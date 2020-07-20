@@ -1,0 +1,9 @@
+/*
+ * @file
+ * CSS for es_userform.
+ */
+
+/* Put some buttons inline, for nicer formatting. */
+.es-userform-inline {
+  display: inline-block;
+}

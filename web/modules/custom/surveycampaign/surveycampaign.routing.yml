@@ -1,0 +1,52 @@
+surveycampaign.settext_form:
+  path: '/admin/config/surveycampaign-configuration'
+  defaults:
+    _form: '\Drupal\surveycampaign\Form\SurveycampaignConfigurationForm'
+    _title: 'Survey interactions configuration'
+  requirements:
+    _permission: 'administer site configuration'
+
+# If the user accesses http://example.com/?q=examples/surveycampaign/simple,
+# the routing system will look for a route with that path. In this case it will
+# find a match, and execute the _controller callback. Access to this path
+# requires "access simple page" permission.
+surveycampaign.simple:
+  path: '/surveycampaign/simple'
+  defaults:
+    _controller: '\Drupal\surveycampaign\Controller\SurveycampaignController::simple'
+    _title: 'Simple - no arguments'
+  requirements:
+    _permission: 'access content'
+    
+surveycampaign.survey_users:
+  path: '/surveycampaign/showusers'
+  defaults:
+    _controller: '\Drupal\surveycampaign\Controller\SurveycampaignController::surveyusers'
+  requirements:
+    _permission: 'access content'
+surveycampaign.twilio_coach:
+  path: '/surveycampaign/startsurvey/{type}/{day}'
+  defaults:
+    _controller: '\Drupal\surveycampaign\Controller\SurveycampaignController::startsurvey'
+  requirements:
+    _permission: 'access arguments page'
+surveycampaign.twilio_texter:
+  path: '/surveycampaign/sendtext/{surveyid}/{campaignid}'
+  defaults:
+    _controller: '\Drupal\surveycampaign\Controller\SurveycampaignController::sendtext'
+  requirements:
+    _permission: 'access arguments page'
+surveycampaign.surveyconfig:
+  path: '/surveyconfig/infoform'
+  defaults:
+    _form:  '\Drupal\surveycampaign\Form\SurveycampaignInfoForm'
+    _title: 'Survey config'
+  requirements:
+    _permission: 'access content'
+surveycampaign.surveyconfigpage:
+  path: '/admin/surveyconfig'
+  defaults:
+    _form:  '\Drupal\surveycampaign\Form\SurveycampaignConfigurationForm'
+    _title: 'Surveycampaign configuration'
+  requirements:
+    _permission: 'access arguments page'

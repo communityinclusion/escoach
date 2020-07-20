@@ -1,0 +1,13 @@
+name: FAPI Validation Example Form
+type: module
+description: Form API Validation Example Form.
+package: Development
+# core: 8.x
+dependencies:
+  - fapi_validation:fapi_validation
+
+# Information added by Drupal.org packaging script on 2017-03-10
+version: '8.x-2.0-alpha1'
+core: '8.x'
+project: 'fapi_validation'
+datestamp: 1489106287

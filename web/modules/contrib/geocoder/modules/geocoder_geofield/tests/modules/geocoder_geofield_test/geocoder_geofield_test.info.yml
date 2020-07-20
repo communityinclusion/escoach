@@ -1,0 +1,12 @@
+type: module
+name: 'Geocoder Geofiel Test'
+description: 'Geocoder Geofiel Test module'
+core_version_requirement: ^8
+package: Testing
+dependencies:
+  - geocoder_geofield
+
+# Information added by Drupal.org packaging script on 2020-06-09
+version: '8.x-2.21'
+project: 'geocoder'
+datestamp: 1591705988

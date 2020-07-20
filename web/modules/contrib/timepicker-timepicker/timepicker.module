@@ -1,0 +1,347 @@
+<?php
+
+/**
+ * @file
+ * Contains timepicker.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Field\WidgetInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_help().
+ */
+function timepicker_help($route_name, RouteMatchInterface $route_match) {
+
+  switch ($route_name) {
+    case 'help.page.timepicker':
+      $output = '<p> ' . t(
+        'Timepicker module. Visit the our @page for "How to use?".',
+        [
+          '@page' => Link::fromTextAndUrl(
+            t('Timepicker'),
+            Url::fromUri('https://www.drupal.org/project/timepicker')
+          )->toString(),
+        ]
+      ) . '</p>';
+
+      return $output;
+  }
+}
+
+/**
+ * Returns list of defined libraries.
+ *
+ * @return array
+ *   Defined libraries in array.
+ *
+ * @see hook_timepicker_libraries()
+ */
+function timepicker_get_libraries() {
+  return \Drupal::moduleHandler()->invokeAll('timepicker_libraries');
+}
+
+/**
+ * Implements hook_timepicker_libraries().
+ */
+function timepicker_timepicker_libraries() {
+  return [
+    'timepicker_jonthornton' => [
+      'title' => 'Jonthornton jQuery Timepicker',
+      'callback library' => [
+        'extension' => 'timepicker',
+        'name' => 'jonthornton-timepicker',
+      ],
+      'depended library' => [
+        'extension' => 'timepicker',
+        'name' => 'jonthornton-jquery-timepicker',
+        'download url' =>
+        'https://github.com/jonthornton/jquery-timepicker/zipball/master',
+        'library path' => '/libraries/jonthornton-jquery-timepicker',
+        'js options reference url' =>
+        'https://github.com/jonthornton/jquery-timepicker#options',
+      ],
+    ],
+    'timepicker_jquery_ui' => [
+      'title' => 'jQuery UI Timepicker',
+      'callback library' => [
+        'extension' => 'timepicker',
+        'name' => 'jquery-ui-timepicker',
+      ],
+      'depended library' => [
+        'extension' => 'timepicker',
+        'name' => 'jquery.ui.timepicker',
+        'download url' =>
+        'https://fgelinas.com/code/timepicker/releases/jquery-ui-timepicker-0.3
+        .3.zip',
+        'library path' => '/libraries/jquery-ui-timepicker',
+        'js options reference url' =>
+        'https://fgelinas.com/code/timepicker/#usage',
+      ],
+    ],
+    'timepicker_jquery_ui_addon' => [
+      'title' => 'jQuery Timepicker Addon',
+      'callback library' => [
+        'extension' => 'timepicker',
+        'name' => 'jquery-addon-timepicker',
+      ],
+      'depended library' => [
+        'extension' => 'timepicker',
+        'name' => 'jquery.ui.timepicker.addon',
+        'download url' =>
+        'https://github.com/trentrichardson/jQuery-Timepicker-Addon/archive/
+          master.zip',
+        'library path' => '/libraries/jquery-timepicker-addon',
+        'js options reference url' =>
+        'http://trentrichardson.com/examples/timepicker/#tp-options',
+      ],
+    ],
+  ];
+}
+
+/**
+ * Returns library info.
+ *
+ * @param string $name
+ *   Machine name of the library.
+ *
+ * @return array|null
+ *   Library info in array or NULL if the library not found.
+ *
+ * @see hook_timepicker_libraries()
+ */
+function timepicker_get_library($name) {
+  $libraries = timepicker_get_libraries();
+
+  return isset($libraries[$name]) ?
+    $libraries[$name] :
+    $libraries['timepicker_jonthornton'];
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ *
+ * Alter the datetime_default widget.
+ */
+function timepicker_field_widget_datetime_default_form_alter(
+  &$element,
+  FormStateInterface $form_state,
+  $context) {
+
+  /** @var \Drupal\Core\Field\WidgetInterface $widget */
+  $widget = $context['widget'];
+  // Fetch settings by the timepicker module.
+  $settings = $widget->getThirdPartySettings('timepicker');
+  if (!empty($settings['enabled'])) {
+    $library_info = timepicker_get_library($settings['type']);
+
+    // Attach callback library.
+    $callback_library = $library_info['callback library'];
+    $callback_library_name = str_replace('-', '_', $callback_library['name']);
+    $element['#attached']['library'][] =
+      "{$callback_library['extension']}/{$callback_library['name']}";
+
+    // Attach js settings.
+    /** @var \Drupal\Core\Field\FieldItemListInterface $items */
+    $items = $context['items'];
+    $field_name = $items->getName();
+    $js_options = [];
+    $js_options_value = $settings['js_options']['value'];
+
+    if (!empty($js_options_value)) {
+      $js_options_values = explode("\n", $js_options_value);
+      foreach ($js_options_values as $value) {
+        $data = explode(':', $value);
+        $js_options[Xss::filter(trim($data[0]))] = Xss::filter(trim($data[1]));
+      }
+    }
+
+    $element['#attached']['drupalSettings'][$callback_library['extension']][$callback_library_name][$field_name] = $js_options;
+  }
+}
+
+/**
+ * Implements hook_field_widget_third_party_settings_form().
+ *
+ * Add options for datetime_default field widget.
+ */
+function timepicker_field_widget_third_party_settings_form(
+  WidgetInterface $plugin,
+  FieldDefinitionInterface $field_definition,
+  $form_mode,
+  $form,
+  FormStateInterface $form_state
+) {
+
+  $element = [];
+  if ($plugin->getPluginId() == 'datetime_default' ||
+      $plugin->getPluginId() == 'daterange_default') {
+
+    // Build default settings.
+    $default_settings = [
+      'enabled' => 0,
+      'type' => 'timepicker_jonthornton',
+      'js_options' => ['value' => ''],
+    ];
+
+    if ($settings = $plugin->getThirdPartySettings('timepicker')) {
+      $settings = array_merge($default_settings, $settings);
+    }
+    else {
+      $settings = $default_settings;
+    }
+
+    $element = [
+      '#type' => 'details',
+      '#title' => t('Date Timepicker'),
+      '#open' => TRUE,
+    ];
+
+    $element['enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Enable Date Timepicker'),
+      '#default_value' => $settings['enabled'],
+    ];
+
+    // Build an array with the supported libraries.
+    $timepicker_types = [];
+    $libraries = timepicker_get_libraries();
+
+    foreach ($libraries as $key => $library) {
+      $timepicker_types[$key] = $library['title'];
+    }
+
+    // Type of the Timepicker library.
+    $element['type'] = [
+      '#type' => 'select',
+      '#title' => t('Date Timepicker type'),
+      '#options' => $timepicker_types,
+      '#default_value' => $settings['type'],
+      '#states' => [
+        'visible' => [
+          ':input[name$="[timepicker][enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    // JS options container.
+    $element['js_options'] = [
+      '#type' => 'container',
+      '#states' => [
+        'visible' => [
+          ':input[name$="[timepicker][enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $element['js_options']['value'] = [
+      '#type' => 'textarea',
+      '#rows' => 4,
+      '#title' => t('JS Options'),
+      '#default_value' => $settings['js_options']['value'],
+      '#description' => t(
+        'Options format:<br>key1:value1<br>key2:value2 <br /> The "timeFormat"
+        option is not available for the JS option as it returns a format is not
+        accepted by Drupal.'
+      ),
+    ];
+
+    foreach ($libraries as $key => $library) {
+      if (!empty($library['depended library']['js options reference url'])) {
+        $element['js_options'][$key] = [
+          '#type' => 'container',
+          '#children' => t(
+            'You can find a list of all the available options at <a href="@url"
+            target="_blank">@url</a>',
+            [
+              '@url' =>
+              $library['depended library']['js options reference url'],
+            ]
+          ),
+          '#states' => [
+            'visible' => [
+              ':input[name$="[timepicker][type]"]' => ['value' => $key],
+            ],
+          ],
+          '#attributes' => ['class' => ['description']],
+        ];
+      }
+    }
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_settings_summary_alter().
+ *
+ * Display information about Timepicker status.
+ */
+function timepicker_field_widget_settings_summary_alter(&$summary, $context) {
+  /** @var \Drupal\Core\Field\WidgetInterface $widget */
+  $widget = $context['widget'];
+  if ($widget->getPluginId() == 'datetime_default' ||
+    $widget->getPluginId() == 'daterange_default') {
+
+    if (TRUE == $widget->getThirdPartySetting('timepicker', 'enabled')) {
+      $summary[] = t('Date Timepicker enabled.');
+      $timepicker_type = $widget->getThirdPartySetting('timepicker', 'type');
+      $library_info = timepicker_get_library($timepicker_type);
+      $summary[] = t(
+        'Timepicker type: @type',
+        ['@type' => $library_info['title']]
+      );
+    }
+    else {
+      $summary[] = t('Date Timepicker disabled.');
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ *
+ * Alter the daterange_default widget.
+ */
+function timepicker_field_widget_daterange_default_form_alter(
+  &$element,
+  FormStateInterface $form_state,
+  $context) {
+
+  /** @var \Drupal\Core\Field\WidgetInterface $widget */
+  $widget = $context['widget'];
+
+  // Fetch settings by the timepicker module.
+  $settings = $widget->getThirdPartySettings('timepicker');
+  if (!empty($settings['enabled'])) {
+    $library_info = timepicker_get_library($settings['type']);
+
+    // Attach callback library.
+    $callback_library = $library_info['callback library'];
+    $callback_library_name = str_replace('-', '_', $callback_library['name']);
+    $element['#attached']['library'][] =
+      "{$callback_library['extension']}/{$callback_library['name']}";
+
+    // Attach js settings.
+    /** @var \Drupal\Core\Field\FieldItemListInterface $items */
+    $items = $context['items'];
+    $field_name = $items->getName();
+    $js_options = [];
+    $js_options_value = $settings['js_options']['value'];
+
+    if (!empty($js_options_value)) {
+      $js_options_values = explode("\n", $js_options_value);
+
+      foreach ($js_options_values as $value) {
+        $data = explode(':', $value);
+        $js_options[Xss::filter(trim($data[0]))] = Xss::filter(trim($data[1]));
+      }
+    }
+    $element['#attached']['drupalSettings'][$callback_library['extension']][$callback_library_name][$field_name] = $js_options;
+  }
+}

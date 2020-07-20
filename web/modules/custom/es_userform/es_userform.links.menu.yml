@@ -1,0 +1,72 @@
+es_userform.description:
+  title: 'ES Userform'
+  route_name: 'es_userform.description'
+  expanded: TRUE
+
+es_userform.simplest:
+  title: 'Simplest AJAX example'
+  route_name: 'es_userform.simplest'
+  parent: es_userform.description
+  weight: 0
+
+es_userform.submit-driven:
+  title: 'Submit-driven AJAX'
+  route_name: 'es_userform.submit_driven_ajax'
+  parent: es_userform.description
+  weight: 1
+
+es_userform.render-link:
+  title: 'AJAX link in a render array'
+  route_name: 'es_userform.ajax_link_render'
+  parent: es_userform.description
+  weight: 2
+
+es_userform.wizard-example:
+  title: 'Wizard example'
+  route_name: 'es_userform.wizard'
+  parent: es_userform.description
+  weight: 2
+
+es_userform.wizard-examplenojs:
+  title: 'Wizard example w/JS turned off'
+  route_name: 'es_userform.wizardnojs'
+  parent: es_userform.description
+  weight: 3
+
+es_userform.autocomplete-user:
+  title: 'Autocomplete user with entity_autocomplete'
+  route_name: 'es_userform.autocomplete_user'
+  parent: es_userform.description
+  weight: 4
+
+es_userform.autotextfields:
+  title: 'Generate textfields'
+  route_name: 'es_userform.autotextfields'
+  parent: es_userform.description
+  weight: 5
+
+es_userform.dependent-dropdown:
+  title: 'Dependent dropdown'
+  route_name: 'es_userform.dependent_dropdown'
+  parent: es_userform.description
+  weight: 6
+es_userform.dependent-dropdown-nojs:
+  title: 'Dependent dropdown w/ no JS'
+  route_name: 'es_userform.dependent_dropdown'
+  route_parameters:
+    nojs: nojs
+  parent: es_userform.description
+  weight: 6
+
+es_userform.dynamic-form-sections:
+  title: 'Dynamic form sections'
+  route_name: 'es_userform.dynamic_form_sections'
+  parent: es_userform.description
+  weight: 10
+es_userform.dynamic-form-sections-nojs:
+  title: 'Dynamic form sections w/ no JS'
+  route_name: 'es_userform.dynamic_form_sections'
+  route_parameters:
+    nojs: nojs
+  parent: es_userform.description
+  weight: 10

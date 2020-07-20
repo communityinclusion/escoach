@@ -1,0 +1,13 @@
+services:
+  surveycampaign.old_nodes:
+     class: \Drupal\surveycampaign\ExpiredNodesService
+     arguments: ["@entity_type.manager"]
+  surveycampaign.logger.channel.surveycampaign:
+    parent: logger.channel_base
+    arguments: ['surveycampaign']
+  surveycampaign.survey_users:
+     class: \Drupal\surveycampaign\SurveyUsersService
+     arguments: ["@entity_type.manager"]
+  surveycampaign.twilio_coach:
+     class: \Drupal\surveycampaign\TwilioCoachService
+     arguments: ["@entity_type.manager"]

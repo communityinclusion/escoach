@@ -1,0 +1,24 @@
+{
+  "name": "drupal/timepicker",
+  "description": "The Date Timepicker module provides a better timepickers for date fields.",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/timepicker",
+  "authors": [
+    {
+      "name": "Ivan Tibezh (tibezh)",
+      "homepage": "https://www.drupal.org/u/tibezh",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Lilian Catanoi (liliancatanoi90)",
+      "homepage": "https://www.drupal.org/u/liliancatanoi90",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/timepicker",
+    "source": "http://cgit.drupalcode.org/timepicker"
+  },
+  "minimum-stability": "dev"
+}

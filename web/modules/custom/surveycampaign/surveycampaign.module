@@ -1,0 +1,114 @@
+<?php
+
+/**
+ * @file
+ * Contains surveycampaign.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Config\ConfigFactoryInterface;
+
+/**
+ * Implements hook_help().
+ */
+function surveycampaign_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the surveycampaign module.
+    case 'help.page.surveycampaign':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Survey interactions') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function surveycampaign_theme() {
+  return [
+    'surveycampaign' => [
+      'render element' => 'children',
+    ],
+  ];
+}
+function surveycampaign_cron()
+{
+  $message = 'Surveycampaign cron run: ' . date('Y-m-d H:i:s');
+  \Drupal::logger('surveycampaign')->notice($message);
+  
+  $config = \Drupal::config('surveycampaign.settings');
+  // Will print 'Hello'.
+  $surveyid =  $config->get('defaultid');
+  $surveyid2 =  $config->get('secondaryid');
+    
+  
+    
+ 
+  $send2 = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0);
+  $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
+
+  
+  
+} 
+
+/**
+* Implements hook_mail().
+*/
+function surveycampaign_mail($key, &$message, $params) {
+  $options = array(
+    'langcode' => $message['langcode'],
+  );
+ 
+  switch ($key) {
+    case 'unpublish_job':
+    $message['from'] = \Drupal::config('system.site')->get('mail');
+    $message['subject'] = t('Your job ad on NERCVE.org has expired: @title', array('@title' => $params['node_title']), $options);
+    $message['body'][] = $params['message'];
+    break;
+    case 'create_job':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Job ad created on NERCVE.org: @title', array('@title' => $params['node_title']), $options);
+      $message['body'][] = t('Your job ad, @title was posted to NERCVE.org.  After an adminstrator approves your posting it will be available on our website employment board for 120 days.', array('@title' => $params['node_title']), $options);
+      break;
+  }
+}
+
+/**
+* Implements hook_entity_insert().
+*/
+function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+
+  if ($entity->getEntityTypeId() !== 'node' || ($entity->getEntityTypeId() === 'node' && $entity->bundle() !== 'job')) {
+  return;
+  }
+  $config = \Drupal::config('surveycampaign.customize_messages');
+  $mailbody = $config->get('surveymessages');
+  $userfirstmailbody = $config->get('firstusermsg');
+  $mailManager = \Drupal::service('plugin.manager.mail');
+  
+  $module = 'surveycampaign';
+  $key = 'create_job';
+  $to = $entity->get('field_email')->getString();
+  
+  $params['message'] = $userfirstmailbody;
+  
+  $params['node_title'] = $entity->label();
+  $langcode = 'und';
+  $send = true;
+  
+  $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+  if ($result['result'] !== true) {
+  $message = t('There was a problem sending alert email notification to @email for creating ticket @id.', array('@email' => $to, '@id' => $entity->id()));
+  //drupal dblog
+  \Drupal::logger('surveycampaign alert')->error($message);
+  return;
+  }
+  
+  $message = t('An email notification has been sent to @email for creating node @id.', array('@email' => $to, '@id' => $entity->id()));
+  //drupal dblog
+  \Drupal::logger('surveycampaign alert')->notice($message);
+  }

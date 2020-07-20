@@ -1,0 +1,7 @@
+surveycampaign.surveycampaign.customize_messages:
+  type: config_object
+  label: 'Survey interactions message settings'
+  mapping:
+    salutation:
+      type: string
+      label: 'The mail message'

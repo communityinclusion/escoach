@@ -1,0 +1,13 @@
+name: Bootstrap DateTime Picker
+type: module
+description: DateTime picker form element using the Bootstrap datetimepicker library.
+# core: '8.x'
+
+dependencies:
+  - drupal:datetime
+
+# Information added by Drupal.org packaging script on 2018-08-29
+version: '8.x-1.2'
+core: '8.x'
+project: 'bootstrap_datetime_picker'
+datestamp: 1535537898
