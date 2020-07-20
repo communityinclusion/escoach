@@ -51,7 +51,7 @@ class SurveycampaignController extends ControllerBase {
   }
   /**
    * @param string $first
-   *   A string to use, should be a number.
+   *   A string to use, should be a number
    * @param string $second
    *   Another string to use, should be a number.
    *
