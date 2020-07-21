@@ -15,5 +15,5 @@
     .floatLeft {float:left;
         width: min-content;
       }
-     
+     .page-user-register #edit-survey-participants-profiles-0-entity-field-partic-suspension-dates-0, .page-user-register #edit-survey-participants-profiles-0-entity-field-set-surveys-to-inactive-wrapper {display: none;}
       
