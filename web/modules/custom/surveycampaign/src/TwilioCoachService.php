@@ -17,7 +17,7 @@ class TwilioCoachService
         include('/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
         $defaultenable = $type == 1 ? $config->get('defaultenable') : $config->get('secondenable');
-        require '/var/www/es_coach/vendor/autoload.php';
+        require $_SERVER['SERVER_ADDR'] == '162.243.15.189' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
         $survey = '5500151';//Survey to pull from
         $todaydate = date("Y-m-d");
         $tomorrowdate = new DateTime("$todaydate");
