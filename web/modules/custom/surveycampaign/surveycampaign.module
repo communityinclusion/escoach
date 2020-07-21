@@ -8,6 +8,7 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use \DateTime;
 
 /**
  * Implements hook_help().
@@ -37,20 +38,41 @@ function surveycampaign_theme() {
 }
 function surveycampaign_cron()
 {
+  
   $message = 'Surveycampaign cron run: ' . date('Y-m-d H:i:s');
   \Drupal::logger('surveycampaign')->notice($message);
   
   $config = \Drupal::config('surveycampaign.settings');
-  // Will print 'Hello'.
   $surveyid =  $config->get('defaultid');
   $surveyid2 =  $config->get('secondaryid');
+  $database = \Drupal::database();
+  $todaydate = date("Y-m-d");
+  $query1 = $database->select('surveycampaign_campaigns', 'sc')
+  ->fields('sc', array(
+  'campaignid'
+    )
+  )
+  ->condition('sc.surveyid', $surveyid)
+  ->condition('senddate', $database->escapeLike($todaydate) . '%', 'LIKE')
+  ->execute();
+  $campaignid = $query1->fetchField();
+  $query2 = $database->select('surveycampaign_campaigns', 'sc')
+  ->fields('sc', array(
+  'campaignid'
+    )
+  )
+  ->condition('sc.surveyid', $surveyid2)
+  ->condition('senddate', $database->escapeLike($todaydate) . '%', 'LIKE')
+  ->execute();
+  $campaignid2 = $query2->fetchField();
     
   
     
  
   $send2 = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0);
   $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
-
+  $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
+  $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
   
   
 } 
