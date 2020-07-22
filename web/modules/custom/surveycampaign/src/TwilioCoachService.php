@@ -242,15 +242,19 @@ class TwilioCoachService
                         // check if user suspended survey.  If so get dates and enter in user profile
                         //delete this individual in this survey/campaign from surveycampaign_mailer 
                         
-                        
-                        if ($suspenddates && $suspenddates['data'][0]['survey_data']) {
-                            if($suspenddates['data'][0]['survey_data'][13]['answer']) {
-                                echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][13]['answer'];
-                                $startdate = new DateTime($suspenddates['data'][0]['survey_data'][13]['answer']);
+                        $startid = $surveyid == '5500151' ? 13 : 587;
+                        $endid = $surveyid == '5500151' ? 14 : 588;
+                        echo "Response begin: ";
+                        print_r($suspenddates['data'][0]['survey_data'][587]);
+                        echo "<br /> REsponse end: "; print_r($suspenddates['data'][0]['survey_data'][588]);
+                        if ($suspenddates && $suspenddates['data'][0]['survey_data'][$startid]) {
+                            if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
+                                echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
+                                $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
                                 $startdate = $startdate->format('Y-m-d');
                             }
-                            if($suspenddates['data'][0]['survey_data'][14]['answer']) {
-                                echo "<br />Suspension last day:" . $suspenddates['data'][0]['survey_data'][14]['answer'];$enddate = new DateTime($suspenddates['data'][0]['survey_data'][14]['answer']);
+                            if($suspenddates['data'][0]['survey_data'][$endid]['answer']) {
+                                echo "<br />Suspension last day:" . $suspenddates['data'][0]['survey_data'][$endid]['answer'];$enddate = new DateTime($suspenddates['data'][0]['survey_data'][$endid]['answer']);
                                 $enddate = $enddate->format('Y-m-d');
                             }
 
@@ -352,7 +356,7 @@ class TwilioCoachService
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
             //$didnotreply = false;
-            $didnotreply = intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$recentcampaigns));
+            $didnotreply = !empty($recentcampaigns) ?intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$recentcampaigns)) : false;
             if($didnotreply >= $limit) $sendwarning = $this->mailNonReplyer($email,$fullname);
             
             if (!is_bool($output)) {
@@ -595,13 +599,14 @@ class TwilioCoachService
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
         $key = 'nonreply_message';
+        $siteemail = 'admin@rsmail.communityinclusion.org';
         $admin = $config->get('survey_admin_mail');
         $inactiveno =$config->get('def_inactive_trigger');
-        $to = "$admin, $email";
+        $to = "$siteemail, $admin, $email";
         $params['message'] = "Dear $fullname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
         $langcode = "en";
         $send = true;
-        $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+        $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
     }
 
 }
