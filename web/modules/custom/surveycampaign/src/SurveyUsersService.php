@@ -77,5 +77,24 @@ class SurveyUsersService
         }
 
     }
+    public function setUserInactive($firstname,$lastname,$userphone) {
+
+        $storage = \Drupal::entityTypeManager()->getStorage('profile')
+            ->loadByProperties([
+                'type' => 'survey_participants',
+                'field_cell_phone' => $userphone,
+                'field_survey_last_name' => $lastname,
+            ]);
+        
+        foreach($storage as $profile) {
+            if($userphone == $profile->get('field_cell_phone')->value && $lastname == $profile->get('field_survey_last_name')->value) {
+
+                $profile->set('field_set_surveys_to_inactive', array(
+                    'value' => '2'));
+                $profile->save();
+            }
+        }
+
+    }
     
 }

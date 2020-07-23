@@ -357,7 +357,7 @@ class TwilioCoachService
             $output= json_decode($output);
             //$didnotreply = false;
             $didnotreply = !empty($recentcampaigns) ?intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$recentcampaigns)) : false;
-            if($didnotreply >= $limit) $sendwarning = $this->mailNonReplyer($email,$fullname);
+            if($didnotreply >= $limit) $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone);
             
             if (!is_bool($output)) {
                 $senddate = new DateTime($transferdate);
@@ -594,7 +594,7 @@ class TwilioCoachService
         }
         return $campaignarray;
     }
-    protected function mailNonReplyer($email,$fullname) {
+    protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone) {
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
@@ -602,9 +602,11 @@ class TwilioCoachService
         $siteemail = 'admin@rsmail.communityinclusion.org';
         $admin = $config->get('survey_admin_mail');
         $inactiveno =$config->get('def_inactive_trigger');
-        $to = "$siteemail, $admin, $email";
-        $params['message'] = "Dear $fullname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
+        $to = "$siteemail, $admin";
+        $params['subject'] = 'Non reply to survey';
+        $params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
         $langcode = "en";
+        $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserInactive($firstname,$lastname,$mobilephone);
         $send = true;
         $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
     }
