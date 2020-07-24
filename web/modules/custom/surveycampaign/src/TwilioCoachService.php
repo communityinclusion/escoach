@@ -4,6 +4,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Twilio\Rest\Client;
 use \DateTime;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\mailgun\MailgunHandlerInterface;
 class TwilioCoachService
 {
     protected $entityTypeManager;
@@ -598,13 +600,14 @@ class TwilioCoachService
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
-        $key = 'nonreply_message';
+        $key = 'mailgun';
         $siteemail = 'admin@rsmail.communityinclusion.org';
         $admin = $config->get('survey_admin_mail');
         $inactiveno =$config->get('def_inactive_trigger');
-        $to = "$siteemail, $admin";
-        $params['subject'] = 'Non reply to survey';
-        $params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
+        $to = $admin;
+        //$params['subject'] = t('Non reply to survey');
+        $params['message'] = t("Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at and tell us if you want to resume the survey at some future date or else be unsubscribed from it.");
+        //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
         $langcode = "en";
         $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserInactive($firstname,$lastname,$mobilephone);
         $send = true;
