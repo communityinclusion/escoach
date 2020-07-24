@@ -359,7 +359,7 @@ class TwilioCoachService
             $output= json_decode($output);
             //$didnotreply = false;
             $didnotreply = !empty($recentcampaigns) ?intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$recentcampaigns)) : false;
-            if($didnotreply >= $limit) $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone);
+            if($didnotreply >= $limit) { $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone);}
             
             if (!is_bool($output)) {
                 $senddate = new DateTime($transferdate);
@@ -371,8 +371,11 @@ class TwilioCoachService
                 $checksuspend = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone);
                 $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
                 $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
-                if($suspendstart && ($suspendstart <= $comparedate) && !$suspendend) $cancelsurvey = true;
-                if($suspendstart && $suspendend && ($suspendstart <= $comparedate) && ($suspendend >= $comparedate)) $cancelsurvey = true;
+                $inactive = $checksuspend[2];
+                if($suspendstart && ($suspendstart <= $comparedate)) $cancelsurvey = true;
+                if($suspendstart && ($suspendstart <= $comparedate) && ($suspendend >= $comparedate)) $cancelsurvey = true;
+                if($inactive) $cancelsurvey = true;
+                
 
 
                 $invitelink = $output->invitelink;
@@ -601,17 +604,22 @@ class TwilioCoachService
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
         $key = 'mailgun';
+        $usermail = urldecode($email);
         $siteemail = 'admin@rsmail.communityinclusion.org';
         $admin = $config->get('survey_admin_mail');
         $inactiveno =$config->get('def_inactive_trigger');
-        $to = $admin;
+        $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
         //$params['subject'] = t('Non reply to survey');
         $params['message'] = t("Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at and tell us if you want to resume the survey at some future date or else be unsubscribed from it.");
         //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
         $langcode = "en";
-        $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserInactive($firstname,$lastname,$mobilephone);
-        $send = true;
-        $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
+        $checkinactive = false;
+        $checkinactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$lastname);
+        if(!$checkinactive) {
+            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserInactive($firstname,$lastname,$mobilephone);
+            $send = true;
+            $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
+        }
     }
 
 }
