@@ -623,7 +623,7 @@ class TwilioCoachService
             $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
         }
     }
-    public function twilioRespond($email) {
+    public function twilioRespond($email,$arraydump) {
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
@@ -634,7 +634,7 @@ class TwilioCoachService
         $inactiveno =$config->get('def_inactive_trigger');
         $to = "Administrator <$admin>,Dummy <$usermail>";
         //$params['subject'] = t('Non reply to survey');
-        $params['message'] = t("Dear Dummy, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at and tell us if you want to resume the survey at some future date or else be unsubscribed from it.");
+        $params['message'] = t("Dear Dummy, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at and tell us if you want to resume the survey at some future date or else be unsubscribed from it.\n$arraydump");
         //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
         $langcode = "en";
         
