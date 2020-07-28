@@ -374,7 +374,7 @@ class TwilioCoachService
                 $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
                 $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
                 $inactive = $checksuspend[2];
-                if($suspendstart && ($suspendstart <= $comparedate)) $cancelsurvey = true;
+                //if($suspendstart && ($suspendstart <= $comparedate)) $cancelsurvey = true;
                 if($suspendstart && ($suspendstart <= $comparedate) && ($suspendend >= $comparedate)) $cancelsurvey = true;
                 if($inactive) $cancelsurvey = true;
                 
