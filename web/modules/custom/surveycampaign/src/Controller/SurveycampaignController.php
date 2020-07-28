@@ -79,7 +79,10 @@ class SurveycampaignController extends ControllerBase {
        throw new AccessDeniedHttpException();
      }
      \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
-   }
+  }
+  public function handleincoming() {
+      $response = \Drupal::service('surveycampaign.twilio_incoming')->sendResponseMail();
+  }
 
   /**
    * A more complex _controller callback that takes arguments.
