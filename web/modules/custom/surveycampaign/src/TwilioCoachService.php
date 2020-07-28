@@ -358,8 +358,10 @@ class TwilioCoachService
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
             //$didnotreply = false;
+            $inactive = false;
+            $inactive = \Drupal::service('surveycampaign.survey_users')->($mobilephone,$lastname);
             $didnotreply = !empty($recentcampaigns) ?intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$recentcampaigns)) : false;
-            if($didnotreply >= $limit) { $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone);}
+            if($didnotreply >= $limit && !$inactive) { $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone);}
             
             if (!is_bool($output)) {
                 $senddate = new DateTime($transferdate);
