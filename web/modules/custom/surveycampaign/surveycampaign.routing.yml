@@ -51,7 +51,7 @@ surveycampaign.surveyconfigpage:
   requirements:
     _permission: 'access arguments page'
 surveycampaign.twiliorespond:
-  path: '/surveycampaign/respond'
+  path: '/surveycampaign/respond/8uYR9NtgO9'
   defaults:
     _controller: '\Drupal\surveycampaign\Controller\SurveycampaignController::handleincoming'
     _title: 'Surveycampaign responder'

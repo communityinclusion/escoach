@@ -17,9 +17,12 @@ class TwilioIncomingService
         $this->entityTypeManager = $entity_type_manager;
     }
     public function sendResponseMail() {
-        if($_REQUEST) $var = print_r($_REQUEST, true);
+        // if($_REQUEST) $var = print_r($_REQUEST, true);
 
-        $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond('paul.foos@umb.edu',$var);
+        if($_REQUEST && $_REQUEST[Body] == 'Test')
+        $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond('paul.foos@umb.edu',$var,'mailgun');
+        else
+        $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond('paul.foos@umb.edu',$var,'twiliorespond');
     }
 
 }
