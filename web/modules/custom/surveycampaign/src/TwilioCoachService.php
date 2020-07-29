@@ -623,13 +623,13 @@ class TwilioCoachService
             $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
         }
     }
-    public function twilioRespond($email,$arraydump,$key) {
+    public function twilioRespond($email,$arraydump,$responsenote) {
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
-        $key = $key;
-        switch ($key) {
-            case 'mailgun':
+        $key = 'mailgun';
+        switch ($responsenote) {
+            case 'goodresponse':
                 $usermail = urldecode($email);
                 $siteemail = 'admin@rsmail.communityinclusion.org';
                 $admin = $config->get('survey_admin_mail');
@@ -643,7 +643,7 @@ class TwilioCoachService
                 $send = true;
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             break;
-            case 'twiliorespond':
+            case 'badresponse':
                 $usermail = urldecode($email);
                 $siteemail = 'admin@rsmail.communityinclusion.org';
                 $admin = $config->get('survey_admin_mail');
