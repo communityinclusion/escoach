@@ -19,7 +19,7 @@ class TwilioIncomingService
     public function sendResponseMail() {
          if($_REQUEST) $var = print_r($_REQUEST, true);
 
-        if($_REQUEST && $_REQUEST[Body] == 'Test')
+        if($_REQUEST && $_REQUEST['Body'] == 'Test')
         $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond('paul.foos@umb.edu','goodresponse');
         else
         $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond('paul.foos@umb.edu',$var,'badresponse');
