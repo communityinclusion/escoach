@@ -35,9 +35,9 @@ class TwilioIncomingService
        elseif($_REQUEST && ($_REQUEST['Body'] == strtolower('start') || $_REQUEST['Body'] == strtolower('yes') || $_REQUEST['Body'] == strtolower('unstop') )) {
            $userphone = substr($_REQUEST['From'],2);
            // $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1');
-            $email = "webguy@paulfoos.com" //$setactive[0];
-            $firstname = "Paul" // $setactive[1];
-            $lastname = "Foos" //$setactive[2];
+            $email = "webguy@paulfoos.com"; //$setactive[0];
+            $firstname = "Paul"; // $setactive[1];
+            $lastname = "Foos" ;//$setactive[2];
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'start',$var);
         } 
       else return;
