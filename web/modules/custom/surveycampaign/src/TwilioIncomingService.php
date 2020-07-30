@@ -17,32 +17,29 @@ class TwilioIncomingService
         $this->entityTypeManager = $entity_type_manager;
     }
     public function sendResponseMail() {
-         if($_REQUEST) $var = print_r($_REQUEST, true);
+         //if($_REQUEST) $var = print_r($_REQUEST, true);
          //STOP, STOPALL, UNSUBSCRIBE, CANCEL, END, or QUIT
          //START, YES and UNSTOP
        
-        //if($_REQUEST && ($_REQUEST['Body'] == strtolower('stop') || $_REQUEST['Body'] == strtolower('stopall') || $_REQUEST['Body'] == strtolower('unsubscribe') || $_REQUEST['Body'] == strtolower('cancel') || $_REQUEST['Body'] == strtolower('end') || $_REQUEST['Body'] == strtolower('quit') )) { 
+        if($_REQUEST && (strtoupper($_REQUEST['Body']) == 'STOP' || strtoupper($_REQUEST['Body']) == 'STOPALL' || strtoupper($_REQUEST['Body']) == 'UNSUBSCRIBE' || strtoupper($_REQUEST['Body']) == 'CANCEL' || strtoupper($_REQUEST['Body']) == 'END' || strtoupper($_REQUEST['Body']) == 'QUIT' )) { 
             $userphone = substr($_REQUEST['From'],2);
-            //$setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2');
-            $email = "webguy@paulfoos.com"; //$setactive[0];
-            $firstname = "Paul"; // $setactive[1];
-            $lastname = "Foos" ;//$setactive[2];
-            //$firstname = $setinactive[1];
-            //$lastname = $setinactive[2];
-           // print_r($setinactive);
+            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2');
+            $email = $setinactive[0];
+            $firstname = $setinactive[1];
+            $lastname = $setinactive[2];
 
 
-            $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop',$var);
-        //}
-      /* elseif($_REQUEST && ($_REQUEST['Body'] == strtolower('start') || $_REQUEST['Body'] == strtolower('yes') || $_REQUEST['Body'] == strtolower('unstop') )) {
-           $userphone = substr($_REQUEST['From'],2);
-           // $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1');
-            $email = "webguy@paulfoos.com"; //$setactive[0];
-            $firstname = "Paul"; // $setactive[1];
-            $lastname = "Foos" ;//$setactive[2];
-            $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'start',$var);
+            $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop');
+        }
+        elseif($_REQUEST && (strtoupper($_REQUEST['Body']) == 'START' || strtoupper($_REQUEST['Body']) == 'YES' || strtoupper($_REQUEST['Body']) == 'UNSTOP' )) {
+            $userphone = substr($_REQUEST['From'],2);
+            $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1');
+            $email = $setactive[0];
+            $firstname = $setactive[1];
+            $lastname = $setactive[2];
+            $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'start');
         } 
-      else return; */
+      else return; 
     }
 
 }
