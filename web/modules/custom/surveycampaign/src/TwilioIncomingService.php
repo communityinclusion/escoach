@@ -20,7 +20,7 @@ class TwilioIncomingService
          //if($_REQUEST) $var = print_r($_REQUEST, true);
          //STOP, STOPALL, UNSUBSCRIBE, CANCEL, END, or QUIT
          //START, YES and UNSTOP
-        //$userphone = substr($_REQUEST['From'],2);
+       $userphone = substr($_REQUEST['From'],2);
        
         if($_REQUEST && ($_REQUEST['Body'] == strtolower('stop') || $_REQUEST['Body'] == strtolower('stopall') || $_REQUEST['Body'] == strtolower('unsubscribe') || $_REQUEST['Body'] == strtolower('cancel') || $_REQUEST['Body'] == strtolower('end') || $_REQUEST['Body'] == strtolower('quit') )) {
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,2);
