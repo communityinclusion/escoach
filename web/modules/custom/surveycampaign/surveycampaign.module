@@ -89,8 +89,9 @@ function surveycampaign_mail($key, &$message, $params) {
     case 'mailgun':
     
       $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Non reply to survey');
+      //$message['subject'] = t('Non reply to survey');
       $message['body'][] = $params['message'];
+      $message['subject'] = t('@title', array('@title' => $params['title']), $options);
       
     
     break;

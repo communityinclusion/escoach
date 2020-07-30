@@ -611,46 +611,46 @@ class TwilioCoachService
         $admin = $config->get('survey_admin_mail');
         $inactiveno =$config->get('def_inactive_trigger');
         $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
-        //$params['subject'] = t('Non reply to survey');
+        $params['title'] = t('Daily survey paused');
         $params['message'] = t("Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at and tell us if you want to resume the survey at some future date or else be unsubscribed from it.");
-        //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
+        
         $langcode = "en";
         $checkinactive = false;
         $checkinactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$lastname);
         if(!$checkinactive) {
-            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserInactive($firstname,$lastname,$mobilephone);
+            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,2);
             $send = true;
             $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
         }
     }
-    public function twilioRespond($email,$arraydump,$responsenote) {
+    public function twilioRespond($email,$firstname,$lastname,$responseaction) {
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
         $key = 'mailgun';
-        switch ($responsenote) {
-            case 'goodresponse':
+        switch ($responseaction) {
+            case 'start':
                 $usermail = urldecode($email);
                 $siteemail = 'admin@rsmail.communityinclusion.org';
                 $admin = $config->get('survey_admin_mail');
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,Dummy <$usermail>";
-                //$params['subject'] = t('Non reply to survey');
-                $params['message'] = t("Dear Dummy, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at and tell us if you want to resume the survey at some future date or else be unsubscribed from it.\n$arraydump");
+                $params['title'] = t('Daily survey restarted');
+                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey resume. If you did not send such a message contact escoach.");
                 //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
                 $langcode = "en";
                 
                 $send = true;
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             break;
-            case 'badresponse':
+            case 'stop':
                 $usermail = urldecode($email);
                 $siteemail = 'admin@rsmail.communityinclusion.org';
                 $admin = $config->get('survey_admin_mail');
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,Dummy <$usermail>";
-                //$params['subject'] = t('Non reply to survey');
-                $params['message'] = t("Wrongo. \n$arraydump");
+                $params['title'] = t('Daily survey paused');
+                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey stop sending to you. If you did not send such a message contact escoach.");
                 //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
                 $langcode = "en";
                 

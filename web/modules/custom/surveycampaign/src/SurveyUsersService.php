@@ -79,17 +79,17 @@ class SurveyUsersService
         }
 
     }
-    public function checkInactive($mobilephone,$lastname) {
+    public function checkInactive($userphone,$lastname) {
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
-                'field_cell_phone' => $mobilephone,
+                'field_cell_phone' => $userphone,
             ]);
         
         foreach($storage as $profile) {
-            echo "Check Inactive values: " . $mobilephone . " " . $lastname . " " . $profile->get('field_set_surveys_to_inactive')->value;
+            echo "Check Inactive values: " . $userphone . " " . $lastname . " " . $profile->get('field_set_surveys_to_inactive')->value;
             
-            if($mobilephone == $profile->get('field_cell_phone')->value && $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2') {
+            if($userphone == $profile->get('field_cell_phone')->value && $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2') {
                 echo "Confirm Inactive values: " . $profile->get('field_cell_phone')->value . " " . $profile->get('field_survey_last_name')->value . " " . $profile->get('field_set_surveys_to_inactive')->value;
             return true;
             }
@@ -98,24 +98,30 @@ class SurveyUsersService
         }
     }
 
-    public function setUserInactive($firstname,$lastname,$userphone) {
+    public function setUserStatus($userphone,$setstatus) {
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
                 'field_cell_phone' => $userphone,
-                'field_survey_last_name' => $lastname,
             ]);
         
         foreach($storage as $profile) {
-            if($userphone == $profile->get('field_cell_phone')->value && $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value != '2') {
-
+            if($userphone == $profile->get('field_cell_phone')->value && $profile->get('field_set_surveys_to_inactive')->value != $setstatus) {
+                $user = $profile->getOwnerId();
+                $userobj = \Drupal\user\Entity\User::load($user);
+                $useremail = $userobj->getEmail();
+                $firstname = $profile->get('field_survey_first_name')->value ? $profile->get('field_survey_first_name')->value : '';
+                $lastname = $profile->get('field_survey_last_name')->value ? $profile->get('field_survey_last_name')->value : '';
                 $profile->set('field_set_surveys_to_inactive', array(
-                    'value' => '2'));
+                    'value' => $setstatus));
                 $profile->save();
+                return array($useremail,$firstname,$lastname);
+
             }
         }
 
     }
+
     
 }
