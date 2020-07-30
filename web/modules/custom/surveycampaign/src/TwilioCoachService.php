@@ -623,7 +623,7 @@ class TwilioCoachService
             $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
         }
     }
-    public function twilioRespond($email,$firstname,$lastname,$responseaction) {
+    public function twilioRespond($email,$firstname,$lastname,$responseaction,$var) {
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'surveycampaign';
@@ -637,7 +637,7 @@ class TwilioCoachService
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
                 $params['title'] = t('Daily survey restarted');
                 $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey resume. If you did not send such a message contact escoach.");
-                //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
+                //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it. $var";
                 $langcode = "en";
                 
                 $send = true;

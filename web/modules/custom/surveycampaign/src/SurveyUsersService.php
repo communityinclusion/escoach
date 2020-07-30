@@ -107,14 +107,14 @@ class SurveyUsersService
             ]);
         
         foreach($storage as $profile) {
-            if($userphone == $profile->get('field_cell_phone')->value && $profile->get('field_set_surveys_to_inactive')->value != $setstatus) {
+            if($userphone == $profile->get('field_cell_phone')->value && $profile->get('field_set_surveys_to_inactive')->value != "$setstatus") {
                 $user = $profile->getOwnerId();
                 $userobj = \Drupal\user\Entity\User::load($user);
                 $useremail = $userobj->getEmail();
                 $firstname = $profile->get('field_survey_first_name')->value ? $profile->get('field_survey_first_name')->value : '';
                 $lastname = $profile->get('field_survey_last_name')->value ? $profile->get('field_survey_last_name')->value : '';
                 $profile->set('field_set_surveys_to_inactive', array(
-                    'value' => $setstatus));
+                    'value' => "$setstatus"));
                 $profile->save();
                 return array($useremail,$firstname,$lastname);
 
