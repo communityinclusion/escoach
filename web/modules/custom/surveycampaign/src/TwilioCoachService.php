@@ -634,7 +634,7 @@ class TwilioCoachService
                 $siteemail = 'admin@rsmail.communityinclusion.org';
                 $admin = $config->get('survey_admin_mail');
                 $inactiveno =$config->get('def_inactive_trigger');
-                $to = "Administrator <$admin>,Dummy <$usermail>";
+                $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
                 $params['title'] = t('Daily survey restarted');
                 $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey resume. If you did not send such a message contact escoach.");
                 //$params['message'] = "Dear $firstname $lastname, You have stopped receiving the daily survey from ES Coach because you have not replied to the survey in $inactiveno days.  Please email us at $admin and tell us if you want to resume the survey at some future date or else be unsubscribed from it.";
