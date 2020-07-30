@@ -27,7 +27,6 @@ class TwilioIncomingService
             $email = "webguy@paulfoos.com"; //$setactive[0];
             $firstname = "Paul"; // $setactive[1];
             $lastname = "Foos" ;//$setactive[2];
-            $email = $setinactive[0];
             $firstname = $setinactive[1];
             $lastname = $setinactive[2];
            // print_r($setinactive);
