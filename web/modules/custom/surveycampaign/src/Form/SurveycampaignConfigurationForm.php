@@ -348,6 +348,14 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       
       '#default_value' => ($secnddatereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($secnddatereturntomorrow)) : ""),
     ];
+    $form['configuration']['second_settings']['alt_first_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'First text message body for secondary survey',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name, @link, @starttime,@endtime'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('alt_first_text_body.value'),
+      //'#format' => $config->get('alt_first_text_body.format'),
+    ];
     $form['configuration']['second_settings']['secondary_reminder_num'] = [
       '#type' => 'select',
       '#title' => $this->t('Number of reminders to follow up first secondary survey notification'),
@@ -357,6 +365,24 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '2' => $this->t('2'),
       ],
       '#default_value' => $config->get('secondary_reminder_num'),
+    ];
+
+    $form['configuration']['second_settings']['alt_second_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'First reminder text message body for secondary survey',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name, @link, @starttime,@endtime'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('alt_second_text_body.value'),
+     // '#format' => $config->get('alt_second_text_body.format'),
+    ];
+
+    $form['configuration']['second_settings']['alt_third_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'Second reminder text message body for secondary survey',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name, @link, @starttime,@endtime'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('alt_third_text_body.value'),
+     // '#format' => $config->get('alt_third_text_body.format'),
     ];
    
 
@@ -434,6 +460,9 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('first_text_body', $form_state->getValue('first_text_body'))
       ->set('second_text_body', $form_state->getValue('second_text_body'))
       ->set('third_text_body', $form_state->getValue('third_text_body'))
+      ->set('alt_first_text_body', $form_state->getValue('alt_first_text_body'))
+      ->set('alt_second_text_body', $form_state->getValue('alt_second_text_body'))
+      ->set('alt_third_text_body', $form_state->getValue('alt_third_text_body'))
       ->set('survey_admin_mail', $form_state->getValue('survey_admin_mail'))
       ->set('def_reminder_num',$form_state->getValue('def_reminder_num'))
       ->set('secondary_reminder_num',$form_state->getValue('secondary_reminder_num'))

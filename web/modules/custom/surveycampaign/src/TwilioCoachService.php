@@ -147,9 +147,9 @@ class TwilioCoachService
                 break;
             }
             
-            
+            $isprimary = $campaignid == $config->get('defaultid') ? true :false;
             $output = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid);
-            $remindnum = $campaignid == $config->get('defaultid') ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
+            $remindnum = $isprimary ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
                     
@@ -157,7 +157,7 @@ class TwilioCoachService
                     
                     
                     if ($contact['id'] == $contactid && $contact["subscriber_status"] != "Complete") {
-                        if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime);
+                        if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime,$isprimary);
                         //set "text1" = 1
                             $database = \Drupal::database();
                             $result = $database->update('surveycampaign_mailer')
@@ -173,7 +173,7 @@ class TwilioCoachService
                         elseif($row['text1'] == '1'  && $row['text2'] === '0' && ($senddate2 <= new DateTime() && $remindnum > 0) 
                         //&& (new DateTime() <= $senddate3) late check for send text 
                         ) { 
-                            $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],2,$formattedstarttime,$formattedendtime);
+                            $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],2,$formattedstarttime,$formattedendtime,$isprimary);
                             //set "text2" = 1
                             $database = \Drupal::database();
                             $result = $database->update('surveycampaign_mailer')
@@ -187,7 +187,7 @@ class TwilioCoachService
                             
                         }
                         elseif($row['text1'] == '1'  && $row['text2'] == '1' && $row['text3'] === '0' && $senddate3 <= new DateTime() && $remindnum > 1) { 
-                            $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],3,$formattedstarttime,$formattedendtime);
+                            $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],3,$formattedstarttime,$formattedendtime,$isprimary);
                             //set "text3" = 1
                             $database = \Drupal::database();
                             $result = $database->update('surveycampaign_mailer')
@@ -255,11 +255,11 @@ class TwilioCoachService
 
 
    }
-   function twilioCall ($tonumber,$name,$link,$textno,$starttime,$endtime) {
+   function twilioCall ($tonumber,$name,$link,$textno,$starttime,$endtime,$isprimary) {
         $config =  \Drupal::config('surveycampaign.settings');
-        $firsttextconfig = $config->get('first_text_body.value');
-        $secondtextconfig = $config->get('second_text_body.value');
-        $thirdtextconfig = $config->get('third_text_body.value');
+        $firsttextconfig = $isprimary ? $config->get('first_text_body.value') : $config->get('alt_first_text_body.value');
+        $secondtextconfig = $isprimary ? $config->get('second_text_body.value') : $config->get('alt_second_text_body.value') ;
+        $thirdtextconfig = $isprimary ? $config->get('third_text_body.value') : $config->get('alt_third_text_body.value');
 
         $firsttextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $firsttextconfig))));
         $secondtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $secondtextconfig))));
@@ -376,7 +376,7 @@ class TwilioCoachService
                         'contactid' => $contactid,
                     ]) ->execute();
                 }
-                 // $this->twilioCall ("+1" . $mobilephone,$fullname,$invitelink);
+            
             }
             $senddate = new DateTime($transferdate);
   
