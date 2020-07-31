@@ -46,45 +46,13 @@ class TwilioCoachService
         $enddate = $day == 0 ? new DateTime( "$firstdate + 30 minutes"  ) : new DateTime( "$firstdate + 1470 minutes"  );
         $senddate = $enddate->format('Y-m-d H:i:s');
         $seconddate = $enddate->format('g:i a');
-        //echo "<br /> $firstdate to $seconddate";
-       
-
-
-        //Restful API Call URL
-        //show survey contacts
-        //$url ="https://restapi.surveygizmo.com/v5/survey/{$survey}/surveycampaign/9862631/surveycontact?api_token={$api_key}&api_token_secret={$api_secret}";
-        // echo $url;
-        //add survey contact
-        // $url ="https://restapi.surveygizmo.com/v5/survey/{$survey}/surveycampaign/9545746/surveycontact/?_method=PUT&email_address=paul.foos@umb.edu&first_name=Paul&last_name=Foos4&api_token={$api_key}&api_token_secret={$api_secret}";
-        // delete survey contact
-        //$url="https://restapi.surveygizmo.com/v5/survey/{$survey}/surveycampaign/9545746/surveycontact/102279429?_method=DELETE&api_token={$api_key}&api_token_secret={$api_secret}";
-        //copy campaign
-
-        //add contacts to new campaign
-        //show contact lists
-        //$url = "https://restapi.surveygizmo.com/v5/contactlist?api_token={$api_key}&api_token_secret={$api_secret}";
-        //list contacts
-        //$url = "https://restapi.surveygizmo.com/v5/contactlist/448/contactlistcontact?api_token={$api_key}&api_token_secret={$api_secret}";
-        //create contact list
-        //$url = "https://restapi.surveygizmo.com/v5/contactlist?_method=PUT&list_name=" . urlencode("New Trial List") . "&api_token={$api_key}&api_token_secret={$api_secret}";
         // create new campaign
         $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . "&linkdates[close]=" . urlencode("$gizmodate 23:59:30") . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
-        //update campaign variables--open/close dates
-        //$url = "https://restapi.surveygizmo.com/v5/survey/{$survey}/surveycampaign/9554492?_method=POST&linkdates[close]=" . urlencode('2020-03-13 12:00:18') . "&api_token={$api_key}&api_token_secret={$api_secret}";
-        //update campaign variables: URL variables
-        //$url = "https://restapi.surveygizmo.com/v5/survey/{$survey}/surveycampaign/9554492?_method=POST&tokenvariables=" . urlencode('starttime=11:30am&endtime=12:00pm') . "&api_token={$api_key}&api_token_secret={$api_secret}";
-        //add contacts to contact list
-        //$url = "https://restapi.surveygizmo.com/v5/contactlist/448/contactlistcontact?_method=PUT&email_address=paulfoos@zoho.com&first_name=Paul&last_name=Foos4&custom[timezone]=" . urlencode('PT') . "&api_token={$api_key}&api_token_secret={$api_secret}";
-        // update a contact list contact
-        //$url = "https://restapi.surveygizmo.com/v5/contactlist/448/contactlistcontact?_method=POST&email_address=paul.foos@umb.edu&custom[timezone]=" . urlencode('ET') . "&api_token={$api_key}&api_token_secret={$api_secret}";
+       
 
-        //add existing contact list to campaign
-        //$url = "https://restapi.surveygizmo.com/v5/survey/{$survey}/surveycampaign/9576967?_method=POST&contact_list=448&api_token={$api_key}&api_token_secret={$api_secret}";
-            //getListInfo(9583441,$survey,$api_key,$api_secret);
-        //$twilio = twilioCall();
+        
         //Curl callfunction 
         $alreadysched = $this->formQuery('surveycampaign_campaigns','senddate',$surveyid,$gizmodate, $day,1);
-        //echo "defaultenable: $defaultenable,surveyid: $surveyid, gizmodate: $gizmodate alreadysched: $alreadysched";
 
         if ($defaultenable != '1' && $sendtoday && !$alreadysched ) {
             $ch = curl_init();
@@ -111,7 +79,6 @@ class TwilioCoachService
                         ->execute();
                         $this->addContacts($response->id,$surveyid,$api_key,$api_secret,$seconddate,$senddate);
                         print_r($response);
-                    // $query = $database->query("INSERT INTO `surveycampaign_campaigns` (`surveyid`, `campaignid`,`senddate`,`text1`,`text2`,`text3`) VALUES($surveyid," . $response->id ,'$senddate',0,0,0)");
                 
                 }
                 
@@ -123,6 +90,7 @@ class TwilioCoachService
    function textSchedule($surveyid, $campaignid) {
         //read mailer table
         include('/var/www/logins.php');
+        $config =  \Drupal::config('surveycampaign.settings');
         $todaydate = date("Y-m-d");
         $database = \Drupal::database();
         $query =  $database->select('surveycampaign_mailer','sm')
@@ -181,7 +149,7 @@ class TwilioCoachService
             
             
             $output = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid);
-            
+            $remindnum = intval($config->get('def_reminder_num'));
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
                     
@@ -202,7 +170,7 @@ class TwilioCoachService
                             ->execute(); 
                         
                         }
-                        elseif($row['text1'] == '1'  && $row['text2'] === '0' && ($senddate2 <= new DateTime()) 
+                        elseif($row['text1'] == '1'  && $row['text2'] === '0' && ($senddate2 <= new DateTime() && $remindnum > 0) 
                         //&& (new DateTime() <= $senddate3) late check for send text 
                         ) { 
                             $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],2,$formattedstarttime,$formattedendtime);
@@ -218,7 +186,7 @@ class TwilioCoachService
                             ->execute(); 
                             
                         }
-                        elseif($row['text1'] == '1'  && $row['text2'] == '1' && $row['text3'] === '0' && $senddate3 <= new DateTime()) { 
+                        elseif($row['text1'] == '1'  && $row['text2'] == '1' && $row['text3'] === '0' && $senddate3 <= new DateTime() && $remindnum > 1) { 
                             $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],3,$formattedstarttime,$formattedendtime);
                             //set "text3" = 1
                             $database = \Drupal::database();
@@ -524,9 +492,8 @@ class TwilioCoachService
         foreach($output as $response)
             { if (!is_bool($response) && is_array($response)) { 
                     foreach ($response as $user) { print_r($user); echo "<br /><br />";
-                        //echo "\n" . $user->home_phone . "\n" . $user->invitelink . "\n" . $user->first_name . " " . $user->last_name . "\n" .$user->timezone . "\n" . $user->subscriber_status . "\n";
                         $name = $user->first_name . " " . $user->last_name;
-                       // $this->twilioCall ($user->home_phone,$name,$user->invitelink);
+
                         }
                 }
         

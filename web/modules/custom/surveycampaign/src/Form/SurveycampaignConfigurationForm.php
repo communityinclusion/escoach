@@ -218,7 +218,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ];
       $form['configuration']['def_inactive_trigger'] = [
         '#type' => 'select',
-        '#title' => $this->t('Select the number of days a user must be inactive to deactivate the survey'),
+        '#title' => $this->t('Select the number of days a user must be inactive to deactivate the default survey'),
         '#options' => [
           '2' => $this->t('2'),
           '3' => $this->t('3'),
@@ -252,6 +252,16 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       // '#date_time_element' => 'time', // you can use text element here as well
       
       '#default_value' => ($datereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($datereturntomorrow)) : ""),
+    ];
+    $form['configuration']['def_reminder_num'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Number of reminders to follow up first default survey notification'),
+      '#options' => [
+        '0' => $this->t('0'),
+        '1' => $this->t('1'),
+        '2' => $this->t('2'),
+      ],
+      '#default_value' => $config->get('def_reminder_num'),
     ];
     $form['configuration']['first_text_body'] = [
       '#type' => 'text_format',
@@ -387,6 +397,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('def_inactive_trigger', $form_state->getValue('def_inactive_trigger'))
       ->set('first_text_body', $form_state->getValue('first_text_body'))
       ->set('survey_admin_mail', $form_state->getValue('survey_admin_mail'))
+      ->set('def_reminder_num',$form_state->getValue('def_reminder_num'))
       ->save();
       $defaultid = $form_state->getValue('surveycampaign_def_survey');
       $secondaryid = $form_state->getValue('surveycampaign_alt_survey');
