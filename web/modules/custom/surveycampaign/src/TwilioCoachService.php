@@ -149,7 +149,7 @@ class TwilioCoachService
             
             
             $output = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid);
-            $remindnum = intval($config->get('def_reminder_num'));
+            $remindnum = $campaignid == $config->get('defaultid') ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
                     
@@ -258,9 +258,14 @@ class TwilioCoachService
    function twilioCall ($tonumber,$name,$link,$textno,$starttime,$endtime) {
         $config =  \Drupal::config('surveycampaign.settings');
         $firsttextconfig = $config->get('first_text_body.value');
-        $firsttextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $firsttextconfig))));
+        $secondtextconfig = $config->get('second_text_body.value');
+        $thirdtextconfig = $config->get('third_text_body.value');
 
-       $bodytext = $textno == 1 ? $firsttextbody : ($textno ==2 ? " Hello $name.  This is a reminder to take the daily survey at this link: $link" : " Hello $name.  This is your second reminder to take the daily survey at this link: $link");
+        $firsttextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $firsttextconfig))));
+        $secondtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $secondtextconfig))));
+        $thirdtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $thirdtextconfig))));
+
+       $bodytext = $textno == 1 ? $firsttextbody : ($textno ==2 ? $secondtextbody : $thirdtextbody);
        include('/var/www/logins.php');
       
       // A Twilio number you own with SMS capabilities

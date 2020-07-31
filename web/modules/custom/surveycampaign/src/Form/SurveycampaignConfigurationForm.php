@@ -122,8 +122,12 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#required' => TRUE,
       
     ];
+    $form['configuration']['default_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Default survey settings'),
+    );
    
-    $form['configuration']['surveycampaign_def_survey'] = [
+    $form['configuration']['default_settings']['surveycampaign_def_survey'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Default survey id'),
       '#description' => $this->t('The default survey id number from SurveyGizmo'),
@@ -133,7 +137,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#required' => TRUE,
       
     ];
-    $form['configuration']['default_disable'] = array(
+    $form['configuration']['default_settings']['default_disable'] = array(
       '#type' => 'radios',
       '#title' => t('Default survey Enable/disable'),
       '#description' => t('Send default survey or disable it.'),
@@ -143,7 +147,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         t('Disable'),
       )
       );
-      $form['configuration']['hour_range_low'] = [
+      $form['configuration']['default_settings']['hour_range_low'] = [
         '#type' => 'select',
         '#title' => $this->t('Select earliest time to start random survey period'),
         '#options' => [
@@ -175,7 +179,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#default_value' => $config->get('hour_range_low'),
       ];
     
-      $form['configuration']['hour_range_high'] = [
+      $form['configuration']['default_settings']['hour_range_high'] = [
         '#type' => 'select',
         '#title' => $this->t('Select latest time to start random survey period'),
         '#options' => [
@@ -209,14 +213,14 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         ],
         '#default_value' => $config->get('hour_range_high'),
       ];
-      $form['configuration']['def_send_days'] = [
+      $form['configuration']['default_settings']['def_send_days'] = [
         '#type' => 'checkboxes',
         '#options' => ['Sunday' => $this->t('Sunday'), 'Monday' => $this->t('Monday'), 'Tuesday' => $this->t('Tuesday'), 'Wednesday' => $this->t('Wednesday'), 'Thursday' => $this->t('Thursday'), 'Friday' => $this->t('Friday'), 'Saturday' => $this->t('Saturday')],
         '#title' => $this->t('Days to send the default survey'),
         '#default_value' => $config->get('def_send_days'),
         
       ];
-      $form['configuration']['def_inactive_trigger'] = [
+      $form['configuration']['default_settings']['def_inactive_trigger'] = [
         '#type' => 'select',
         '#title' => $this->t('Select the number of days a user must be inactive to deactivate the default survey'),
         '#options' => [
@@ -232,7 +236,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         ],
         '#default_value' => $config->get('def_inactive_trigger'),
       ];
-    $form['configuration']['default_survey_todaytime'] = [
+    $form['configuration']['default_settings']['default_survey_todaytime'] = [
       '#type' => 'datetime',
       '#title' => $this->t('Default survey: set text send time of today\'s survey: format 00:00 (24 hour time). This is at the end of the half hour survey period.'),
       '#description' => t('This field will be populated automatically every day in early AM.  You can manually change the time of the survey here.  Don\'t change the date.'),
@@ -242,7 +246,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       
       '#default_value' => ($datereturn ? DrupalDateTime::createFromTimestamp(strtotime($datereturn)) : ""),
     ];
-    $form['configuration']['default_survey_tomorrowtime'] = [
+    $form['configuration']['default_settings']['default_survey_tomorrowtime'] = [
       '#type' => 'datetime',
       '#title' => $this->t('Default survey: Set text send time of tomorrow\'s survey: format 00:00 (24 hour time)'),
 
@@ -253,7 +257,15 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       
       '#default_value' => ($datereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($datereturntomorrow)) : ""),
     ];
-    $form['configuration']['def_reminder_num'] = [
+    $form['configuration']['default_settings']['first_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'First text message body for default survey',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name, @link, @starttime,@endtime'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('first_text_body.value'),
+      //'#format' => $config->get('first_text_body.format'),
+    ];
+    $form['configuration']['default_settings']['def_reminder_num'] = [
       '#type' => 'select',
       '#title' => $this->t('Number of reminders to follow up first default survey notification'),
       '#options' => [
@@ -263,16 +275,30 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ],
       '#default_value' => $config->get('def_reminder_num'),
     ];
-    $form['configuration']['first_text_body'] = [
+
+    $form['configuration']['default_settings']['second_text_body'] = [
       '#type' => 'text_format',
-      '#title' => 'First text message body for default survey',
+      '#title' => 'First reminder text message body for default survey',
       '#description' => t('You can use these tokens to add personalized messages to the text: @name, @link, @starttime,@endtime'),
-      //'#format' => 'plain_text',
-      '#default_value' => $config->get('first_text_body.value'),
-      '#format' => $config->get('first_text_body.format'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('second_text_body.value'),
+     // '#format' => $config->get('second_text_body.format'),
     ];
 
-    $form['configuration']['surveycampaign_alt_survey'] = [
+    $form['configuration']['default_settings']['third_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'Second reminder text message body for default survey',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name, @link, @starttime,@endtime'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('third_text_body.value'),
+     // '#format' => $config->get('third_text_body.format'),
+    ];
+    $form['configuration']['second_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Secondary survey settings'),
+    );
+
+    $form['configuration']['second_settings']['surveycampaign_alt_survey'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Secondary survey id'),
       '#description' => $this->t('The secondary survey id number from SurveyGizmo'),
@@ -282,7 +308,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#required' => FALSE,
       
     ];
-    $form['configuration']['second_disable'] = array(
+    $form['configuration']['second_settings']['second_disable'] = array(
       '#type' => 'radios',
       '#title' => t('Secondary survey Enable/disable'),
       '#description' => t('Send secondary survey or disable it.'),
@@ -292,7 +318,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         t('Disable'),
       )
     );
-    $form['configuration']['alt_send_days'] = [
+    $form['configuration']['second_settings']['alt_send_days'] = [
       '#type' => 'checkboxes',
       '#options' => ['Sunday' => $this->t('Sunday'), 'Monday' => $this->t('Monday'), 'Tuesday' => $this->t('Tuesday'), 'Wednesday' => $this->t('Wednesday'), 'Thursday' => $this->t('Thursday'), 'Friday' => $this->t('Friday'), 'Saturday' => $this->t('Saturday')],
       '#title' => $this->t('Days to send the secondary survey'),
@@ -300,7 +326,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       
     ];
   
-    $form['configuration']['secondary_survey_todaytime'] = [
+    $form['configuration']['second_settings']['secondary_survey_todaytime'] = [
       '#type' => 'datetime',
       '#title' => $this->t('Secondary survey: set text send time of today\'s survey: format 00:00 (24 hour time)'),
       '#description' => t('This field will be populated automatically every day in early AM if the secondary survey is enabled.  You can manually change the time of the survey here.  Don\'t change the date.'),
@@ -312,7 +338,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     ];
    
 
-    $form['configuration']['secondary_survey_tomorrowtime'] = [
+    $form['configuration']['second_settings']['secondary_survey_tomorrowtime'] = [
       '#type' => 'datetime',
       '#title' => $this->t('Secondary survey: Set text send time of tomorrow\'s survey: format 00:00 (24 hour time)'),
       '#size' => 20,
@@ -321,6 +347,16 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       // '#date_time_element' => 'time', // you can use text element here as well
       
       '#default_value' => ($secnddatereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($secnddatereturntomorrow)) : ""),
+    ];
+    $form['configuration']['second_settings']['secondary_reminder_num'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Number of reminders to follow up first secondary survey notification'),
+      '#options' => [
+        '0' => $this->t('0'),
+        '1' => $this->t('1'),
+        '2' => $this->t('2'),
+      ],
+      '#default_value' => $config->get('secondary_reminder_num'),
     ];
    
 
@@ -396,8 +432,11 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('alt_send_days', $form_state->getValue('alt_send_days'))
       ->set('def_inactive_trigger', $form_state->getValue('def_inactive_trigger'))
       ->set('first_text_body', $form_state->getValue('first_text_body'))
+      ->set('second_text_body', $form_state->getValue('second_text_body'))
+      ->set('third_text_body', $form_state->getValue('third_text_body'))
       ->set('survey_admin_mail', $form_state->getValue('survey_admin_mail'))
       ->set('def_reminder_num',$form_state->getValue('def_reminder_num'))
+      ->set('secondary_reminder_num',$form_state->getValue('secondary_reminder_num'))
       ->save();
       $defaultid = $form_state->getValue('surveycampaign_def_survey');
       $secondaryid = $form_state->getValue('surveycampaign_alt_survey');
