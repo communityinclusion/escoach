@@ -150,11 +150,10 @@ class TwilioCoachService
             
             $isprimary = $surveyid == $config->get('defaultid') ? true :false;
             $output = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid);
-            echo "Output: <br />"; print_r($output);
+            echo "Output: <br />";
             $remindnum = $isprimary ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
-                    echo "Remindnum: " . $remindnum;
                     
                     
                     
@@ -492,6 +491,7 @@ class TwilioCoachService
         $output = curl_exec($ch);
         //The standard return from the API is JSON, decode to php.
         $output= json_decode($output,true);
+        print_r($output);
         return $output;
         
        
