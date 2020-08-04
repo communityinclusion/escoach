@@ -102,6 +102,7 @@ class TwilioCoachService
         ->condition('sm.campaignid', $campaignid)
         ->condition('senddate', $database->escapeLike($todaydate) . '%', 'LIKE');
         // dump($query->__toString());
+
         $result = $query->execute();
         foreach ($result as $row) {
             //turn an object into an array by json encoding then decoding it
@@ -147,11 +148,13 @@ class TwilioCoachService
                 break;
             }
             
-            $isprimary = $campaignid == $config->get('defaultid') ? true :false;
+            $isprimary = $surveyid == $config->get('defaultid') ? true :false;
             $output = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid);
+            echo "Output: <br />"; print_r($output);
             $remindnum = $isprimary ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
+                    echo "Remindnum: " . $remindnum;
                     
                     
                     
