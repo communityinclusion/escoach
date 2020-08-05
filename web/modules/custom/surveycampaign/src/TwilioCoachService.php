@@ -156,20 +156,22 @@ class TwilioCoachService
                 if (!is_bool($contact)) {
                     
                     
-                    
+                    $sendit = false;
                     
                     if ($contact['id'] == $contactid && $contact["subscriber_status"] != "Complete") {
                         if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime,$isprimary);
                         //set "text1" = 1
-                            $database = \Drupal::database();
-                            $result = $database->update('surveycampaign_mailer')
-                            ->fields([
-                            'text1' => 1,
-                            ])
-                            ->condition('surveyid', $surveyid)
-                            ->condition('campaignid',$campaignid)
-                            ->condition('contactid',$contactid)
-                            ->execute(); 
+                        if($sendit) {
+                                $database = \Drupal::database();
+                                $result = $database->update('surveycampaign_mailer')
+                                ->fields([
+                                'text1' => 1,
+                                ])
+                                ->condition('surveyid', $surveyid)
+                                ->condition('campaignid',$campaignid)
+                                ->condition('contactid',$contactid)
+                                ->execute(); 
+                        }
                         
                         }
                         elseif($row['text1'] == '1'  && $row['text2'] === '0' && ($senddate2 <= new DateTime() && $remindnum > 0) 
@@ -177,29 +179,33 @@ class TwilioCoachService
                         ) { 
                             $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],2,$formattedstarttime,$formattedendtime,$isprimary);
                             //set "text2" = 1
-                            $database = \Drupal::database();
-                            $result = $database->update('surveycampaign_mailer')
-                            ->fields([
-                            'text2' => 1,
-                            ])
-                            ->condition('surveyid', $surveyid)
-                            ->condition('campaignid',$campaignid)
-                            ->condition('contactid',$contactid)
-                            ->execute(); 
+                            if($sendit) {
+                                $database = \Drupal::database();
+                                $result = $database->update('surveycampaign_mailer')
+                                ->fields([
+                                'text2' => 1,
+                                ])
+                                ->condition('surveyid', $surveyid)
+                                ->condition('campaignid',$campaignid)
+                                ->condition('contactid',$contactid)
+                                ->execute(); 
+                            }
                             
                         }
                         elseif($row['text1'] == '1'  && $row['text2'] == '1' && $row['text3'] === '0' && $senddate3 <= new DateTime() && $remindnum > 1) { 
                             $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],3,$formattedstarttime,$formattedendtime,$isprimary);
                             //set "text3" = 1
-                            $database = \Drupal::database();
-                            $result = $database->update('surveycampaign_mailer')
-                            ->fields([
-                            'text3' => 1,
-                            ])
-                            ->condition('surveyid', $surveyid)
-                            ->condition('campaignid',$campaignid)
-                            ->condition('contactid',$contactid)
-                            ->execute(); 
+                            if($sendit) {
+                                $database = \Drupal::database();
+                                $result = $database->update('surveycampaign_mailer')
+                                ->fields([
+                                'text3' => 1,
+                                ])
+                                ->condition('surveyid', $surveyid)
+                                ->condition('campaignid',$campaignid)
+                                ->condition('contactid',$contactid)
+                                ->execute(); 
+                            }
                             
                         }
                     } elseif ($contact['id'] == $contactid && $contact["subscriber_status"] == "Complete") 
@@ -274,14 +280,19 @@ class TwilioCoachService
       $twilio_number = "+16172497169";
 
       $client = new Client($account_sid, $auth_token);
-      $client->messages->create(
-         // Where to send a text message (your cell phone?)
-         "+1$tonumber",
-         array(
-            'from' => $twilio_number,
-            'body' => $bodytext,
-         )
-      );
+      try {
+                $client->messages->create(
+                    // Where to send a text message (your cell phone?)
+                    "+1$tonumber",
+                    array(
+                        'from' => $twilio_number,
+                        'body' => $bodytext,
+                    )
+                );
+                return true;
+        } catch (\Twilio\Exceptions\RestException $e) {
+            return false;
+        }
 
     }
     function hoursRange( $lower = 0, $upper = 86400, $step = 3600, $format = '' ) {
