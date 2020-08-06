@@ -289,10 +289,11 @@ class TwilioCoachService
                         'body' => $bodytext,
                     )
                 );
-                return true;
+                
         } catch (\Twilio\Exceptions\RestException $e) {
             return false;
         }
+        return true;
 
     }
     function hoursRange( $lower = 0, $upper = 86400, $step = 3600, $format = '' ) {
