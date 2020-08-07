@@ -157,7 +157,7 @@ class TwilioCoachService
                     
                     
                     $sendit = false;
-                    
+                    //if ($contact['id'] == $contactid && $contact["subscriber_status"] == "Partial") { }
                     if ($contact['id'] == $contactid && $contact["subscriber_status"] != "Complete") {
                         if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime,$isprimary);
                         //set "text1" = 1
@@ -220,11 +220,8 @@ class TwilioCoachService
                         // check if user suspended survey.  If so get dates and enter in user profile
                         //delete this individual in this survey/campaign from surveycampaign_mailer 
                         
-                        $startid = $surveyid == '5500151' ? 13 : 587;
-                        $endid = $surveyid == '5500151' ? 14 : 588;
-                        echo "Response begin: ";
-                        print_r($suspenddates['data'][0]['survey_data'][587]);
-                        echo "<br /> REsponse end: "; print_r($suspenddates['data'][0]['survey_data'][588]);
+                        $startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
+                        $endid = $isprimary ? $config->get('def_survey_suspend_end_id') : $config->get('alt_survey_suspend_end_id');
                         if ($suspenddates && $suspenddates['data'][0]['survey_data'][$startid]) {
                             if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
                                 echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
@@ -232,7 +229,9 @@ class TwilioCoachService
                                 $startdate = $startdate->format('Y-m-d');
                             }
                             if($suspenddates['data'][0]['survey_data'][$endid]['answer']) {
-                                echo "<br />Suspension last day:" . $suspenddates['data'][0]['survey_data'][$endid]['answer'];$enddate = new DateTime($suspenddates['data'][0]['survey_data'][$endid]['answer']);
+                                //echo "<br />Suspension last day:" . $suspenddates['data'][0]['survey_data'][$endid]['answer'];
+                                $enddate = new DateTime($suspenddates['data'][0]['survey_data'][$endid]['answer']);
+                                $enddate->modify("- 1 day");
                                 $enddate = $enddate->format('Y-m-d');
                             }
 
@@ -241,8 +240,8 @@ class TwilioCoachService
                         }
                     }
                         
-                    } 
-                }
+                } 
+            }
             
          }
    }

@@ -275,6 +275,27 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ],
       '#default_value' => $config->get('def_reminder_num'),
     ];
+    $form['configuration']['default_settings']['def_survey_suspend_start_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('SG question id for default survey suspension start'),
+      '#description' => $this->t('The question id from the default survey for the start date of a suspension.  Get this from the survey build mode.'),
+      '#default_value' => $config->get('def_survey_suspend_start_id'),
+       '#size' => 10,
+      '#maxlength' => 10,
+      '#required' => FALSE,
+      
+    ];
+
+    $form['configuration']['default_settings']['def_survey_suspend_end_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('SG question id for default survey suspension end date'),
+      '#description' => $this->t('The question id from the default survey for the end date of a suspension.  Get this from the survey build mode.'),
+      '#default_value' => $config->get('def_survey_suspend_end_id'),
+       '#size' => 10,
+      '#maxlength' => 10,
+      '#required' => FALSE,
+      
+    ];
 
     $form['configuration']['default_settings']['second_text_body'] = [
       '#type' => 'text_format',
@@ -365,6 +386,27 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '2' => $this->t('2'),
       ],
       '#default_value' => $config->get('secondary_reminder_num'),
+    ];
+    $form['configuration']['second_settings']['alt_survey_suspend_start_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('SG question id for secondary survey suspension start'),
+      '#description' => $this->t('The question id from the secondary survey for the start date of a suspension.  Get this from the survey build mode.'),
+      '#default_value' => $config->get('alt_survey_suspend_start_id'),
+       '#size' => 10,
+      '#maxlength' => 10,
+      '#required' => FALSE,
+      
+    ];
+
+    $form['configuration']['second_settings']['alt_survey_suspend_end_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('SG question id for secondary survey suspension end date'),
+      '#description' => $this->t('The question id from the secondary survey for the end date of a suspension.  Get this from the survey build mode.'),
+      '#default_value' => $config->get('alt_survey_suspend_end_id'),
+       '#size' => 10,
+      '#maxlength' => 10,
+      '#required' => FALSE,
+      
     ];
 
     $form['configuration']['second_settings']['alt_second_text_body'] = [
@@ -466,6 +508,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('survey_admin_mail', $form_state->getValue('survey_admin_mail'))
       ->set('def_reminder_num',$form_state->getValue('def_reminder_num'))
       ->set('secondary_reminder_num',$form_state->getValue('secondary_reminder_num'))
+      ->set('def_survey_suspend_start_id',$form_state->getValue('def_survey_suspend_start_id'))
+      ->set('def_survey_suspend_end_id',$form_state->getValue('def_survey_suspend_end_id'))
+      ->set('alt_survey_suspend_start_id',$form_state->getValue('alt_survey_suspend_start_id'))
+      ->set('alt_survey_suspend_end_id',$form_state->getValue('alt_survey_suspend_end_id'))
       ->save();
       $defaultid = $form_state->getValue('surveycampaign_def_survey');
       $secondaryid = $form_state->getValue('surveycampaign_alt_survey');
