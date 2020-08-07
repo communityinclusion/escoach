@@ -90,7 +90,7 @@ class SurveyUsersService
             echo "Check Inactive values: " . $userphone . " " . $lastname . " " . $profile->get('field_set_surveys_to_inactive')->value;
             
             if($userphone == $profile->get('field_cell_phone')->value && $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2') {
-                echo "Confirm Inactive values: " . $profile->get('field_cell_phone')->value . " " . $profile->get('field_survey_last_name')->value . " " . $profile->get('field_set_surveys_to_inactive')->value;
+               // echo "Confirm Inactive values: " . $profile->get('field_cell_phone')->value . " " . $profile->get('field_survey_last_name')->value . " " . $profile->get('field_set_surveys_to_inactive')->value;
             return true;
             }
             else 

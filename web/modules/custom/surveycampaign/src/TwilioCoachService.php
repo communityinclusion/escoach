@@ -637,7 +637,7 @@ class TwilioCoachService
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
                 $params['title'] = t('Daily survey paused');
-                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey stop sending to you. If you want to resume getting the daily survey sign in to your account on http://escoach.communityinclusion.org/user and set your status to active; or send a text message with just the word \"START\". If you did not send such a message contact escoach. ");
+                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey stop sending to you. If you want to resume getting the daily survey send a text message with just the word \"START\". If you did not send such a message contact escoach. ");
                 
                 $langcode = "en";
                 
