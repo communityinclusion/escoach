@@ -124,7 +124,6 @@ class TwilioCoachService
                     $senddate2 = $senddate2->modify("+ 30 minutes");
                     $senddate3 = $senddate3->modify("+ 60 minutes");
         
-            
                     break;
                 case 'CT': 
                     $senddate = $senddate->modify("+ 60 minutes");
@@ -150,10 +149,13 @@ class TwilioCoachService
             
             $isprimary = $surveyid == $config->get('defaultid') ? true :false;
             $output = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid);
-            echo "Output: <br />";
+            
+            
             $remindnum = $isprimary ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
+            print_r($output);
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
+                    
                     
                     
                     $sendit = false;
