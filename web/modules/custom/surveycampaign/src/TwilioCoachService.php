@@ -212,21 +212,19 @@ class TwilioCoachService
                         }
                     } elseif ($contact['id'] == $contactid && $contact["subscriber_status"] == "Complete") 
                     {
-                        $database = \Drupal::database();
-                        $result = $database->delete('surveycampaign_mailer')
-                        ->condition('surveyid', $surveyid)
-                            ->condition('campaignid',$campaignid)
-                            ->condition('contactid',$contactid)
-                            ->execute();
+                        
                         $suspenddates = $this->getResponseInfo($surveyid,$contactid,$api_key,$api_secret);
+                        //echo "Suspendarray: "; print_r($suspenddates);
                         // check if user suspended survey.  If so get dates and enter in user profile
                         //delete this individual in this survey/campaign from surveycampaign_mailer 
                         
                         $startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
                         $endid = $isprimary ? $config->get('def_survey_suspend_end_id') : $config->get('alt_survey_suspend_end_id');
-                        if ($suspenddates && $suspenddates['data'][0]['survey_data'][$startid]) {
+                        
+                        if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
                             if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
-                                echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
+                                //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
+                                echo "Suspenddates: "; print_r($suspenddates);
                                 $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
                                 $startdate = $startdate->format('Y-m-d');
                             }
@@ -239,6 +237,14 @@ class TwilioCoachService
 
 
                             $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
+                        }
+                        if($suspenddates['data'][0]) {
+                            $database = \Drupal::database();
+                            $result = $database->delete('surveycampaign_mailer')
+                            ->condition('surveyid', $surveyid)
+                                ->condition('campaignid',$campaignid)
+                                ->condition('contactid',$contactid)
+                                ->execute();
                         }
                     }
                         
@@ -255,7 +261,6 @@ class TwilioCoachService
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
-        //print_r($output);
         //The standard return from the API is JSON, decode to php.
         $output= json_decode($output,true);
     
