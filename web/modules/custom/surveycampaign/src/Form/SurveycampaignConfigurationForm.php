@@ -102,7 +102,15 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
   }
   public function buildForm(array $form, FormStateInterface $form_state) {
+    
+    $i = 0;
+    $name_field = $form_state->get('num_hols');
     $config = $this->configFactory->get('surveycampaign.settings');
+    $holdates = $config->get('def_holiday_date');
+    $holnames = $config->get('def_holiday_name');
+    $counthols = is_array($holdates) ? count($holdates) : 0;
+    dsm("Holdates: " . $holdates);
+
     $defaultid = $config->get('defaultid');
     $secondaryid = $config->get('secondaryid');
     $datereturn = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,0);
@@ -125,6 +133,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $form['configuration']['default_settings'] = array(
       '#type' => 'fieldset',
       '#title' => t('Default survey settings'),
+      //'#tree' => TRUE,
     );
    
     $form['configuration']['default_settings']['surveycampaign_def_survey'] = [
@@ -220,6 +229,75 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#default_value' => $config->get('def_send_days'),
         
       ];
+
+    $form['configuration']['default_settings']['shell'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Shell'),
+      '#tree' => TRUE,
+    );
+
+      $form['configuration']['default_settings']['shell']['holiday_fieldset'] = [
+        '#type' => 'fieldset',
+        '#title' => $this->t('Holiday suspension'),
+        '#prefix' => "<div id='names-fieldset-wrapper'>",
+        '#suffix' => '</div>',
+      ];
+  
+      if (empty($name_field) || $counthols < 1) {
+        $name_field = $counthols <= 1 ? $form_state->set('num_hols', 1) : $form_state->set('num_hols', $counthols);
+
+      }
+
+  
+      for ($i = 0; $i < $form_state->get('num_hols'); $i++) {
+        $thisdate = !empty($holdates) && $holdates[$i] ? $holdates[$i] : '';
+        $thisname = !empty($holnames) && $holnames[$i] ? $holnames[$i] : '';
+        $j = $i + 1;
+        
+
+        $form['configuration']['default_settings']['shell']['holiday_fieldset'][$i]['holiday_name'] = [
+          '#type' => 'textfield',
+          '#title' => $this->t('Holiday name'),
+          '#maxlength' => 64,
+          '#size' => 64,
+          '#default_value' => $thisname,
+          '#prefix' => "<div class='inner-fieldset'><legend><span class='fieldset-legend'>Holiday {$j}</span></legend>",
+        ];
+        $form['configuration']['default_settings']['shell']['holiday_fieldset'][$i]['holiday_date'] = [
+          '#type' => 'date',
+          '#title' => $this->t('Default survey: set a survey holiday.'),
+          '#description' => t('Set a date in the future, holiday or otherwise, on which you wish the survey not to send.'),
+          '#size' => 20,
+          '#default_value' => $thisdate,
+        ];
+        
+      }
+        $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions'] = [
+          '#type' => 'actions',
+        ];
+        $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['add_name'] = [
+          '#type' => 'submit',
+          '#value' => t('Add one more'),
+          '#submit' => array('::addOne'),
+          '#ajax' => [
+            'callback' => '::addmoreCallback',
+            'wrapper' => "names-fieldset-wrapper",
+          ],
+        ];
+        if ($form_state->get('num_hols') > 1) {
+          $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['remove_name'] = [
+            '#type' => 'submit',
+            '#value' => t('Remove one'),
+            '#submit' => array('::removeCallback'),
+            '#ajax' => [
+              'callback' => '::addmoreCallback',
+              'wrapper' => "names-fieldset-wrapper",
+            ],
+          ];
+        }
+      
+
+
       $form['configuration']['default_settings']['def_inactive_trigger'] = [
         '#type' => 'select',
         '#title' => $this->t('Select the number of days a user must be inactive to deactivate the default survey'),
@@ -428,9 +506,45 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     ];
    
 
-
+    $form_state->setCached(FALSE);
     return parent::buildForm($form, $form_state);
   }
+   /**
+   * Callback for both ajax-enabled buttons.
+   *
+   * Selects and returns the fieldset with the names in it.
+   */
+  public function addmoreCallback(array &$form, FormStateInterface $form_state) {
+    $name_field = $form_state->get('num_hols');
+    return $form['configuration']['default_settings']['shell']['holiday_fieldset'];
+  }
+
+  /**
+   * Submit handler for the "add-one-more" button.
+   *
+   * Increments the max counter and causes a rebuild.
+   */
+  public function addOne(array &$form, FormStateInterface $form_state) {
+    $name_field = $form_state->get('num_hols');
+    $add_button = $name_field + 1;
+    $form_state->set('num_hols', $add_button);
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Submit handler for the "remove one" button.
+   *
+   * Decrements the max counter and causes a form rebuild.
+   */
+  public function removeCallback(array &$form, FormStateInterface $form_state) {
+    $name_field = $form_state->get('num_hols');
+    if ($name_field > 1) {
+      $remove_button = $name_field - 1;
+      $form_state->set('num_hols', $remove_button);
+    }
+    $form_state->setRebuild();
+  }
+
 
   /**
    * Allow user to directly execute cron, optionally forcing it.
@@ -489,6 +603,14 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $tomorrowdate = new DateTime("$todaydate");
     $tomorrowdate->modify('+ 1 day');
     $tomorrowdate = $tomorrowdate->format('Y-m-d');
+    $namearray = array();
+    $holarray = array();
+    foreach ($form_state->getValue(array('shell','holiday_fieldset')) as $key => $value) {
+      if(is_numeric($key)) $namearray[]= $form_state->getValue(array('shell','holiday_fieldset',$key, 'holiday_name'));
+      if(is_numeric($key)) $holarray[]= $form_state->getValue(array('shell','holiday_fieldset',$key, 'holiday_date'));
+    }
+    $config = $this->configFactory->get('surveycampaign.settings');
+    
     $this->configFactory->getEditable('surveycampaign.settings')
       ->set('defaultid', $form_state->getValue('surveycampaign_def_survey'))
       ->set('defaultenable', $form_state->getValue('default_disable'))
@@ -512,67 +634,75 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('def_survey_suspend_end_id',$form_state->getValue('def_survey_suspend_end_id'))
       ->set('alt_survey_suspend_start_id',$form_state->getValue('alt_survey_suspend_start_id'))
       ->set('alt_survey_suspend_end_id',$form_state->getValue('alt_survey_suspend_end_id'))
+      ->set('def_holiday_name',$namearray)
+      ->set('def_holiday_date',$holarray)
       ->save();
-      $defaultid = $form_state->getValue('surveycampaign_def_survey');
-      $secondaryid = $form_state->getValue('surveycampaign_alt_survey');
-      $datereturn = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,0);
-      $datereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,1);
-      $formupdatetoday = new DateTime($form_state->getValue('default_survey_todaytime'));
-      $formupdatetoday = $formupdatetoday->format('Y-m-d H:i:s');
-      $formupdatetomorrow = new DateTime($form_state->getValue('default_survey_tomorrowtime'));
-      $formupdatetomorrow = $formupdatetomorrow->format('Y-m-d H:i:s');
-      $secnddatereturn = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,0);
-      $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
-      // set up variables for creating new survey on form
-      if($form_state->getValue('default_survey_tomorrowtime') && $form_state->getValue('default_survey_tomorrowtime') != '') {
-        $defupdatetomorrow = new DateTime($form_state->getValue('default_survey_tomorrowtime'));
-        $defupdatetomorrow = $defupdatetomorrow->format('Y-m-d H:i:s');
-      }
-      if($form_state->getValue('secondary_survey_todaytime') && $form_state->getValue('secondary_survey_todaytime') != '') {
-        $secndformupdatetoday = new DateTime($form_state->getValue('secondary_survey_todaytime'));
-        $secndformupdatetoday = $secndformupdatetoday->format('Y-m-d H:i:s');
-      
-      }
-      if($form_state->getValue('secondary_survey_tomorrowtime') && $form_state->getValue('secondary_survey_tomorrowtime') != '') {
-        $secndformupdatetomorrow = new DateTime($form_state->getValue('secondary_survey_tomorrowtime'));
-        $secndformupdatetomorrow = $secndformupdatetomorrow->format('Y-m-d H:i:s');
-      }
+      //Future: this is how you remove a single value in an array
+      //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_holiday_date.1')->save();
+      //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_holiday_name.1')->save();
+     
+    
+    
+    $defaultid = $form_state->getValue('surveycampaign_def_survey');
+    $secondaryid = $form_state->getValue('surveycampaign_alt_survey');
+    $datereturn = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,0);
+    $datereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,1);
+    $formupdatetoday = new DateTime($form_state->getValue('default_survey_todaytime'));
+    $formupdatetoday = $formupdatetoday->format('Y-m-d H:i:s');
+    $formupdatetomorrow = new DateTime($form_state->getValue('default_survey_tomorrowtime'));
+    $formupdatetomorrow = $formupdatetomorrow->format('Y-m-d H:i:s');
+    $secnddatereturn = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,0);
+    $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
+    // set up variables for creating new survey on form
+    if($form_state->getValue('default_survey_tomorrowtime') && $form_state->getValue('default_survey_tomorrowtime') != '') {
+      $defupdatetomorrow = new DateTime($form_state->getValue('default_survey_tomorrowtime'));
+      $defupdatetomorrow = $defupdatetomorrow->format('Y-m-d H:i:s');
+    }
+    if($form_state->getValue('secondary_survey_todaytime') && $form_state->getValue('secondary_survey_todaytime') != '') {
+      $secndformupdatetoday = new DateTime($form_state->getValue('secondary_survey_todaytime'));
+      $secndformupdatetoday = $secndformupdatetoday->format('Y-m-d H:i:s');
+    
+    }
+    if($form_state->getValue('secondary_survey_tomorrowtime') && $form_state->getValue('secondary_survey_tomorrowtime') != '') {
+      $secndformupdatetomorrow = new DateTime($form_state->getValue('secondary_survey_tomorrowtime'));
+      $secndformupdatetomorrow = $secndformupdatetomorrow->format('Y-m-d H:i:s');
+    }
 
-      //set up conditions for update time or create new survey
+    //set up conditions for update time or create new survey
 
-      if($form_state->getValue('default_survey_todaytime') != $datereturn) {
-        
-        $defupdatetoday = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturn,$formupdatetoday,0);
+    if($form_state->getValue('default_survey_todaytime') != $datereturn) {
+      
+      $defupdatetoday = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturn,$formupdatetoday,0);
 
-      }
-      if($datereturntomorrow && $form_state->getValue('default_survey_tomorrowtime') != $datereturntomorrow) {
-      
-        $defupdatetomorrow = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturntomorrow,$formupdatetomorrow,1);
-   
-      }
-      elseif(!$datereturntomorrow && $defupdatetomorrow && $defupdatetomorrow != '') {
-        $newdeftomorrow = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_def_survey'),1,1,$defupdatetomorrow);
-      }
-      if($secnddatereturn && $secndformupdatetoday && $secndformupdatetoday != $secnddatereturn) {
-      
-          $altupdatetoday = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($secondaryid,$secnddatereturn,$secndformupdatetoday,0);
-   
-          }
-      elseif(!$secnddatereturn && $secndformupdatetoday && $secndformupdatetoday != '') {
-        $newalttoday = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_alt_survey'),2,0,$secndformupdatetoday);
-      }
-      if($secnddatereturntomorrow && $secndformupdatetomorrow != $secnddatereturntomorrow) {
+    }
+    if($datereturntomorrow && $form_state->getValue('default_survey_tomorrowtime') != $datereturntomorrow) {
+    
+      $defupdatetomorrow = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturntomorrow,$formupdatetomorrow,1);
   
-        $altupdatetomorrow = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($secondaryid,$secnddatereturntomorrow,$secndformupdatetomorrow,1);
+    }
+    elseif(!$datereturntomorrow && $defupdatetomorrow && $defupdatetomorrow != '') {
+      $newdeftomorrow = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_def_survey'),1,1,$defupdatetomorrow);
+    }
+    if($secnddatereturn && $secndformupdatetoday && $secndformupdatetoday != $secnddatereturn) {
+    
+        $altupdatetoday = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($secondaryid,$secnddatereturn,$secndformupdatetoday,0);
   
-        
-      }
-      elseif(!$secnddatereturntomorrow && $secndformupdatetomorrow && $secndformupdatetomorrow != '') {
-        $newalttomorrow = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_alt_survey'),2,1,$secndformupdatetomorrow);
-      }
-      
+        }
+    elseif(!$secnddatereturn && $secndformupdatetoday && $secndformupdatetoday != '') {
+      $newalttoday = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_alt_survey'),2,0,$secndformupdatetoday);
+    }
+    if($secnddatereturntomorrow && $secndformupdatetomorrow != $secnddatereturntomorrow) {
 
-    parent::submitForm($form, $form_state); 
+      $altupdatetomorrow = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($secondaryid,$secnddatereturntomorrow,$secndformupdatetomorrow,1);
+
+      
+    }
+    elseif(!$secnddatereturntomorrow && $secndformupdatetomorrow && $secndformupdatetomorrow != '') {
+      $newalttomorrow = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_alt_survey'),2,1,$secndformupdatetomorrow);
+    }
+    
+
+  parent::submitForm($form, $form_state); 
   }
   protected function timzoneAdjust($basetime){
     $senddate = new DateTime($basetime);

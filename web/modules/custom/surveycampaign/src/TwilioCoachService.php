@@ -36,6 +36,13 @@ class TwilioCoachService
         $senddays = $type == 1 ? $config->get('def_send_days') : $config->get('alt_send_days');
         $sendtoday = false;
         $sendtoday = $this->checkDayName($senddays);
+        $holiday = $config->get('def_holiday_date');
+        foreach ($holiday as $key => $value) {
+            if (date($value) == $todaydate) {
+                $sendtoday = false;
+                break;
+            }
+        }
         $lowrange = intval($config->get('hour_range_low'));
         $highrange = intval($config->get('hour_range_high'));
         $range = $this->hoursRange( $lowrange, $highrange, 60 * 30, 'g:i a' );
