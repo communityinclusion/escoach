@@ -277,7 +277,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         ];
         $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['add_name'] = [
           '#type' => 'submit',
-          '#value' => t('Add one more'),
+          '#value' => t('Add another holiday'),
           '#submit' => array('::addOne'),
           '#ajax' => [
             'callback' => '::addmoreCallback',
@@ -287,7 +287,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         if ($form_state->get('num_hols') > 1) {
           $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['remove_name'] = [
             '#type' => 'submit',
-            '#value' => t('Remove one'),
+            '#value' => t('Remove this holiday'),
             '#submit' => array('::removeCallback'),
             '#ajax' => [
               'callback' => '::addmoreCallback',
