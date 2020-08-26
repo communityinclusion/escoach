@@ -232,7 +232,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
     $form['configuration']['default_settings']['shell'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Shell'),
+      '#title' => t(''),
       '#tree' => TRUE,
     );
 
