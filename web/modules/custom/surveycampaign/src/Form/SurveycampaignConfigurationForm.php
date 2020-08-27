@@ -126,9 +126,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $form['configuration']['default_settings'] = array(
       '#type' => 'details',
       '#title' => t('Default survey settings'),
-      //'#collapsible' => TRUE,
       '#group' => 'configuration',
-      //'#tree' => TRUE,
     );
     $form['configuration']['default_settings']['survey_admin_mail'] = [
       '#type' => 'textfield',
