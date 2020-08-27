@@ -1,0 +1,7 @@
+name: 'Tamper test'
+description: Test module for Tamper.
+type: module
+package: Testing
+dependencies:
+  - drupal:entity_test
+  - tamper:tamper
