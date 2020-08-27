@@ -119,8 +119,18 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
     
     
-
-    $form['configuration']['survey_admin_mail'] = [
+    $form['configuration'] = array(
+      '#type' => 'vertical_tabs',
+    );
+    
+    $form['configuration']['default_settings'] = array(
+      '#type' => 'details',
+      '#title' => t('Default survey settings'),
+      //'#collapsible' => TRUE,
+      '#group' => 'configuration',
+      //'#tree' => TRUE,
+    );
+    $form['configuration']['default_settings']['survey_admin_mail'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Survey administrator email'),
       '#description' => $this->t('Automated emails from survey users will use this address'),
@@ -130,11 +140,6 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#required' => TRUE,
       
     ];
-    $form['configuration']['default_settings'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Default survey settings'),
-      //'#tree' => TRUE,
-    );
    
     $form['configuration']['default_settings']['surveycampaign_def_survey'] = [
       '#type' => 'textfield',
@@ -393,8 +398,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
      // '#format' => $config->get('third_text_body.format'),
     ];
     $form['configuration']['second_settings'] = array(
-      '#type' => 'fieldset',
+      '#type' => 'details',
       '#title' => t('Secondary survey settings'),
+      //'#collapsible' => TRUE,
+      '#group' => 'configuration',
     );
 
     $form['configuration']['second_settings']['surveycampaign_alt_survey'] = [
