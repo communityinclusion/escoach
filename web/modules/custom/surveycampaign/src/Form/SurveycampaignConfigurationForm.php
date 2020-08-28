@@ -109,7 +109,6 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $holdates = $config->get('def_holiday_date');
     $holnames = $config->get('def_holiday_name');
     $counthols = is_array($holdates) ? count($holdates) : 0;
-    dsm("Holdates: " . $holdates);
 
     $defaultid = $config->get('defaultid');
     $secondaryid = $config->get('secondaryid');
