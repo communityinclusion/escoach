@@ -36,13 +36,13 @@ surveycampaign.twilio_texter:
     _controller: '\Drupal\surveycampaign\Controller\SurveycampaignController::sendtext'
   requirements:
     _permission: 'access arguments page'
-surveycampaign.surveyconfig:
-  path: '/surveyconfig/infoform'
+surveycampaign.surveyconfig_library:
+  path: 'admin/surveyconfig/library'
   defaults:
-    _form:  '\Drupal\surveycampaign\Form\SurveycampaignInfoForm'
-    _title: 'Survey config'
+    _form:  '\Drupal\surveycampaign\Form\SurveycampaignLibraryInsert'
+    _title: 'Survey manage library'
   requirements:
-    _permission: 'access content'
+    _permission: 'access arguments page'
 surveycampaign.surveyconfigpage:
   path: '/admin/surveyconfig'
   defaults:

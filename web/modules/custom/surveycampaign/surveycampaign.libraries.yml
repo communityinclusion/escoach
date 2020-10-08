@@ -1,0 +1,8 @@
+surveycampaign.library:
+  version: 1.x
+  css:
+    base:
+      css/surveycampaign.css: {}
+  js:
+    js/surveycampaign.js: {}
+  

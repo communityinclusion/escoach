@@ -65,7 +65,6 @@ class SurveycampaignController extends ControllerBase {
       throw new AccessDeniedHttpException();
     }
     $config = \Drupal::config('surveycampaign.settings');
-    // Will print 'Hello'.
     $surveyid = $type == 1 ? $config->get('defaultid') : $config->get('secondaryid');
   
 

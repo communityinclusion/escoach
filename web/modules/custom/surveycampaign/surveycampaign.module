@@ -8,6 +8,7 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_help().
@@ -34,6 +35,11 @@ function surveycampaign_theme() {
       'render element' => 'children',
     ],
   ];
+}
+function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if($form['#id'] == 'surveymessages-configuration-form' ) {
+    $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
+  }
 }
 function surveycampaign_cron()
 {
