@@ -6,6 +6,7 @@ use Twilio\Rest\Client;
 use \DateTime;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\mailgun\MailgunHandlerInterface;
+use Drupal\node\Entity\Node;
 class TwilioCoachService
 {
     protected $entityTypeManager;
@@ -18,6 +19,10 @@ class TwilioCoachService
         $user = 'oliver.lyons@umb.edu'; //Email address used to log in
         include('/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
+        $libconfig =  \Drupal::config('surveycampaign.library_settings');
+        //If lib config date array includes today, get the closing screen page heading and text
+        //Else use the default heading and text for the final screen, from the lib settings page defaults.
+        // call the manage closing screen function (if today's date/default to do the work of changing things in SG
         $defaultenable = $type == 1 ? $config->get('defaultenable') : $config->get('secondenable');
         require $_SERVER['SERVER_ADDR'] == '162.243.15.189' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
         $survey = '5500151';//Survey to pull from
@@ -92,6 +97,28 @@ class TwilioCoachService
             } 
         }
         else return false;
+    }
+   function manageClosingScreen($today = false) {
+        $libconfig =  \Drupal::config('surveycampaign.library_settings');
+        //get final page question id and final page id 
+        // if $today entity queries for selected library item text
+        //$node = \Drupal\node\Entity\Node::load($nid);
+        //echo $node->field_short_version->value;
+        //if $today and default title entity queries for library item title
+        //if $today and custom title, config query for custom title
+        // if !$today config query for default title
+        // if !$today config query for default body text
+        //urlencode selected text and heading
+        //get closing question ID from config
+        //get closing page ID from config
+        //call to SG API modifying closing screen question text
+        //call to SG API modifying closing screen heading
+        //
+        // https://restapi.surveygizmo.com/v5/survey/5500151/surveyquestion/1?_method=POST&title=%3Cp%3EAn+essential+element+for+building+trust+with+job+seekers%2C%26nbsp%3Bactive+listening%26nbsp%3Bis+the+dynamic+process+by+which+an+employment+specialist+secures+relevant+information+from+an+individual+in+order+to+better+get+to+know+him+or+her+and+gain+a+clearer+picture+of+skills%2C+interests%2C%26nbsp%3Btalents%2C%26nbsp%3Band+support+needs.%3C%2Fp%3E++%3Cp%3EActive+listening%26nbsp%3Binvolves+paying+attention+to+the+conversation%2C+not+interrupting%2C+and+taking+the+time+to+fully+understand+what+your+job+seeker+is+discussing%26nbsp%3Band+sharing+with+you.+The+%E2%80%9Cactive%E2%80%9D+element+involves+taking+steps+to+draw+out+details+that+might+not+otherwise+be+shared%3A%3C%2Fp%3E++%3Cp%3EActive+listening+techniques+include%3A%3C%2Fp%3E++%3Cul%3E+%09%3Cli%3EDemonstrating%26nbsp%3Binterest%26nbsp%3Bin+what+the+job+seeker+is+saying%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EParaphrasing%26nbsp%3Bto+show+understanding%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EUsing%26nbsp%3Bnonverbal+cues%E2%80%AF%28i.e.+nodding%2C+making+eye+contact%2C+leaning+forward%29+to+show+understanding%26nbsp%3B%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EInterjecting+with+brief+verbal+affirmations%26nbsp%3Blike+%E2%80%9CI+see%2C%E2%80%9D+%E2%80%9CI+know%2C%E2%80%9D+%E2%80%9CSure%2C%E2%80%9D+%E2%80%9CThank+you%2C%E2%80%9D+or+%E2%80%9CI+understand%E2%80%9D%26nbsp%3Bto+validate+job+seeker%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EAllowing+for+uninterrupted+speaking+and+sharing%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EAsking+open-ended+questions%26nbsp%3Bto+draw+out+more+robust+information%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EAsking+specific+questions%26nbsp%3Bto+seek+clarification%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EWaiting+to+disclose+your+opinion%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EDisclosing+similar+experiences%26nbsp%3Bto%26nbsp%3Bdemonstrate%26nbsp%3Bunderstanding%26nbsp%3Band+awareness%3C%2Fli%3E+%3C%2Ful%3E&api_token=586e061a200b69688552db140bca6d5be55403e0f8346d7655&api_token_secret=A9vwBZC/pRVpg
+
+
+        //https://restapi.surveygizmo.com/v4/survey/5500151/surveypage/2?_method=POST&title=Build+Trust+with+Job+Seekers+through+Active+Listening%3A+9+Important+Techniques&api_token=586e061a200b69688552db140bca6d5be55403e0f8346d7655&api_token_secret=A9vwBZC/pRVpg
+
     }
 
    function textSchedule($surveyid, $campaignid) {
