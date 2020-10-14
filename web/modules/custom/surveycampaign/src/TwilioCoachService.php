@@ -71,9 +71,14 @@ class TwilioCoachService
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($ch);
-            print_r($output);
+            //print_r($output);
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
+            $libid = $libconfig->get('defaultid');
+            $libraryid = $libid == $surveyid ? $libid : null;
+            if($libraryid) {
+              $changeclosing = $this->manageClosingScreen($libid,$gizmodate,$api_key,$api_secret);
+            }
         
             foreach($output as $response)
             { if (!is_bool($response)) {
@@ -98,26 +103,89 @@ class TwilioCoachService
         }
         else return false;
     }
-   function manageClosingScreen($today = false) {
+   function manageClosingScreen($surveyid,$date,$api_key,$api_secret) {
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
-        //get final page question id and final page id 
-        // if $today entity queries for selected library item text
-        //$node = \Drupal\node\Entity\Node::load($nid);
-        //echo $node->field_short_version->value;
-        //if $today and default title entity queries for library item title
-        //if $today and custom title, config query for custom title
-        // if !$today config query for default title
-        // if !$today config query for default body text
-        //urlencode selected text and heading
-        //get closing question ID from config
-        //get closing page ID from config
-        //call to SG API modifying closing screen question text
-        //call to SG API modifying closing screen heading
-        //
-        // https://restapi.surveygizmo.com/v5/survey/5500151/surveyquestion/1?_method=POST&title=%3Cp%3EAn+essential+element+for+building+trust+with+job+seekers%2C%26nbsp%3Bactive+listening%26nbsp%3Bis+the+dynamic+process+by+which+an+employment+specialist+secures+relevant+information+from+an+individual+in+order+to+better+get+to+know+him+or+her+and+gain+a+clearer+picture+of+skills%2C+interests%2C%26nbsp%3Btalents%2C%26nbsp%3Band+support+needs.%3C%2Fp%3E++%3Cp%3EActive+listening%26nbsp%3Binvolves+paying+attention+to+the+conversation%2C+not+interrupting%2C+and+taking+the+time+to+fully+understand+what+your+job+seeker+is+discussing%26nbsp%3Band+sharing+with+you.+The+%E2%80%9Cactive%E2%80%9D+element+involves+taking+steps+to+draw+out+details+that+might+not+otherwise+be+shared%3A%3C%2Fp%3E++%3Cp%3EActive+listening+techniques+include%3A%3C%2Fp%3E++%3Cul%3E+%09%3Cli%3EDemonstrating%26nbsp%3Binterest%26nbsp%3Bin+what+the+job+seeker+is+saying%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EParaphrasing%26nbsp%3Bto+show+understanding%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EUsing%26nbsp%3Bnonverbal+cues%E2%80%AF%28i.e.+nodding%2C+making+eye+contact%2C+leaning+forward%29+to+show+understanding%26nbsp%3B%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EInterjecting+with+brief+verbal+affirmations%26nbsp%3Blike+%E2%80%9CI+see%2C%E2%80%9D+%E2%80%9CI+know%2C%E2%80%9D+%E2%80%9CSure%2C%E2%80%9D+%E2%80%9CThank+you%2C%E2%80%9D+or+%E2%80%9CI+understand%E2%80%9D%26nbsp%3Bto+validate+job+seeker%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EAllowing+for+uninterrupted+speaking+and+sharing%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EAsking+open-ended+questions%26nbsp%3Bto+draw+out+more+robust+information%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EAsking+specific+questions%26nbsp%3Bto+seek+clarification%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EWaiting+to+disclose+your+opinion%26nbsp%3B%3C%2Fli%3E+%09%3Cli%3EDisclosing+similar+experiences%26nbsp%3Bto%26nbsp%3Bdemonstrate%26nbsp%3Bunderstanding%26nbsp%3Band+awareness%3C%2Fli%3E+%3C%2Ful%3E&api_token=586e061a200b69688552db140bca6d5be55403e0f8346d7655&api_token_secret=A9vwBZC/pRVpg
+        $finalpageid = $libconfig->get('sg_clos_page_id');
+        $finalquestionid = $libconfig->get('sg_clos_ques_id');
+        include('/var/www/logins.php');
+        $libconfig =  \Drupal::config('surveycampaign.library_settings');
+        $database = \Drupal::database();
+        $query1 = $database->select('surveycampaign_library_insert', 'sli')
+            ->fields('sli', array(
+            'senddate'
+            )
+            
+            )
+            ->condition('sli.surveyid', $surveyid)
+            ->condition('senddate', $database->escapeLike($date) . '%', 'LIKE')
+            ->range(0, 1);
 
+        $query2 = $database->select('surveycampaign_library_insert', 'sli')
+            ->fields('sli', array(
+            'senddate','nodeid','titlechoice','pagetitle',
+            )
+            
+            )
+            ->condition('sli.surveyid', $surveyid)
+            ->condition('senddate', $database->escapeLike($date) . '%', 'LIKE')
+            ->range(0, 1);
+        $result1 = $query1->execute()->fetchField();
+        $result2 = $query2->execute();
 
-        //https://restapi.surveygizmo.com/v4/survey/5500151/surveypage/2?_method=POST&title=Build+Trust+with+Job+Seekers+through+Active+Listening%3A+9+Important+Techniques&api_token=586e061a200b69688552db140bca6d5be55403e0f8346d7655&api_token_secret=A9vwBZC/pRVpg
+        if (!$result1 || $result1 < 1) { 
+            $finaldeftitle = urlencode($libconfig->get('finalpageheading'));
+            $finaldeftext = urlencode($libconfig->get('defaultlibrarytext.value')); 
+            $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaldeftitle}&api_token={$api_key}&api_token_secret={$api_secret}";
+            $texturl = "https://restapi.surveygizmo.com/v5/survey/5500151/surveyquestion/{$finalquestionid}?_method=POST&title={$finaldeftext}&&api_token={$api_key}&api_token_secret={$api_secret}";
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $titleurl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch);
+            $ch2 = curl_init();
+            curl_setopt($ch2, CURLOPT_URL, $texturl);
+            curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch2);
+        }
+        else { //$showresult = print_r($result,true);
+            foreach ($result2 as $row) {
+
+                //turn an object into an array by json encoding then decoding it
+                $row = json_decode(json_encode($row), true);
+                // $message = print_r($row,true);
+                $nodeid =$row['nodeid'];
+                $senddate = $row['senddate'];
+                $titlechoice = $row['titlechoice'];
+                $pagetitle = $row['pagetitle'];
+                
+    
+                $storage = \Drupal::entityTypeManager()->getStorage('node')
+                ->loadByProperties([
+                    'nid' => $nodeid,
+                    
+                ]);
+        
+                foreach($storage as $libnode) {
+                    $libnodetitle = $titlechoice == '2' ? urlencode($libnode->get('title')->value) : urlencode($pagetitle);
+                    $libnodetext = urlencode($libnode->get('field_short_version')->value);
+                    $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$libnodetitle}&api_token={$api_key}&api_token_secret={$api_secret}";
+                    $texturl = "https://restapi.surveygizmo.com/v5/survey/5500151/surveyquestion/{$finalquestionid}?_method=POST&title={$libnodetext}&&api_token={$api_key}&api_token_secret={$api_secret}";
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $titleurl);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    $output = curl_exec($ch);
+                    //\Drupal::logger('surveycampaign alert')->notice($titleurl);
+                    $ch2 = curl_init();
+                    curl_setopt($ch2, CURLOPT_URL, $texturl);
+                    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
+                    $output = curl_exec($ch2);
+
+                }
+            }
+                
+               
+        }
 
     }
 
@@ -443,8 +511,6 @@ class TwilioCoachService
         $gizmodate = new DateTime("$todaydate");
         $gizmodate->modify("+ $day day");
         $conditiondate = $gizmodate->format('Y-m-d');
-        $api_key = '586e061a200b69688552db140bca6d5be55403e0f8346d7655';
-        $api_secret = 'A9vwBZC/pRVpg';
         $newdate = new DateTime($newdate);
         $seconddate = $newdate->format('g:i a');
         $minusdate = new DateTime( "$seconddate - 30 minutes"  );

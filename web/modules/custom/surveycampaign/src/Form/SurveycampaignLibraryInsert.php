@@ -81,7 +81,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       $query = $database->select('surveycampaign_library_insert','sli')
         ->fields('sli', array('ID','nodeid','pagetitle','senddate','ordering','titlechoice'))
         ->condition('sli.surveyid', $defaultid)
-        ->condition('sli.senddate', $todaydate ,'>=')
+        //->condition('sli.senddate', $todaydate ,'>=')
         ->orderBy('senddate', 'DESC');;
         $result = $query->execute();
         $result2 = $query->execute();
@@ -106,7 +106,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
           '#default_value' => $defaultid,
            '#size' => 10,
           '#maxlength' => 128,
-          '#required' => FALSE,
+          '#required' => TRUE,
           
         );
       $form['sg_clos_ques_id'] = array(
@@ -116,7 +116,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#default_value' => $config->get('sg_clos_ques_id'),
           '#size' => 5,
         '#maxlength' => 128,
-        '#required' => FALSE,
+        '#required' => TRUE,
         
       );
       $form['sg_clos_page_id'] = array(
@@ -126,7 +126,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#default_value' => $config->get('sg_clos_page_id'),
           '#size' => 5,
         '#maxlength' => 128,
-        '#required' => FALSE,
+        '#required' => TRUE,
         
       );
       $form['shell'] = array(
@@ -162,6 +162,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
           '#title' => 'Library items',
           '#description' => 'Select a library item to use on closing screen',
           '#default_value' => $thistext,
+          '#required' => TRUE,
           '#options' => $libraryitems,
           '#prefix' => "<div class='inner-fieldset'><legend><span class='fieldset-legend'>Library Choice {$j}</span></legend>",
         );
@@ -170,6 +171,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
             '#title' => $this->t('Default survey: set a date to insert library item.'),
             '#description' => t('Set a date in the future, on which the library item above will be inserted in the final question.'),
             '#size' => 20,
+            '#required' => TRUE,
             '#default_value' => $thisdate,
           );
           $form['shell']['libchoice_fieldset'][$i]['pageheadingchoice'] = array(
@@ -178,6 +180,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
             '#options' => array(2 => $this->t('Use the library item title'), 4 => $this->t('Add a custom heading below')),
             '#description' => $this->t('You can change the heading for the final screen or just use the title of the library item.'),
             '#default_value' => $thisheading,
+            '#required' => TRUE,
             '#attributes' => array('class' => array('toggleHeading')),
           );
           $form['shell']['libchoice_fieldset'][$i]['custompageheading'] = array(
@@ -225,6 +228,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#type' => 'textfield',
         '#title' => $this->t('Default final screen heading'),
         '#description' => $this->t('Default final screen heading if no library item chosen'),
+        '#required' => TRUE,
         '#default_value' => $config->get('finalpageheading'),
       );
 
@@ -234,6 +238,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#type' => 'text_format',
         '#title' => $this->t('Default final screen text'),
         '#description' => $this->t('Default final screen body text if no library item chosen.'),
+        '#required' => TRUE,
         '#default_value' => $config->get('defaultlibrarytext.value'),
         
         
@@ -303,7 +308,6 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         if(is_numeric($key) && $form_state->getValue(array('shell','libchoice_fieldset',$key, 'pageheadingchoice')) == '4') {$pagetitle = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'custompageheading'));} 
         else { $pagetitle = ""; }
         if(is_numeric($key)) $rowid = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'row_ID')) ? $form_state->getValue(array('shell','libchoice_fieldset',$key, 'row_ID')) : null;
-        if(is_numeric($key)) dpm($date);
         if(is_numeric($key)) $this->manageLibraryItem($nid,$surveyid,$date,$titlechoice,$pagetitle,$rowid);
 
       }
