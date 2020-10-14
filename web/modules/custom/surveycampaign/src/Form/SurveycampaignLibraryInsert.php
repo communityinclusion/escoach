@@ -213,6 +213,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
             '#type' => 'submit',
             '#value' => t('Remove this library choice/date'),
             '#submit' => array('::removeCallback'),
+            '#limit_validation_errors' => array(),
             '#ajax' => [
               'callback' => '::addmoreCallback',
               'wrapper' => "names-fieldset-wrapper",
