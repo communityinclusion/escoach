@@ -81,7 +81,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       $query = $database->select('surveycampaign_library_insert','sli')
         ->fields('sli', array('ID','nodeid','pagetitle','senddate','ordering','titlechoice'))
         ->condition('sli.surveyid', $defaultid)
-        //->condition('sli.senddate', $todaydate ,'>=')
+        ->condition('sli.senddate', $todaydate ,'>=')
         ->orderBy('senddate', 'DESC');;
         $result = $query->execute();
         $result2 = $query->execute();
@@ -311,7 +311,6 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         if(is_numeric($key)) $this->manageLibraryItem($nid,$surveyid,$date,$titlechoice,$pagetitle,$rowid);
 
       }
-      dpm("Num libs: " . $form_state->get('num_libs'));
       $this->config('surveycampaign.library_settings')
         ->set('defaultid', $form_state->getValue('libsg_def_survey'))
         ->set('sg_clos_ques_id', $form_state->getValue('sg_clos_ques_id'))
