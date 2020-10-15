@@ -170,7 +170,7 @@ class TwilioCoachService
                     $libnodetext = urlencode($libnode->get('field_short_version')->value);
                     
                     $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$libnodetitle}&api_token={$api_key}&api_token_secret={$api_secret}";
-                    $texturl = "https://restapi.surveygizmo.com/v5/survey/5500151/surveyquestion/{$finalquestionid}?_method=POST&title={$libnodetext}&&api_token={$api_key}&api_token_secret={$api_secret}";
+                    $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$libnodetext}&&api_token={$api_key}&api_token_secret={$api_secret}";
 
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL, $titleurl);
