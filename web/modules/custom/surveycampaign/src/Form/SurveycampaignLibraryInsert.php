@@ -70,7 +70,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       $todaydate = $newdate->format('Y-m-d H:i:s');
       $yesterdaydate = new DateTime();
       $yesterdaydate->modify("- 1 day");
-      $yesterdaydate = $yestardaydate->format('Y-m-d H:i:s');
+      $yesterdaydate = $yesterdaydate->format('Y-m-d H:i:s');
       $i = 0;
       $config = $this->config('surveycampaign.library_settings');
       $mainconfig = $this->config('surveycampaign.settings');
