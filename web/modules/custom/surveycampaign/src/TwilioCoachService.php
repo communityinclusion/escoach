@@ -168,7 +168,7 @@ class TwilioCoachService
                 foreach($storage as $libnode) {
                     $libnodetitle = $titlechoice == '2' ? urlencode($libnode->get('title')->value) : urlencode($pagetitle);
                     $libnodetext = urlencode($libnode->get('field_short_version')->value);
-                    \Drupal::logger('surveycampaign alert')->notice($titleurl);
+                    
                     $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$libnodetitle}&api_token={$api_key}&api_token_secret={$api_secret}";
                     $texturl = "https://restapi.surveygizmo.com/v5/survey/5500151/surveyquestion/{$finalquestionid}?_method=POST&title={$libnodetext}&&api_token={$api_key}&api_token_secret={$api_secret}";
 
@@ -176,7 +176,7 @@ class TwilioCoachService
                     curl_setopt($ch, CURLOPT_URL, $titleurl);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     $output = curl_exec($ch);
-                    //\Drupal::logger('surveycampaign alert')->notice($titleurl);
+                    \Drupal::logger('surveycampaign alert')->notice($texturl);
                     $ch2 = curl_init();
                     curl_setopt($ch2, CURLOPT_URL, $texturl);
                     curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
