@@ -68,6 +68,9 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
     public function buildForm(array $form, FormStateInterface $form_state) {
       $newdate = new DateTime();
       $todaydate = $newdate->format('Y-m-d H:i:s');
+      $yesterdaydate = new DateTime();
+      $yesterdaydate->modify("- 1 day");
+      $yesterdaydate = $yestardaydate->format('Y-m-d H:i:s');
       $i = 0;
       $config = $this->config('surveycampaign.library_settings');
       $mainconfig = $this->config('surveycampaign.settings');
@@ -81,7 +84,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       $query = $database->select('surveycampaign_library_insert','sli')
         ->fields('sli', array('ID','nodeid','pagetitle','senddate','ordering','titlechoice'))
         ->condition('sli.surveyid', $defaultid)
-        ->condition('sli.senddate', $todaydate ,'>=')
+        ->condition('sli.senddate', $yesterdaydate ,'>=')
         ->orderBy('senddate', 'DESC');;
         $result = $query->execute();
         $result2 = $query->execute();
