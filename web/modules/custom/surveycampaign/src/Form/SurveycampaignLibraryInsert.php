@@ -162,7 +162,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         
         $form['shell']['libchoice_fieldset'][$i]['library_choices'] = array(
           '#type' => 'radios',
-          '#title' => 'Library items',
+          '#title' => 'Library items (scroll for more)',
           '#description' => 'Select a library item to use on closing screen',
           '#default_value' => $thistext,
           '#required' => TRUE,
