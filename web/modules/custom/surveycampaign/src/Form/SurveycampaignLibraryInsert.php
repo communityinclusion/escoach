@@ -167,7 +167,6 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
           '#default_value' => $thistext,
           '#required' => TRUE,
           '#options' => $libraryitems,
-          '#attributes' => array('class' => array('scrollChoice')),
           '#prefix' => "<div class='inner-fieldset'><legend><span class='fieldset-legend'>Library Choice {$j}</span></legend>",
         );
           $form['shell']['libchoice_fieldset'][$i]['library_date'] = array(
