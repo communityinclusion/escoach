@@ -233,7 +233,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#type' => 'textfield',
         '#title' => $this->t('Default final screen heading'),
         '#description' => $this->t('Default final screen heading if no library item chosen'),
-        '#required' => TRUE,
+        '#required' => FALSE,
         '#default_value' => $config->get('finalpageheading'),
       );
 
