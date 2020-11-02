@@ -343,11 +343,14 @@ class TwilioCoachService
                         }
                         if($suspenddates['data'][0]) {
                             $database = \Drupal::database();
-                            $result = $database->delete('surveycampaign_mailer')
-                            ->condition('surveyid', $surveyid)
-                                ->condition('campaignid',$campaignid)
-                                ->condition('contactid',$contactid)
-                                ->execute();
+                            $result = $database->update('surveycampaign_mailer')
+                                ->fields([
+                                'Complete' => '1'
+                                ])
+                                ->condition('surveyid', $surveyid)
+                                    ->condition('campaignid',$campaignid)
+                                    ->condition('contactid',$contactid)
+                                    ->execute();
                         }
                     }
                         
@@ -669,6 +672,7 @@ class TwilioCoachService
         ->condition('sm.mobilephone', $mobilephone)
         ->condition('sm.fullname', $fullname)
         ->condition('sm.campaignid', $campaignarray, 'IN')
+        ->condition('sm.Complete', '0')
         ->countQuery();
         $result = $query->execute()->fetchField();
         return $result;
