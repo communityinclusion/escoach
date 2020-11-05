@@ -17,7 +17,7 @@ class TwilioCoachService
     public function load($surveyid,$type = 1,$day = 0,$fixdate = null) {
      
         $user = 'oliver.lyons@umb.edu'; //Email address used to log in
-        include('/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
         // If lib config date array includes today, get the closing screen page heading and text
