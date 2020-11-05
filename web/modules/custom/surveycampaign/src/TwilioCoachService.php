@@ -20,7 +20,7 @@ class TwilioCoachService
         include('/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
-        //If lib config date array includes today, get the closing screen page heading and text
+        // If lib config date array includes today, get the closing screen page heading and text
         //Else use the default heading and text for the final screen, from the lib settings page defaults.
         // call the manage closing screen function (if today's date/default to do the work of changing things in SG
         $defaultenable = $type == 1 ? $config->get('defaultenable') : $config->get('secondenable');
