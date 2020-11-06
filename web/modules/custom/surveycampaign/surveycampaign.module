@@ -9,6 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\UserSession;
 
 /**
  * Implements hook_help().
@@ -43,7 +44,7 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
 }
 function surveycampaign_cron()
 {
-  use Drupal\Core\Session\UserSession;
+  
 
 // call the account switcher service
 $accountSwitcher = \Drupal::service('account_switcher');
