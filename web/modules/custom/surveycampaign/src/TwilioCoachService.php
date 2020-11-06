@@ -107,7 +107,7 @@ class TwilioCoachService
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
         $finalpageid = $libconfig->get('sg_clos_page_id');
         $finalquestionid = $libconfig->get('sg_clos_ques_id');
-        include('/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
         $database = \Drupal::database();
         $query1 = $database->select('surveycampaign_library_insert', 'sli')
@@ -192,7 +192,7 @@ class TwilioCoachService
 
    function textSchedule($surveyid, $campaignid) {
         //read mailer table
-        include('/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
         $todaydate = date("Y-m-d");
         $database = \Drupal::database();
@@ -386,7 +386,7 @@ class TwilioCoachService
         $thirdtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $thirdtextconfig))));
 
        $bodytext = $textno == 1 ? $firsttextbody : ($textno ==2 ? $secondtextbody : $thirdtextbody);
-       include('/var/www/logins.php');
+       include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
       
       // A Twilio number you own with SMS capabilities
       $twilio_number = "+16172497169";

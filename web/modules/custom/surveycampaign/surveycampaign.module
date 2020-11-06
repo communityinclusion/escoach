@@ -46,10 +46,10 @@ function surveycampaign_cron()
 {
   
 
-// call the account switcher service
-$accountSwitcher = \Drupal::service('account_switcher');
-// switch to the admin user
-$accountSwitcher->switchTo(new UserSession(['uid' => 1]));
+  // call the account switcher service
+  $accountSwitcher = \Drupal::service('account_switcher');
+  // switch to the admin user
+  $accountSwitcher->switchTo(new UserSession(['uid' => 1]));
   
   $message = 'Surveycampaign cron run: ' . date('Y-m-d H:i:s');
   \Drupal::logger('surveycampaign')->notice($message);
