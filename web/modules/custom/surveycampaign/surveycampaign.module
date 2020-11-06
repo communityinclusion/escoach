@@ -43,6 +43,12 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
 }
 function surveycampaign_cron()
 {
+  use Drupal\Core\Session\UserSession;
+
+// call the account switcher service
+$accountSwitcher = \Drupal::service('account_switcher');
+// switch to the admin user
+$accountSwitcher->switchTo(new UserSession(['uid' => 1]));
   
   $message = 'Surveycampaign cron run: ' . date('Y-m-d H:i:s');
   \Drupal::logger('surveycampaign')->notice($message);
@@ -78,6 +84,7 @@ function surveycampaign_cron()
   $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
   $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
   $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
+  $accountSwitcher->switchBack();
   
   
 } 
