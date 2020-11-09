@@ -42,6 +42,9 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
   }
 }
+function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['account']['mail']['#required'] = TRUE;
+}
 function surveycampaign_cron()
 {
   
