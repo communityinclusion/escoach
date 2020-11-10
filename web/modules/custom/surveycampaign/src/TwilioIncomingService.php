@@ -1,7 +1,7 @@
 <?php
 namespace Drupal\surveycampaign;
 // Get the PHP helper library from https://twilio.com/docs/libraries/php
-require_once $_SERVER['SERVER_ADDR'] == '162.243.15.189' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
+require_once $_SERVER['SERVER_ADDR'] == '162.243.15.189' || $_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Twilio\Rest\Client;
