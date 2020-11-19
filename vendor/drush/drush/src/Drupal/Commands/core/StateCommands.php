@@ -36,6 +36,8 @@ class StateCommands extends DrushCommands implements StdinAwareInterface
      * @param string $key The key name.
      * @usage drush state:get system.cron_last
      *   Displays last cron run timestamp
+     * @usage drush state:get drupal_css_cache_files --format=yaml
+     *   Displays an array of css files in yaml format.
      * @aliases sget,state-get
      *
      * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
@@ -53,7 +55,7 @@ class StateCommands extends DrushCommands implements StdinAwareInterface
      *
      * @param string $key The state key, for example: system.cron_last.
      * @param mixed $value The value to assign to the state key. Use '-' to read from STDIN.
-     * @option input-format Type for the value. Defaults to 'auto'. Other recognized values: string, integer float, boolean, json, yaml.
+     * @option input-format Type for the value. Defaults to 'auto'. Other recognized values: string, integer, float, boolean, json, yaml.
      * @option value For internal use only.
      * @hidden-options value
      * @usage drush sset system.maintenance_mode 1 --input-format=integer

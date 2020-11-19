@@ -5,6 +5,7 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\user\Entity\User;
 use Drush\Commands\DrushCommands;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Html;
@@ -23,7 +24,7 @@ class WatchdogCommands extends DrushCommands
      * @option severity Restrict to messages of a given severity level.
      * @option type Restrict to messages of a given type.
      * @option extended Return extended information about each message.
-     * @usage  drush watchdog-show
+     * @usage  drush watchdog:show
      *   Show a listing of most recent 10 messages.
      * @usage drush watchdog:show "cron run succesful"
      *   Show a listing of most recent 10 messages containing the string "cron run succesful".
@@ -33,6 +34,8 @@ class WatchdogCommands extends DrushCommands
      *   Show a listing of most recent 10 messages with a severity of notice.
      * @usage drush watchdog:show --type=php
      *   Show a listing of most recent 10 messages of type php
+     * @usage  while sleep 2; do drush watchdog:show; done
+     *   Every 2 seconds, show the most recent 10 messages.
      * @aliases wd-show,ws,watchdog-show
      * @validate-module-enabled dblog
      * @field-labels
@@ -79,7 +82,7 @@ class WatchdogCommands extends DrushCommands
      * @option extended Return extended information about each message.
      * @option severity Restrict to messages of a given severity level.
      * @option type Restrict to messages of a given type.
-     * @usage  drush watchdog-list
+     * @usage  drush watchdog:list
      *   Prompt for message type or severity, then run watchdog-show.
      * @aliases wd-list,watchdog-list
      * @hidden-options type,severity
@@ -281,7 +284,7 @@ class WatchdogCommands extends DrushCommands
         $result->severity = trim(DrupalUtil::drushRender($severities[$result->severity]));
 
         // Date.
-        $result->date = format_date($result->timestamp, 'custom', 'd/M H:i');
+        $result->date = date('d/M H:i', $result->timestamp);
         unset($result->timestamp);
 
         // Message.
@@ -305,7 +308,7 @@ class WatchdogCommands extends DrushCommands
                 unset($result->referer);
             }
             // Username.
-            if ($account = user_load($result->uid)) {
+            if ($account = User::load($result->uid)) {
                 $result->username = $account->name;
             } else {
                 $result->username = dt('Anonymous');

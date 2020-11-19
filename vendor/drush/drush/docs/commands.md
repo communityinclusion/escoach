@@ -10,6 +10,7 @@ Creating a new Drush command or porting a legacy command is easy. Follow the ste
 1. Drush will then report that it created a commandfile, a drush.services.yml file and a composer.json file. Edit those files as needed.
 1. Use the classes for the core Drush commands at [/src/Drupal/Commands](https://github.com/drush-ops/drush/tree/master/src/Drupal/Commands) as inspiration and documentation.
 1. See the [dependency injection docs](dependency-injection.md) for interfaces you can implement to gain access to Drush config, Drupal site aliases, etc.
+1. Write PHPUnit tests based on [Drush Test Traits](https://github.com/drush-ops/drush/tree/master/tests#drush-test-traits).
 1. Once your two files are ready, run `drush cr` to get your command recognized by the Drupal container.
 
 Specifying the Services File
@@ -73,6 +74,8 @@ If you still prefer using site-wide commandfiles, here are some examples of vali
     - Filename: $PROJECT_ROOT/drush/Commands/contrib/dev_modules/ExampleCommands.php
     - Namespace: Drush\Commands\dev_modules
 
+Note: Make sure you do _not_ include `src` in the path to your command. Your command may not be discovered and have additional problems.
+
 Installing commands as part of a Composer project requires that the project's type be `drupal-drush`, and that the `installer-paths` in the Drupal site's composer.json file contains `"drush/Commands/contrib/{$name}": ["type:drupal-drush"]`. It is also possible to commit projects with a similar layout using a directory named `custom` in place of `contrib`; if this is done, then the directory `custom` will not be considered to be part of the commandfile's namespace.
 
 If a site-wide commandfile is added via a Composer package, then it may declare any dependencies that it may need in its composer.json file. Site-wide commandfiles that are committed directly to a site's repository only have access to the dependencies already available in the site. Site-wide commandfiles should declare their Drush version compatibility via a `conflict` directive. For example, a Composer-managed site-wide command that works with both Drush 8 and Drush 9 might contain something similar to the following in its composer.json file:
@@ -108,3 +111,9 @@ With this configuration in place, global commands may be placed as described in 
     1.  ../drush, /drush or /sites/all/drush. These paths are relative to Drupal root.
 
 It is recommended that you avoid global Drush commands, and favor site-wide commandfiles instead. If you really need a command or commands that are not part of any Drupal site, consider making a stand-alone script or custom .phar instead. See [ahoy](https://github.com/ahoy-cli/ahoy), [Robo](https://github.com/consolidation/robo) and [g1a/starter](https://github.com/g1a/starter) as potential starting points.
+
+Composer packaged commands
+==============================
+
+##### Symlinked packages
+While it is good practice to make your custom commands into a Composer package, please beware that symlinked packages (by using the composer repository type [Path](https://getcomposer.org/doc/05-repositories.md#path)) will **not** be discovered by Drush. When in development, it is recommended to [specify your package's](https://github.com/drush-ops/drush/blob/master/examples/example.drush.yml#L52-L67) path in your `drush.yml` to have quick access to your commands.

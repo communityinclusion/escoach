@@ -22,7 +22,7 @@ class TwilioIncomingService
          //START, YES and UNSTOP
          if($_REQUEST['Body']) {$bodytext = str_replace(' ', '',$_REQUEST['Body']);}
        
-        if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext) == 'STOP' || strtoupper($bodytext == 'STOPALL' || strtoupper($bodytext == 'UNSUBSCRIBE' || strtoupper($bodytext == 'CANCEL' || strtoupper($bodytext == 'END' || strtoupper($bodytext == 'QUIT' )) { 
+        if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext)) == 'STOP' || strtoupper($bodytext) == 'STOPALL' || strtoupper($bodytext) == 'UNSUBSCRIBE' || strtoupper($bodytext) == 'CANCEL' || strtoupper($bodytext) == 'END' || strtoupper($bodytext) == 'QUIT' )) { 
             $userphone = substr($_REQUEST['From'],2);
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2');
             $email = $setinactive[0];
@@ -32,7 +32,7 @@ class TwilioIncomingService
 
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop');
         }
-        elseif($_REQUEST && (strtoupper($bodytext == 'START' || strtoupper($bodytext == 'YES' || strtoupper($bodytext == 'UNSTOP' )) {
+        elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
             $userphone = substr($_REQUEST['From'],2);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1');
             $email = $setactive[0];

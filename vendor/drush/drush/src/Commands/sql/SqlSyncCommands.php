@@ -113,7 +113,7 @@ class SqlSyncCommands extends DrushCommands implements SiteAliasManagerAwareInte
             return 'simulated_db';
         }
 
-        $process = $this->processManager()->drush($record, 'core-status', ['db-name'], ['format' => 'json']);
+        $process = $this->processManager()->drush($record, 'core-status', [], ['fields' => 'db-name', 'format' => 'json']);
         $process->setSimulated(false);
         $process->mustRun();
         $data = $process->getOutputAsJson();
@@ -142,9 +142,7 @@ class SqlSyncCommands extends DrushCommands implements SiteAliasManagerAwareInte
         ];
         if (!$options['no-dump']) {
             $this->logger()->notice(dt('Starting to dump database on source.'));
-            // Set --backend=json. Drush 9.6+ changes that to --format=json. See \Drush\Preflight\PreflightArgs::setBackend.
-            // Drush 9.5- handles this as --backend.
-            $process = $this->processManager()->drush($sourceRecord, 'sql-dump', [], $dump_options + ['backend' => 'json']);
+            $process = $this->processManager()->drush($sourceRecord, 'sql-dump', [], $dump_options + ['format' => 'json']);
             $process->mustRun();
 
             if ($this->getConfig()->simulate()) {
