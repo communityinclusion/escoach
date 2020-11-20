@@ -511,6 +511,7 @@ class TwilioCoachService
 
     }
     function updateCampaignTime($surveyid,$pastdate,$newdate,$day) {
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
         $gizmodate = new DateTime("$todaydate");
         $gizmodate->modify("+ $day day");
