@@ -548,6 +548,7 @@ class TwilioCoachService
 
 
         $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}?_method=POST" . "&tokenvariables=" . urlencode("starttime={$firstdate}&endtime={$seconddate}") . "&api_token={$api_key}&api_token_secret={$api_secret}";
+        \Drupal::logger('surveycampaign')->notice("Here is the URL: " . $url);
         $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
