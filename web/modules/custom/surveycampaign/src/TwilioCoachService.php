@@ -52,6 +52,10 @@ class TwilioCoachService
         $highrange = intval($config->get('hour_range_high'));
         $range = $this->hoursRange( $lowrange, $highrange, 60 * 30, 'g:i a' );
         //print_r($range);
+        //$countrange = count($range);
+        //$rangeprint = print_r($range,TRUE);
+        
+        //\Drupal::logger('surveycampaign')->notice("Here is the range count: " . $countrange);
         $k = array_rand($range);
         if($fixdate && $fixdate != '') $fixdate = new DateTime("$fixdate - 30 minutes"); 
         $firstdate = $fixdate ? $fixdate->format('g:i a') : $range[$k];
@@ -137,6 +141,7 @@ class TwilioCoachService
             $finaldeftext = urlencode($libconfig->get('defaultlibrarytext.value')); 
             $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaldeftitle}&api_token={$api_key}&api_token_secret={$api_secret}";
             $texturl = "https://restapi.surveygizmo.com/v5/survey/5500151/surveyquestion/{$finalquestionid}?_method=POST&title={$finaldeftext}&&api_token={$api_key}&api_token_secret={$api_secret}";
+            //\Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $titleurl);
@@ -147,7 +152,7 @@ class TwilioCoachService
             curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($ch2);
         }
-        else { //$showresult = print_r($result,true);
+        else { 
             foreach ($result2 as $row) {
 
                 //turn an object into an array by json encoding then decoding it
@@ -176,7 +181,6 @@ class TwilioCoachService
                     curl_setopt($ch, CURLOPT_URL, $titleurl);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     $output = curl_exec($ch);
-                    \Drupal::logger('surveycampaign alert')->notice($texturl);
                     $ch2 = curl_init();
                     curl_setopt($ch2, CURLOPT_URL, $texturl);
                     curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
