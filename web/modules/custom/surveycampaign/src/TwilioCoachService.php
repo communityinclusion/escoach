@@ -69,6 +69,14 @@ class TwilioCoachService
         
         //Curl callfunction 
         $alreadysched = $this->formQuery('surveycampaign_campaigns','senddate',$surveyid,$gizmodate, $day,1);
+        if ($defaultenable != '1' && $sendtoday) {
+            $libid = $libconfig->get('defaultid');
+            $libraryid = $libid == $surveyid ? $libid : null;
+            if($libraryid) {
+              $changeclosing = $this->manageClosingScreen($libid,$gizmodate,$api_key,$api_secret);
+            }
+        }
+
 
         if ($defaultenable != '1' && $sendtoday && !$alreadysched ) {
             $ch = curl_init();
@@ -78,11 +86,7 @@ class TwilioCoachService
             //print_r($output);
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
-            $libid = $libconfig->get('defaultid');
-            $libraryid = $libid == $surveyid ? $libid : null;
-            if($libraryid) {
-              $changeclosing = $this->manageClosingScreen($libid,$gizmodate,$api_key,$api_secret);
-            }
+            
         
             foreach($output as $response)
             { if (!is_bool($response)) {
@@ -106,6 +110,7 @@ class TwilioCoachService
             } 
         }
         else return false;
+        
     }
    function manageClosingScreen($surveyid,$date,$api_key,$api_secret) {
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
