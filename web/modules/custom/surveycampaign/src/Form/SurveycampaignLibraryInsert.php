@@ -100,7 +100,8 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
 
       $name_field = $form_state->get('num_libs');
       foreach($nodes as $node) {
-       $libraryitems[$node->id()] = $node->label();
+        $library_id = $node->get('field_library_id')->value ? '#' . $node->get('field_library_id')->value . ': ' : '';
+       $libraryitems[$node->id()] = $library_id . ' ' . $node->label();
       } 
       $form['libsg_def_survey'] = array(
           '#type' => 'textfield',

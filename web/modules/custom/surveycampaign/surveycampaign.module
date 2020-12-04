@@ -36,7 +36,7 @@ function surveycampaign_theme() {
       'render element' => 'children',
     ],
   ];
-}
+} 
 function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if($form['#id'] == 'surveymessages-configuration-form' ) {
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
@@ -159,5 +159,6 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
   //drupal dblog
   \Drupal::logger('surveycampaign alert')->notice($message);
 }
+
 
 

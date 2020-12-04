@@ -3,3 +3,7 @@ type: module
 description: 'Survey interactions'
 core: 8.x
 package: 'Custom'
+package: Views
+core: '8.x'
+dependencies:
+  - drupal:views
