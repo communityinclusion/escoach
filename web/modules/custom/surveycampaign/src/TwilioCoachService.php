@@ -146,7 +146,7 @@ class TwilioCoachService
             $finaldeftext = urlencode($libconfig->get('defaultlibrarytext.value')); 
             $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaldeftitle}&api_token={$api_key}&api_token_secret={$api_secret}";
             $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaldeftext}&&api_token={$api_key}&api_token_secret={$api_secret}";
-          \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
+          \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $titleurl);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $titleurl);
