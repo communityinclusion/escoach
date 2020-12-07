@@ -58,6 +58,7 @@ function surveycampaign_cron()
   \Drupal::logger('surveycampaign')->notice($message);
   
   $config = \Drupal::config('surveycampaign.settings');
+  $libconfig = \Drupal::config('surveycampaign.library_settings');
   $surveyid =  $config->get('defaultid');
   $surveyid2 =  $config->get('secondaryid');
   $database = \Drupal::database();
@@ -88,7 +89,12 @@ function surveycampaign_cron()
   $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
   $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
   $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
+  $libid = $libconfig->get('defaultid');
+  if(date('H') >= 14 ) {
+    $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($libid,$todaydate);
+  }
   $accountSwitcher->switchBack();
+ 
   
   
 } 

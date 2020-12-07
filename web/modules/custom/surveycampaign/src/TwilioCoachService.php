@@ -72,9 +72,9 @@ class TwilioCoachService
         if ($defaultenable != '1' && $sendtoday) {
             $libid = $libconfig->get('defaultid');
             $libraryid = $libid == $surveyid ? $libid : null;
-            if($libraryid) {
+        /*    if($libraryid) {
               $changeclosing = $this->manageClosingScreen($libid,$gizmodate,$api_key,$api_secret);
-            }
+            } */
         }
 
 
@@ -112,7 +112,7 @@ class TwilioCoachService
         else return false;
         
     }
-   function manageClosingScreen($surveyid,$date,$api_key,$api_secret) {
+   function manageClosingScreen($surveyid,$date) {
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
         $finalpageid = $libconfig->get('sg_clos_page_id');
         $finalquestionid = $libconfig->get('sg_clos_ques_id');
@@ -146,7 +146,7 @@ class TwilioCoachService
             $finaldeftext = urlencode($libconfig->get('defaultlibrarytext.value')); 
             $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaldeftitle}&api_token={$api_key}&api_token_secret={$api_secret}";
             $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaldeftext}&&api_token={$api_key}&api_token_secret={$api_secret}";
-          \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $titleurl);
+         \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $titleurl);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $titleurl);
@@ -181,6 +181,8 @@ class TwilioCoachService
                     
                     $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$libnodetitle}&api_token={$api_key}&api_token_secret={$api_secret}";
                     $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$libnodetext}&api_token={$api_key}&api_token_secret={$api_secret}";
+                    \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
+
 
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL, $titleurl);
