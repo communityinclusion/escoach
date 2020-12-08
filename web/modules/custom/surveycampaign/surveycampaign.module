@@ -90,7 +90,7 @@ function surveycampaign_cron()
   $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
   $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
   $libid = $libconfig->get('defaultid');
-  if(date('H') >= 14 ) {
+  if(date('H') <= 8 && date('i') > 20 ) {
     $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($libid,$todaydate);
   }
   $accountSwitcher->switchBack();
