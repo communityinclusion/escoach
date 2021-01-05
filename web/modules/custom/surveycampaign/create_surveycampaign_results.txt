@@ -1,0 +1,18 @@
+CREATE TABLE `surveycampaign_results`(
+    `surveyid` INT(10) UNSIGNED NOT NULL,
+    `id` INT(10) UNSIGNED NOT NULL,
+    `contact_id` INT(10) UNSIGNED NOT NULL,
+    `date_submitted` DATE,
+     `country` VARCHAR(125) NOT NULL,
+     `region` VARCHAR(125) NOT NULL,
+     `city` VARCHAR(125) NOT NULL,
+     `postal` VARCHAR(125) NOT NULL,
+     `name` VARCHAR(125) NOT NULL,
+     `email` VARCHAR(125) NOT NULL,
+     `latitude` DECIMAL(8,6),
+     `longitude` DECIMAL(8,6),
+    PRIMARY KEY(`surveyid`,`id`) ,
+    INDEX `CONTACT_ID`(`contact_id` ASC) ,
+    INDEX `ID`(`id` ASC)
+)
+

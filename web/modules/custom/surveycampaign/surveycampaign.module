@@ -89,10 +89,18 @@ function surveycampaign_cron()
   $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
   $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
   $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
-  $libid = $libconfig->get('defaultid');
-  if(date('H') < 01) {
-    $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($libid,$todaydate);
-  }
+  $nowTime = date('H:i');
+  $nowTime = date('H:i', strtotime($nowTime));
+
+$manageClosingBegin = date('H:i', strtotime('01:00'));
+$manageClosingEnd = date('H:i', strtotime('01:25'));
+    
+if (($nowTime >= $manageClosingBegin) && ($nowTime <= $manageClosingEnd)){
+    
+    $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid,$todaydate);
+    $manageclosing2 = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid2,$todaydate);
+}
+  
   $accountSwitcher->switchBack();
  
   

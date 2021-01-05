@@ -106,6 +106,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $i = 0;
     $name_field = $form_state->get('num_hols');
     $config = $this->configFactory->get('surveycampaign.settings');
+    $libconfig = $this->configFactory->get('surveycampaign.library_settings');
     $holdates = $config->get('def_holiday_date');
     $holnames = $config->get('def_holiday_name');
     $counthols = is_array($holdates) ? count($holdates) : 0;
@@ -394,6 +395,53 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#default_value' => $config->get('third_text_body.value'),
      // '#format' => $config->get('third_text_body.format'),
     ];
+
+
+
+    $form['configuration']['default_settings']['sg_clos_ques_id'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Question ID of closing question from SG'),
+      '#description' => $this->t('Look at the closing page question in Surveygizmo in build mode.  There should be an id number.'),
+      '#default_value' => $libconfig->get('sg_clos_ques_id'),
+        '#size' => 5,
+      '#maxlength' => 128,
+      '#required' => TRUE,
+      
+    );
+    $form['configuration']['default_settings']['sg_clos_page_id'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Page ID of closing page from SG'),
+      '#description' => $this->t('Look at the closing page in Surveygizmo in build mode.  If you mouse over the closing page edit symbol it will give you an sid number  That is the page id.'),
+      '#default_value' => $libconfig->get('sg_clos_page_id'),
+        '#size' => 5,
+      '#maxlength' => 128,
+      '#required' => TRUE,
+      
+    );
+    $form['configuration']['default_settings']['finalpageheading'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Default final screen heading'),
+      '#description' => $this->t('Default final screen heading if no library item chosen'),
+      '#required' => FALSE,
+      '#default_value' => $libconfig->get('finalpageheading'),
+    );
+
+    $form['configuration']['default_settings']['defaultlibrarytext'] = array(
+      '#type' => 'text_format',
+      '#title' => $this->t('Default final screen text'),
+      '#description' => $this->t('Default final screen body text if no library item chosen.'),
+      '#required' => TRUE,
+      '#default_value' => $libconfig->get('defaultlibrarytext.value'),
+      
+      
+      '#format' => $config->get('full_html'),
+    
+    );
+
+
+
+
+
     $form['configuration']['second_settings'] = array(
       '#type' => 'details',
       '#title' => t('Secondary survey settings'),
@@ -508,6 +556,49 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#default_value' => $config->get('alt_third_text_body.value'),
      // '#format' => $config->get('alt_third_text_body.format'),
     ];
+
+
+
+    $form['configuration']['second_settings']['alt_sg_clos_ques_id'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Question ID of closing question from SG'),
+      '#description' => $this->t('Look at the closing page question in Surveygizmo in build mode.  There should be an id number.'),
+      '#default_value' => $libconfig->get('alt_sg_clos_ques_id'),
+        '#size' => 5,
+      '#maxlength' => 128,
+      '#required' => TRUE,
+      
+    );
+    $form['configuration']['second_settings']['alt_sg_clos_page_id'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Page ID of closing page from SG'),
+      '#description' => $this->t('Look at the closing page in Surveygizmo in build mode.  If you mouse over the closing page edit symbol it will give you an sid number  That is the page id.'),
+      '#default_value' => $libconfig->get('alt_sg_clos_page_id'),
+        '#size' => 5,
+      '#maxlength' => 128,
+      '#required' => TRUE,
+      
+    );
+    $form['configuration']['second_settings']['alt_finalpageheading'] = array(
+      '#type' => 'textfield',
+      '#title' => $this->t('Default final screen heading'),
+      '#description' => $this->t('Default final screen heading if no library item chosen'),
+      '#required' => FALSE,
+      '#default_value' => $libconfig->get('alt_finalpageheading'),
+    );
+
+    $form['configuration']['second_settings']['alt_defaultlibrarytext'] = array(
+      '#type' => 'text_format',
+      '#title' => $this->t('Default final screen text for alternate survey'),
+      '#description' => $this->t('Default final screen body text if no library item chosen.'),
+      '#required' => TRUE,
+      '#default_value' => $libconfig->get('alt_defaultlibrarytext.value'),
+      
+      
+      '#format' => $config->get('full_html'),
+    
+    );
+
    
 
     $form_state->setCached(FALSE);
@@ -641,6 +732,17 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('def_holiday_name',$namearray)
       ->set('def_holiday_date',$holarray)
       ->save();
+     $this->configFactory->getEditable('surveycampaign.library_settings')
+        ->set('defaultid', $form_state->getValue('libsg_def_survey'))
+        ->set('sg_clos_ques_id', $form_state->getValue('sg_clos_ques_id'))
+        ->set('sg_clos_page_id', $form_state->getValue('sg_clos_page_id'))
+        ->set('alt_sg_clos_ques_id', $form_state->getValue('alt_sg_clos_ques_id'))
+        ->set('alt_sg_clos_page_id', $form_state->getValue('alt_sg_clos_page_id'))
+        ->set('finalpageheading', $form_state->getValue('finalpageheading'))
+        ->set('defaultlibrarytext', $form_state->getValue('defaultlibrarytext'))
+        ->set('alt_finalpageheading', $form_state->getValue('alt_finalpageheading'))
+        ->set('alt_defaultlibrarytext', $form_state->getValue('alt_defaultlibrarytext'))
+        ->save();
       //Future: this is how you remove a single value in an array
       //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_holiday_date.1')->save();
       //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_holiday_name.1')->save();
@@ -739,7 +841,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['surveycampaign.settings'];
+    return ['surveycampaign.settings','surveycampaign.library_settings'];
   }
 
 }

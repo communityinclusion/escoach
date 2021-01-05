@@ -113,40 +113,51 @@ class TwilioCoachService
         
     }
    function manageClosingScreen($surveyid,$date) {
+        $config =  \Drupal::config('surveycampaign.settings');
+        $surveytype = $surveyid == $config->get('defaultid') ? 'default' : ($surveyid == $config->get('secondaryid') ? 'alt' : null) ;
+        $defaultdisable = $config->get('defaultenable');
+        $seconddisable = $config->get('secondenable');
+        //\Drupal::logger('surveycampaign alert')->notice('Surveyid: ' . $surveyid . ' Surveytype: ' . $surveytype);
+        if(!$surveytype) return false;
+        if(($surveytype == 'default' && $defaultdisable == '1') || ($surveytype == 'alt' && $seconddisable == '1')) return false;
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
-        $finalpageid = $libconfig->get('sg_clos_page_id');
-        $finalquestionid = $libconfig->get('sg_clos_ques_id');
+        $finalpageid = $surveytype == 'default' ?  $libconfig->get('sg_clos_page_id') :  $libconfig->get('alt_sg_clos_page_id');
+        $finalquestionid = $surveytype == 'default' ? $libconfig->get('sg_clos_ques_id') : $libconfig->get('alt_sg_clos_ques_id');
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
-        $libconfig =  \Drupal::config('surveycampaign.library_settings');
-        $database = \Drupal::database();
-        $query1 = $database->select('surveycampaign_library_insert', 'sli')
-            ->fields('sli', array(
-            'senddate'
-            )
+        $entity = \Drupal::entityTypeManager()->getStorage('node');
+        $query = $entity->getQuery();
             
-            )
-            ->condition('sli.surveyid', $surveyid)
-            ->condition('senddate', $database->escapeLike($date) . '%', 'LIKE')
-            ->range(0, 1);
+        $ids = $query->condition('status', 1)
+        ->condition('type', 'library_item')
+        ->execute();
 
-        $query2 = $database->select('surveycampaign_library_insert', 'sli')
-            ->fields('sli', array(
-            'senddate','nodeid','titlechoice','pagetitle',
-            )
+        // Load multiples or single item load($id)
+        $libcontent = $entity->loadMultiple($ids);
+        $todayinsert = false;
+        $finaltitle = null;
+        $finaltext = null;
+        foreach($libcontent as $libitem) {
+            if($libitem->get('field_publish_to_survey_date_s_')->value) { 
+                
+                foreach($libitem->get('field_publish_to_survey_date_s_')->getValue() as $showdate) {
+                    if($showdate['value'] == $date) {
+                        $finaltitle = $libitem->get('field_heading_for_closing_screen')->value == 'custom' ? urlencode($libitem->get('field_custom_heading_for_closing')->value) : ($libitem->get('field_heading_for_closing_screen')->value == 'title' ? urlencode($libitem->get('title')->value): '');
             
-            )
-            ->condition('sli.surveyid', $surveyid)
-            ->condition('senddate', $database->escapeLike($date) . '%', 'LIKE')
-            ->range(0, 1);
-        $result1 = $query1->execute()->fetchField();
-        $result2 = $query2->execute();
+                        //\Drupal::logger('librarybuild alert')->notice('Date field: ' . $showdate['value'] . ' Node id: ' . $libitem->id() . '  Today Date: ' . $date . ' Closing header: ' .$finaltitle);
+                        $finaltext = urlencode($libitem->get('field_short_version')->value);
+                        $todayinsert = true;
+                        break;
+                    }
+                }
+            }
+        }
 
-        if (!$result1 || $result1 < 1) { 
-            $finaldeftitle = urlencode($libconfig->get('finalpageheading'));
-            $finaldeftext = urlencode($libconfig->get('defaultlibrarytext.value')); 
-            $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaldeftitle}&api_token={$api_key}&api_token_secret={$api_secret}";
-            $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaldeftext}&&api_token={$api_key}&api_token_secret={$api_secret}";
-         \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $titleurl);
+        if (!$todayinsert) { 
+            $finaltitle = $surveytype == 'default' ? urlencode($libconfig->get('finalpageheading')) : urlencode($libconfig->get('alt_finalpageheading'));
+            $finaltext = $surveytype == 'default' ? urlencode($libconfig->get('defaultlibrarytext.value')) : urlencode($libconfig->get('alt_defaultlibrarytext.value')); 
+            $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaltitle}&api_token={$api_key}&api_token_secret={$api_secret}";
+            $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaltext}&&api_token={$api_key}&api_token_secret={$api_secret}";
+        // \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $titleurl);
@@ -158,44 +169,22 @@ class TwilioCoachService
             $output = curl_exec($ch2);
         }
         else { 
-            foreach ($result2 as $row) {
-
-                //turn an object into an array by json encoding then decoding it
-                $row = json_decode(json_encode($row), true);
-                // $message = print_r($row,true);
-                $nodeid =$row['nodeid'];
-                $senddate = $row['senddate'];
-                $titlechoice = $row['titlechoice'];
-                $pagetitle = $row['pagetitle'];
-                
-    
-                $storage = \Drupal::entityTypeManager()->getStorage('node')
-                ->loadByProperties([
-                    'nid' => $nodeid,
                     
-                ]);
-        
-                foreach($storage as $libnode) {
-                    $libnodetitle = $titlechoice == '2' ? urlencode($libnode->get('title')->value) : urlencode($pagetitle);
-                    $libnodetext = urlencode($libnode->get('field_short_version')->value);
-                    
-                    $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$libnodetitle}&api_token={$api_key}&api_token_secret={$api_secret}";
-                    $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$libnodetext}&api_token={$api_key}&api_token_secret={$api_secret}";
-                    \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
+            $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaltitle}&api_token={$api_key}&api_token_secret={$api_secret}";
+            $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaltext}&api_token={$api_key}&api_token_secret={$api_secret}";
+           // \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
 
 
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $titleurl);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    $output = curl_exec($ch);
-                    $ch2 = curl_init();
-                    curl_setopt($ch2, CURLOPT_URL, $texturl);
-                    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
-                    $output = curl_exec($ch2);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $titleurl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch);
+            $ch2 = curl_init();
+            curl_setopt($ch2, CURLOPT_URL, $texturl);
+            curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch2);
 
-                }
-            }
-                
+  
                
         }
 
