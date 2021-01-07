@@ -172,7 +172,7 @@ class TwilioCoachService
                     
             $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaltitle}&api_token={$api_key}&api_token_secret={$api_secret}";
             $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaltext}&api_token={$api_key}&api_token_secret={$api_secret}";
-           // \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
+            \Drupal::logger('surveycampaign alert')->notice('Library Title URL: ' . $titleurl);
 
 
             $ch = curl_init();
