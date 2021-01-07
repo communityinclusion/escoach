@@ -141,7 +141,7 @@ class TwilioCoachService
                 
                 foreach($libitem->get('field_publish_to_survey_date_s_')->getValue() as $showdate) {
                     if($showdate['value'] == $date) {
-                        $finaltitle = $libitem->get('field_heading_for_closing_screen')->value == 'custom' ? urlencode($libitem->get('field_custom_heading_for_closing')->value) : ($libitem->get('field_heading_for_closing_screen')->value == 'title' ? urlencode($libitem->get('title')->value): '');
+                        $finaltitle = $libitem->get('field_heading_for_closing_screen')->value == 'custom' ? urlencode($libitem->get('field_custom_heading_for_closing')->value) : ($libitem->get('field_heading_for_closing_screen')->value == 'title' ? urlencode($libitem->get('title')->value): ' ');
             
                         //\Drupal::logger('librarybuild alert')->notice('Date field: ' . $showdate['value'] . ' Node id: ' . $libitem->id() . '  Today Date: ' . $date . ' Closing header: ' .$finaltitle);
                         $finaltext = urlencode($libitem->get('field_short_version')->value);
