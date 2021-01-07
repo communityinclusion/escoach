@@ -157,7 +157,7 @@ class TwilioCoachService
             $finaltext = $surveytype == 'default' ? urlencode($libconfig->get('defaultlibrarytext.value')) : urlencode($libconfig->get('alt_defaultlibrarytext.value')); 
             $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaltitle}&api_token={$api_key}&api_token_secret={$api_secret}";
             $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaltext}&&api_token={$api_key}&api_token_secret={$api_secret}";
-        // \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
+            // \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $titleurl);
@@ -182,7 +182,7 @@ class TwilioCoachService
             $ch2 = curl_init();
             curl_setopt($ch2, CURLOPT_URL, $texturl);
             curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
-            $output = curl_exec($ch2);
+            $output2 = curl_exec($ch2);
 
   
                
