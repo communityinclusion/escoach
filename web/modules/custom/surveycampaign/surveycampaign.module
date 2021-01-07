@@ -92,8 +92,8 @@ function surveycampaign_cron()
   $nowTime = date('H:i');
   $nowTime = date('H:i', strtotime($nowTime));
 
-$manageClosingBegin = date('H:i', strtotime('01:00'));
-$manageClosingEnd = date('H:i', strtotime('01:25'));
+$manageClosingBegin = date('H:i', strtotime('11:00'));
+$manageClosingEnd = date('H:i', strtotime('12:25'));
     
 if (($nowTime >= $manageClosingBegin) && ($nowTime <= $manageClosingEnd)){
     
