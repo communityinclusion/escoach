@@ -14,3 +14,7 @@ services:
   surveycampaign.twilio_incoming:
       class: \Drupal\surveycampaign\TwilioIncomingService
       arguments: ["@entity_type.manager"]
+  surveycampaign.survey_responses:
+      class: \Drupal\surveycampaign\SurveyResponsesService
+      arguments: ["@entity_type.manager"]
+
