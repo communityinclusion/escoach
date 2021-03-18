@@ -458,8 +458,6 @@ class TwilioCoachService
             $output= json_decode($output);
             //$didnotreply = false;
             $inactive = false;
-            $logmessage = "Phone: " . $mobilephone . " Lastname: " . $lastname;
-            \Drupal::logger('surveycampaign')->notice($logmessage);
             $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$lastname);
             $didnotreply = !empty($recentcampaigns) ?intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$recentcampaigns)) : false;
             if($didnotreply >= $limit && !$inactive) { $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone);}
