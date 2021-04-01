@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ecb69e744250e5c846148faa2d1bec6",
+    "content-hash": "7490fe068d20ee6bb21ad68f9e8f0e36",
     "packages": [
         {
             "name": "alchemy/zippy",
@@ -6186,6 +6186,70 @@
             }
         },
         {
+            "name": "drupal/taxonomy_manager",
+            "version": "1.0.0-beta2",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/taxonomy_manager.git",
+                "reference": "8.x-1.0-beta2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/taxonomy_manager-8.x-1.0-beta2.zip",
+                "reference": "8.x-1.0-beta2",
+                "shasum": "41a6f7860d5327782111937586415ec669c91e67"
+            },
+            "require": {
+                "drupal/core": "^8"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.0-beta2",
+                    "datestamp": "1595677567",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Beta releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "JacobSanford",
+                    "homepage": "https://www.drupal.org/user/806538"
+                },
+                {
+                    "name": "VladimirAus",
+                    "homepage": "https://www.drupal.org/user/673120"
+                },
+                {
+                    "name": "dragan_bp",
+                    "homepage": "https://www.drupal.org/user/3578037"
+                },
+                {
+                    "name": "joaogarin",
+                    "homepage": "https://www.drupal.org/user/612814"
+                },
+                {
+                    "name": "kalinchernev",
+                    "homepage": "https://www.drupal.org/user/231185"
+                },
+                {
+                    "name": "mh86",
+                    "homepage": "https://www.drupal.org/user/59747"
+                }
+            ],
+            "description": "Tool for administrating taxonomy terms.",
+            "homepage": "https://www.drupal.org/project/taxonomy_manager",
+            "support": {
+                "source": "https://git.drupalcode.org/project/taxonomy_manager"
+            }
+        },
+        {
             "name": "drupal/timepicker-timepicker",
             "version": "1.11.0",
             "source": {
@@ -12024,6 +12088,7 @@
         "drupal/rules": 15,
         "drupal/smtp": 10,
         "drupal/tamper": 20,
+        "drupal/taxonomy_manager": 10,
         "drupal/token_custom": 15,
         "drupal/viewfield": 15,
         "drupal/views_data_export": 10
