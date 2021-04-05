@@ -3,6 +3,10 @@ namespace Drupal\surveycampaign;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use \DateTime;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\user\Entity\User;
+use Drupal\taxonomy\Entity\Term;
+
 class SurveyUsersService
 {
     protected $entityTypeManager;
@@ -37,13 +41,10 @@ class SurveyUsersService
                 $suspension = $profile->get('field_partic_suspension_dates')->value ? $profile->get('field_partic_suspension_dates')->value : '';
                 $suspension_end = $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : '';
                 $activstatus = $profile->get('field_set_surveys_to_inactive')->value ? $profile->get('field_set_surveys_to_inactive')->value : '';
-               /* $profile->set('field_partic_suspension_dates', array(
-                    'value' => "2020-08-08",
-                    'end_value' => "2020-09-09",
-                    ));
-                    $profile->save(); */
+                $provider = $profile->get('field_provider')->target_id ? $profile->get('field_provider')->entity->getName() : 'unknown provider';
+                
 
-                $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus);
+                $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider);
 
             }
        }
@@ -87,11 +88,10 @@ class SurveyUsersService
             ]);
         
         foreach($storage as $profile) {
-            $logmessage = "Check Inactive values: " . $userphone . " " . $lastname . " " . $profile->get('field_set_surveys_to_inactive')->value;
-            \Drupal::logger('surveycampaign')->notice($logmessage);
+           
             
             if($userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2') {
-               // echo "Confirm Inactive values: " . $profile->get('field_cell_phone')->value . " " . $profile->get('field_survey_last_name')->value . " " . $profile->get('field_set_surveys_to_inactive')->value;
+               
             return true;
             }
             else 

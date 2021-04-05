@@ -445,10 +445,11 @@ class TwilioCoachService
             $fullname = $firstname . " " . $lastname;
             $mobilephone = urlencode($contact[3]);
             $timezone = urlencode($contact[4]);
+            $provider = $contact[8] ? urlencode($contact[8]) : 'whuddebber';
             $sendtime = urlencode($seconddate);
 
             //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
-            $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$mobilephone}&customfield1={$timezone}&api_token={$api_key}&api_token_secret={$api_secret}";
+            $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$mobilephone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
             //echo $url;
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
