@@ -91,7 +91,7 @@ function surveycampaign_cron()
   $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
   $nowTime = date('H:i');
   $nowTime = date('H:i', strtotime($nowTime));
-
+// closing screen management and results table population run just a few times in the very early AM
 $manageClosingBegin = date('H:i', strtotime('01:10'));
 $manageClosingEnd = date('H:i', strtotime('01:25'));
     

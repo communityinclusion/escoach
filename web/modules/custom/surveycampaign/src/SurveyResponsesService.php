@@ -83,6 +83,7 @@ class SurveyResponsesService
                         $longitude = $response['longitude'] ? $response['longitude'] : 0;
                         $name = $surveyid == '5420562' ? ($response['survey_data'][544]['answer'] ? $response['survey_data'][544]['answer']  : 'no name') : ($response['survey_data'][19]['answer'] ? $response['survey_data'][19]['answer']  : 'no name');
                         $email = $surveyid == '5420562' ? ($response['survey_data'][520]['answer'] ? $response['survey_data'][520]['answer'] : '') : ($response['survey_data'][10]['answer'] ? $response['survey_data'][10]['answer'] : '');
+                        $survey_data = $surveyid == '5420562' ? "not used" : json_encode($response['survey_data']);
                         $answer482 = $surveyid == '5420562' ? ($response['survey_data'][482]['answer_id'] ? $response['survey_data'][482]['answer_id'] : NULL) : ($response['survey_data'][482]['answer_id'] ? $response['survey_data'][482]['answer_id'] : NULL);
                         $answer481 = $surveyid == '5420562' ? ($response['survey_data'][481]['answer_id'] ? $response['survey_data'][481]['answer_id'] : NULL) : ($response['survey_data'][481]['answer_id'] ? $response['survey_data'][481]['answer_id'] : NULL);
                         $answer525 = $surveyid == '5420562' ? ($response['survey_data'][525]['answer_id'] ? $response['survey_data'][525]['answer_id'] : NULL) : ($response['survey_data'][525]['answer_id'] ? $response['survey_data'][525]['answer_id'] : NULL);
@@ -103,7 +104,7 @@ class SurveyResponsesService
                         ->fields([
                             'surveyid', 'id','contact_id','date_submitted','country','region','city','postal','name','email','latitude','longitude','status','survey_data','provider','answer482','answer481','answer525','answer526','answer590','answer591','answer592','answer483','answer537','answer538','answer539','answer540','answer541','answer542'
                         ])
-                        ->values(array($surveyid,$id,$contactid,$date_submitted,$country,$state,$city,$postal,$name,$email,$latitude,$longitude,$status,"not used",$provider,$answer482,$answer481,$answer525,$answer526,$answer590,$answer591,$answer592,$answer483,$answer537,$answer538,$answer539,$answer540,$answer541,$answer542
+                        ->values(array($surveyid,$id,$contactid,$date_submitted,$country,$state,$city,$postal,$name,$email,$latitude,$longitude,$status,$survey_data,$provider,$answer482,$answer481,$answer525,$answer526,$answer590,$answer591,$answer592,$answer483,$answer537,$answer538,$answer539,$answer540,$answer541,$answer542
                         ));
 
                         $resultout = $query->execute();
