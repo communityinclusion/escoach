@@ -84,20 +84,22 @@ class SurveyResponsesService
                         $name = $surveyid == '5420562' ? ($response['survey_data'][544]['answer'] ? $response['survey_data'][544]['answer']  : 'no name') : ($response['survey_data'][19]['answer'] ? $response['survey_data'][19]['answer']  : 'no name');
                         $email = $surveyid == '5420562' ? ($response['survey_data'][520]['answer'] ? $response['survey_data'][520]['answer'] : '') : ($response['survey_data'][10]['answer'] ? $response['survey_data'][10]['answer'] : '');
                         $survey_data = $surveyid == '5420562' ? "not used" : json_encode($response['survey_data']);
-                        $answer482 = $surveyid == '5420562' ? ($response['survey_data'][482]['answer_id'] ? $response['survey_data'][482]['answer_id'] : NULL) : ($response['survey_data'][482]['answer_id'] ? $response['survey_data'][482]['answer_id'] : NULL);
-                        $answer481 = $surveyid == '5420562' ? ($response['survey_data'][481]['answer_id'] ? $response['survey_data'][481]['answer_id'] : NULL) : ($response['survey_data'][481]['answer_id'] ? $response['survey_data'][481]['answer_id'] : NULL);
-                        $answer525 = $surveyid == '5420562' ? ($response['survey_data'][525]['answer_id'] ? $response['survey_data'][525]['answer_id'] : NULL) : ($response['survey_data'][525]['answer_id'] ? $response['survey_data'][525]['answer_id'] : NULL);
-                        $answer526 = $surveyid == '5420562' ? ($response['survey_data'][526]['answer_id'] ? $response['survey_data'][526]['answer_id'] : NULL) : ($response['survey_data'][526]['answer_id'] ? $response['survey_data'][526]['answer_id'] : NULL);
-                        $answer590 = $surveyid == '5420562' ? ($response['survey_data'][590]['answer_id'] ? $response['survey_data'][590]['answer_id'] : NULL) : ($response['survey_data'][590]['answer_id'] ? $response['survey_data'][590]['answer_id'] : NULL);
-                        $answer591 = $surveyid == '5420562' ? ($response['survey_data'][591]['answer_id'] ? $response['survey_data'][591]['answer_id'] : NULL) : ($response['survey_data'][591]['answer_id'] ? $response['survey_data'][591]['answer_id'] : NULL);
-                        $answer592 = $surveyid == '5420562' ? ($response['survey_data'][592]['answer_id'] ? $response['survey_data'][592]['answer_id'] : NULL) : ($response['survey_data'][592]['answer_id'] ? $response['survey_data'][592]['answer_id'] : NULL);
-                        $answer483 = $surveyid == '5420562' ? ($response['survey_data'][483]['answer_id'] ? $response['survey_data'][483]['answer_id'] : NULL) : ($response['survey_data'][483]['answer_id'] ? $response['survey_data'][483]['answer_id'] : NULL);
-                        $answer537 = $surveyid == '5420562' ? ($response['survey_data'][537]['answer_id'] ? $response['survey_data'][537]['answer_id'] : NULL) : ($response['survey_data'][537]['answer_id'] ? $response['survey_data'][537]['answer_id'] : NULL);
-                        $answer538 = $surveyid == '5420562' ? ($response['survey_data'][538]['answer_id'] ? $response['survey_data'][538]['answer_id'] : NULL) : ($response['survey_data'][538]['answer_id'] ? $response['survey_data'][538]['answer_id'] : NULL);
-                        $answer539 = $surveyid == '5420562' ? ($response['survey_data'][539]['answer_id'] ? $response['survey_data'][539]['answer_id'] : NULL) : ($response['survey_data'][539]['answer_id'] ? $response['survey_data'][539]['answer_id'] : NULL);
-                        $answer540 = $surveyid == '5420562' ? ($response['survey_data'][540]['answer_id'] ? $response['survey_data'][540]['answer_id'] : NULL) : ($response['survey_data'][540]['answer_id'] ? $response['survey_data'][540]['answer_id'] : NULL);
-                        $answer541 = $surveyid == '5420562' ? ($response['survey_data'][541]['answer_id'] ? $response['survey_data'][541]['answer_id'] : NULL) : ($response['survey_data'][541]['answer_id'] ? $response['survey_data'][541]['answer_id'] : NULL);
-                        $answer542 = $surveyid == '5420562' ? ($response['survey_data'][542]['answer_id'] ? $response['survey_data'][542]['answer_id'] : NULL) : ($response['survey_data'][542]['answer_id'] ? $response['survey_data'][542]['answer_id'] : NULL);
+                        if($surveyid == '5420562') {
+                            $answer482 = $response['survey_data'][482]['answer_id'] ? $response['survey_data'][482]['answer_id'] : NULL;
+                            $answer481 = $response['survey_data'][481]['answer_id'] ? $response['survey_data'][481]['answer_id'] : NULL;
+                            $answer525 =  $response['survey_data'][525]['answer_id'] ? $response['survey_data'][525]['answer_id'] : NULL;
+                            $answer526 = $response['survey_data'][526]['answer_id'] ? $response['survey_data'][526]['answer_id'] : NULL;
+                            $answer590 = $response['survey_data'][590]['answer_id'] ? $response['survey_data'][590]['answer_id'] : NULL;
+                            $answer591 = $response['survey_data'][591]['answer_id'] ? $response['survey_data'][591]['answer_id'] : NULL;
+                            $answer592 = $response['survey_data'][592]['answer_id'] ? $response['survey_data'][592]['answer_id'] : NULL;
+                            $answer483 = $response['survey_data'][483]['answer_id'] ? $response['survey_data'][483]['answer_id'] : NULL;
+                            $answer537 = $response['survey_data'][537]['answer_id'] ? $response['survey_data'][537]['answer_id'] : NULL;
+                            $answer538 = $response['survey_data'][538]['answer_id'] ? $response['survey_data'][538]['answer_id'] : NULL;
+                            $answer539 = $response['survey_data'][539]['answer_id'] ? $response['survey_data'][539]['answer_id'] : NULL;
+                            $answer540 =$response['survey_data'][540]['answer_id'] ? $response['survey_data'][540]['answer_id'] : NULL;
+                            $answer541 = $response['survey_data'][541]['answer_id'] ? $response['survey_data'][541]['answer_id'] : NULL;
+                            $answer542 = $response['survey_data'][542]['answer_id'] ? $response['survey_data'][542]['answer_id'] : NULL;
+                        }
                         $status = $response['status'] ? $response['status'] : null; 
                         //$survey_data = json_encode($response['survey_data']);
                         $query = $database->insert('surveycampaign_results')
