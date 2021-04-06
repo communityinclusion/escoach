@@ -96,7 +96,7 @@ class SurveyUsersService
             $user = $profile->getOwnerId();
             $userobj = \Drupal\user\Entity\User::load($user);
             $userstatus = $userobj ->get('status')->value;
-            if(($userstatus == 0) || ($userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
+            if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) &&  $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
                
             return true;
             }
