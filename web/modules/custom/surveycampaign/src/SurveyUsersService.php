@@ -33,10 +33,11 @@ class SurveyUsersService
             $userobj = \Drupal\user\Entity\User::load($user);
             $useremail = $userobj->getEmail();
             $userstatus = $userobj ->get('status')->value;
+            $roles =$userobj->getRoles();
             
            
                 foreach($storage as $profile) {
-                    if ($userstatus != 0) {
+                    if ($userstatus != 0 && in_array('survey_participant',$roles)) {
                         $firstname = $profile->get('field_survey_first_name')->value ? $profile->get('field_survey_first_name')->value : '';
                         $lastname = $profile->get('field_survey_last_name')->value ? $profile->get('field_survey_last_name')->value : '';
                         $timezone = $profile->get('field_participant_time_zone')->value ? $profile->get('field_participant_time_zone')->value : '';
@@ -49,9 +50,7 @@ class SurveyUsersService
                         
                         $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider);
                     }
-
                 }
-            
        }
        //print_r($userarray);
         return $userarray;
@@ -96,6 +95,7 @@ class SurveyUsersService
             $user = $profile->getOwnerId();
             $userobj = \Drupal\user\Entity\User::load($user);
             $userstatus = $userobj ->get('status')->value;
+            
             if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) &&  $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
                
             return true;
