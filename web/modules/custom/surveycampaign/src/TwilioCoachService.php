@@ -445,7 +445,7 @@ class TwilioCoachService
             $fullname = $firstname . " " . $lastname;
             $mobilephone = urlencode($contact[3]);
             $timezone = urlencode($contact[4]);
-            $provider = $contact[8] ? urlencode($contact[8]) : 'whuddebber';
+            $provider = $contact[8] ? urlencode($contact[8]) : 'no provider';
             $sendtime = urlencode($seconddate);
 
             //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
