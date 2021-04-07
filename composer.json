@@ -63,6 +63,7 @@
         "drupal/pathauto": "^1.6",
         "drupal/profile": "^1.1",
         "drupal/recaptcha": "^2.4",
+        "drupal/registration_role": "^1.1",
         "drupal/rules": "^3.0@alpha",
         "drupal/scheduler": "^1.0",
         "drupal/search_api": "^1.14",

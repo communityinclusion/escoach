@@ -443,13 +443,14 @@ class TwilioCoachService
             $firstname = urlencode($contact[1]);
             $lastname = urlencode($contact[2]);
             $fullname = $firstname . " " . $lastname;
-            $mobilephone = urlencode($contact[3]);
+            $urlphone = urlencode( preg_replace('/\D+/', '',$contact[3]));
+            $mobilephone = $contact[3];
             $timezone = urlencode($contact[4]);
             $provider = $contact[8] ? urlencode($contact[8]) : 'no provider';
             $sendtime = urlencode($seconddate);
 
             //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
-            $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$mobilephone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
+            $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
             //echo $url;
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);

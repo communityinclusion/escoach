@@ -41,7 +41,7 @@ class SurveyUsersService
                         $firstname = $profile->get('field_survey_first_name')->value ? $profile->get('field_survey_first_name')->value : '';
                         $lastname = $profile->get('field_survey_last_name')->value ? $profile->get('field_survey_last_name')->value : '';
                         $timezone = $profile->get('field_participant_time_zone')->value ? $profile->get('field_participant_time_zone')->value : '';
-                        $cellphone = $profile->get('field_cell_phone')->value ? preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) : '';
+                        $cellphone = $profile->get('field_cell_phone')->value ? $profile->get('field_cell_phone')->value : '';
                         $suspension = $profile->get('field_partic_suspension_dates')->value ? $profile->get('field_partic_suspension_dates')->value : '';
                         $suspension_end = $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : '';
                         $activstatus = $profile->get('field_set_surveys_to_inactive')->value ? $profile->get('field_set_surveys_to_inactive')->value : '';
@@ -66,14 +66,14 @@ class SurveyUsersService
             ]);
         
         foreach($storage as $profile) {
-            if($userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $startdate && $enddate) {
+            if( preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $startdate && $enddate) {
 
                 $profile->set('field_partic_suspension_dates', array(
                     'value' => $startdate,
                     'end_value' => $enddate,
                     ));
                 $profile->save();
-            } elseif ($userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && !$startdate && !$enddate)
+            } elseif (preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && !$startdate && !$enddate)
             {
                 $suspension = $profile->get('field_partic_suspension_dates')->value ? $profile->get('field_partic_suspension_dates')->value : null ;
                 $suspension_end =  $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : null;
@@ -85,6 +85,10 @@ class SurveyUsersService
 
     }
     public function checkInactive($userphone,$lastname) {
+        $cleanphone = preg_replace('/\D+/', '',$userphone);
+        
+        \Drupal::logger('surveycampaign')->notice("Phone numbers : userphone variable: " . $userphone . " lastname: " . $lastname);
+
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
@@ -96,7 +100,9 @@ class SurveyUsersService
             $userobj = \Drupal\user\Entity\User::load($user);
             $userstatus = $userobj ->get('status')->value;
             
-            if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) &&  $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
+             \Drupal::logger('surveycampaign')->notice("Phone numbers : userphone variable: " . $testvariable . " profile phone: " . $testprofile . " lastname: " . $lastname);
+            
+            if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $cleanphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) &&  $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
                
             return true;
             }
@@ -116,7 +122,7 @@ class SurveyUsersService
         foreach($storage as $profile) {
 
             
-            if($userphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $profile->get('field_set_surveys_to_inactive')->value != "$setstatus") {
+            if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $profile->get('field_set_surveys_to_inactive')->value != "$setstatus") {
                 $user = $profile->getOwnerId();
                 $userobj = \Drupal\user\Entity\User::load($user);
                 $useremail = $userobj->getEmail();
