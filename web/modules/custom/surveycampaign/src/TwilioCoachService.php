@@ -141,10 +141,12 @@ class TwilioCoachService
                 
                 foreach($libitem->get('field_publish_to_survey_date_s_')->getValue() as $showdate) {
                     if($showdate['value'] == $date) {
-                        $finaltitle = $libitem->get('field_heading_for_closing_screen')->value == 'custom' ? urlencode($libitem->get('field_custom_heading_for_closing')->value) : ($libitem->get('field_heading_for_closing_screen')->value == 'title' ? urlencode($libitem->get('title')->value): ' ');
+                        $finaltitle = $libitem->get('field_heading_for_closing_screen')->value == 'custom' ? urlencode($libitem->get('field_custom_heading_for_closing')->value) : ($libitem->get('field_heading_for_closing_screen')->value == 'title' ? urlencode($libitem->get('title')->value): urlencode(' '));
             
                         //\Drupal::logger('librarybuild alert')->notice('Date field: ' . $showdate['value'] . ' Node id: ' . $libitem->id() . '  Today Date: ' . $date . ' Closing header: ' .$finaltitle);
                         $finaltext = urlencode($libitem->get('field_short_version')->value);
+                        $finalfooter = $libitem->get('field_use_standard_footer_')->value != "No" ? ($surveytype == 'default' ? urlencode($libconfig->get('defaultfootertext.value')) : urlencode($libconfig->get('alt_defaultfootertext.value'))) : '';
+                        $finaltext .= $finalfooter;
                         $todayinsert = true;
                         break;
                     }
@@ -155,6 +157,8 @@ class TwilioCoachService
         if (!$todayinsert) { 
             $finaltitle = $surveytype == 'default' ? urlencode($libconfig->get('finalpageheading')) : urlencode($libconfig->get('alt_finalpageheading'));
             $finaltext = $surveytype == 'default' ? urlencode($libconfig->get('defaultlibrarytext.value')) : urlencode($libconfig->get('alt_defaultlibrarytext.value')); 
+            $finalfooter = $surveytype == 'default' ? urlencode($libconfig->get('defaultfootertext.value')) : urlencode($libconfig->get('alt_defaultfootertext.value'));
+            $finaltext .= $finalfooter;
             $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaltitle}&api_token={$api_key}&api_token_secret={$api_secret}";
             $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaltext}&&api_token={$api_key}&api_token_secret={$api_secret}";
             // \Drupal::logger('surveycampaign alert')->notice('Library Text URL: ' . $texturl);
@@ -168,11 +172,12 @@ class TwilioCoachService
             curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($ch2);
         }
-        else { 
+        else 
+        { 
                     
             $titleurl = "https://restapi.surveygizmo.com/v4/survey/{$surveyid}/surveypage/{$finalpageid}?_method=POST&title={$finaltitle}&api_token={$api_key}&api_token_secret={$api_secret}";
             $texturl = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyquestion/{$finalquestionid}?_method=POST&title={$finaltext}&api_token={$api_key}&api_token_secret={$api_secret}";
-            \Drupal::logger('surveycampaign alert')->notice('Library Title URL: ' . $titleurl);
+            // \Drupal::logger('surveycampaign alert')->notice('Library Title URL: ' . $titleurl);
 
 
             $ch = curl_init();

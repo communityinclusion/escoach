@@ -437,6 +437,17 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#format' => $config->get('full_html'),
     
     );
+    $form['configuration']['default_settings']['defaultfootertext'] = array(
+      '#type' => 'text_format',
+      '#title' => $this->t('Default final screen footer'),
+      '#description' => $this->t('Default final screen footer if footer not disabled in library item'),
+      '#required' => TRUE,
+      '#default_value' => $libconfig->get('defaultfootertext.value'),
+      
+      
+      '#format' => $config->get('full_html'),
+    
+    );
 
 
 
@@ -599,6 +610,18 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     
     );
 
+    $form['configuration']['second_settings']['alt_defaultfootertext'] = array(
+      '#type' => 'text_format',
+      '#title' => $this->t('Default final screen footer for alt survey'),
+      '#description' => $this->t('Default final screen footer for alt survey if footer not disabled in library item'),
+      '#required' => TRUE,
+      '#default_value' => $libconfig->get('alt_defaultfootertext.value'),
+      
+      
+      '#format' => $config->get('full_html'),
+    
+    );
+
    
 
     $form_state->setCached(FALSE);
@@ -740,8 +763,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         ->set('alt_sg_clos_page_id', $form_state->getValue('alt_sg_clos_page_id'))
         ->set('finalpageheading', $form_state->getValue('finalpageheading'))
         ->set('defaultlibrarytext', $form_state->getValue('defaultlibrarytext'))
+        ->set('defaultfootertext', $form_state->getValue('defaultfootertext'))
         ->set('alt_finalpageheading', $form_state->getValue('alt_finalpageheading'))
         ->set('alt_defaultlibrarytext', $form_state->getValue('alt_defaultlibrarytext'))
+        ->set('alt_defaultfootertext', $form_state->getValue('alt_defaultfootertext'))
         ->save();
       //Future: this is how you remove a single value in an array
       //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_holiday_date.1')->save();
