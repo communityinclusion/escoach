@@ -14,14 +14,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "rules_entity_fetch_by_field",
  *   label = @Translation("Fetch entities by field"),
  *   category = @Translation("Entity"),
- *   context = {
+ *   context_definitions = {
  *     "type" = @ContextDefinition("string",
  *       label = @Translation("Entity type"),
  *       description = @Translation("Specifies the type of the entity that should be fetched.")
  *     ),
  *     "field_name" = @ContextDefinition("string",
  *       label = @Translation("Field name"),
- *       description = @Translation("Name of the field by which the entity is to be selected..")
+ *       description = @Translation("Name of the field by which the entity is to be selected.")
  *     ),
  *     "field_value" = @ContextDefinition("any",
  *       label = @Translation("Field value"),
@@ -35,10 +35,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *     ),
  *   },
  *   provides = {
- *      "entity_fetched" = @ContextDefinition("entity",
- *        label = @Translation("Fetched entity"),
- *        multiple = TRUE
- *      ),
+ *     "entity_fetched" = @ContextDefinition("entity",
+ *       label = @Translation("Fetched entity"),
+ *       multiple = TRUE
+ *     ),
  *   }
  * )
  *

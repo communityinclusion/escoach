@@ -71,7 +71,7 @@ class SurveyResponsesService
                     if($checkexisting < 1){
                        // \Drupal::logger('surveycampaign alert')->notice('Survey id: ' . $surveyid);
                 
-                        $id =  $response['id'] ? $response['id'] : null;
+                        $id = $response['id'] ? $response['id'] : null;
                         $contactid = $response['contact_id'] ? $response['contact_id'] :1; 
                         $date_submitted = $response['date_submitted'] ? substr($response['date_submitted'],0,10) : null; 
                         $country = $response['country'] ? $response['country'] : '';

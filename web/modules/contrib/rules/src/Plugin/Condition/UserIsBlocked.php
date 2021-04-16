@@ -12,9 +12,10 @@ use Drupal\user\UserInterface;
  *   id = "rules_user_is_blocked",
  *   label = @Translation("User is blocked"),
  *   category = @Translation("User"),
- *   context = {
+ *   context_definitions = {
  *     "user" = @ContextDefinition("entity:user",
- *       label = @Translation("User")
+ *       label = @Translation("User"),
+ *       description = @Translation("Specifies the user account to check.")
  *     ),
  *   }
  * )
