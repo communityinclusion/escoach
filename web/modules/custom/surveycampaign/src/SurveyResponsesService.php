@@ -61,9 +61,11 @@ class SurveyResponsesService
         
                 foreach($output['data'] as $response) { 
                     $contactid = $response['contact_id'];
+                    $id = $response['id'];
                     $checkexisting = $database->select('surveycampaign_results', 'sr')
                     ->condition('sr.surveyid', $surveyid)
-                    ->condition('contact_id', $contactid)
+                    //->condition('contact_id', $contactid)
+                    ->condition('id',$id)
                     ->countQuery()
                     ->execute()
                     ->fetchField();
