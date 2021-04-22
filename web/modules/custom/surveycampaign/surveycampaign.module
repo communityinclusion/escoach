@@ -10,6 +10,7 @@ use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\UserSession;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_help().
@@ -41,10 +42,17 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
   if($form['#id'] == 'surveymessages-configuration-form' ) {
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
   }
+  
 }
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['account']['mail']['#required'] = TRUE;
+  //$form['survey_participants_profiles'][0]['entity']['field_cell_phone'][0]['#validate'] = array('surveycampaign_profile_cellphone_validate' => array());
+  //$form['account']['mail']['#validate'] = array('surveycampaign_profile_cellphone_validate' => array());
+  $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
+  
+  
 }
+
 function surveycampaign_cron()
 {
   
@@ -55,7 +63,7 @@ function surveycampaign_cron()
   $accountSwitcher->switchTo(new UserSession(['uid' => 1]));
   
   $message = 'Surveycampaign cron run: ' . date('Y-m-d H:i:s');
-  \Drupal::logger('surveycampaign')->notice($message);
+  //\Drupal::logger('surveycampaign')->notice($message);
   
   $config = \Drupal::config('surveycampaign.settings');
   $libconfig = \Drupal::config('surveycampaign.library_settings');
@@ -175,6 +183,39 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
   //drupal dblog
   \Drupal::logger('surveycampaign alert')->notice($message);
 }
+  
+function surveycampaign_profile_cellphone_validate (&$form, $form_state) {
+  $formphone = $form_state->getValues()['survey_participants_profiles'][0]['entity']['field_cell_phone'][0]['value'];
+  $checknewphone = preg_replace('/\D+/', '',$formphone);
+  $storage = \Drupal::entityTypeManager()->getStorage('profile')
+            ->loadByProperties([
+                'type' => 'survey_participants',
+            ]);
+  if (!preg_match('/^\d{10}$/', $checknewphone)) {
+    $form_state->setErrorByName("survey_participants_profiles][0][entity][field_cell_phone][0][value", "Cellphone number $formphone must be a 10-digit North American phone number in the format (###) ###-####. No leading \"1\"");
+  }
+          
+            
+           
+  foreach($storage as $profile) {
+
+    
+    $cellphone = $profile->get('field_cell_phone')->value;
+    $cleanphone = preg_replace('/\D+/', '',$cellphone);
+    if ($cleanphone == $checknewphone) { 
+      
+      $form_state->setErrorByName("survey_participants_profiles][0][entity][field_cell_phone][0][value",
+    "Cellphone number $formphone is already in use by another survey participant.");
+    }
+    
+  
+  
+    
+  }
+ 
+  
+}
+
 
 
 

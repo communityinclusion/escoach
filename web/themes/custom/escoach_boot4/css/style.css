@@ -20,4 +20,5 @@
      .site-footer__top .region.region-footer-first {width: 95%;}
      .mainLogo {width: 50%;max-width: 550px;}
      .sizeSlogan { font-size: 115%;color: #0077af;font-weight: bold;}
+     form input.is-invalid {color: red;}
       
