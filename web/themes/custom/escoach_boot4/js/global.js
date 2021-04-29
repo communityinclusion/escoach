@@ -9,21 +9,29 @@
 
   Drupal.behaviors.escoach_boot4 = {
     attach: function (context, settings) {
-      var dateFieldofChoice = form.find('#edit-field-date-oferta-und-0-value-datepicker-popup-0');
-  
-      if (dateFieldofChoice.length) {
-        dateFieldofChoice.datepicker({ minDate: 0, maxDate: "+1D" });
-      } 
+      $( "select#edit-survey-participants-profiles-0-entity-field-provider",context ).on('change',function() {
+        var provChoice = $(this).val();
+        
+        if (provChoice == "6") { 
+          if(!$('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').hasClass('showOther')) $('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').addClass('showOther');
+        } else {
+          if($('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').hasClass('showOther')) $('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').removeClass('showOther');
+        }
 
-    }
-  };
-  Drupal.behaviors.datepickerMaxDate = {
-    attach: function (context, settings) {
-      var dateFieldofChoice = form.find('#edit-default-survey-todaytime-date');
-  
-      if (dateFieldofChoice.length) {
-        dateFieldofChoice.datepicker({ minDate: 0, maxDate: "+7D" });
-      } 
+
+      });
+      $( "select#edit-survey-participants-profiles-0-entity-field-provider",context ).once('providerchoice').each(function() {
+        var provChoice = $(this).val();
+        
+        if (provChoice == "6") { 
+          if(!$('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').hasClass('showOther')) $('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').addClass('showOther');
+        } else {
+          if($('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').hasClass('showOther')) $('#edit-survey-participants-profiles-0-entity-field-other-provider-wrapper').removeClass('showOther');
+        }
+
+
+      });
+
     }
   };
 
