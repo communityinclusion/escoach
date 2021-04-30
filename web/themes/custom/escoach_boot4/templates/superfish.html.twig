@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Default theme implementation of the Superfish menus.
+ *
+ * Available variables:
+ * - id: Unique menu identifier.
+ * - menu_classes: Menu classes.
+ * - menu_items: Menu tree.
+ *
+ * @see template_preprocess_superfish()
+ *
+ * @ingroup themeable
+ */
+#}
+
+<ul id="{{ id }}" class="{{ menu_classes }}">
+  {{ menu_items }}
+ {% if id=='superfish-user-menu' %}
+  <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/survey_participants">Edit your survey preferences</a></li>
+   <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/edit">Edit password and email address</a></li>
+  {% endif %}
+</ul>

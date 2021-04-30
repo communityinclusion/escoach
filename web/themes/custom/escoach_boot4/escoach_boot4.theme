@@ -43,3 +43,7 @@ function escoach_boot4_preprocess_node(array &$variables) {
   }
   $variables['field_academics_other_specify'] = $example_class;
 }
+function escoach_boot4_preprocess(&$vars, $hook)
+{
+  $vars['uid'] = \Drupal::currentUser()->id();
+}
