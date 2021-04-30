@@ -23,4 +23,6 @@
      form input.is-invalid {color: red;}
      #edit-survey-participants-profiles-0-entity-field-other-provider-wrapper {display: none;}
      #edit-survey-participants-profiles-0-entity-field-other-provider-wrapper.showOther {display:block;}
+     #edit-field-other-provider-wrapper {display: none;}
+     #edit-field-other-provider-wrapper.showOther { display: block; }
       
