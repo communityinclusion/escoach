@@ -18,6 +18,7 @@
   {{ menu_items }}
  {% if id=='superfish-user-menu' %}
     {% if logged_in %}
+      <li class="sf-depth-1 sf-no-children"><a href="/user-library">Employent Specialist Library</a></li>
       <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/survey_participants">Edit your survey preferences</a></li>
       <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/edit">Edit password and email address</a></li>
       <li class="sf-depth-1 sf-no-children"><a href="/user/logout">Log out</a></li>
