@@ -1,0 +1,28 @@
+id: escoach_terms_who
+label: Import escoash dashboard terms - who.
+source:
+  plugin: csv
+  path: 'What_Who_Where.csv'
+  header_row_count: 1
+  keys:
+    - response_id
+  column_names:
+    0:
+      question_id: question_id
+    1:
+      response_id: response_id
+    2:
+      response_text: response_text
+    3:
+      parent_response_id: parent_response_id
+    4:
+      vocabulary: vocabulary
+    5:
+      notes: notes
+process:
+  name: response_text
+  vid:
+    plugin: default_value
+    default_value: who
+destination:
+  plugin: entity:taxonomy_term
