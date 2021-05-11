@@ -19,6 +19,8 @@ module:
   computed_field: 0
   conditional_fields: 0
   config: 0
+  config_filter: 0
+  config_split: 0
   contextual: 0
   csv_serialization: 0
   ctools: 0
@@ -34,6 +36,7 @@ module:
   entity_browser: 0
   entity_reference_revisions: 0
   entity_usage: 0
+  es_migrate: 0
   fapi_validation: 0
   fapiv_example: 0
   field: 0
@@ -69,6 +72,10 @@ module:
   menu_block: 0
   menu_breadcrumb: 0
   menu_ui: 0
+  migrate: 0
+  migrate_plus: 0
+  migrate_source_csv: 0
+  migrate_tools: 0
   node: 0
   nodeaccess: 0
   options: 0
