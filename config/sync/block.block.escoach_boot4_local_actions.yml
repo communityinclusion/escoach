@@ -1,0 +1,20 @@
+uuid: a98da17b-6fbf-47b6-bd6f-a132a5d5516b
+langcode: en
+status: true
+dependencies:
+  theme:
+    - escoach_boot4
+_core:
+  default_config_hash: PffmQ-ABSz5tFjWmVsR7NesunDnEivvopnJnBjl8KNE
+id: escoach_boot4_local_actions
+theme: escoach_boot4
+region: content
+weight: -10
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  provider: core
+  label_display: '0'
+visibility: {  }

@@ -1,0 +1,33 @@
+uuid: f9f76b7e-7ce3-4807-9e5d-4465c23c228d
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - profile
+id: profile.field_participant_time_zone
+field_name: field_participant_time_zone
+entity_type: profile
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: ET
+      label: ET
+    -
+      value: CT
+      label: CT
+    -
+      value: MT
+      label: MT
+    -
+      value: PT
+      label: PT
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

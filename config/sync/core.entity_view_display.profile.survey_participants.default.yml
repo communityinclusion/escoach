@@ -1,0 +1,102 @@
+uuid: f4c98589-cabb-43fc-9c9d-0575fa877aad
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.survey_participants.field_cell_phone
+    - field.field.profile.survey_participants.field_job_type
+    - field.field.profile.survey_participants.field_other_provider
+    - field.field.profile.survey_participants.field_partic_suspension_dates
+    - field.field.profile.survey_participants.field_participant_time_zone
+    - field.field.profile.survey_participants.field_provider
+    - field.field.profile.survey_participants.field_set_surveys_to_inactive
+    - field.field.profile.survey_participants.field_survey_first_name
+    - field.field.profile.survey_participants.field_survey_last_name
+    - profile.type.survey_participants
+  module:
+    - datetime_range
+    - field_layout
+    - layout_discovery
+    - options
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: profile.survey_participants.default
+targetEntityType: profile
+bundle: survey_participants
+mode: default
+content:
+  field_cell_phone:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_job_type:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_other_provider:
+    weight: 8
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_partic_suspension_dates:
+    weight: 6
+    label: above
+    settings:
+      separator: '-'
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: daterange_default
+    region: content
+  field_participant_time_zone:
+    weight: 3
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_provider:
+    weight: 7
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_set_surveys_to_inactive:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_survey_first_name:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_survey_last_name:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

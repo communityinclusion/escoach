@@ -756,4 +756,10 @@ $settings['entity_update_backup'] = TRUE;
    include $app_root . '/' . $site_path . '/settings.local.php';
  }
 
-$settings['config_sync_directory'] = 'sites/default/files/config_Sz4-eTTIFcnZPcnPQKy5E0u5vCjQjpdhVsnrtos_4nmKY0U1HKkbg1zLAFdMk8nKR3kRcA_DEQ/sync';
+$settings['config_sync_directory'] = '../config/sync';
+
+// Automatically generated include for settings managed by ddev.
+$ddev_settings = dirname(__FILE__) . '/settings.ddev.php';
+if (is_readable($ddev_settings) && getenv('IS_DDEV_PROJECT') == 'true') {
+  require $ddev_settings;
+}

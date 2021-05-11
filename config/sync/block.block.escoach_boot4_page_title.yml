@@ -1,0 +1,27 @@
+uuid: 9f70d577-67e4-4c82-89fb-959b669baea3
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - escoach_boot4
+_core:
+  default_config_hash: 8yptDf6WrXxeyevUz4nP5vfr7BtxQqCBMninhV2IJ1g
+id: escoach_boot4_page_title
+theme: escoach_boot4
+region: content
+weight: -30
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  provider: core
+  label_display: '0'
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: true
+    context_mapping: {  }

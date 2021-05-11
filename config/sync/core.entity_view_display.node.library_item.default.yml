@@ -1,0 +1,79 @@
+uuid: 18d7e6fd-e151-429c-93dc-e20985956867
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.library_item.body
+    - field.field.node.library_item.field_custom_heading_for_closing
+    - field.field.node.library_item.field_file_resource
+    - field.field.node.library_item.field_heading_for_closing_screen
+    - field.field.node.library_item.field_library_id
+    - field.field.node.library_item.field_publish_to_survey_date_s_
+    - field.field.node.library_item.field_short_version
+    - field.field.node.library_item.field_subjects
+    - field.field.node.library_item.field_use_standard_footer_
+    - field.field.node.library_item.field_web_link
+    - node.type.library_item
+  module:
+    - field_layout
+    - file
+    - layout_discovery
+    - link
+    - text
+    - user
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: node.library_item.default
+targetEntityType: node
+bundle: library_item
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_file_resource:
+    weight: 3
+    label: above
+    settings:
+      use_description_as_link_text: true
+    third_party_settings: {  }
+    type: file_default
+    region: content
+  field_short_version:
+    weight: 0
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_web_link:
+    weight: 4
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_custom_heading_for_closing: true
+  field_heading_for_closing_screen: true
+  field_library_id: true
+  field_publish_to_survey_date_s_: true
+  field_subjects: true
+  field_use_standard_footer_: true

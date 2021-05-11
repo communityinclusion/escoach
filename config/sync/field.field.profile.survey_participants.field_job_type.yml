@@ -1,0 +1,21 @@
+uuid: 070aab43-4aff-4d9b-9a9a-32de1452b60a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_job_type
+    - profile.type.survey_participants
+  module:
+    - options
+id: profile.survey_participants.field_job_type
+field_name: field_job_type
+entity_type: profile
+bundle: survey_participants
+label: 'Job type'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string
