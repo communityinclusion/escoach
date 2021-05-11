@@ -1,10 +1,10 @@
-id: escoach_dashboardterms
+id: escoach_dashboard_terms
 label: Import escoash dashboard terms - what/who/where.
 source:
   plugin: csv
-  path: 'What_Who_Where.csv'
+  path: modules/custom/es_migrate/data/What_Who_Where.csv
   header_row_count: 1
-  keys:
+  ids:
     - response_id
   column_names:
     0:
@@ -31,12 +31,12 @@ process:
   parent:
     -
       plugin: migration_lookup
-      migration: escoach_dashboardterms
+      migration: escoach_dashboard_terms
       source: parent_response_id
     -
       plugin: default_value
-      default_value:
+      default_value: 0
   field_dashboard_question_id: question_id
-  field_dashbaord_response_id: response_id
+  field_dashboard_response_id: response_id
 destination:
   plugin: entity:taxonomy_term

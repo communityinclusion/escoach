@@ -1,0 +1,7 @@
+auto_import:
+  -
+    filename: modules/custom/es_migrate/config/install/migrate_plus.migration.escoach_dashboard_terms.yml
+    hash: ''
+auto_export: {  }
+_core:
+  default_config_hash: W4OGMJ9g0nIliU6O4quijGqNLQuWFixbxzi1Fytx6lk
