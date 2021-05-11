@@ -1,0 +1,27 @@
+uuid: 4c938b89-ef43-44dc-95c9-3ea7b7967357
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_file_resource
+    - node.type.library_item
+  module:
+    - file
+id: node.library_item.field_file_resource
+field_name: field_file_resource
+entity_type: node
+bundle: library_item
+label: 'File resource'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'txt doc docx pdf xls xlsx ppt pptx'
+  max_filesize: ''
+  description_field: true
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file
