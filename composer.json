@@ -56,6 +56,9 @@
         "drupal/memcache": "^2.0",
         "drupal/menu_block": "^1.5",
         "drupal/menu_breadcrumb": "^1.8",
+        "drupal/migrate_plus": "^5.1",
+        "drupal/migrate_source_csv": "^3.4",
+        "drupal/migrate_tools": "^5.0",
         "drupal/nodeaccess": "^1.0@beta",
         "drupal/page_manager": "^4.0@beta",
         "drupal/panels": "^4.3",
@@ -88,6 +91,8 @@
         "twilio/sdk": "^6.4"
     },
     "require-dev": {
+        "drupal/config_devel": "^1.8",
+        "drupal/config_split": "^1.7"
     },
     "conflict": {
         "drupal/drupal": "*"

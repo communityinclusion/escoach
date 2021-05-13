@@ -1,0 +1,29 @@
+uuid: d1e05cca-9162-4d42-9a0a-9e5f131eb019
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.es_coach_user_library
+  module:
+    - system
+    - views
+  theme:
+    - escoach_boot4
+id: exposedformes_coach_user_librarypage_1
+theme: escoach_boot4
+region: sidebar_first
+weight: -4
+provider: null
+plugin: 'views_exposed_filter_block:es_coach_user_library-page_1'
+settings:
+  id: 'views_exposed_filter_block:es_coach_user_library-page_1'
+  label: ''
+  provider: views
+  label_display: visible
+  views_label: 'Select by subject'
+visibility:
+  request_path:
+    id: request_path
+    pages: /user-library
+    negate: false
+    context_mapping: {  }

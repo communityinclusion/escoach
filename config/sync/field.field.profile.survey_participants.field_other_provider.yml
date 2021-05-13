@@ -1,0 +1,24 @@
+uuid: d67379dd-8554-45c4-a0d5-fe4ea9e837d9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_other_provider
+    - profile.type.survey_participants
+  module:
+    - field_display_label
+third_party_settings:
+  field_display_label:
+    display_label: 'Other provider name'
+id: profile.survey_participants.field_other_provider
+field_name: field_other_provider
+entity_type: profile
+bundle: survey_participants
+label: 'Other provider name'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

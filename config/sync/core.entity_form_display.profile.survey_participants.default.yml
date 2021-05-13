@@ -1,0 +1,93 @@
+uuid: f560a19b-d81d-4494-9808-faca979111a7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.survey_participants.field_cell_phone
+    - field.field.profile.survey_participants.field_job_type
+    - field.field.profile.survey_participants.field_other_provider
+    - field.field.profile.survey_participants.field_partic_suspension_dates
+    - field.field.profile.survey_participants.field_participant_time_zone
+    - field.field.profile.survey_participants.field_provider
+    - field.field.profile.survey_participants.field_set_surveys_to_inactive
+    - field.field.profile.survey_participants.field_survey_first_name
+    - field.field.profile.survey_participants.field_survey_last_name
+    - profile.type.survey_participants
+  module:
+    - datetime_range
+    - field_layout
+    - layout_discovery
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: profile.survey_participants.default
+targetEntityType: profile
+bundle: survey_participants
+mode: default
+content:
+  field_cell_phone:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: 'Area code and number (xxx) xxx-xxxx  No leading "1"'
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_job_type:
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_other_provider:
+    weight: 26
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_partic_suspension_dates:
+    weight: 4
+    settings: {  }
+    third_party_settings: {  }
+    type: daterange_default
+    region: content
+  field_participant_time_zone:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_provider:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_set_surveys_to_inactive:
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_survey_first_name:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_survey_last_name:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  is_default: true

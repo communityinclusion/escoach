@@ -1,0 +1,20 @@
+uuid: f791e3fc-426c-4e73-9c85-cdade9929d8d
+langcode: en
+status: true
+dependencies:
+  module:
+    - datetime
+    - node
+id: node.field_publish_to_survey_date_s_
+field_name: field_publish_to_survey_date_s_
+entity_type: node
+type: datetime
+settings:
+  datetime_type: date
+module: datetime
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
