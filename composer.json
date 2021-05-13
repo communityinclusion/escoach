@@ -35,7 +35,7 @@
         "drupal/core-project-message": "^8.8",
         "drupal/core-recommended": "^8.9.14",
         "drupal/csv_importer": "1.x-dev",
-        "drupal/ctools": "^3.2",
+        "drupal/ctools": "^3.6",
         "drupal/datetime_extras": "^1.0",
         "drupal/devel": "^2.0",
         "drupal/email_registration": "^1.1",
