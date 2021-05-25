@@ -100,8 +100,6 @@ class SurveyUsersService
             $userobj = \Drupal\user\Entity\User::load($user);
             $userstatus = $userobj ->get('status')->value;
             
-             \Drupal::logger('surveycampaign')->notice("Phone numbers : userphone variable: " . $testvariable . " profile phone: " . $testprofile . " lastname: " . $lastname);
-            
             if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $cleanphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) &&  $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
                
             return true;

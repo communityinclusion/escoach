@@ -175,13 +175,11 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
   if ($result['result'] !== true) {
   $message = t('There was a problem sending alert email notification to @email for creating ticket @id.', array('@email' => $to, '@id' => $entity->id()));
   //drupal dblog
-  \Drupal::logger('surveycampaign alert')->error($message);
   return;
   }
   
   $message = t('An email notification has been sent to @email for creating node @id.', array('@email' => $to, '@id' => $entity->id()));
   //drupal dblog
-  \Drupal::logger('surveycampaign alert')->notice($message);
 }
   
 function surveycampaign_profile_cellphone_validate (&$form, $form_state) {

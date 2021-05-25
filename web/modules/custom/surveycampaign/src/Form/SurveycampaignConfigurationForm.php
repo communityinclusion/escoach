@@ -301,22 +301,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       
 
 
-      $form['configuration']['default_settings']['def_inactive_trigger'] = [
-        '#type' => 'select',
-        '#title' => $this->t('Select the number of days a user must be inactive to deactivate the default survey'),
-        '#options' => [
-          '2' => $this->t('2'),
-          '3' => $this->t('3'),
-          '4' => $this->t('4'),
-          '5' => $this->t('5'),
-          '6' => $this->t('6'),
-          '7' => $this->t('7'),
-          '8' => $this->t('8'),
-          '9' => $this->t('9'),
-          '10' => $this->t('10'),
-        ],
-        '#default_value' => $config->get('def_inactive_trigger'),
-      ];
+
     $form['configuration']['default_settings']['default_survey_todaytime'] = [
       '#type' => 'datetime',
       '#title' => $this->t('Default survey: set text send time of today\'s survey: format 00:00 (24 hour time). This is at the end of the half hour survey period.'),
@@ -394,6 +379,74 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#format' => 'plain_text',
       '#default_value' => $config->get('third_text_body.value'),
      // '#format' => $config->get('third_text_body.format'),
+    ];
+    
+
+
+    $form['configuration']['default_settings']['def_warning_trigger'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select the number of days a user must be inactive to get a warning they will be deactivated'),
+      '#options' => [
+        '2' => $this->t('2'),
+        '3' => $this->t('3'),
+        '4' => $this->t('4'),
+        '5' => $this->t('5'),
+        '6' => $this->t('6'),
+        '7' => $this->t('7'),
+        '8' => $this->t('8'),
+        '9' => $this->t('9'),
+        '10' => $this->t('10'),
+        '10' => $this->t('11'),
+        '10' => $this->t('12'),
+        '10' => $this->t('13'),
+        '10' => $this->t('14'),
+      ],
+      '#default_value' => $config->get('def_warning_trigger'),
+    ];
+    $form['configuration']['default_settings']['def_inactive_trigger'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select the number of days a user must be inactive to deactivate the default survey'),
+      '#options' => [
+        '2' => $this->t('2'),
+        '3' => $this->t('3'),
+        '4' => $this->t('4'),
+        '5' => $this->t('5'),
+        '6' => $this->t('6'),
+        '7' => $this->t('7'),
+        '8' => $this->t('8'),
+        '9' => $this->t('9'),
+        '10' => $this->t('10'),
+      ],
+      '#default_value' => $config->get('def_inactive_trigger'),
+    ];
+
+    $form['configuration']['default_settings']['def_inactive_mode'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select mode by which the inactivity messages below will be received'),
+      '#options' => [
+        '0' => $this->t('Do not send'),
+        '1' => $this->t('SMS text only'),
+        '2' => $this->t('Email only'),
+        '3' => $this->t('Email and SMS'),
+      ],
+      '#default_value' => $config->get('def_inactive_mode'),
+    ];
+    $form['configuration']['default_settings']['warning_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'First reminder about non-response to survey',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name,@warningdays, and @daystocutoff'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('warning_text_body.value'),
+     // '#format' => $config->get('warning_text_body.format'),
+    ];
+
+    $form['configuration']['default_settings']['cutoff_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'Second notice about non-response to survey, with cutoff of delivery',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name,@cutoffdays'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('cutoff_text_body.value'),
+     // '#format' => $config->get('cutoff_text_body.format'),
     ];
 
 
@@ -738,10 +791,14 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('hour_range_high', $form_state->getValue('hour_range_high'))
       ->set('def_send_days', $form_state->getValue('def_send_days'))
       ->set('alt_send_days', $form_state->getValue('alt_send_days'))
+      ->set('def_warning_trigger', $form_state->getValue('def_warning_trigger'))
+      ->set('def_inactive_mode', $form_state->getValue('def_inactive_mode'))
       ->set('def_inactive_trigger', $form_state->getValue('def_inactive_trigger'))
       ->set('first_text_body', $form_state->getValue('first_text_body'))
       ->set('second_text_body', $form_state->getValue('second_text_body'))
       ->set('third_text_body', $form_state->getValue('third_text_body'))
+      ->set('warning_text_body', $form_state->getValue('warning_text_body'))
+      ->set('cutoff_text_body', $form_state->getValue('cutoff_text_body'))
       ->set('alt_first_text_body', $form_state->getValue('alt_first_text_body'))
       ->set('alt_second_text_body', $form_state->getValue('alt_second_text_body'))
       ->set('alt_third_text_body', $form_state->getValue('alt_third_text_body'))
