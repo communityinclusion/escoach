@@ -486,7 +486,7 @@ class TwilioCoachService
             $output= json_decode($output);
             //$didnotreply = false;
             $inactive = false;
-            $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$lastname);
+            $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
             // $didnotreplyshort = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) : false;
             $displaycutoff = print_r($cutoffcampaigns,true);
             $displaywarning = print_r($warningcampaigns,true);
