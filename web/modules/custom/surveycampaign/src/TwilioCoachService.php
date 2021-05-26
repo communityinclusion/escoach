@@ -458,7 +458,7 @@ class TwilioCoachService
     function addContacts($campaignid,$surveyid,$api_key,$api_secret,$seconddate,$transferdate = null) {
         $config =  \Drupal::config('surveycampaign.settings');
         $cutoffcampaigns = array();
-        $warning = intval($config->get('def_inactive_warning'));
+        $warning = intval($config->get('def_warning_trigger'));
         $cutoff = intval($config->get('def_inactive_trigger')); 
         $cutoffcampaigns = $this->getRecentCampaigns($surveyid,$cutoff);
         $warningcampaigns = array_slice($cutoffcampaigns, 0, $warning);
@@ -484,21 +484,21 @@ class TwilioCoachService
             $output = curl_exec($ch);
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
-            //$didnotreply = false;
+            $didnotreply = false;
             $inactive = false;
             $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
             // $didnotreplyshort = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) : false;
-            $displaycutoff = print_r($cutoffcampaigns,true);
-            $displaywarning = print_r($warningcampaigns,true);
+            //$displaycutoff = print_r($cutoffcampaigns,true);
+            //$displaywarning = print_r($warningcampaigns,true);
             $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
             $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
 
             //\Drupal::logger('surveycampaign')->notice("Cutoffcampaigns: " . $displaycutoff);
             //\Drupal::logger('surveycampaign')->notice("Warningcampaigns: " . $displaywarning);
             //\Drupal::logger('surveycampaign')->notice("Didnot reply: " . $didnotreply);
-            //\Drupal::logger('surveycampaign')->notice("Warning count: " . $warningcount);
+            //\Drupal::logger('surveycampaign')->notice("Warning count: " . $warning);
             if($didnotreply >= $cutoff && !$inactive) {
-                 $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2);
+                  $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2);
                 }
             elseif ($didnotreply == $warning && $warningcount == $warning && !$inactive) 
             { 
