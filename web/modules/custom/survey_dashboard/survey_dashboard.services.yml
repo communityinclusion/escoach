@@ -1,0 +1,3 @@
+services:
+  survey_dashboard.query_builder:
+    class: \Drupal\survey_dashboard\Service\QueryBuilder
