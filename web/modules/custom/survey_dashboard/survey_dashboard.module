@@ -1,0 +1,10 @@
+<?php
+/** @file
+ *
+ */
+
+function survey_dashboard_theme() {
+  return [
+
+  ];
+}
