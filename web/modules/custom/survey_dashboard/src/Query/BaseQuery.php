@@ -1,8 +1,11 @@
 <?php
 namespace Drupal\survey_dashboard\Query;
 
+use Drupal\taxonomy\Entity\Term;
+
 class BaseQuery {
   const BASE_TABLE = 'surveycampaign_results';
+  const VID = '';
   const QUESTION_ID = 0;
 
   private $query;
@@ -15,6 +18,7 @@ class BaseQuery {
     $this->email = $email;
     $this->provider = $provider;
 
+    $this->initDimension();
     $database = \Drupal::database();
     $this->query = $database->select(self::BASE_TABLE, self::BASE_TABLE);
     $this->addSums();
@@ -27,12 +31,28 @@ class BaseQuery {
       $this->addSumsProvider();
   }
 
+  public function initDimension() {
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree(static::VID);
+    foreach ($terms as $term) {
+      if ($term->parents[0] == 0) {
+        $termObj = Term::load($term->tid);
+        if ( !empty($termObj->field_alias->value)) {
+          $this->valueAliasMap[$termObj->field_alias->value] = [
+            'response_id' => $termObj->field_dashboard_response_id->value,
+            'title' => $term->name,
+          ];
+        }
+      }
+    }
+  }
+
   private function getValueIndex() {
     return $this->valueIndex++;
   }
 
   public function addSumsAll() {
-    foreach ($this->valueAliasMap as $alias => $value) {
+    foreach ($this->valueAliasMap as $alias => $definition) {
+      $value = $definition['response_id'];
       if (is_array($value)) {
         $ind1 = $this->getValueIndex();
         $ind2 = $this->getValueIndex();
@@ -59,7 +79,8 @@ class BaseQuery {
   }
 
   public function addSumsMe() {
-    foreach ($this->valueAliasMap as $alias => $value) {
+    foreach ($this->valueAliasMap as $alias => $definition) {
+      $value = $definition['response_id'];
       if (is_array($value)) {
         $ind1 = $this->getValueIndex();
         $ind2 = $this->getValueIndex();
@@ -92,7 +113,8 @@ class BaseQuery {
   }
 
   public function addSumsProvider() {
-    foreach ($this->valueAliasMap as $alias => $value) {
+    foreach ($this->valueAliasMap as $alias => $definition) {
+      $value = $definition['response_id'];
       if (is_array($value)) {
         $ind1 = $this->getValueIndex();
         $ind2 = $this->getValueIndex();
