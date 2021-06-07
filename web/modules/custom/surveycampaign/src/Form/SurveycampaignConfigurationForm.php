@@ -434,7 +434,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $form['configuration']['default_settings']['warning_text_body'] = [
       '#type' => 'text_format',
       '#title' => 'First reminder about non-response to survey',
-      '#description' => t('You can use these tokens to add personalized messages to the text: @name,@warningdays, and @daystocutoff'),
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name,@warningdays, and @daystocutoff, @invitelink'),
       '#format' => 'plain_text',
       '#default_value' => $config->get('warning_text_body.value'),
      // '#format' => $config->get('warning_text_body.format'),
