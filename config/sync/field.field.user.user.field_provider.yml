@@ -1,0 +1,20 @@
+uuid: 27180a91-6aff-4b53-9279-35cab636b193
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_provider
+  module:
+    - user
+id: user.user.field_provider
+field_name: field_provider
+entity_type: user
+bundle: user
+label: Provider
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
