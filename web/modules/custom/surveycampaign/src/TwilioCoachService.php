@@ -86,6 +86,7 @@ class TwilioCoachService
             //print_r($output);
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
+            if(!$output) \Drupal::logger('surveycampaign alert')->notice('No Output from Alchemer: ');
             
         
             foreach($output as $response)
@@ -391,7 +392,7 @@ class TwilioCoachService
         $firsttextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $firsttextconfig))));
         $secondtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $secondtextconfig))));
         $thirdtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $thirdtextconfig))));
-        $warningtextbody = str_replace("@name", $name,str_replace('@warningdays', $starttime,str_replace("@daystocutoff", $endtime, $warningtextconfig)));
+        $warningtextbody = str_replace("@name", $name,str_replace('@warningdays', $starttime,str_replace("@daystocutoff", $endtime,str_replace('@invitelink', $link, $warningtextconfig))));
         $cutofftextbody = str_replace("@name", $name,str_replace('@cutoffdays', $starttime, $cutofftextconfig));
         switch($textno) {
             case 1 :
@@ -492,18 +493,28 @@ class TwilioCoachService
             //$displaywarning = print_r($warningcampaigns,true);
             $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
             $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
+            //$invitelink = db_query("SELECT `invitelink` FROM `surveycampaign_mailer` WHERE `surveyid` = :surveyid AND `mobilephone` = :mobilephone = :city LIMIT 1 ORDER BY `campaignid` DESC", array(":mobilephone" => $mobilephone,":surveyid" => $surveyid))->fetchField();
 
-            //\Drupal::logger('surveycampaign')->notice("Cutoffcampaigns: " . $displaycutoff);
+            //\Drupal::logger('surveycampaign')->notice("Invite link: " . $invitelink);
             //\Drupal::logger('surveycampaign')->notice("Warningcampaigns: " . $displaywarning);
             //\Drupal::logger('surveycampaign')->notice("Didnot reply: " . $didnotreply);
             //\Drupal::logger('surveycampaign')->notice("Warning count: " . $warning);
+            $todaylink = null;
             if($didnotreply >= $cutoff && !$inactive) {
-                  $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2);
+               
+                  $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink);
                 }
             elseif ($didnotreply == $warning && $warningcount == $warning && !$inactive) 
             { 
-                $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1);
+                
+                if (!is_bool($output)) {
+                    $todaylink = $output->invitelink;
+                    \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
+                    $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink);
+                }
+                
             }
+            
             
             if (!is_bool($output)) {
                 $senddate = new DateTime($transferdate);
@@ -742,7 +753,7 @@ class TwilioCoachService
         }
         return $campaignarray;
     }
-    protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel) {
+    protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink) {
         $send = false;
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
@@ -777,7 +788,7 @@ class TwilioCoachService
         elseif($noreplylevel == 1)
         {
             $dayno = $warningno;
-            $warningtextbody = str_replace("@name", "$firstname $lastname",str_replace('@warningdays', $dayno,str_replace("@daystocutoff", $warningdays, $warningtextconfig)));
+            $warningtextbody = str_replace("@name", "$firstname $lastname",str_replace('@invitelink', $invitelink,str_replace('@warningdays', $dayno,str_replace("@daystocutoff", $warningdays, $warningtextconfig))));
             $params['title'] = t('Daily survey non-response warning');
             $params['message'] = t("$warningtextbody");
             
@@ -794,7 +805,8 @@ class TwilioCoachService
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
             if($warningmode == '1' || $warningmode == '3') { 
-                $this->twilioCall($mobilephone,"$firstname $lastname",null,$textno,$dayno,$warningdays,true);
+                $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,true);
+                
             }
         }
     }
