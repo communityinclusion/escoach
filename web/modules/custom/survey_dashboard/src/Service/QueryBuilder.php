@@ -33,7 +33,10 @@ class QueryBuilder {
       return $term->field_dashboard_response_id->value;
     }
     else {
-
+      return [
+        $term->field_dashboard_response_id[0]->value,
+        $term->field_dashboard_response_id[1]->value
+      ];
     }
   }
 
