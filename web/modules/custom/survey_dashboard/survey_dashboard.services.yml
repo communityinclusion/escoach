@@ -1,3 +1,4 @@
 services:
   survey_dashboard.query_builder:
     class: \Drupal\survey_dashboard\Service\QueryBuilder
+    arguments: ['@current_user', '@entity_type.manager']
