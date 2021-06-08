@@ -145,28 +145,27 @@ class QueryBuilder {
       $this->provider = $profile->field_provider->entity->getName();
     }
 
+    /** @var \Drupal\survey_dashboard\Query\BaseQuery $query */
+    $query = $this->buildQuery();
 
     switch ($this->timeframe) {
       case 'quarterly':
-        $result = $this->processQuarterly();
+        $query->addQuarterlyParams();
         break;
 
       case 'monthly':
-        $result = $this->processMonthly();
+        $query->addMonthlyParams();
         break;
-
-      default:
-      case 'up-to-date':
-        $result = $this->processUpToDate();
     }
 
+    $result = $query->execute();
     return $result;
   }
 
   /**
-   * Execute query using up-to-date timeframe.
+   * Build query.
    */
-  protected function processUpToDate() {
+  protected function buildQuery() {
     if (!$this->what) {
       return $this->whatSummary();
     }
@@ -194,7 +193,7 @@ class QueryBuilder {
       $query->addWhoCondition($this->who);
     }
 
-    return $query->execute();
+    return $query;
   }
 
   /**
@@ -209,7 +208,7 @@ class QueryBuilder {
       $query->addWhoCondition($this->who);
     }
 
-    return $query->execute();
+    return $query;
   }
 
   /**
@@ -223,7 +222,7 @@ class QueryBuilder {
     elseif ($this->what && $this->what != 'any') {
       $query->addWhatCondition($this->what);
     }
-    return $query->execute();
+    return $query;
   }
 
   /**
@@ -237,21 +236,7 @@ class QueryBuilder {
     elseif ($this->who && $this->who != 'any') {
       $query->addWhoCondition($this->who);
     }
-    return $query->execute();
-  }
-
-  /**
-   * Execute query for quarterly trends.
-   */
-  protected function processQuarterly() {
-    return [];
-  }
-
-  /**
-   * Execute query for monthly trends.
-   */
-  protected function processMonthly() {
-    return [];
+    return $query;
   }
 
 }
