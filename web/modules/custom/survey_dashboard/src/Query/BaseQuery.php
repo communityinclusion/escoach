@@ -123,13 +123,13 @@ class BaseQuery {
 
   public function addMonthlyParams() {
     $this->query->addExpression('MONTH(date_submitted)', 'month');
-    $this->query->condition('data_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
+    $this->query->condition('date_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
     $this->query->groupBy('MONTH(date_submitted)');
   }
 
   public function addQuarterlyParams() {
     $this->query->addExpression('QUARTER(date_submitted)', 'quarter');
-    $this->query->condition('data_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
+    $this->query->condition('date_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
     $this->query->groupBy('QUARTER(date_submitted)');
   }
 
