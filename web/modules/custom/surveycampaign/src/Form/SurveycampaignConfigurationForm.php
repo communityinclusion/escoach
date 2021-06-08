@@ -533,6 +533,82 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         t('Disable'),
       )
     );
+    $form['configuration']['second_settings']['alt_repeat'] = array(
+      '#type' => 'radios',
+      '#title' => t('Secondary survey Repeating (daily) or One-time completion (e.g. baseline)'),
+      '#description' => t('Set secondary survey to require daily completion, or one-time completion. If repeating users will get daily reminders to complete the survey every day.  If one-time, users will get daily reminders to complete the survey until they have completed it once, then no more reminders.'),
+      '#default_value' => $config->get('alt_repeat'),
+      '#options' => array(
+        t('One-time'),
+        t('Daily (repeating)'),
+      )
+    );
+    $form['configuration']['second_settings']['alt_hour_range_low'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select earliest time to send survey'),
+      '#options' => [
+        '21600' => $this->t('6:00 AM'),
+        '23400' => $this->t('6:30 AM'),
+        '25200' => $this->t('7:00 AM'),
+        '27000' => $this->t('7:30 AM'),
+        '28800' => $this->t('8:00 AM'),
+        '30600' => $this->t('8:30 AM'),
+        '32400' => $this->t('9:00 AM'),
+        '34200' => $this->t('9:30 AM'),
+        '36000' => $this->t('10:00 AM'),
+        '37800' => $this->t('10:30 AM'),
+        '39600' => $this->t('11:00 AM'),
+        '41400' => $this->t('11:30 AM'),
+        '43200' => $this->t('12:00 PM'),
+        '45000' => $this->t('12:30 PM'),
+        '46800' => $this->t('1:00 PM'),
+        '48600' => $this->t('1:30 PM'),
+        '50400' => $this->t('2:00 PM'),
+        '52200' => $this->t('2:30 PM'),
+        '54000' => $this->t('3:00 PM'),
+        '55800' => $this->t('3:30 PM'),
+        '57600' => $this->t('4:00 PM'),
+        '59400' => $this->t('4:30 PM'),
+        '61200' => $this->t('5:00 PM'),
+        '63000' => $this->t('5:30 PM'),
+      ],
+      '#default_value' => $config->get('alt_hour_range_low'),
+    ];
+  
+    $form['configuration']['second_settings']['alt_hour_range_high'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select latest time to send survey'),
+      '#options' => [
+        '25200' => $this->t('7:00 AM'),
+        '27000' => $this->t('7:30 AM'),
+        '28800' => $this->t('8:00 AM'),
+        '30600' => $this->t('8:30 AM'),
+        '32400' => $this->t('9:00 AM'),
+        '34200' => $this->t('9:30 AM'),
+        '36000' => $this->t('10:00 AM'),
+        '37800' => $this->t('10:30 AM'),
+        '39600' => $this->t('11:00 AM'),
+        '41400' => $this->t('11:30 AM'),
+        '43200' => $this->t('12:00 PM'),
+        '45000' => $this->t('12:30 PM'),
+        '46800' => $this->t('1:00 PM'),
+        '48600' => $this->t('1:30 PM'),
+        '50400' => $this->t('2:00 PM'),
+        '52200' => $this->t('2:30 PM'),
+        '54000' => $this->t('3:00 PM'),
+        '55800' => $this->t('3:30 PM'),
+        '57600' => $this->t('4:00 PM'),
+        '59400' => $this->t('4:30 PM'),
+        '61200' => $this->t('5:00 PM'),
+        '63000' => $this->t('5:30 PM'),
+        '64800' => $this->t('6:00 PM'),
+        '66600' => $this->t('6:30 PM'),
+        '68400' => $this->t('7:00 PM'),
+        '70200' => $this->t('7:30 PM'),
+        '72000' => $this->t('8:00 PM'),
+      ],
+      '#default_value' => $config->get('alt_hour_range_high'),
+    ];
     $form['configuration']['second_settings']['alt_send_days'] = [
       '#type' => 'checkboxes',
       '#options' => ['Sunday' => $this->t('Sunday'), 'Monday' => $this->t('Monday'), 'Tuesday' => $this->t('Tuesday'), 'Wednesday' => $this->t('Wednesday'), 'Thursday' => $this->t('Thursday'), 'Friday' => $this->t('Friday'), 'Saturday' => $this->t('Saturday')],
@@ -787,8 +863,11 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('defaultenable', $form_state->getValue('default_disable'))
       ->set('secondaryid', $form_state->getValue('surveycampaign_alt_survey'))
       ->set('secondenable', $form_state->getValue('second_disable'))
+      ->set('alt_repeat', $form_state->getValue('alt_repeat'))
       ->set('hour_range_low', $form_state->getValue('hour_range_low'))
       ->set('hour_range_high', $form_state->getValue('hour_range_high'))
+      ->set('alt_hour_range_low', $form_state->getValue('alt_hour_range_low'))
+      ->set('alt_hour_range_high', $form_state->getValue('alt_hour_range_high'))
       ->set('def_send_days', $form_state->getValue('def_send_days'))
       ->set('alt_send_days', $form_state->getValue('alt_send_days'))
       ->set('def_warning_trigger', $form_state->getValue('def_warning_trigger'))
