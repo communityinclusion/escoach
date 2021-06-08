@@ -32,6 +32,13 @@ class BaseQuery {
   }
 
   public function initDimension() {
+
+    $cid = 'survey_dashboard:aliasmap:' . static::VID;
+    if ( $cache = \Drupal::cache('data')->get($cid)) {
+      $this->valueAliasMap = $cache->data;
+      return;
+    }
+
     $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree(static::VID);
     foreach ($terms as $term) {
       if ($term->parents[0] == 0) {
@@ -44,6 +51,8 @@ class BaseQuery {
         }
       }
     }
+
+    \Drupal::cache('data')->set($cid, $this->valueAliasMap);
   }
 
   private function getValueIndex() {
@@ -110,6 +119,18 @@ class BaseQuery {
         ]);
       }
     }
+  }
+
+  public function addMonthlyParams() {
+    $this->query->addExpression('MONTH(date_submitted)', 'month');
+    $this->query->condition('data_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
+    $this->query->groupBy('MONTH(date_submitted)');
+  }
+
+  public function addQuarterlyParams() {
+    $this->query->addExpression('QUARTER(date_submitted)', 'quarter');
+    $this->query->condition('data_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
+    $this->query->groupBy('QUARTER(date_submitted)');
   }
 
   public function addSumsProvider() {
