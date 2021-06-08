@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class DashboardForm extends FormBase {
 
+  /** @var \Drupal\survey_dashboard\Service\QueryBuilder */
   private $surveyDashboardQueryBuilder;
   /**
    * {@inheritdoc}
@@ -53,10 +54,28 @@ class DashboardForm extends FormBase {
       '#weight' => '2',
       '#default_value' => $form_state->get('where') ?? 'any',
     ];
+
+    $form['data_frame'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Select your role'),
+      '#options' => [
+        'me' => $this->t('I am an EC/Manager who entered data'),
+        'team' => $this->t('I manage a team who entered data'),
+        'all ' => $this->t('I am from the general public')
+      ],
+      '#default_value' => $form_state->get('time_frame') ?? 'up-to-date',
+      '#weight' => '4',
+    ];
+
     $form['time_frame'] = [
       '#type' => 'radios',
       '#title' => $this->t('Time Frame'),
-      '#options' => ['up-to-date' => $this->t('Up-to-date'), 'quarterly' => $this->t('Quarterly Trends'), 'monthly' => $this->t('Monthly Trends')],
+      '#options' => [
+        'up-to-date' => $this->t('Up-to-date'),
+        'quarterly' => $this->t('Quarterly Trends'),
+        'monthly' => $this->t('Monthly Trends')
+      ],
+      '#default_value' => $form_state->get('time_frame') ?? 'up-to-date',
       '#weight' => '4',
     ];
 
