@@ -2,8 +2,6 @@ uuid: b39e5388-d318-4128-a66a-38314b2eaa05
 langcode: en
 status: true
 dependencies:
-  config:
-    - field.field.user.user.field_provider
   module:
     - field_layout
     - layout_discovery
@@ -23,14 +21,6 @@ content:
     weight: -10
     settings: {  }
     third_party_settings: {  }
-    region: content
-  field_provider:
-    weight: 31
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
     region: content
   google_analytics:
     weight: 3
