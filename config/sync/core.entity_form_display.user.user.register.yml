@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - core.entity_form_mode.user.register
-    - field.field.user.user.field_provider
   module:
     - field_layout
     - layout_discovery
@@ -59,5 +58,4 @@ content:
     settings: {  }
     third_party_settings: {  }
     region: content
-hidden:
-  field_provider: true
+hidden: {  }
