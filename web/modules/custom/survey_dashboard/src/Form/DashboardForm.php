@@ -55,7 +55,7 @@ class DashboardForm extends FormBase {
       '#default_value' => $form_state->get('where') ?? 'any',
     ];
 
-    $form['data_frame'] = [
+    $form['dataframe'] = [
       '#type' => 'radios',
       '#title' => $this->t('Select your role'),
       '#options' => [
@@ -67,7 +67,7 @@ class DashboardForm extends FormBase {
       '#weight' => '4',
     ];
 
-    $form['time_frame'] = [
+    $form['timeframe'] = [
       '#type' => 'radios',
       '#title' => $this->t('Time Frame'),
       '#options' => [
@@ -83,6 +83,7 @@ class DashboardForm extends FormBase {
 
     $params = [
       'timeframe' => $input['timeframe'],
+      'dataframe' => $input['dataframe'],
       'who' => $input['who'],
       'what' => $input['what'],
       'where' => $input['where'],
