@@ -2,30 +2,109 @@
 
 namespace Drupal\survey_dashboard\Service;
 
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Session\AccountProxy;
 use Drupal\survey_dashboard\Query\What;
 use Drupal\survey_dashboard\Query\Where;
 use Drupal\survey_dashboard\Query\Who;
-use Drupal\taxonomy\Entity\Term;
-use Drupal\user\Entity\User;
 
+/**
+ * Query builder service.
+ */
 class QueryBuilder {
 
   const BASE_TABLE = 'surveycampaign_results';
-  protected $who;
-  protected $where;
-  protected $what;
-  protected $timeframe;
-  protected $email;
-  protected $provider;
 
+  /**
+   * Value from who field.
+   *
+   * @var int
+   */
+  protected $who;
+
+  /**
+   * Value from where field.
+   *
+   * @var int
+   */
+  protected $where;
+
+  /**
+   * Value from what field.
+   *
+   * @var int
+   */
+  protected $what;
+
+  /**
+   * Value from timeframe field.
+   *
+   * @var int
+   */
+  protected $timeframe;
+
+  /**
+   * Value from dataframe field.
+   *
+   * @var int
+   */
+  protected $dataframe;
+
+  /**
+   * The email address of the current user.
+   *
+   * @var int
+   */
+  protected $email;
+
+  /**
+   * The provider name of the current user.
+   *
+   * @var int
+   */
+  protected $provider;
+  /**
+   * The current_user service.
+   *
+   * @var \Drupal\Core\Session\AccountProxy
+   */
+  private $currentUser;
+  /**
+   * The entitytypeManager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  private $entityTypeManager;
+
+  /**
+   * Constructor.
+   */
+  public function __construct(AccountProxy $currentUser, EntityTypeManagerInterface $entityTypeManager) {
+
+    $this->currentUser = $currentUser;
+    $this->entityTypeManager = $entityTypeManager;
+  }
+
+  /**
+   * Get response IDs for selected terms.
+   */
   private function getTaxonomyValue($vid, $tid) {
-    if (!$tid || !is_numeric($tid)) {
+    if (!$tid ) {
       return NULL;
     }
 
-    $term = Term::load($tid);
+    if (is_array($tid)) {
+      $return = [];
+      $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadMultiple($tid);
+      foreach ($terms as $term) {
+        $return[] = $term->field_dashboard_response_id->value;
+      }
+      return $return;
+    }
+    else {
+      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
+    }
+
     if (!$term) {
       return NULL;
     }
@@ -35,43 +114,59 @@ class QueryBuilder {
     else {
       return [
         $term->field_dashboard_response_id[0]->value,
-        $term->field_dashboard_response_id[1]->value
+        $term->field_dashboard_response_id[1]->value,
       ];
     }
   }
 
-  private function getUserInfo() {
-    $this->email = \Drupal::currentUser()->getEmail();
-    $this->provider = \Drupal::currentUser()->getAccount()->field_provider->value;
-  }
-
+  /**
+   * Primary controller.
+   */
   public function process($params = []) {
 
-    $acct = User::load(\Drupal::currentUser()->id());
+    $profiles = $this->entityTypeManager->getStorage('profile')
+      ->loadByProperties([
+        'uid' => $this->currentUser->id(),
+        'type' => 'survey_participants',
+      ]);
+
+    if ( $profiles) {
+      $profile = current($profiles);
+    }
 
     $this->timeframe = $params['timeframe'];
+    $this->dataframe = $params['dataframe'];
     $this->who = $this->getTaxonomyValue('who', $params['who']);
     $this->what = $this->getTaxonomyValue('what', $params['what']);
     $this->where = $this->getTaxonomyValue('where', $params['where']);
-    $this->email = \Drupal::currentUser()->getEmail();
-    $this->provider = $acct->field_provider->value;
+    $this->email = $this->currentUser->getEmail();
+
+    if ( $profile && $profile->field_provider->entity ) {
+      $this->provider = $profile->field_provider->entity->getName();
+    }
+
 
     switch ($this->timeframe) {
       case 'quarterly':
-        $result = $this->process_quarterly();
+        $result = $this->processQuarterly();
+        break;
 
       case 'monthly':
-        $result = $this->process_monthly();
+        $result = $this->processMonthly();
+        break;
 
       default:
       case 'up-to-date':
-        $result = $this->process_up_to_date();
+        $result = $this->processUpToDate();
     }
 
     return $result;
   }
 
-  protected function process_up_to_date() {
+  /**
+   * Execute query using up-to-date timeframe.
+   */
+  protected function processUpToDate() {
     if (!$this->what) {
       return $this->whatSummary();
     }
@@ -86,6 +181,9 @@ class QueryBuilder {
     }
   }
 
+  /**
+   * Execute query using selected activities.
+   */
   protected function selectedActivities() {
     $query = new What($this->email, $this->provider);
     $query->addWhatCondition($this->what);
@@ -99,6 +197,9 @@ class QueryBuilder {
     return $query->execute();
   }
 
+  /**
+   * Execute what summary query.
+   */
   protected function whatSummary() {
     $query = new What($this->email, $this->provider);
     if ($this->where && $this->where != 'any') {
@@ -111,6 +212,9 @@ class QueryBuilder {
     return $query->execute();
   }
 
+  /**
+   * Execute who summary query.
+   */
   protected function whoSummary() {
     $query = new Who($this->email, $this->provider);
     if ($this->where && $this->where != 'any') {
@@ -122,6 +226,9 @@ class QueryBuilder {
     return $query->execute();
   }
 
+  /**
+   * Execute where summary query.,.
+   */
   protected function whereSummary() {
     $query = new Where($this->email, $this->provider);
     if ($this->what && $this->what != 'any') {
@@ -133,11 +240,18 @@ class QueryBuilder {
     return $query->execute();
   }
 
-  protected function process_quarterly() {
-
+  /**
+   * Execute query for quarterly trends.
+   */
+  protected function processQuarterly() {
+    return [];
   }
 
-  protected function process_monthly() {
-
+  /**
+   * Execute query for monthly trends.
+   */
+  protected function processMonthly() {
+    return [];
   }
+
 }
