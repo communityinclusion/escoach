@@ -19,6 +19,7 @@ class TwilioCoachService
         $user = 'oliver.lyons@umb.edu'; //Email address used to log in
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
+        $onetime = $type == '2'  && $config->get('alt_repeat') == '0' ? true : false;
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
         // If lib config date array includes today, get the closing screen page heading and text
         //Else use the default heading and text for the final screen, from the lib settings page defaults.
@@ -29,9 +30,10 @@ class TwilioCoachService
         $todaydate = date("Y-m-d");
         $tomorrowdate = new DateTime("$todaydate");
         $tomorrowdate->modify("+ $day day");
+        if($onetime) $tomorrowdate->modify("+ 1 day");
         $tomorrowdate = $tomorrowdate->format('Y-m-d');
         $gizmodate = $day == 0 ? $todaydate : $tomorrowdate;
-        //Options Filter examples, uncomment to see theese in use
+        //Options Filter examples, uncomment to see these in use
         $status = "&filter[field][1]=status&filter[operator][1]==&filter[value][1]=Complete";//Only show complete responses
         $datesubmitted = "&filter[field][0]=datesubmitted&filter[operator][0]=>=&filter[value][0]=$gizmodate+01:00:00&resultsperpage=150";//Submit date greater than today at 1:00 AM
         $loginslug = "api_token={$api_key}&api_token_secret={$api_secret}";
@@ -48,8 +50,8 @@ class TwilioCoachService
                 break;
             }
         }
-        $lowrange = intval($config->get('hour_range_low'));
-        $highrange = intval($config->get('hour_range_high'));
+        $lowrange = $type == 1 ? intval($config->get('hour_range_low')) : intval($config->get('alt_hour_range_low'));
+        $highrange = $type == 1 ? intval($config->get('hour_range_high')) : intval($config->get('alt_hour_range_high'));
         $range = $this->hoursRange( $lowrange, $highrange, 60 * 30, 'g:i a' );
         //print_r($range);
         //$countrange = count($range);
@@ -63,7 +65,8 @@ class TwilioCoachService
         $senddate = $enddate->format('Y-m-d H:i:s');
         $seconddate = $enddate->format('g:i a');
         // create new campaign
-        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . "&linkdates[close]=" . urlencode("$gizmodate 23:59:30") . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
+        // IF this is a one-timer, make the expire data tomorrow.
+        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . "&linkdates[close]=" . ($onetime ? urlencode("$tomorrowdate 23:59:30") : urlencode("$gizmodate 23:59:30")) . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
        
 
         
@@ -195,11 +198,30 @@ class TwilioCoachService
         }
 
     }
+   function checkCompletedOnce($surveyid,$phone) {
+       $completedonce = false;
+        $database = \Drupal::database();
+        $query =  $database->select('surveycampaign_mailer','sm')
+        ->fields('sm', array(
+        'Complete',
+            )
+        )
+        ->condition('sm.Complete', 1)
+        ->condition('sm.surveyid', $surveyid)
+        ->condition('sm.mobilephone', "$phone")
+        ->execute()->fetchField();
+        $number_of_rows = count($result);
+        $completedonce = $number_of_rows > 0 ? true : false;
 
+        return $completedonce;
+   }
    function textSchedule($surveyid, $campaignid) {
+        $config =  \Drupal::config('surveycampaign.settings');
+        $isprimary = $surveyid == $config->get('defaultid') ? true :false;
+        $onetime = false;
+        if (!$isprimary) $onetime = $config->get('alt_repeat') && $config->get('alt_repeat') == '0' ? true : false;
         //read mailer table
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
-        $config =  \Drupal::config('surveycampaign.settings');
         $todaydate = date("Y-m-d");
         $database = \Drupal::database();
         $query =  $database->select('surveycampaign_mailer','sm')
@@ -210,8 +232,6 @@ class TwilioCoachService
         ->condition('sm.surveyid', $surveyid)
         ->condition('sm.campaignid', $campaignid)
         ->condition('senddate', $database->escapeLike($todaydate) . '%', 'LIKE');
-        // dump($query->__toString());
-
         $result = $query->execute();
         foreach ($result as $row) {
             //turn an object into an array by json encoding then decoding it
@@ -256,7 +276,7 @@ class TwilioCoachService
                 break;
             }
             
-            $isprimary = $surveyid == $config->get('defaultid') ? true :false;
+            
             $output = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid);
             
             
@@ -264,11 +284,12 @@ class TwilioCoachService
             print_r($output);
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
+                    //setting for secondary survey to send only once.
                     
-                    
+                    if($onetime) $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
+                    if($checkcompletedonce) return;
                     
                     $sendit = false;
-                    //if ($contact['id'] == $contactid && $contact["subscriber_status"] == "Partial") { }
                     if ($contact['id'] == $contactid && $contact["subscriber_status"] != "Complete") {
                         if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime,$isprimary);
                         //set "text1" = 1
@@ -303,6 +324,7 @@ class TwilioCoachService
                             }
                             
                         }
+                        
                         elseif($row['text1'] == '1'  && $row['text2'] == '1' && $row['text3'] === '0' && $senddate3 <= new DateTime() && $remindnum > 1) { 
                             $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],3,$formattedstarttime,$formattedendtime,$isprimary);
                             //set "text3" = 1
