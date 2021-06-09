@@ -136,9 +136,10 @@ class QueryBuilder {
 
     $this->timeframe = $params['timeframe'];
     $this->dataframe = $params['dataframe'];
-    $this->who = $this->getTaxonomyValue('who', $params['who']);
+
+    $this->who = ( $params['who'] == 'any' ) ? 'any' : $this->getTaxonomyValue('who', $params['who']);
     $this->what = $this->getTaxonomyValue('what', $params['what']);
-    $this->where = $this->getTaxonomyValue('where', $params['where']);
+    $this->where = ( $params['where'] == 'any' ) ? 'any' : $this->getTaxonomyValue('where', $params['where']);
     $this->email = $this->currentUser->getEmail();
 
     if ( $profile && $profile->field_provider->entity ) {
