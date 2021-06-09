@@ -18,6 +18,8 @@ source:
     4:
       vocabulary: vocabulary
     5:
+      alias: alias
+    6:
       notes: notes
 process:
   name: response_text
@@ -36,7 +38,14 @@ process:
     -
       plugin: default_value
       default_value: 0
-  field_dashboard_question_id: question_id
-  field_dashboard_response_id: response_id
+  field_dashboard_question_id:
+    plugin: explode
+    source: question_id
+    delimiter: ,
+  field_dashboard_response_id:
+    plugin: explode
+    source: response_id
+    delimiter: ,
+  field_alias: alias
 destination:
   plugin: entity:taxonomy_term
