@@ -53,11 +53,7 @@ class TwilioCoachService
         $lowrange = $type == 1 ? intval($config->get('hour_range_low')) : intval($config->get('alt_hour_range_low'));
         $highrange = $type == 1 ? intval($config->get('hour_range_high')) : intval($config->get('alt_hour_range_high'));
         $range = $this->hoursRange( $lowrange, $highrange, 60 * 30, 'g:i a' );
-        //print_r($range);
-        //$countrange = count($range);
-        //$rangeprint = print_r($range,TRUE);
         
-        //\Drupal::logger('surveycampaign')->notice("Here is the range count: " . $countrange);
         $k = array_rand($range);
         if($fixdate && $fixdate != '') $fixdate = new DateTime("$fixdate - 30 minutes"); 
         $firstdate = $fixdate ? $fixdate->format('g:i a') : $range[$k];
@@ -146,8 +142,6 @@ class TwilioCoachService
                 foreach($libitem->get('field_publish_to_survey_date_s_')->getValue() as $showdate) {
                     if($showdate['value'] == $date) {
                         $finaltitle = $libitem->get('field_heading_for_closing_screen')->value == 'custom' ? urlencode($libitem->get('field_custom_heading_for_closing')->value) : ($libitem->get('field_heading_for_closing_screen')->value == 'title' ? urlencode($libitem->get('title')->value): urlencode(' '));
-            
-                        //\Drupal::logger('librarybuild alert')->notice('Date field: ' . $showdate['value'] . ' Node id: ' . $libitem->id() . '  Today Date: ' . $date . ' Closing header: ' .$finaltitle);
                         $finaltext = urlencode($libitem->get('field_short_version')->value);
                         $finalfooter = $libitem->get('field_use_standard_footer_')->value != "No" ? ($surveytype == 'default' ? urlencode($libconfig->get('defaultfootertext.value')) : urlencode($libconfig->get('alt_defaultfootertext.value'))) : '';
                         $finaltext .= $finalfooter;
@@ -208,12 +202,10 @@ class TwilioCoachService
         )
         ->condition('sm.Complete', 1)
         ->condition('sm.surveyid', $surveyid)
-        ->condition('sm.mobilephone', "$phone");
-        $result = $query->execute()->fetchField();
-        $number_of_rows = count($result);
-        $completedonce = $number_of_rows > 0 ? true : false;
-        \Drupal::logger('surveycampaign')->notice("check completed, rows returned: " . $number_of_rows);
-
+        ->condition('sm.mobilephone', "$phone")
+        ->execute();
+        $results = $query->fetchAllAssoc('Complete');
+        $completedonce = !empty($results) ? true: false;
         return $completedonce;
    }
    function textSchedule($surveyid, $campaignid) {
@@ -290,7 +282,6 @@ class TwilioCoachService
                   
                     if($onetime) {
                         $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
-                        \Drupal::logger('surveycampaign')->notice("Phone check: " . $row['mobilephone']);
                     }
                     if($checkcompletedonce) return;
                     
@@ -490,6 +481,9 @@ class TwilioCoachService
         $cutoff = intval($config->get('def_inactive_trigger')); 
         $cutoffcampaigns = $this->getRecentCampaigns($surveyid,$cutoff);
         $warningcampaigns = array_slice($cutoffcampaigns, 0, $warning);
+        $isprimary = $surveyid == $config->get('defaultid') ? true :false;
+        $onetime = false;
+        $onetime = !$isprimary && $config->get('alt_repeat') == '0' ? true : false;
         $contactarray = \Drupal::service('surveycampaign.survey_users')->load();
         foreach($contactarray as $contact) {
             print_r($contact);
@@ -502,90 +496,92 @@ class TwilioCoachService
             $timezone = urlencode($contact[4]);
             $provider = $contact[8] ? urlencode($contact[8]) : 'no provider';
             $sendtime = urlencode($seconddate);
+            $checkcompletedonce = false;
+            if($onetime) {
+                $checkcompletedonce = $this->checkCompletedOnce($surveyid,$mobilephone);
+            }
+            if(!$checkcompletedonce)
+            {
 
-            //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
-            $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
-            //echo $url;
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $output = curl_exec($ch);
-            //The standard return from the API is JSON, decode to php.
-            $output= json_decode($output);
-            $didnotreply = false;
-            $inactive = false;
-            $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
-            // $didnotreplyshort = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) : false;
-            //$displaycutoff = print_r($cutoffcampaigns,true);
-            //$displaywarning = print_r($warningcampaigns,true);
-            $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
-            $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
-            //$invitelink = db_query("SELECT `invitelink` FROM `surveycampaign_mailer` WHERE `surveyid` = :surveyid AND `mobilephone` = :mobilephone = :city LIMIT 1 ORDER BY `campaignid` DESC", array(":mobilephone" => $mobilephone,":surveyid" => $surveyid))->fetchField();
-
-            //\Drupal::logger('surveycampaign')->notice("Invite link: " . $invitelink);
-            //\Drupal::logger('surveycampaign')->notice("Warningcampaigns: " . $displaywarning);
-            //\Drupal::logger('surveycampaign')->notice("Didnot reply: " . $didnotreply);
-            //\Drupal::logger('surveycampaign')->notice("Warning count: " . $warning);
-            $todaylink = null;
-            if($didnotreply >= $cutoff && !$inactive) {
-               
-                  $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink);
+                //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
+                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
+                //echo $url;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                $output = curl_exec($ch);
+                //The standard return from the API is JSON, decode to php.
+                $output= json_decode($output);
+                $didnotreply = false;
+                $inactive = false;
+                $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
+                // $didnotreplyshort = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) : false;
+                //$displaycutoff = print_r($cutoffcampaigns,true);
+                //$displaywarning = print_r($warningcampaigns,true);
+                $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
+                $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
+                
+                $todaylink = null;
+                if($didnotreply >= $cutoff && !$inactive) {
+                
+                    $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink);
+                    }
+                elseif ($didnotreply == $warning && $warningcount == $warning && !$inactive) 
+                { 
+                    
+                    if (!is_bool($output)) {
+                        $todaylink = $output->invitelink;
+                        \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
+                        $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink);
+                    }
+                    
                 }
-            elseif ($didnotreply == $warning && $warningcount == $warning && !$inactive) 
-            { 
+                
                 
                 if (!is_bool($output)) {
-                    $todaylink = $output->invitelink;
-                    \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
-                    $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink);
-                }
+                    $senddate = new DateTime($transferdate);
+                    $truncdate = $senddate->format('Y-m-d');
+                    $comparedate = new DateTime($truncdate);
+
+                    //compare send date to suspend dates and cancel adding user if suspended
+                    $cancelsurvey = false;
+                    $checksuspend = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone);
+                    $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
+                    $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
+                    $inactive = $checksuspend[2];
+                    //if($suspendstart && ($suspendstart <= $comparedate)) $cancelsurvey = true;
+                    if($suspendstart && ($suspendstart <= $comparedate) && ($suspendend >= $comparedate)) $cancelsurvey = true;
+                    if($inactive) $cancelsurvey = true;
+                    
+
+
+                    $invitelink = $output->invitelink;
+                    $contactid = $output->id;
                 
-            }
-            
-            
-            if (!is_bool($output)) {
+                
+                    
+                    $senddate = $senddate->format('Y-m-d H:i:s');
+                    $checkalready = false;
+                    $checkalready =  $this->conditionCheck('surveycampaign_mailer',$surveyid,$senddate,$mobilephone);
+
+                    if(!$checkalready && !$cancelsurvey && $didnotreply < $cutoff) {
+                        $database = \Drupal::database();
+                        $result = $database->insert('surveycampaign_mailer')
+                        ->fields([
+                            'surveyid' => $surveyid,
+                            'campaignid' => $campaignid,
+                            'senddate' => $senddate,
+                            'mobilephone' => $mobilephone,
+                            'timezone' => $timezone,
+                            'fullname' => $fullname,
+                            'invitelink' => $invitelink,
+                            'contactid' => $contactid,
+                        ]) ->execute();
+                    }
+                
+                }
                 $senddate = new DateTime($transferdate);
-                $truncdate = $senddate->format('Y-m-d');
-                $comparedate = new DateTime($truncdate);
-
-                //compare send date to suspend dates and cancel adding user if suspended
-                $cancelsurvey = false;
-                $checksuspend = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone);
-                $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
-                $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
-                $inactive = $checksuspend[2];
-                //if($suspendstart && ($suspendstart <= $comparedate)) $cancelsurvey = true;
-                if($suspendstart && ($suspendstart <= $comparedate) && ($suspendend >= $comparedate)) $cancelsurvey = true;
-                if($inactive) $cancelsurvey = true;
-                
-
-
-                $invitelink = $output->invitelink;
-                $contactid = $output->id;
-               
-              
-                   
-                $senddate = $senddate->format('Y-m-d H:i:s');
-                $checkalready = false;
-                $checkalready =  $this->conditionCheck('surveycampaign_mailer',$surveyid,$senddate,$mobilephone);
-
-                if(!$checkalready && !$cancelsurvey && $didnotreply < $cutoff) {
-                    $database = \Drupal::database();
-                    $result = $database->insert('surveycampaign_mailer')
-                    ->fields([
-                        'surveyid' => $surveyid,
-                        'campaignid' => $campaignid,
-                        'senddate' => $senddate,
-                        'mobilephone' => $mobilephone,
-                        'timezone' => $timezone,
-                        'fullname' => $fullname,
-                        'invitelink' => $invitelink,
-                        'contactid' => $contactid,
-                    ]) ->execute();
-                }
-            
             }
-            $senddate = new DateTime($transferdate);
   
         }
         $show = $this->getListInfo($campaignid,$surveyid,$api_key,$api_secret);
