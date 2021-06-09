@@ -44,8 +44,18 @@ class BaseQuery {
       if ($term->parents[0] == 0) {
         $termObj = Term::load($term->tid);
         if ( !empty($termObj->field_alias->value)) {
+          $response_id = $termObj->field_dashboard_response_id->getValue();
+          if (is_array($response_id)) {
+            $value = [];
+            foreach ($response_id as $item) {
+              $value[] = $item['value'];
+            }
+          }
+          else {
+            $value = $termObj->field_dashboard_response_id->value;
+          }
           $this->valueAliasMap[$termObj->field_alias->value] = [
-            'response_id' => $termObj->field_dashboard_response_id->value,
+            'response_id' => $value,
             'title' => $term->name,
           ];
         }
