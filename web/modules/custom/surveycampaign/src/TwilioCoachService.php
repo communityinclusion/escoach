@@ -208,10 +208,11 @@ class TwilioCoachService
         )
         ->condition('sm.Complete', 1)
         ->condition('sm.surveyid', $surveyid)
-        ->condition('sm.mobilephone', "$phone")
-        ->execute()->fetchField();
+        ->condition('sm.mobilephone', "$phone");
+        $result = $query->execute()->fetchField();
         $number_of_rows = count($result);
         $completedonce = $number_of_rows > 0 ? true : false;
+        \Drupal::logger('surveycampaign')->notice("check completed, rows returned: " . $number_of_rows);
 
         return $completedonce;
    }
@@ -219,7 +220,7 @@ class TwilioCoachService
         $config =  \Drupal::config('surveycampaign.settings');
         $isprimary = $surveyid == $config->get('defaultid') ? true :false;
         $onetime = false;
-        if (!$isprimary) $onetime = $config->get('alt_repeat') && $config->get('alt_repeat') == '0' ? true : false;
+        $onetime = !$isprimary && $config->get('alt_repeat') == '0' ? true : false;
         //read mailer table
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
@@ -285,8 +286,12 @@ class TwilioCoachService
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
                     //setting for secondary survey to send only once.
-                    
-                    if($onetime) $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
+
+                  
+                    if($onetime) {
+                        $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
+                        \Drupal::logger('surveycampaign')->notice("Phone check: " . $row['mobilephone']);
+                    }
                     if($checkcompletedonce) return;
                     
                     $sendit = false;
