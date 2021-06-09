@@ -45,26 +45,20 @@ class DashboardForm extends FormBase {
       '#title' => $this->t('Who'),
       '#options' => $this->getTerms('who', 'any', 'Any Interaction'),
       '#weight' => '1',
-      '#default_value' => $form_state->get('who') ?? 'any',
+      '#default_value' => $form_state->get('who') ?? NULL,
+      '#empty_value' => '_none',
+      '#empty_option' => 'None',
+      '#required' => FALSE,
     ];
     $form['where'] = [
       '#type' => 'radios',
       '#title' => $this->t('Where'),
       '#options' => $this->getTerms('where', 'any', 'Anyplace'),
       '#weight' => '2',
-      '#default_value' => $form_state->get('where') ?? 'any',
-    ];
-
-    $form['dataframe'] = [
-      '#type' => 'radios',
-      '#title' => $this->t('Select your role'),
-      '#options' => [
-        'me' => $this->t('I am an EC/Manager who entered data'),
-        'team' => $this->t('I manage a team who entered data'),
-        'all ' => $this->t('I am from the general public')
-      ],
-      '#default_value' => $form_state->get('time_frame') ?? 'up-to-date',
-      '#weight' => '4',
+      '#default_value' => $form_state->get('where') ?? NULL,
+      '#empty_value' => '_none',
+      '#empty_option' => 'None',
+      '#required' => FALSE,
     ];
 
     $form['timeframe'] = [
@@ -82,11 +76,10 @@ class DashboardForm extends FormBase {
     $input = $form_state->getUserInput();
 
     $params = [
-      'timeframe' => $input['timeframe'],
-      'dataframe' => $input['dataframe'],
-      'who' => $input['who'],
-      'what' => $input['what'],
-      'where' => $input['where'],
+      'timeframe' => $input['timeframe'] ?? NULL,
+      'who' => $input['who'] ?? NULL,
+      'what' => $input['what'] ?? NULL,
+      'where' => $input['where'] ?? NULL,
     ];
 
     $form['results'] = [
@@ -116,6 +109,8 @@ class DashboardForm extends FormBase {
       ],
     ];
 
+    // Don't cache the form
+    $form['#cache']['max-age'] = 0;
     return $form;
   }
 
