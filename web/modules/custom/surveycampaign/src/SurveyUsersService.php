@@ -87,7 +87,6 @@ class SurveyUsersService
     public function checkInactive($userphone,$lastname) {
         $cleanphone = preg_replace('/\D+/', '',$userphone);
         
-        \Drupal::logger('surveycampaign')->notice("Phone numbers : userphone variable: " . $userphone . " lastname: " . $lastname);
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
