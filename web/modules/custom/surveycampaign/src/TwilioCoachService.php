@@ -33,7 +33,7 @@ class TwilioCoachService
         if($onetime) $tomorrowdate->modify("+ 1 day");
         $tomorrowdate = $tomorrowdate->format('Y-m-d');
         $gizmodate = $day == 0 ? $todaydate : $tomorrowdate;
-        //Options Filter examples, uncomment to see these in use
+        //Options Filter examples, uncomment to see these in use.
         $status = "&filter[field][1]=status&filter[operator][1]==&filter[value][1]=Complete";//Only show complete responses
         $datesubmitted = "&filter[field][0]=datesubmitted&filter[operator][0]=>=&filter[value][0]=$gizmodate+01:00:00&resultsperpage=150";//Submit date greater than today at 1:00 AM
         $loginslug = "api_token={$api_key}&api_token_secret={$api_secret}";
