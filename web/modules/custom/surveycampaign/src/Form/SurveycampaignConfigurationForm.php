@@ -387,6 +387,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#type' => 'select',
       '#title' => $this->t('Select the number of days a user must be inactive to get a warning they will be deactivated'),
       '#options' => [
+        '1' => $this->t('1'),
         '2' => $this->t('2'),
         '3' => $this->t('3'),
         '4' => $this->t('4'),
