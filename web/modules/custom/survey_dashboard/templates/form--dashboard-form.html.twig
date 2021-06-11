@@ -1,0 +1,10 @@
+<div class="container">
+  <div class="row">
+    <div class="col">{{ form.who }}</div><div class="col">{{ form.where }}</div><div class="col">{{ form.timeframe }}</div>
+  </div>
+  <div class="row">
+    <div class="col">{{ form.what }}</div><div class="col">{{ form.results }}</div>
+  </div>
+  {{ form|without('who', 'what', 'where', 'results', 'timeframe') }}
+</div>
+
