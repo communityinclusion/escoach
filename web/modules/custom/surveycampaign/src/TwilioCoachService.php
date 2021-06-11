@@ -278,7 +278,7 @@ class TwilioCoachService
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
                     //setting for secondary survey to send only once.
-
+                    $checkcompletedonce = false;
                   
                     if($onetime) {
                         $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
@@ -399,7 +399,7 @@ class TwilioCoachService
 
 
    }
-   function twilioCall ($tonumber,$name,$link,$textno,$starttime,$endtime,$isprimary) {
+   function twilioCall($tonumber,$name,$link,$textno,$starttime,$endtime,$isprimary) {
         $config =  \Drupal::config('surveycampaign.settings');
         $firsttextconfig = $isprimary ? $config->get('first_text_body.value') : $config->get('alt_first_text_body.value');
         $secondtextconfig = $isprimary ? $config->get('second_text_body.value') : $config->get('alt_second_text_body.value') ;
@@ -524,7 +524,7 @@ class TwilioCoachService
                 $todaylink = null;
                 if($didnotreply >= $cutoff && !$inactive) {
                 
-                    $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink);
+                    $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink,$isprimary);
                     }
                 elseif ($didnotreply == $warning && $warningcount == $warning && !$inactive) 
                 { 
@@ -532,7 +532,7 @@ class TwilioCoachService
                     if (!is_bool($output)) {
                         $todaylink = $output->invitelink;
                         \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
-                        $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink);
+                        $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
                     
                 }
@@ -774,9 +774,11 @@ class TwilioCoachService
                 $campaignarray[]= $value;
             }
         }
+        $campaigndisplay = print_r($campaignarray,true);
+        \Drupal::logger('surveycampaign alert')->notice('Campaign array: ' . $campaigndisplay);
         return $campaignarray;
     }
-    protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink) {
+    protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink,$isprimary) {
         $send = false;
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
@@ -824,11 +826,11 @@ class TwilioCoachService
         $langcode = "en";
 
         if($send) { 
-            if($warningmode == '2' || $warningmode == '3') {
+            if(($warningmode == '2' || $warningmode == '3') && $isprimary) {
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
-            if($warningmode == '1' || $warningmode == '3') { 
-                $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,true);
+            if(($warningmode == '1' || $warningmode == '3') && $isprimary) { 
+                $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,$isprimary);
                 
             }
         }
