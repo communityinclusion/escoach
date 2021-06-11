@@ -45,7 +45,7 @@ class BaseQuery {
         $termObj = Term::load($term->tid);
         if ( !empty($termObj->field_alias->value)) {
           $response_id = $termObj->field_dashboard_response_id->getValue();
-          if (is_array($response_id)) {
+          if (is_array($response_id) && count($response_id) > 1) {
             $value = [];
             foreach ($response_id as $item) {
               $value[] = $item['value'];
