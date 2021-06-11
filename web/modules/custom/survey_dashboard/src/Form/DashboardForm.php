@@ -38,7 +38,7 @@ class DashboardForm extends FormBase {
       '#title' => $this->t('What'),
       '#options' => $this->getTerms('what'),
       '#weight' => '0',
-      '#default_value' => $form_state->get('what') ?? 'any',
+      '#default_value' => $form_state->get('what') ?? [],
     ];
     $form['who'] = [
       '#type' => 'radios',
@@ -76,7 +76,8 @@ class DashboardForm extends FormBase {
     $input = $form_state->getUserInput();
 
     $params = [
-      'timeframe' => $input['timeframe'] ?? NULL,
+      'timeframe' => $input['timeframe'] ?? '',
+      'dataframe' => $input['dataframe'] ?? '',
       'who' => $input['who'] ?? NULL,
       'what' => $input['what'] ?? NULL,
       'where' => $input['where'] ?? NULL,
