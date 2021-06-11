@@ -794,7 +794,7 @@ class TwilioCoachService
         $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
         $warningtextconfig = $config->get('warning_text_body.value');
         $cutofftextconfig = $config->get('cutoff_text_body.value');
-        if($noreplylevel == 2) {
+        if($noreplylevel == 2 && $isprimary) {
             
              $cutofftextbody = str_replace("@name", "$firstname $lastname",str_replace('@cutoffdays', $dayno, $cutofftextconfig));
             $dayno = $inactiveno;
@@ -810,7 +810,7 @@ class TwilioCoachService
                 $textno = 5;
             } 
         }
-        elseif($noreplylevel == 1)
+        elseif($noreplylevel == 1 && $isprimary)
         {
             $dayno = $warningno;
             $warningtextbody = str_replace("@name", "$firstname $lastname",str_replace('@invitelink', $invitelink,str_replace('@warningdays', $dayno,str_replace("@daystocutoff", $warningdays, $warningtextconfig))));
