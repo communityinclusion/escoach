@@ -109,6 +109,9 @@ class DashboardForm extends FormBase {
       ],
     ];
 
+    $form['#attached']['library'][] = 'survey_dashboard/dashboard';
+    $form['#theme'] = ['dashboard-form'];
+
     // Don't cache the form
     $form['#cache']['max-age'] = 0;
     return $form;

@@ -5,6 +5,9 @@
 
 function survey_dashboard_theme() {
   return [
-
+    'dashboard-form' => [
+      'render element' => 'form',
+      'template' => 'form--dashboard-form',
+    ],
   ];
 }
