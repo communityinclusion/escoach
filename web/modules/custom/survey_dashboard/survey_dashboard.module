@@ -9,5 +9,35 @@ function survey_dashboard_theme() {
       'render element' => 'form',
       'template' => 'form--dashboard-form',
     ],
+    'what-summary' => [
+      'template'  => 'what-summary',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'where-summary' => [
+      'template'  => 'where-summary',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'who-summary' => [
+      'template'  => 'who-summary',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'monthly-trends' => [
+      'template'  => 'monthly-trends',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'quarterly-trends' => [
+      'template'  => 'quarterly-trends',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
   ];
 }
