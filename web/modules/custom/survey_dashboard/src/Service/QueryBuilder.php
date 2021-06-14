@@ -4,6 +4,7 @@ namespace Drupal\survey_dashboard\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
+use Drupal\survey_dashboard\Query\BaseQuery;
 use Drupal\survey_dashboard\Query\What;
 use Drupal\survey_dashboard\Query\Where;
 use Drupal\survey_dashboard\Query\Who;
@@ -77,6 +78,38 @@ class QueryBuilder {
   private $entityTypeManager;
 
   /**
+   * The theme used to render the results.
+   * @var string
+   */
+  private $theme;
+
+  /**
+   * The title for the results.
+   */
+  private $title;
+
+  /**
+   * The title(s) of the selected WHAT options.
+   *
+   * @var array
+   */
+  private $whatTitles;
+
+  /**
+   * The title(s) of the selected WHO options.
+   *
+   * @var array
+   */
+  private $whoTitles;
+
+  /**
+   * The title(s) of the selected WHERE options.
+   *
+   * @var array
+   */
+  private $whereTitles;
+
+  /**
    * Constructor.
    */
   public function __construct(AccountProxy $currentUser, EntityTypeManagerInterface $entityTypeManager) {
@@ -93,12 +126,17 @@ class QueryBuilder {
       return NULL;
     }
 
+    $titleProp = $vid . 'Titles';
     if (is_array($tid)) {
       $return = [];
+      $titles = [];
       $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadMultiple($tid);
       foreach ($terms as $term) {
+        $titles[] = $term->label();
         $return[] = $term->field_dashboard_response_id->value;
       }
+
+      $this->$titleProp = $titles;
       return $return;
     }
     else {
@@ -108,6 +146,9 @@ class QueryBuilder {
     if (!$term) {
       return NULL;
     }
+
+    $this->$titleProp = [ $term->label() ];
+
     if ($vid != 'who') {
       return $term->field_dashboard_response_id->value;
     }
@@ -151,29 +192,91 @@ class QueryBuilder {
 
     switch ($this->timeframe) {
       case 'quarterly':
+        $this->theme = 'quarterly-trends';
         $query->addQuarterlyParams();
+        $trends = TRUE;
         break;
 
       case 'monthly':
+        $this->theme = 'monthly-trends';
         $query->addMonthlyParams();
+        $trends = TRUE;
         break;
+
+      default:
+        $trends = FALSE;
     }
 
-    $result = $query->execute();
-    return $result;
+    return [
+      '#theme' => $this->theme,
+      '#data' => ($trends) ? $this->processResultsTrends($query) : $this->processResultsSummary($query),
+    ];
   }
 
+  private function processResultsSummary(BaseQuery $query) {
+
+    $result = $query->execute();
+
+    $return = [
+      'title' => $this->title,
+      'aliasMap' => $query->getAliasMap(),
+      'results' => [
+        'all' => [],
+        'me' => [],
+        'provider' => [],
+      ]
+    ];
+
+    foreach (array_keys($return['aliasMap']) as $alias ) {
+      foreach (['all', 'me', 'provider'] as $who) {
+        $return['results'][$who][$alias]['day'] = $this->calculateHrs($result[0], $alias, $who,'day');
+        $return['results'][$who][$alias]['week'] = $this->calculateHrs($result[0], $alias, $who, 'week');
+
+      }
+    }
+
+    return  $return;
+  }
+
+  /**
+   * Calculate the number of hours for the given cell in the results table.
+   *
+   * @param array $results
+   * @param string $alias
+   * @param string $who
+   * @param string $term
+   */
+  private function calculateHrs($results, $alias, $who, $term) {
+    $totalCell = 'Total' . ucfirst($who);
+    $dataCell = $alias . ucfirst($who);
+
+    if ($results[$totalCell] == 0 ) {
+      return '0';
+    }
+
+    $dayTotal = $results[$dataCell] / $results[$totalCell] * 8 / 24;
+    return ($term == 'day') ? $dayTotal : $dayTotal * 5;
+  }
+
+  private function processResultsTrends($results) : array {
+    $return = [];
+
+    return  $return;
+  }
   /**
    * Build query.
    */
   protected function buildQuery() {
     if (!$this->what) {
+      $this->theme = 'what-summary';
       return $this->whatSummary();
     }
     elseif ($this->who == 'any') {
+      $this->theme = 'who-summary';
       return $this->whoSummary();
     }
     elseif ($this->where == 'any') {
+      $this->theme = 'where-summary';
       return $this->whereSummary();
     }
     else {
