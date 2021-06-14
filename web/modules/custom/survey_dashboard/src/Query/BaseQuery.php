@@ -161,6 +161,23 @@ class BaseQuery {
     if (!$this->email) {
       return;
     }
+
+    if (is_array(static::QUESTION_ID)) {
+      $sql = sprintf("sum(case when (((answer%d IS NOT NULL) OR (answer%d IS NOT NULL)) AND email = :email) then 1 else 0 end)",
+        static::QUESTION_ID[0],
+        static::QUESTION_ID[1]
+      );
+    }
+    else {
+      $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (email = :email)) then 1 else 0 end)',
+        static::QUESTION_ID
+      );
+    }
+
+    $this->query->addExpression($sql, 'TotalMe', [
+      ':email' => $this->email,
+    ]);
+
     foreach ($this->valueAliasMap as $alias => $definition) {
       $value = $definition['response_id'];
       if (is_array($value)) {
@@ -221,8 +238,9 @@ class BaseQuery {
     }
 
     if (is_array(static::QUESTION_ID)) {
-      $sql = sprintf('sum(case when ((answer%d IS NULL) AND (provider = :provider)) then 1 else 0 end)',
-        static::QUESTION_ID[0]
+      $sql = sprintf("sum(case when (((answer%d IS NOT NULL) OR (answer%d IS NOT NULL)) AND provider = :provider) then 1 else 0 end)",
+        static::QUESTION_ID[0],
+        static::QUESTION_ID[1]
       );
     }
     else {
@@ -231,7 +249,9 @@ class BaseQuery {
       );
     }
 
-    $this->query->addExpression($sql, 'TotalProvider');
+    $this->query->addExpression($sql, 'TotalProvider', [
+      ':provider' => $this->provider,
+    ]);
 
     foreach ($this->valueAliasMap as $alias => $definition) {
       $value = $definition['response_id'];
