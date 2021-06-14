@@ -62,7 +62,7 @@ class TwilioCoachService
         $seconddate = $enddate->format('g:i a');
         // create new campaign
         // IF this is a one-timer, make the expire data tomorrow.
-        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . "&linkdates[close]=" . ($onetime ? urlencode("$tomorrowdate 23:59:30") : urlencode("$gizmodate 23:59:30")) . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
+        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . ($onetime ? "" : "&linkdates[close]=" . urlencode("$gizmodate 23:59:30")) . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
        
 
         
