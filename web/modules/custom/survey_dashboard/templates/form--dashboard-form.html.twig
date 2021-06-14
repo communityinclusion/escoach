@@ -4,7 +4,8 @@
   </div>
   <div class="row">
     <div class="col">{{ form.what }}</div><div class="col">{{ form.results }}</div>
+    {{ form.submit }}
   </div>
-  {{ form|without('who', 'what', 'where', 'results', 'timeframe') }}
+  {{ form|without('who', 'what', 'where', 'results', 'timeframe', 'submit') }}
 </div>
 
