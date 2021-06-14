@@ -39,5 +39,11 @@ function survey_dashboard_theme() {
         'data' => null,
       ],
     ],
+    'selected-activities' => [
+      'template'  => 'selected-activities',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
   ];
 }
