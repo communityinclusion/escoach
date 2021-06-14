@@ -255,9 +255,17 @@ class QueryBuilder {
     }
 
     $dayTotal = $results[$dataCell] / $results[$totalCell] * 8 / 24;
-    return ($term == 'day') ? $dayTotal : $dayTotal * 5;
+    return ($term == 'day') ?
+      $this->formatDuration($dayTotal)  :
+      $this->formatDuration($dayTotal * 5);
   }
 
+  private function formatDuration(float $time) {
+    $total_hours = $time * 24;
+    $hour_part = floor($total_hours);
+    $min_part = round(($total_hours - $hour_part) * 60);
+    return sprintf("%d:%02d", $hour_part, $min_part);
+  }
   private function processResultsTrends($results) : array {
     $return = [];
 
@@ -280,6 +288,7 @@ class QueryBuilder {
       return $this->whereSummary();
     }
     else {
+      $this->theme = 'selected-activities';
       return $this->selectedActivities();
     }
   }
