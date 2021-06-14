@@ -540,7 +540,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => t('Set secondary survey to require daily completion, or one-time completion. If repeating users will get daily reminders to complete the survey every day.  If one-time, users will get daily reminders to complete the survey until they have completed it once, then no more reminders.'),
       '#default_value' => $config->get('alt_repeat'),
       '#options' => array(
-        t('One-time'),
+        t('One-time (one-time campaign links will remain open until the survey is shut down.'),
         t('Daily (repeating)'),
       )
     );
