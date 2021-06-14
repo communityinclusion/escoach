@@ -122,10 +122,6 @@ class DashboardForm extends FormBase {
     return $form['results'];
   }
 
-  private function processResults() {
-
-  }
-
   private function getTerms($vid, $empty_value = NULL, $emty_option = NULL) {
     $term_data = [];
 

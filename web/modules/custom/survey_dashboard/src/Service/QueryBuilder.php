@@ -209,6 +209,7 @@ class QueryBuilder {
       $query->addWhoCondition($this->who);
     }
 
+    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
     return $query;
   }
 
@@ -223,6 +224,8 @@ class QueryBuilder {
     elseif ($this->what && $this->what != 'any') {
       $query->addWhatCondition($this->what);
     }
+
+    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
     return $query;
   }
 
@@ -237,6 +240,8 @@ class QueryBuilder {
     elseif ($this->who && $this->who != 'any') {
       $query->addWhoCondition($this->who);
     }
+
+    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
     return $query;
   }
 
