@@ -71,6 +71,15 @@ class BaseQuery {
   }
 
   /**
+   * Get the alias map for the current dimension.
+   *
+   * @return array
+   */
+  public function getAliasMap() {
+    return $this->valueAliasMap;
+  }
+
+  /**
    * Get taxonomy terms for dimension.
    */
   public function initDimension() {
@@ -309,7 +318,7 @@ class BaseQuery {
       $recordSet[] = (array) $result;
     }
 
-    return json_encode($recordSet);
+    return $recordSet;
   }
 
 }

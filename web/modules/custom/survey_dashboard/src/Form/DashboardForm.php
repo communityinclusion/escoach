@@ -83,6 +83,8 @@ class DashboardForm extends FormBase {
       'where' => $input['where'] ?? NULL,
     ];
 
+    $results = $this->surveyDashboardQueryBuilder->process($params);
+
     $form['results'] = [
       '#type' => 'container',
       '#weight' => 5,
@@ -91,7 +93,7 @@ class DashboardForm extends FormBase {
       ],
       'widget' => [
         '#type' => 'markup',
-        '#markup' => $this->surveyDashboardQueryBuilder->process($params),
+        '#markup' => render($results) ,
       ]
     ];
 
