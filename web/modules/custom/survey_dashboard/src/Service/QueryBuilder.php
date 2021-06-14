@@ -225,7 +225,7 @@ class QueryBuilder {
       $query->addWhatCondition($this->what);
     }
 
-    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
+    $query->addCondition('answer' . What::QUESTION_ID, 'NULL', '!=');
     return $query;
   }
 
@@ -235,13 +235,13 @@ class QueryBuilder {
   protected function whereSummary() {
     $query = new Where($this->email, $this->provider);
     if ($this->what && $this->what != 'any') {
-      $query->addWhatCondition($this->where);
+      $query->addWhatCondition($this->what);
     }
     elseif ($this->who && $this->who != 'any') {
       $query->addWhoCondition($this->who);
     }
 
-    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
+    $query->addCondition('answer' . What::QUESTION_ID, 'NULL', '!=');
     return $query;
   }
 
