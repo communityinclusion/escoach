@@ -29,6 +29,7 @@ class SurveyUsersService
             ->loadByProperties([
                 'uid' => $user,
                 'type' => 'survey_participants',
+                'is_default' => 1,
             ]);
             $userobj = \Drupal\user\Entity\User::load($user);
             $useremail = $userobj->getEmail();
@@ -62,6 +63,7 @@ class SurveyUsersService
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
+                'is_default' => 1,
                 'field_cell_phone' => $userphone,
             ]);
         
@@ -91,6 +93,7 @@ class SurveyUsersService
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
+                'is_default' => 1,
                 'field_cell_phone' => $userphone,
             ]);
         
