@@ -137,7 +137,9 @@ class QueryBuilder {
       $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadMultiple($tid);
       foreach ($terms as $term) {
         $titles[] = $term->label();
-        $return[] = $term->field_dashboard_response_id->value;
+        $return[] = [
+          $term->field_dashboard_question_id->value => $term->field_dashboard_response_id->value
+        ];
       }
 
       $this->$titleProp = $titles;
