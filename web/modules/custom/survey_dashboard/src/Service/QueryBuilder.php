@@ -126,6 +126,10 @@ class QueryBuilder {
       return NULL;
     }
 
+    if ($vid == 'what' && count($tid) == 1) {
+      $tid = current($tid);
+    }
+
     $titleProp = $vid . 'Titles';
     if (is_array($tid)) {
       $return = [];
@@ -150,12 +154,14 @@ class QueryBuilder {
     $this->$titleProp = [ $term->label() ];
 
     if ($vid != 'who') {
-      return $term->field_dashboard_response_id->value;
+      return [
+        $term->field_dashboard_question_id->value => $term->field_dashboard_response_id->value
+      ];
     }
     else {
       return [
-        $term->field_dashboard_response_id[0]->value,
-        $term->field_dashboard_response_id[1]->value,
+        $term->field_dashboard_question_id[0]->value => $term->field_dashboard_response_id[0]->value,
+        $term->field_dashboard_question_id[1]->value => $term->field_dashboard_response_id[1]->value,
       ];
     }
   }
@@ -169,8 +175,8 @@ class QueryBuilder {
     $this->timeframe = $params['timeframe'];
     $this->dataframe = $params['dataframe'];
 
-    $this->who = ( $params['who'] == 'any' ) ? 'any' : $this->getTaxonomyValue('who', $params['who']);
-    $this->what = $this->getTaxonomyValue('what', $params['what']);
+    $this->who =   ( $params['who'] == 'any'   ) ? 'any' : $this->getTaxonomyValue('who', $params['who']);
+    $this->what =  ( $params['what'] == 'any'  ) ? 'any' : $this->getTaxonomyValue('what', $params['what']);
     $this->where = ( $params['where'] == 'any' ) ? 'any' : $this->getTaxonomyValue('where', $params['where']);
     $this->email = $this->currentUser->getEmail();
 
@@ -350,7 +356,7 @@ class QueryBuilder {
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
-    elseif ($this->what && $this->what != 'any') {
+    elseif ($this->what && is_array($this->what)) {
       $query->addWhatCondition($this->what);
     }
 
@@ -367,7 +373,7 @@ class QueryBuilder {
     if ($this->what && $this->what != 'any') {
       $query->addWhatCondition($this->what);
     }
-    elseif ($this->who && $this->who != 'any') {
+    elseif ($this->who && is_array($this->who)) {
       $query->addWhoCondition($this->who);
     }
 
