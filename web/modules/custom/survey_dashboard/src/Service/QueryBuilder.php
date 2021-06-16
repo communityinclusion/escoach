@@ -337,6 +337,7 @@ class QueryBuilder {
       $query->addWhoCondition($this->who);
     }
 
+    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
     return $query;
   }
 
