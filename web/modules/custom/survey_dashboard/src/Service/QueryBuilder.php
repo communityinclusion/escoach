@@ -165,16 +165,7 @@ class QueryBuilder {
    */
   public function process($params = []) {
 
-    $profiles = $this->entityTypeManager->getStorage('profile')
-      ->loadByProperties([
-        'uid' => $this->currentUser->id(),
-        'type' => 'survey_participants',
-      ]);
-
-    if ( $profiles) {
-      $profile = current($profiles);
-    }
-
+    $this->getProvider();
     $this->timeframe = $params['timeframe'];
     $this->dataframe = $params['dataframe'];
 
@@ -182,10 +173,6 @@ class QueryBuilder {
     $this->what = $this->getTaxonomyValue('what', $params['what']);
     $this->where = ( $params['where'] == 'any' ) ? 'any' : $this->getTaxonomyValue('where', $params['where']);
     $this->email = $this->currentUser->getEmail();
-
-    if ( $profile && $profile->field_provider->entity ) {
-      $this->provider = $profile->field_provider->entity->getName();
-    }
 
     /** @var \Drupal\survey_dashboard\Query\BaseQuery $query */
     $query = $this->buildQuery();
@@ -213,6 +200,26 @@ class QueryBuilder {
     ];
   }
 
+  /**
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  private function getProvider() {
+    $profiles = $this->entityTypeManager->getStorage('profile')
+      ->loadByProperties([
+        'uid' => $this->currentUser->id(),
+        'type' => 'survey_participants',
+        'is_default' => 1,
+      ]);
+
+    if ( $profiles) {
+      $profile = current($profiles);
+    }
+    if ( $profile && $profile->field_provider->entity ) {
+      $this->provider = $profile->field_provider->entity->getName();
+    }
+
+  }
   private function processResultsSummary(BaseQuery $query) {
 
     $result = $query->execute();
@@ -227,10 +234,14 @@ class QueryBuilder {
       ]
     ];
 
+    if (!empty($this->whatTitles)) {
+      $return['what'] = (count($this->whatTitles) > 1) ? 'Selected Whats' : $this->whatTitles[0];
+    }
+
     foreach (array_keys($return['aliasMap']) as $alias ) {
-      foreach (['all', 'me', 'provider'] as $who) {
-        $return['results'][$who][$alias]['day'] = $this->calculateHrs($result[0], $alias, $who,'day');
-        $return['results'][$who][$alias]['week'] = $this->calculateHrs($result[0], $alias, $who, 'week');
+      foreach (['all', 'me', 'provider'] as $scope) {
+        $return['results'][$scope][$alias]['day'] = $this->calculateHrs($result[0], $alias, $scope,'day');
+        $return['results'][$scope][$alias]['week'] = $this->calculateHrs($result[0], $alias, $scope, 'week');
 
       }
     }
@@ -251,7 +262,7 @@ class QueryBuilder {
     $dataCell = $alias . ucfirst($who);
 
     if ($results[$totalCell] == 0 ) {
-      return '0';
+      return '0:00';
     }
 
     $dayTotal = $results[$dataCell] / $results[$totalCell] * 8 / 24;
@@ -298,7 +309,7 @@ class QueryBuilder {
    */
   protected function selectedActivities() {
     $query = new What($this->email, $this->provider);
-    $query->addWhatCondition($this->what);
+    $query->addSelectedSums($this->what);
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
@@ -314,6 +325,7 @@ class QueryBuilder {
    */
   protected function whatSummary() {
     $query = new What($this->email, $this->provider);
+    $query->addSums();
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
@@ -330,6 +342,7 @@ class QueryBuilder {
    */
   protected function whoSummary() {
     $query = new Who($this->email, $this->provider);
+    $query->addSums();
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
@@ -346,6 +359,7 @@ class QueryBuilder {
    */
   protected function whereSummary() {
     $query = new Where($this->email, $this->provider);
+    $query->addSums();
     if ($this->what && $this->what != 'any') {
       $query->addWhatCondition($this->what);
     }
