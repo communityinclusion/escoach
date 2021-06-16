@@ -10,14 +10,15 @@ class What extends BaseQuery {
    * @param $ids
    */
   public function addSelectedSums($ids) {
+    $qidMap = $this->flattenIds($ids);
     $this->query->addExpression('count(*)', 'TotalAll');
-    $this->addSelectedSumsAll($ids);
-    $this->addSelectedSumsMe($ids);
-    $this->addSelectedSumsProvider($ids);
+    $this->addSelectedSumsAll($qidMap);
+    $this->addSelectedSumsMe($qidMap);
+    $this->addSelectedSumsProvider($qidMap);
 
-    $this->addSelectedSumsAll($ids, 'NOT');
-    $this->addSelectedSumsMe($ids, 'NOT');
-    $this->addSelectedSumsProvider($ids, 'NOT');
+    $this->addSelectedSumsAll($qidMap, 'NOT');
+    $this->addSelectedSumsMe($qidMap, 'NOT');
+    $this->addSelectedSumsProvider($qidMap, 'NOT');
 
     $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (email = :email)) then 1 else 0 end)',
       static::QUESTION_ID
@@ -52,14 +53,14 @@ class What extends BaseQuery {
   private function addSelectedSumsAll($ids, $not = NULL) {
     $ind1 = $this->getValueIndex();
     $sql = sprintf('sum(case when answer%d %s IN (:value%d[])  then 1 else 0 end)',
-      self::QUESTION_ID,
+      key($ids),
       $not,
       $ind1
     );
 
     $alias = (!$not) ? 'SelectedAll' : 'OtherAll';
     $this->query->addExpression($sql, $alias, [
-      ':value' . $ind1 . '[]' => $ids,
+      ':value' . $ind1 . '[]' => current($ids),
     ]);
   }
 
@@ -70,14 +71,14 @@ class What extends BaseQuery {
   private function addSelectedSumsMe($ids, $not = NULL) {
     $ind1 = $this->getValueIndex();
     $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) AND email = :email then 1 else 0 end)',
-      self::QUESTION_ID,
+      key($ids),
       $not,
       $ind1
     );
 
     $alias = (!$not) ? 'SelectedMe' : 'OtherMe';
     $this->query->addExpression($sql, $alias, [
-      ':value' . $ind1 . '[]' => $ids,
+      ':value' . $ind1 . '[]' => current($ids),
       ':email' => $this->email,
     ]);
   }
@@ -89,15 +90,23 @@ class What extends BaseQuery {
   private function addSelectedSumsProvider($ids, $not = NULL) {
     $ind1 = $this->getValueIndex();
     $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) AND provider = :provider then 1 else 0 end)',
-      self::QUESTION_ID,
+      key($ids),
       $not,
       $ind1
     );
 
     $alias = (!$not) ? 'SelectedProvider' : 'OtherProvider';
     $this->query->addExpression($sql, $alias, [
-      ':value' . $ind1 . '[]' => $ids,
+      ':value' . $ind1 . '[]' => current($ids),
       ':provider' => $this->provider,
     ]);
+  }
+
+  private function flattenIds($ids) {
+    $return = [];
+    foreach ($ids as $idx => $v) {
+      $return[key($v)][] = current($v);
+    }
+    return $return;
   }
 }
