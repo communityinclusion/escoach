@@ -41,28 +41,28 @@ class DashboardForm extends FormBase {
       '#default_value' => $form_state->get('what') ?? [],
     ];
     $form['who'] = [
-      '#type' => 'radios',
+      '#type' => 'select',
       '#title' => $this->t('Who'),
       '#options' => $this->getTerms('who', 'any', 'Any Interaction'),
       '#weight' => '1',
       '#default_value' => $form_state->get('who') ?? NULL,
       '#empty_value' => '_none',
-      '#empty_option' => 'None',
+      '#empty_option' => '--',
       '#required' => FALSE,
     ];
     $form['where'] = [
-      '#type' => 'radios',
+      '#type' => 'select',
       '#title' => $this->t('Where'),
       '#options' => $this->getTerms('where', 'any', 'Anyplace'),
       '#weight' => '2',
       '#default_value' => $form_state->get('where') ?? NULL,
       '#empty_value' => '_none',
-      '#empty_option' => 'None',
+      '#empty_option' => '--',
       '#required' => FALSE,
     ];
 
     $form['timeframe'] = [
-      '#type' => 'radios',
+      '#type' => 'select',
       '#title' => $this->t('Time Frame'),
       '#options' => [
         'up-to-date' => $this->t('Up-to-date'),
