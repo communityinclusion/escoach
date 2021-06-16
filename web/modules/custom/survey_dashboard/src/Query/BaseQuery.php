@@ -306,26 +306,26 @@ class BaseQuery {
   /**
    * Add a "What" condition.
    */
-  public function addWhatCondition($value) {
-    $this->query->condition('answer' . What::QUESTION_ID, $value, 'IN');
+  public function addWhatCondition(array $what) {
+    $this->query->condition('answer' . key($what), current($what), 'IN');
   }
 
   /**
    * Add a "Who" condition.
    */
-  public function addWhoCondition($values) {
-    $group = $this->query->orConditionGroup()
-      ->condition('answer' . Who::QUESTION_ID[0], $values[0], 'IN')
-      ->condition('answer' . Who::QUESTION_ID[1], $values[1], 'IN');
-
+  public function addWhoCondition(array $values) {
+    $group = $this->query->orConditionGroup();
+    foreach ($values as $qid => $value) {
+      $group->condition('answer' . $qid, $value, 'IN');
+    }
     $this->query->condition($group);
   }
 
   /**
    * Add a "Where" condition.
    */
-  public function addWhereCondition($value) {
-    $this->query->condition('answer' . Where::QUESTION_ID, $value, 'IN');
+  public function addWhereCondition(array $value) {
+    $this->query->condition('answer' . key($value), current($value), 'IN');
   }
 
   /**
