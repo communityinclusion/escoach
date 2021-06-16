@@ -228,9 +228,13 @@ class QueryBuilder {
       'title' => $this->title,
       'aliasMap' => $query->getAliasMap(),
       'results' => [
-        'all' => [],
+        'all' => [
+          'total' => $result[0]['TotalAll'],
+        ],
         'me' => [],
-        'provider' => [],
+        'provider' => [
+          'total' => $result[0]['TotalProvider'],
+        ],
       ]
     ];
 
@@ -333,7 +337,6 @@ class QueryBuilder {
       $query->addWhoCondition($this->who);
     }
 
-    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
     return $query;
   }
 
