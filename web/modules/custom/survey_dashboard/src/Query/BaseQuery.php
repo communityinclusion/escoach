@@ -17,21 +17,21 @@ class BaseQuery {
    *
    * @var \Drupal\Core\Database\Query\SelectInterface
    */
-  private $query;
+  protected $query;
 
   /**
    * The email address for the current user.
    *
    * @var string
    */
-  private $email;
+  protected $email;
 
   /**
    * The provider name of the current user.
    *
    * @var string
    */
-  private $provider;
+  protected $provider;
 
   /**
    * Array of aliases and field values for current dimension.
@@ -57,7 +57,7 @@ class BaseQuery {
     $this->initDimension();
     $database = \Drupal::database();
     $this->query = $database->select(self::BASE_TABLE, self::BASE_TABLE);
-    $this->addSums();
+
   }
 
   /**
@@ -119,7 +119,7 @@ class BaseQuery {
   /**
    * Keep a running count of the placeholder deltas.
    */
-  private function getValueIndex() {
+  protected function getValueIndex() {
     return $this->valueIndex++;
   }
 
