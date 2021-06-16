@@ -18,9 +18,9 @@
   {{ menu_items }}
  {% if id=='superfish-user-menu' %}
     {% if logged_in %}
-      <li class="sf-depth-1 sf-no-children"><a href="/user-library">Employment Specialist Library</a></li>
-      <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/survey_participants">Edit your survey preferences</a></li>
-      <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/edit">Edit password and email address</a></li>
+      <li class="sf-depth-1 sf-no-children"><a href="/user-library">Library</a></li>
+      <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/survey_participants">Stop/Resume survey</a></li>
+      <li class="sf-depth-1 sf-no-children"><a href="/user/{{ uid }}/edit">Change password</a></li>
       <li class="sf-depth-1 sf-no-children"><a href="/user/logout">Log out</a></li>
     {% else %}
        <li class="sf-depth-1 sf-no-children"><a href="/user/login">Log in to your account</a></li>
