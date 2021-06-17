@@ -298,7 +298,7 @@ class QueryBuilder {
    * Build query.
    */
   protected function buildQuery() {
-    if (!$this->what) {
+    if (!$this->what && !$this->who && !$this->where) {
       $this->theme = 'what-summary';
       return $this->whatSummary();
     }
