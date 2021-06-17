@@ -1,9 +1,9 @@
-<h3>{{ data.what }} & WHERE</h3>
+<h3>{% if data.what %}{{ data.what }} & {% endif %}WHERE</h3>
 <div id="google-charts"></div>
 <table id="where-table">
   <thead>
   <tr>
-    <th>{{ data.what }} & WHERE</th>
+    <th>{% if data.what %}{{ data.what }} & {% endif %}WHERE</th>
     <th colspan="3">Hrs/day</th>
     <th colspan="3">Hrs/week</th>
   </tr>

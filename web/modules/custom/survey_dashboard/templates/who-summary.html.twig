@@ -1,9 +1,9 @@
-<h3>{{ data.what }} & WHO</h3>
+<h3>{% if data.what %}{{ data.what }} & {% endif %}WHO</h3>
 <div id="google-charts"></div>
 <table id="who-table">
   <thead>
   <tr>
-    <th>{{ data.what }} & WHO</th>
+    <th>{% if data.what %}{{ data.what }} & {% endif %}WHO</th>
     <th colspan="3">Hrs/day</th>
     <th colspan="3">Hrs/week</th>
   </tr>
