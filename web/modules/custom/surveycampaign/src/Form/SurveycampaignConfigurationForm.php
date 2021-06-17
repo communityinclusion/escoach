@@ -546,7 +546,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     );
     $form['configuration']['second_settings']['alt_hour_range_low'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select earliest time to send survey'),
+      '#title' => $this->t('Select earliest time to send survey (1/2 hour before message sends)'),
       '#options' => [
         '21600' => $this->t('6:00 AM'),
         '23400' => $this->t('6:30 AM'),
@@ -578,7 +578,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
   
     $form['configuration']['second_settings']['alt_hour_range_high'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select latest time to send survey'),
+      '#title' => $this->t('Select latest time for survey period (1/2 hour before message sends)'),
       '#options' => [
         '25200' => $this->t('7:00 AM'),
         '27000' => $this->t('7:30 AM'),
