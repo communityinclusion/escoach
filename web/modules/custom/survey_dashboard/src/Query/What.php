@@ -103,6 +103,10 @@ class What extends BaseQuery {
   }
 
   private function flattenIds($ids) {
+    if (count($ids) == 1) {
+      return $ids;
+    }
+
     $return = [];
     foreach ($ids as $idx => $v) {
       $return[key($v)][] = current($v);
