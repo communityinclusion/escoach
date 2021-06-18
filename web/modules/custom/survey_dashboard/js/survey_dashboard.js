@@ -9,12 +9,12 @@
 
   Drupal.behaviors.surveyDashboard = {
     attach: function (context, settings) {
-      $('input[name="who"]').once('who-select').on('change', function (evt) {
-        $('input[name="where"]').prop('checked', false);
+      $('select[name="who"]').once('who-select').on('change', function (evt) {
+        $('select[name="where"]').val('_none');
       });
 
-      $('input[name="where"]').once('where-select').on('change', function (evt) {
-        $('input[name="who"]').prop('checked', false);
+      $('select[name="where"]').once('where-select').on('change', function (evt) {
+        $('select[name="who"]').val('_none');
       });
     }
   };
