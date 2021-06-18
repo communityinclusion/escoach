@@ -302,11 +302,11 @@ class QueryBuilder {
       $this->theme = 'what-summary';
       return $this->whatSummary();
     }
-    elseif ($this->who == 'any') {
+    elseif ($this->who == 'any' && !$this->where) {
       $this->theme = 'who-summary';
       return $this->whoSummary();
     }
-    elseif ($this->where == 'any') {
+    elseif ($this->where == 'any' && !$this->who) {
       $this->theme = 'where-summary';
       return $this->whereSummary();
     }
