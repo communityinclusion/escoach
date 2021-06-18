@@ -258,7 +258,7 @@ class BaseQuery {
       if (is_array($value)) {
         $ind1 = $this->getValueIndex();
         $ind2 = $this->getValueIndex();
-        $sql = sprintf('sum(case when ((answer%d = :value%d) OR (answer%d = :value%d) AND provider = :provider) then 1 else 0 end)',
+        $sql = sprintf('sum(case when (((answer%d = :value%d) OR (answer%d = :value%d)) AND provider = :provider) then 1 else 0 end)',
           static::QUESTION_ID[0],
           $ind1,
           static::QUESTION_ID[1],
