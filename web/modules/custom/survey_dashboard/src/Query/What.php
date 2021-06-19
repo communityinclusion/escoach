@@ -46,11 +46,52 @@ class What extends BaseQuery {
     ];
   }
 
+  private function buildExpression($ids, $not = NULL, $email = NULL, $provider = NULL) {
+
+    if ($not) {
+      $alias = 'Other';
+      $logical_op = ' AND ';
+    }
+    else {
+      $alias = 'Selected';
+      $logical_op = ' OR ';
+    }
+
+    $conditions = [];
+    foreach ($ids as $qid => $resp_ids) {
+      $ind = $this->getValueIndex();
+      $placeholders[ ':value' . $ind . '[]' ] = $resp_ids;
+      $str = '(answer%d %s IN (:value%d[]))';
+      $conditions[] = sprintf( $str, $qid, $not, $ind);
+    }
+
+    $scope = 'All';
+
+    $sql = 'sum(case when ((' . implode($logical_op, $conditions) . ')';
+    if ($email) {
+      $scope = 'Me';
+      $placeholders[':email'] = $email;
+      $sql .= ' AND (email = :email)';
+    }
+    elseif ($provider) {
+      $scope = 'Provider';
+      $placeholders[':provider'] = $provider;
+      $sql .= ' AND (provider = :provider)';
+    }
+
+    $sql .= ') then 1 else 0 end)';
+
+    $this->query->addExpression($sql, $alias . $scope, $placeholders);
+  }
+
   /**
    * @param $ids
    * @param null $not
    */
   private function addSelectedSumsAll($ids, $not = NULL) {
+    $this->buildExpression($ids,$not);
+    return;
+
     $ind1 = $this->getValueIndex();
     $sql = sprintf('sum(case when answer%d %s IN (:value%d[])  then 1 else 0 end)',
       key($ids),
@@ -69,6 +110,8 @@ class What extends BaseQuery {
    * @param null $not
    */
   private function addSelectedSumsMe($ids, $not = NULL) {
+    $this->buildExpression($ids,$not,$this->email);
+    return;
     $ind1 = $this->getValueIndex();
     $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) AND email = :email then 1 else 0 end)',
       key($ids),
@@ -88,6 +131,9 @@ class What extends BaseQuery {
    * @param null $not
    */
   private function addSelectedSumsProvider($ids, $not = NULL) {
+    $this->buildExpression($ids,$not,NULL, $this->provider);
+    return;
+
     $ind1 = $this->getValueIndex();
     $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) AND provider = :provider then 1 else 0 end)',
       key($ids),
