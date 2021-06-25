@@ -6,6 +6,7 @@ dependencies:
     - system.menu.main
   module:
     - superfish
+    - system
     - user
   theme:
     - escoach_boot4
@@ -77,3 +78,8 @@ visibility:
     negate: false
     context_mapping:
       user: '@user.current_user_context:current_user'
+  request_path:
+    id: request_path
+    pages: /dashboard
+    negate: true
+    context_mapping: {  }
