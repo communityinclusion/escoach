@@ -307,7 +307,23 @@ class BaseQuery {
    * Add a "What" condition.
    */
   public function addWhatCondition(array $what) {
-    $this->query->condition('answer' . key($what), current($what), 'IN');
+    if (count($what) > 1) {
+      $qidMap = $this->flattenIds($what);
+      if (count($qidMap) > 1) {
+        $group = $this->query->orConditionGroup();
+        foreach ($qidMap as $qid => $values) {
+          $group->condition('answer' . $qid, $values, 'IN');
+        }
+        $this->query->condition($group);
+      }
+      else {
+        $this->query->condition('answer' . key($qidMap), current($qidMap), 'IN');
+      }
+    }
+    else {
+      $this->query->condition('answer' . key($what), current($what), 'IN');
+    }
+
   }
 
   /**
@@ -339,6 +355,18 @@ class BaseQuery {
     }
 
     return $recordSet;
+  }
+
+  protected function flattenIds($ids) {
+    if (count($ids) == 1) {
+      return $ids;
+    }
+
+    $return = [];
+    foreach ($ids as $idx => $v) {
+      $return[key($v)][] = current($v);
+    }
+    return $return;
   }
 
 }
