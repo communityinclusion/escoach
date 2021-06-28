@@ -287,6 +287,10 @@ class QueryBuilder {
     $total_hours = $time * 24;
     $hour_part = floor($total_hours);
     $min_part = round(($total_hours - $hour_part) * 60);
+    if ( $min_part == 60) {
+      $hour_part++;
+      $min_part = 0;
+    }
     return sprintf("%d:%02d", $hour_part, $min_part);
   }
   private function processResultsTrends($results) : array {
