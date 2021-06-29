@@ -71,7 +71,6 @@ class What extends BaseQuery {
    *   "What" items selected by user.
    */
   private function addSelectedSums(string $scope, array $ids) {
-    $ind1 = $this->getValueIndex();
     $args = [];
 
     switch ($scope) {
@@ -89,18 +88,22 @@ class What extends BaseQuery {
         $and = '';
     }
 
-    $sql = sprintf('sum(case when answer%d IN (:value%d[]) %s then 1 else 0 end)',
-      key($ids),
-      $ind1,
+    $conditions = [];
+    foreach ($ids as $qid => $values) {
+      $ind = $this->getValueIndex();
+      $conditions[] = sprintf( '(answer%d in (:value%d[]) )', $qid, $ind );
+      if (!is_array($values)) {
+        $values = [$values];
+      }
+      $args[':value' . $ind . '[]'] = $values;
+    }
+
+    $str_condition = implode(' OR ', $conditions);
+    $sql = sprintf('sum(case when (%s) %s then 1 else 0 end)',
+      $str_condition,
       $and
     );
 
-    $values = current($ids);
-    if (!is_array($values)) {
-      $values = [$values];
-    }
-
-    $args[':value' . $ind1 . '[]'] = $values;
     $this->query->addExpression($sql, 'Selected' . $scope, $args);
   }
 
