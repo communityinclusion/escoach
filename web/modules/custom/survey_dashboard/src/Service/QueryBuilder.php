@@ -183,24 +183,15 @@ class QueryBuilder {
     $this->email = $this->currentUser->getEmail();
 
     /** @var \Drupal\survey_dashboard\Query\BaseQuery $query */
-    $query = $this->buildQuery();
-
-    switch ($this->timeframe) {
-      case 'quarterly':
-        $this->theme = 'quarterly-trends';
-        $query->addQuarterlyParams();
-        $trends = TRUE;
-        break;
-
-      case 'monthly':
-        $this->theme = 'monthly-trends';
-        $query->addMonthlyParams();
-        $trends = TRUE;
-        break;
-
-      default:
-        $trends = FALSE;
+    if ($this->timeframe == 'monthly' || $this->timeframe == 'quarterly') {
+      $query = $this->buildTrendsQuery();
+      $trends = TRUE;
     }
+    else {
+      $query = $this->buildQuery();
+      $trends = FALSE;
+    }
+
 
     return [
       '#theme' => $this->theme,
@@ -208,6 +199,22 @@ class QueryBuilder {
     ];
   }
 
+  private function buildTrendsQuery() {
+
+    $query = $this->whatSummary();
+
+    switch ($this->timeframe) {
+      case 'quarterly':
+        $this->theme = 'quarterly-trends';
+        $query->addQuarterlyParams();
+        break;
+
+      case 'monthly':
+        $this->theme = 'monthly-trends';
+        $query->addMonthlyParams();
+        break;
+    }
+  }
   /**
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -228,9 +235,44 @@ class QueryBuilder {
     }
 
   }
+
+  private function getAliasMap() {
+    if ($this->timeframe == 'monthly') {
+      return [
+        1 => 'January',
+        2 => 'February',
+        3 => 'March',
+        4 => 'April',
+        5 => 'May',
+        6 => 'June',
+        7 => 'July',
+        8 => 'August',
+        9 => 'September',
+        10 => 'October',
+        11 => 'November',
+        12 => 'December',
+      ];
+    }
+
+    if ($this->timeframe == 'quarterly') {
+      return [
+        1 => 'Q1',
+        2 => 'Q2',
+        3 => 'Q3',
+        4 => 'Q4',
+      ];
+    }
+
+    return [];
+  }
+
   private function processResultsSummary(BaseQuery $query) {
 
     $result = $query->execute();
+
+    if ($this->theme == 'selected-activities') {
+      $this->calculateOther($result);
+    }
 
     $return = [
       'title' => $this->title,
@@ -259,6 +301,12 @@ class QueryBuilder {
     }
 
     return  $return;
+  }
+
+  private function calculateOther(&$result) {
+    $result[0]['OtherAll'] = $result[0]['TotalAll'] - $result[0]['SelectedAll'];
+    $result[0]['OtherMe'] = $result[0]['TotalMe'] - $result[0]['SelectedMe'];
+    $result[0]['OtherProvider'] = $result[0]['TotalProvider'] - $result[0]['SelectedProvider'];
   }
 
   /**
@@ -293,9 +341,33 @@ class QueryBuilder {
     }
     return sprintf("%d:%02d", $hour_part, $min_part);
   }
-  private function processResultsTrends($results) : array {
-    $return = [];
+  private function processResultsTrends($query) : array {
 
+    $result = $query->execute();
+
+    $return = [
+      'title' => $this->title,
+      'aliasMap' => $this->getAliasMap(),
+      'results' => [
+        'all' => [
+          'total' => $result[0]['TotalAll'],
+        ],
+        'me' => [],
+        'provider' => [
+          'total' => $result[0]['TotalProvider'],
+        ],
+      ]
+    ];
+
+    foreach ($result as $record) {
+      foreach (array_keys($return['aliasMap']) as $alias ) {
+        foreach (['all', 'me', 'provider'] as $scope) {
+          $return['results'][$scope][$alias]['day'] = $this->calculateHrs($record, $alias, $scope,'day');
+          $return['results'][$scope][$alias]['week'] = $this->calculateHrs($record, $alias, $scope, 'week');
+
+        }
+      }
+    }
     return  $return;
   }
   /**
@@ -325,13 +397,15 @@ class QueryBuilder {
    */
   protected function selectedActivities() {
     $query = new What($this->email, $this->provider);
-    $query->addSelectedSums($this->what);
+    $query->addSelectedWhatSums($this->what);
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
     elseif ($this->who && $this->who != 'any') {
       $query->addWhoCondition($this->who);
     }
+
+    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
 
     return $query;
   }
