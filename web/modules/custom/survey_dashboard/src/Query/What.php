@@ -9,32 +9,16 @@ class What extends BaseQuery {
   /**
    * @param $ids
    */
-  public function addSelectedSums($ids) {
+  public function addSelectedWhatSums($ids) {
     $qidMap = $this->flattenIds($ids);
     $this->query->addExpression('count(*)', 'TotalAll');
-    $this->addSelectedSumsAll($qidMap);
-    $this->addSelectedSumsMe($qidMap);
-    $this->addSelectedSumsProvider($qidMap);
 
-    $this->addSelectedSumsAll($qidMap, 'NOT');
-    $this->addSelectedSumsMe($qidMap, 'NOT');
-    $this->addSelectedSumsProvider($qidMap, 'NOT');
+    $this->addSelectedSums('All', $qidMap);
+    $this->addSelectedSums('Me', $qidMap);
+    $this->addSelectedSums('Provider', $qidMap);
 
-    $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (email = :email)) then 1 else 0 end)',
-      static::QUESTION_ID
-    );
-
-    $this->query->addExpression($sql, 'TotalMe', [
-    ':email' => $this->email,
-    ]);
-
-    $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (provider = :provider)) then 1 else 0 end)',
-      static::QUESTION_ID
-    );
-
-    $this->query->addExpression($sql, 'TotalProvider', [
-      ':provider' => $this->provider,
-    ]);
+    $this->addSelectedSumsTotal('Me');
+    $this->addSelectedSumsTotal('Provider');
 
     $this->valueAliasMap = [
       'Selected' => [
@@ -46,60 +30,67 @@ class What extends BaseQuery {
     ];
   }
 
-  /**
-   * @param $ids
-   * @param null $not
-   */
-  private function addSelectedSumsAll($ids, $not = NULL) {
-    $ind1 = $this->getValueIndex();
-    $sql = sprintf('sum(case when answer%d %s IN (:value%d[])  then 1 else 0 end)',
-      key($ids),
-      $not,
-      $ind1
+  private function addSelectedSumsTotal($scope) {
+    $args = [];
+    if ($scope == 'Me') {
+      $and = 'email = :email';
+      $args[':email'] = $this->email;
+    }
+    elseif ($scope == 'Provider') {
+      $and = 'provider = :provider';
+      $args[':provider'] = $this->provider;
+    }
+    else {
+      return;
+    }
+
+    $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (%s)) then 1 else 0 end)',
+      static::QUESTION_ID,
+      $and
     );
 
-    $alias = (!$not) ? 'SelectedAll' : 'OtherAll';
-    $this->query->addExpression($sql, $alias, [
-      ':value' . $ind1 . '[]' => current($ids),
-    ]);
+    $this->query->addExpression($sql, 'Total' . $scope, $args);
   }
 
   /**
    * @param $ids
    * @param null $not
    */
-  private function addSelectedSumsMe($ids, $not = NULL) {
+  private function addSelectedSums($scope, $ids, $not = NULL) {
     $ind1 = $this->getValueIndex();
-    $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) AND email = :email then 1 else 0 end)',
+    $args = [];
+
+    switch ($scope) {
+      case 'Me':
+        $and = 'AND email = :email';
+        $args[':email'] = $this->email;
+        break;
+
+      case 'Provider':
+        $and = 'AND provider = :provider';
+        $args[':provider'] = $this->provider;
+        break;
+
+      default:
+        $and = '';
+    }
+
+    $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) %s then 1 else 0 end)',
       key($ids),
       $not,
-      $ind1
+      $ind1,
+      $and
     );
 
-    $alias = (!$not) ? 'SelectedMe' : 'OtherMe';
-    $this->query->addExpression($sql, $alias, [
-      ':value' . $ind1 . '[]' => current($ids),
-      ':email' => $this->email,
-    ]);
-  }
+    $values = current($ids);
+    if (!is_array($values)) {
+      $values = [$values];
+    }
 
-  /**
-   * @param $ids
-   * @param null $not
-   */
-  private function addSelectedSumsProvider($ids, $not = NULL) {
-    $ind1 = $this->getValueIndex();
-    $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) AND provider = :provider then 1 else 0 end)',
-      key($ids),
-      $not,
-      $ind1
-    );
+    $args[':value' . $ind1 . '[]'] = $values;
 
-    $alias = (!$not) ? 'SelectedProvider' : 'OtherProvider';
-    $this->query->addExpression($sql, $alias, [
-      ':value' . $ind1 . '[]' => current($ids),
-      ':provider' => $this->provider,
-    ]);
+    $alias = (!$not) ? 'Selected' : 'Other';
+    $this->query->addExpression($sql, $alias . $scope, $args);
   }
 
 }
