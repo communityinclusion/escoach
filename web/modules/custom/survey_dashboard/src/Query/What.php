@@ -1,15 +1,22 @@
 <?php
+
 namespace Drupal\survey_dashboard\Query;
 
+/**
+ * Class for building "What" queries.
+ */
 class What extends BaseQuery {
 
   const VID = 'what';
   const QUESTION_ID = 483;
 
   /**
-   * @param $ids
+   * Add sum expressions for "What" queries.
+   *
+   * @param array $ids
+   *   Ids of "what" items selected by user.
    */
-  public function addSelectedWhatSums($ids) {
+  public function addSelectedWhatSums(array $ids) {
     $qidMap = $this->flattenIds($ids);
     $this->query->addExpression('count(*)', 'TotalAll');
 
@@ -30,6 +37,9 @@ class What extends BaseQuery {
     ];
   }
 
+  /**
+   * Add total sums for me and provider.
+   */
   private function addSelectedSumsTotal($scope) {
     $args = [];
     if ($scope == 'Me') {
@@ -53,10 +63,14 @@ class What extends BaseQuery {
   }
 
   /**
-   * @param $ids
-   * @param null $not
+   * Build sum expression.
+   *
+   * @param string $scope
+   *   Which grouping - All, Me, or Provider.
+   * @param array $ids
+   *   "What" items selected by user.
    */
-  private function addSelectedSums($scope, $ids, $not = NULL) {
+  private function addSelectedSums(string $scope, array $ids) {
     $ind1 = $this->getValueIndex();
     $args = [];
 
@@ -75,9 +89,8 @@ class What extends BaseQuery {
         $and = '';
     }
 
-    $sql = sprintf('sum(case when answer%d %s IN (:value%d[]) %s then 1 else 0 end)',
+    $sql = sprintf('sum(case when answer%d IN (:value%d[]) %s then 1 else 0 end)',
       key($ids),
-      $not,
       $ind1,
       $and
     );
@@ -88,9 +101,7 @@ class What extends BaseQuery {
     }
 
     $args[':value' . $ind1 . '[]'] = $values;
-
-    $alias = (!$not) ? 'Selected' : 'Other';
-    $this->query->addExpression($sql, $alias . $scope, $args);
+    $this->query->addExpression($sql, 'Selected' . $scope, $args);
   }
 
 }
