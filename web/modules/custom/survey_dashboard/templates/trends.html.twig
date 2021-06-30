@@ -1,0 +1,41 @@
+<div id="google-charts"></div>
+<table id="selected-table">
+  <thead>
+  <tr>
+    <th>{{ title }}</th>
+    <th colspan="3">Hrs/day</th>
+    <th colspan="3">Hrs/week</th>
+  </tr>
+  <tr>
+    <th>&nbsp;</th>
+    <th>All</th>
+    <th>Me</th>
+    <th>My Team</th>
+    <th>All</th>
+    <th>Me</th>
+    <th>My Team</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for alias, aliasData in data.aliasMap %}
+    <tr>
+      <td>{{ aliasData.title }}</td>
+      <th>{{ data.results.all[alias].Selected.day }}</th>
+      <th>{{ data.results.me[alias].Selected.day }}</th>
+      <th>{{ data.results.provider[alias].Selected.day }}</th>
+      <th>{{ data.results.all[alias].Selected.week }}</th>
+      <th>{{ data.results.me[alias].Selected.week }}</th>
+      <th>{{ data.results.provider[alias].Selected.week }}</th>
+    </tr>
+  {% endfor %}
+  <tr>
+    <td>Total Respondents</td>
+    <th>{{ data.results.all.total }}</th>
+    <th>0</th>
+    <th>{{ data.results.provider.total }}</th>
+    <th>{{ data.results.all.total }}</th>
+    <th>0</th>
+    <th>{{ data.results.provider.total }}</th>
+  </tr>
+  </tbody>
+</table>
