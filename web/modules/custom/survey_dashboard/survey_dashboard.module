@@ -28,13 +28,13 @@ function survey_dashboard_theme() {
       ],
     ],
     'monthly-trends' => [
-      'template'  => 'monthly-trends',
+      'template'  => 'trends',
       'variables' => [
         'data' => null,
       ],
     ],
     'quarterly-trends' => [
-      'template'  => 'quarterly-trends',
+      'template'  => 'trends',
       'variables' => [
         'data' => null,
       ],
