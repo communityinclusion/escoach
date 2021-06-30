@@ -79,6 +79,7 @@ class QueryBuilder {
 
   /**
    * The theme used to render the results.
+   *
    * @var string
    */
   private $theme;
@@ -122,7 +123,7 @@ class QueryBuilder {
    * Get response IDs for selected terms.
    */
   private function getTaxonomyValue($vid, $tid) {
-    if (!$tid ) {
+    if (!$tid) {
       return NULL;
     }
 
@@ -138,7 +139,7 @@ class QueryBuilder {
       foreach ($terms as $term) {
         $titles[] = $term->label();
         $return[] = [
-          $term->field_dashboard_question_id->value => $term->field_dashboard_response_id->value
+          $term->field_dashboard_question_id->value => $term->field_dashboard_response_id->value,
         ];
       }
 
@@ -153,11 +154,11 @@ class QueryBuilder {
       return NULL;
     }
 
-    $this->$titleProp = [ $term->label() ];
+    $this->$titleProp = [$term->label()];
 
     if ($vid != 'who') {
       return [
-        $term->field_dashboard_question_id->value => $term->field_dashboard_response_id->value
+        $term->field_dashboard_question_id->value => $term->field_dashboard_response_id->value,
       ];
     }
     else {
@@ -177,14 +178,16 @@ class QueryBuilder {
     $this->timeframe = $params['timeframe'];
     $this->dataframe = $params['dataframe'];
 
-    $this->who =   ( $params['who'] == 'any'   ) ? 'any' : $this->getTaxonomyValue('who', $params['who']);
-    $this->what =  ( $params['what'] == 'any'  ) ? 'any' : $this->getTaxonomyValue('what', $params['what']);
-    $this->where = ( $params['where'] == 'any' ) ? 'any' : $this->getTaxonomyValue('where', $params['where']);
+    $this->who = ($params['who'] == 'any') ? 'any' : $this->getTaxonomyValue('who', $params['who']);
+    $this->what = ($params['what'] == 'any') ? 'any' : $this->getTaxonomyValue('what', $params['what']);
+    $this->where = ($params['where'] == 'any') ? 'any' : $this->getTaxonomyValue('where', $params['where']);
     $this->email = $this->currentUser->getEmail();
 
     /** @var \Drupal\survey_dashboard\Query\BaseQuery $query */
     if ($this->timeframe == 'monthly' || $this->timeframe == 'quarterly') {
       $query = $this->buildTrendsQuery();
+      $this->theme = $this->timeframe . '-trends';
+      $this->title = ucfirst($this->timeframe) . ' Trends';
       $trends = TRUE;
     }
     else {
@@ -192,16 +195,18 @@ class QueryBuilder {
       $trends = FALSE;
     }
 
-
     return [
       '#theme' => $this->theme,
       '#data' => ($trends) ? $this->processResultsTrends($query) : $this->processResultsSummary($query),
     ];
   }
 
+  /**
+   *
+   */
   private function buildTrendsQuery() {
 
-    $query = $this->whatSummary();
+    $query = $this->selectedActivities();
 
     switch ($this->timeframe) {
       case 'quarterly':
@@ -214,7 +219,10 @@ class QueryBuilder {
         $query->addMonthlyParams();
         break;
     }
+
+    return $query;
   }
+
   /**
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -227,45 +235,83 @@ class QueryBuilder {
         'is_default' => 1,
       ]);
 
-    if ( $profiles) {
+    if ($profiles) {
       $profile = current($profiles);
     }
-    if ( $profile && $profile->field_provider->entity ) {
+    if ($profile && $profile->field_provider->entity) {
       $this->provider = $profile->field_provider->entity->getName();
     }
 
   }
 
-  private function getAliasMap() {
+  /**
+   *
+   */
+  private function getTrendAliasMap() {
     if ($this->timeframe == 'monthly') {
       return [
-        1 => 'January',
-        2 => 'February',
-        3 => 'March',
-        4 => 'April',
-        5 => 'May',
-        6 => 'June',
-        7 => 'July',
-        8 => 'August',
-        9 => 'September',
-        10 => 'October',
-        11 => 'November',
-        12 => 'December',
+        1 => [
+          'title' => 'January',
+        ],
+        2 => [
+          'title' => 'February',
+        ],
+        3 => [
+          'title' => 'March',
+        ],
+        4 => [
+          'title' => 'April',
+        ],
+        5 => [
+          'title' => 'May',
+        ],
+        6 => [
+          'title' => 'June',
+        ],
+        7 => [
+          'title' => 'July',
+        ],
+        8 => [
+          'title' => 'August',
+        ],
+        9 => [
+          'title' => 'September',
+        ],
+        10 => [
+          'title' => 'October',
+        ],
+        11 => [
+          'title' => 'November',
+        ],
+        12 => [
+          'title' => 'December',
+        ],
       ];
     }
 
     if ($this->timeframe == 'quarterly') {
       return [
-        1 => 'Q1',
-        2 => 'Q2',
-        3 => 'Q3',
-        4 => 'Q4',
+        1 => [
+          'title' => 'Q1',
+          ],
+        2 => [
+          'title' => 'Q2',
+        ],
+        3 => [
+          'title' => 'Q3',
+        ],
+        4 => [
+          'title' => 'Q4',
+        ],
       ];
     }
 
     return [];
   }
 
+  /**
+   *
+   */
   private function processResultsSummary(BaseQuery $query) {
 
     $result = $query->execute();
@@ -285,24 +331,27 @@ class QueryBuilder {
         'provider' => [
           'total' => $result[0]['TotalProvider'],
         ],
-      ]
+      ],
     ];
 
     if (!empty($this->whatTitles)) {
       $return['what'] = (count($this->whatTitles) > 1) ? 'Selected Whats' : $this->whatTitles[0];
     }
 
-    foreach (array_keys($return['aliasMap']) as $alias ) {
+    foreach (array_keys($return['aliasMap']) as $alias) {
       foreach (['all', 'me', 'provider'] as $scope) {
-        $return['results'][$scope][$alias]['day'] = $this->calculateHrs($result[0], $alias, $scope,'day');
+        $return['results'][$scope][$alias]['day'] = $this->calculateHrs($result[0], $alias, $scope, 'day');
         $return['results'][$scope][$alias]['week'] = $this->calculateHrs($result[0], $alias, $scope, 'week');
 
       }
     }
 
-    return  $return;
+    return $return;
   }
 
+  /**
+   *
+   */
   private function calculateOther(&$result) {
     $result[0]['OtherAll'] = $result[0]['TotalAll'] - $result[0]['SelectedAll'];
     $result[0]['OtherMe'] = $result[0]['TotalMe'] - $result[0]['SelectedMe'];
@@ -321,55 +370,58 @@ class QueryBuilder {
     $totalCell = 'Total' . ucfirst($who);
     $dataCell = $alias . ucfirst($who);
 
-    if ($results[$totalCell] == 0 ) {
+    if ($results[$totalCell] == 0) {
       return '0:00';
     }
 
     $dayTotal = $results[$dataCell] / $results[$totalCell] * 8 / 24;
     return ($term == 'day') ?
-      $this->formatDuration($dayTotal)  :
+      $this->formatDuration($dayTotal) :
       $this->formatDuration($dayTotal * 5);
   }
 
+  /**
+   *
+   */
   private function formatDuration(float $time) {
     $total_hours = $time * 24;
     $hour_part = floor($total_hours);
     $min_part = round(($total_hours - $hour_part) * 60);
-    if ( $min_part == 60) {
+    if ($min_part == 60) {
       $hour_part++;
       $min_part = 0;
     }
     return sprintf("%d:%02d", $hour_part, $min_part);
   }
+
+  /**
+   *
+   */
   private function processResultsTrends($query) : array {
 
     $result = $query->execute();
 
     $return = [
       'title' => $this->title,
-      'aliasMap' => $this->getAliasMap(),
+      'aliasMap' => $this->getTrendAliasMap(),
       'results' => [
-        'all' => [
-          'total' => $result[0]['TotalAll'],
-        ],
+        'all' => [],
         'me' => [],
-        'provider' => [
-          'total' => $result[0]['TotalProvider'],
-        ],
-      ]
+        'provider' => [],
+      ],
     ];
 
+    $unit = ($this->timeframe == 'monthly') ? 'month' : 'quarter';
     foreach ($result as $record) {
-      foreach (array_keys($return['aliasMap']) as $alias ) {
-        foreach (['all', 'me', 'provider'] as $scope) {
-          $return['results'][$scope][$alias]['day'] = $this->calculateHrs($record, $alias, $scope,'day');
-          $return['results'][$scope][$alias]['week'] = $this->calculateHrs($record, $alias, $scope, 'week');
 
-        }
+      foreach (['all', 'me', 'provider'] as $scope) {
+        $return['results'][$scope][$record[$unit]]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day');
+        $return['results'][$scope][$record[$unit]]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week');
       }
     }
-    return  $return;
+    return $return;
   }
+
   /**
    * Build query.
    */
