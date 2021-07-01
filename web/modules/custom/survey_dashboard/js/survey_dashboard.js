@@ -17,25 +17,14 @@
         $('select[name="who"]').val('_none');
       });
 
-      $('#edit-timeframe').once('disable-trends-options').each(function () {
-        Drupal.behaviors.surveyDashboard.checkWhats();
+      $('input[type="submit"]').once('validate-timeframe').on('click', function (evt) {
+        if ($('#edit-timeframe').val() != 'up-to-date' && $('input:checked[name^="what"]').length == 0 ) {
+          evt.stopPropagation();
+          evt.preventDefault();
+          alert('Please select at least one "What" option');
+        }
       });
 
-      $('input[name^="what"]').once('update-timeframe').on('click', function () {
-        Drupal.behaviors.surveyDashboard.checkWhats();
-      });
-    },
-
-    checkWhats: function () {
-      if ( $('input:checked[name^="what"]').length > 0 ) {
-        $('#edit-timeframe option[value="quarterly"]').prop('disabled', '');
-        $('#edit-timeframe option[value="monthly"]').prop('disabled', '');
-      }
-      else {
-        $('#edit-timeframe option[value="quarterly"]').prop('disabled', 'disabled');
-        $('#edit-timeframe option[value="monthly"]').prop('disabled', 'disabled');
-        $('#edit-timeframe').val('up-to-date');
-      }
     }
   };
 
