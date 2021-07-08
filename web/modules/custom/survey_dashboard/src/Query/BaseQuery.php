@@ -65,9 +65,11 @@ class BaseQuery {
    */
   public function addSums() {
     $this->query->addExpression('count(*)', 'TotalAll');
-    $this->addSumsAll();
-    $this->addSumsMe();
-    $this->addSumsProvider();
+    $this->addSumsTotal('Me');
+    $this->addSumsTotal('Provider');
+    $this->addSumsByScope('Me');
+    $this->addSumsByScope('Provider');
+    $this->addSumsByScope('All');
   }
 
   /**
@@ -96,16 +98,24 @@ class BaseQuery {
         $termObj = Term::load($term->tid);
         if (!empty($termObj->field_alias->value)) {
           $response_id = $termObj->field_dashboard_response_id->getValue();
+          $question_id = $termObj->field_dashboard_question_id->getValue();
+
           if (is_array($response_id) && count($response_id) > 1) {
             $value = [];
+            $qid = [];
             foreach ($response_id as $item) {
               $value[] = $item['value'];
+            }
+            foreach ($question_id as $item) {
+              $qid[] = $item['value'];
             }
           }
           else {
             $value = $termObj->field_dashboard_response_id->value;
+            $qid = $termObj->field_dashboard_question_id->value;
           }
           $this->valueAliasMap[$termObj->field_alias->value] = [
+            'question_id' => $qid,
             'response_id' => $value,
             'title' => $term->name,
           ];
@@ -123,92 +133,95 @@ class BaseQuery {
     return $this->valueIndex++;
   }
 
-  /**
-   * Add the sums expressions for all users.
-   */
-  public function addSumsAll() {
+
+  public function addSumsByScope($scope) {
+
+    switch ($scope) {
+      case 'Me':
+        $and = 'AND email = :email';
+        $args[':email'] = $this->email;
+        break;
+
+      case 'Provider':
+        $and = 'AND provider = :provider';
+        $args[':provider'] = $this->provider;
+        break;
+
+      default:
+        $and = '';
+    }
+
     foreach ($this->valueAliasMap as $alias => $definition) {
       $value = $definition['response_id'];
+      $qid = $definition['question_id'];
+
       if (is_array($value)) {
-        $ind1 = $this->getValueIndex();
-        $ind2 = $this->getValueIndex();
-        $sql = sprintf('sum(case when ((answer%d = :value%d) OR (answer%d = :value%d)) then 1 else 0 end)',
-          static::QUESTION_ID[0],
-          $ind1,
-          static::QUESTION_ID[1],
-          $ind2
+        $args = [];
+        $qids = [];
+        foreach ($qid as $idx => $id) {
+          $qids[$qid][] = $value[$idx];
+        }
+
+        $conditions = [];
+        foreach (array_keys($qids) as  $qid) {
+          $ind = $this->getValueIndex();
+          $conditions[] = sprintf('(answer%d IN (:value%d[]))', $qid, $ind);
+          $args[':value' . $ind . '[]'] = $qids[$qid];
+        }
+
+        $str_condition = implode(' OR ', $conditions);
+        $sql = sprintf('sum(case when (%s %s) then 1 else 0 end)',
+          $str_condition,
+          $and
         );
 
-        $this->query->addExpression($sql, $alias . 'All', [
-          ':value' . $ind1 => $value[0],
-          ':value' . $ind2 => $value[1],
-        ]);
+        $this->query->addExpression($sql, $alias . $scope, $args);
       }
       else {
-        $ind = $this->getValueIndex();
-        $sql = sprintf('sum(case when answer%d IN (:value%d) then 1 else 0 end)', static::QUESTION_ID, $ind);
-        $this->query->addExpression($sql, $alias . 'All', [
-          ':value' . $ind => $value,
-        ]);
+        $ind1 = $this->getValueIndex();
+        $sql = sprintf('sum(case when answer%d IN (:value%d) %s then 1 else 0 end)',
+          static::QUESTION_ID,
+          $ind1,
+          $and
+        );
+
+        $args[':value' . $ind1] = $value;
+
+        $this->query->addExpression($sql, $alias . $scope, $args);
       }
     }
   }
 
-  /**
-   * Add the sums expressions for the current user.
-   */
-  public function addSumsMe() {
-    if (!$this->email) {
+  public function addSumsTotal($scope) {
+
+    $args = [];
+    if ($scope == 'Me' && !empty($this->email)) {
+      $and = 'email = :email';
+      $args[':email'] = $this->email;
+    }
+    elseif ($scope == 'Provider' && !empty($this->provider)) {
+      $and = 'provider = :provider';
+      $args[':provider'] = $this->provider;
+    }
+    else {
       return;
     }
 
     if (is_array(static::QUESTION_ID)) {
-      $sql = sprintf("sum(case when (((answer%d IS NOT NULL) OR (answer%d IS NOT NULL)) AND email = :email) then 1 else 0 end)",
+      $sql = sprintf("sum(case when (((answer%d IS NOT NULL) OR (answer%d IS NOT NULL)) AND %s) then 1 else 0 end)",
         static::QUESTION_ID[0],
-        static::QUESTION_ID[1]
+        static::QUESTION_ID[1],
+        $and
       );
     }
     else {
-      $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (email = :email)) then 1 else 0 end)',
-        static::QUESTION_ID
+      $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (%s)) then 1 else 0 end)',
+        static::QUESTION_ID,
+        $and
       );
     }
 
-    $this->query->addExpression($sql, 'TotalMe', [
-      ':email' => $this->email,
-    ]);
-
-    foreach ($this->valueAliasMap as $alias => $definition) {
-      $value = $definition['response_id'];
-      if (is_array($value)) {
-        $ind1 = $this->getValueIndex();
-        $ind2 = $this->getValueIndex();
-        $sql = sprintf('sum(case when (((answer%d = :value%d) OR (answer%d = :value%d)) AND email = :email) then 1 else 0 end)',
-          static::QUESTION_ID[0],
-          $ind1,
-          static::QUESTION_ID[1],
-          $ind2
-        );
-
-        $this->query->addExpression($sql, $alias . 'Me', [
-          ':value' . $ind1 => $value[0],
-          ':value' . $ind2 => $value[1],
-          ':email' => $this->email,
-        ]);
-      }
-      else {
-        $ind1 = $this->getValueIndex();
-        $sql = sprintf('sum(case when answer%d IN (:value%d) AND email = :email then 1 else 0 end)',
-          static::QUESTION_ID,
-          $ind1
-        );
-
-        $this->query->addExpression($sql, $alias . 'Me', [
-          ':value' . $ind1 => $value,
-          ':email' => $this->email,
-        ]);
-      }
-    }
+    $this->query->addExpression($sql, 'Total' . $scope, $args);
   }
 
   /**
@@ -227,62 +240,6 @@ class BaseQuery {
     $this->query->addExpression('QUARTER(date_submitted)', 'quarter');
     $this->query->condition('date_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
     $this->query->groupBy('QUARTER(date_submitted)');
-  }
-
-  /**
-   * Add the sums expressions for provider of current user.
-   */
-  public function addSumsProvider() {
-    if (!$this->provider) {
-      return;
-    }
-
-    if (is_array(static::QUESTION_ID)) {
-      $sql = sprintf("sum(case when (((answer%d IS NOT NULL) OR (answer%d IS NOT NULL)) AND provider = :provider) then 1 else 0 end)",
-        static::QUESTION_ID[0],
-        static::QUESTION_ID[1]
-      );
-    }
-    else {
-      $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (provider = :provider)) then 1 else 0 end)',
-        static::QUESTION_ID
-      );
-    }
-
-    $this->query->addExpression($sql, 'TotalProvider', [
-      ':provider' => $this->provider,
-    ]);
-
-    foreach ($this->valueAliasMap as $alias => $definition) {
-      $value = $definition['response_id'];
-      if (is_array($value)) {
-        $ind1 = $this->getValueIndex();
-        $ind2 = $this->getValueIndex();
-        $sql = sprintf('sum(case when (((answer%d = :value%d) OR (answer%d = :value%d)) AND provider = :provider) then 1 else 0 end)',
-          static::QUESTION_ID[0],
-          $ind1,
-          static::QUESTION_ID[1],
-          $ind2
-        );
-        $this->query->addExpression($sql, $alias . 'Provider', [
-          ':value' . $ind1 => $value[0],
-          ':value' . $ind2 => $value[1],
-          ':provider' => $this->provider,
-        ]);
-      }
-      else {
-        $ind1 = $this->getValueIndex();
-        $sql = sprintf('sum(case when answer%d IN (:value%d) AND provider = :provider then 1 else 0 end)',
-          static::QUESTION_ID,
-          $ind1
-        );
-
-        $this->query->addExpression($sql, $alias . 'Provider', [
-          ':value' . $ind1 => $value,
-          ':provider' => $this->provider,
-        ]);
-      }
-    }
   }
 
   /**
@@ -331,8 +288,10 @@ class BaseQuery {
    */
   public function addWhoCondition(array $values) {
     $group = $this->query->orConditionGroup();
-    foreach ($values as $qid => $value) {
-      $group->condition('answer' . $qid, $value, 'IN');
+    foreach ($values as $idx => $value) {
+      $qid = key($value);
+      $rids = $value[$qid];
+      $group->condition('answer' . $qid . '[]', $rids, 'IN');
     }
     $this->query->condition($group);
   }
@@ -341,7 +300,7 @@ class BaseQuery {
    * Add a "Where" condition.
    */
   public function addWhereCondition(array $value) {
-    $this->query->condition('answer' . key($value), current($value), 'IN');
+    $this->query->condition('answer' . key($value) . '[]', current($value), 'IN');
   }
 
   /**
