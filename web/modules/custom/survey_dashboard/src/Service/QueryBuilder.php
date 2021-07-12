@@ -156,7 +156,7 @@ class QueryBuilder {
 
     $this->$titleProp = [$term->label()];
 
-    if ($vid != 'who') {
+    if ($vid == 'what') {
       return [
         $term->field_dashboard_question_id->value => $term->field_dashboard_response_id->value,
       ];
