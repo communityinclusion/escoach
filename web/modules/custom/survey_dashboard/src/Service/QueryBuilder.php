@@ -162,6 +162,22 @@ class QueryBuilder {
       ];
     }
     else {
+      $return = [];
+      $qidMap = [];
+      $idx = 0;
+      $max = count($term->field_dashboard_question_id);
+      foreach ($term->field_dashboard_response_id as $resp) {
+        $qid = ($idx < $max ) ? $idx : $idx % $max;
+        $qidMap[$term->field_dashboard_question_id[$qid]->value][] = $resp->value;
+        $idx++;
+      }
+      foreach ($qidMap as $qid => $resp_ids) {
+        $return[] = [
+          $qid => $resp_ids,
+        ];
+      }
+      return $return;
+
       return [
         $term->field_dashboard_question_id[0]->value => $term->field_dashboard_response_id[0]->value,
         $term->field_dashboard_question_id[1]->value => $term->field_dashboard_response_id[1]->value,
@@ -193,6 +209,12 @@ class QueryBuilder {
     else {
       $query = $this->buildQuery();
       $trends = FALSE;
+
+      if (!$query) {
+        return [
+          '#markup' => t('Invalid selection.  Please select at least one "What" option'),
+        ];
+      }
     }
 
     return [
@@ -438,9 +460,12 @@ class QueryBuilder {
       $this->theme = 'where-summary';
       return $this->whereSummary();
     }
-    else {
+    elseif ($this->what) {
       $this->theme = 'selected-activities';
       return $this->selectedActivities();
+    }
+    else {
+      return NULL;
     }
   }
 
