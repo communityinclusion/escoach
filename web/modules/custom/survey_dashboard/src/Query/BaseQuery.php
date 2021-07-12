@@ -159,7 +159,7 @@ class BaseQuery {
         $args = [];
         $qids = [];
         foreach ($qid as $idx => $id) {
-          $qids[$qid][] = $value[$idx];
+          $qids[$id][] = $value[$idx];
         }
 
         $conditions = [];
