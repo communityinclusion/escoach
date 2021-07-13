@@ -300,7 +300,7 @@ class BaseQuery {
    * Add a "Where" condition.
    */
   public function addWhereCondition(array $value) {
-    $this->query->condition('answer' . key($value) . '[]', current($value), 'IN');
+    $this->query->condition('answer' . key($value[0]) . '[]', current($value[0]), 'IN');
   }
 
   /**
