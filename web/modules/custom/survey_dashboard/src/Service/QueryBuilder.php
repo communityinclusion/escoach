@@ -392,7 +392,7 @@ class QueryBuilder {
     $totalCell = 'Total' . ucfirst($who);
     $dataCell = $alias . ucfirst($who);
 
-    if ($results[$totalCell] == 0) {
+    if (! isset($results[$totalCell]) || $results[$totalCell] == 0) {
       return '0:00';
     }
 
