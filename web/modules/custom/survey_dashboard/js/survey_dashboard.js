@@ -28,4 +28,16 @@
     }
   };
 
+  Drupal.behaviors.surveyDashboardClearWhat = {
+    attach: function (context, settings) {
+      if (!$('#edit-what--wrapper legend').hasClass('escoach-processed')) {
+        $('#edit-what--wrapper legend').append(' <span class="escoach-what-clear-wrapper">[<a href="#" class="escoach-what-clear">clear</a>]</span>').addClass('escoach-processed');
+      }
+
+      $('a.escoach-what-clear').on('click', function (evt) {
+        $('#edit-what input:checkbox').prop('checked', false);
+      });
+    }
+  };
+
 })(jQuery, Drupal);
