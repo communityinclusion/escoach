@@ -170,7 +170,7 @@ class BaseQuery {
         }
 
         $str_condition = implode(' OR ', $conditions);
-        $sql = sprintf('sum(case when (%s %s) then 1 else 0 end)',
+        $sql = sprintf('sum(case when ((%s) %s) then 1 else 0 end)',
           $str_condition,
           $and
         );
