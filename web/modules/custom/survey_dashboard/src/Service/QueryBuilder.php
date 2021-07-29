@@ -349,7 +349,9 @@ class QueryBuilder {
         'all' => [
           'total' => $result[0]['TotalAll'],
         ],
-        'me' => [],
+        'me' => [
+          'total' => $result[0]['TotalMe'],
+        ],
         'provider' => [
           'total' => $result[0]['TotalProvider'],
         ],
