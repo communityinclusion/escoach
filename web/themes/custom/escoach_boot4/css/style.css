@@ -26,4 +26,6 @@
      #edit-field-other-provider-wrapper {display: none;}
      #edit-field-other-provider-wrapper.showOther { display: block; }
      select#edit-tid--2 option[value="12"] {display: none;}
-      
+    #views-exposed-form-es-coach-library-page-1 #edit-submit-es-coach-library {margin-right: 15px;margin-bottom: 9px;}
+    #views-exposed-form-es-coach-library-page-1 #edit-actions, #views-exposed-form-es-coach-library-page-1 fieldset {width: 45%;}
+    #views-exposed-form-es-coach-library-page-1 #edit-actions input {width: 45%; float: left;}
