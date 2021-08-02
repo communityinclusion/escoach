@@ -52,6 +52,19 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
   
   
 }
+function surveycampaign_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+  foreach (array_keys($form['actions']) as $action) {
+    if ($form_state->get('user_pass_reset')) {
+      $form['actions']['submit']['#submit'][] = '_surveycampaign_user_form_submit';
+    }
+  }
+}
+
+function _surveycampaign_user_form_submit(array $form, FormStateInterface $form_state){
+  //Add logic for checking is this is first time logged in User
+  $form_state->setRedirect('<front>');
+}
 
 function surveycampaign_cron()
 {
