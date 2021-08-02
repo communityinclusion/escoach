@@ -371,10 +371,19 @@ class BaseQuery {
       return;
     }
 
-    $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (%s)) then 1 else 0 end)',
-      static::QUESTION_ID,
-      $and
-    );
+    if (is_array(static::QUESTION_ID)) {
+      $sql = sprintf("sum(case when (((answer%d IS NOT NULL) OR (answer%d IS NOT NULL)) AND %s) then 1 else 0 end)",
+        static::QUESTION_ID[0],
+        static::QUESTION_ID[1],
+        $and
+      );
+    }
+    else {
+      $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (%s)) then 1 else 0 end)',
+        static::QUESTION_ID,
+        $and
+      );
+    }
 
     $this->query->addExpression($sql, 'Total' . $scope, $args);
   }
