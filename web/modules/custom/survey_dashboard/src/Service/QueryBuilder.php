@@ -19,21 +19,21 @@ class QueryBuilder {
   /**
    * Value from who field.
    *
-   * @var int
+   * @var array
    */
   protected $who;
 
   /**
    * Value from where field.
    *
-   * @var int
+   * @var array
    */
   protected $where;
 
   /**
    * Value from what field.
    *
-   * @var int
+   * @var array
    */
   protected $what;
 
@@ -475,20 +475,29 @@ class QueryBuilder {
    * Execute query using selected activities.
    */
   protected function selectedActivities() {
-    $query = new What($this->email, $this->provider);
-    $query->addSelectedWhatSums($this->what);
     if ($this->where && $this->where != 'any') {
-      $query->addWhereCondition($this->where);
+      $query = new Where($this->email, $this->provider);
+      $query->buildSelectedSums($this->convertIDs($this->where));
     }
     elseif ($this->who && $this->who != 'any') {
-      $query->addWhoCondition($this->who);
+      $query = new Who($this->email, $this->provider);
+      $query->buildSelectedSums($this->convertIDs($this->who));
     }
 
-    $query->addCondition('answer' . $query::QUESTION_ID, 'NULL', '!=');
+    $query->addWhatCondition($this->what);
 
     return $query;
   }
 
+  /**
+   * @param array $ids
+   * @return array
+   */
+  public function convertIDs($ids) {
+    $tmp = $ids[0];
+    $qid = key($tmp);
+    return [ $qid => $tmp[$qid][0] ];
+  }
   /**
    * Execute what summary query.
    */
