@@ -59,6 +59,7 @@
         "drupal/migrate_plus": "^5.1",
         "drupal/migrate_source_csv": "^3.4",
         "drupal/migrate_tools": "^5.0",
+        "drupal/node_export": "^1.0@alpha",
         "drupal/nodeaccess": "^1.0@beta",
         "drupal/page_manager": "^4.0@beta",
         "drupal/panels": "^4.3",
