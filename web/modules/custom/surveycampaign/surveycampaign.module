@@ -104,7 +104,7 @@ function surveycampaign_cron()
   $campaignid2 = $query2->fetchField();
     
   $checkTime = date('H:i');
-  $checkTime = date('H:i', strtotime($nowTime));
+  $checkTime = date('H:i', strtotime($checkTime));
   $runTasksBegin = date('H:i', strtotime('07:00'));
   $runTasksEnd = date('H:i', strtotime('20:00'));
   if (($checkTime >= $runTasksBegin) && ($checkTime <= $runTasksEnd)){
