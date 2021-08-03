@@ -108,7 +108,6 @@ function surveycampaign_cron()
   $runTasksBegin = date('H:i', strtotime('07:00'));
   $runTasksEnd = date('H:i', strtotime('20:00'));
   if (($checkTime >= $runTasksBegin) && ($checkTime <= $runTasksEnd)){
- 
     $send2 = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0);
     $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
     $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
