@@ -76,7 +76,6 @@ function surveycampaign_cron()
   $accountSwitcher->switchTo(new UserSession(['uid' => 1]));
   
   $message = 'Surveycampaign cron run: ' . date('Y-m-d H:i:s');
-  //\Drupal::logger('surveycampaign')->notice($message);
   
   $config = \Drupal::config('surveycampaign.settings');
   $libconfig = \Drupal::config('surveycampaign.library_settings');
@@ -102,14 +101,13 @@ function surveycampaign_cron()
   ->condition('senddate', $database->escapeLike($todaydate) . '%', 'LIKE')
   ->execute();
   $campaignid2 = $query2->fetchField();
-    
   $checkTime = date('H:i');
   $checkTime = date('H:i', strtotime($checkTime));
   $runTasksBegin = date('H:i', strtotime('07:00'));
   $runTasksEnd = date('H:i', strtotime('20:00'));
   if (($checkTime >= $runTasksBegin) && ($checkTime <= $runTasksEnd)){
-    $send2 = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0);
     $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
+    $send2 = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0);
     $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
     $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
     $nowTime = date('H:i');
