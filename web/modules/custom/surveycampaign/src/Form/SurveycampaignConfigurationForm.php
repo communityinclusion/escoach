@@ -118,7 +118,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $secnddatereturn = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,0);
     $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
     
-    
+    $form['#attached']['library'][] = 'admincss/csslib';
     $form['configuration'] = array(
       '#type' => 'vertical_tabs',
     );
