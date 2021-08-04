@@ -483,6 +483,10 @@ class QueryBuilder {
       $query = new Who($this->email, $this->provider);
       $query->buildSelectedSums($this->convertIDs($this->who));
     }
+    else {
+      $query = new What($this->email, $this->provider);
+      $query->buildSelectedSums($this->convertIDs([$this->what]));
+    }
 
     $query->addWhatCondition($this->what);
 
