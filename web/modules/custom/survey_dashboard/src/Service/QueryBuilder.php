@@ -219,7 +219,7 @@ class QueryBuilder {
 
     return [
       '#theme' => $this->theme,
-      '#data' => ($trends) ? $this->processResultsTrends($query) : $this->processResultsSummary($query),
+      '#data' => ($trends) ? $this->processResultsTrends($query) : $this->processResultsSummary($query, $params['debug']),
     ];
   }
 
@@ -334,7 +334,7 @@ class QueryBuilder {
   /**
    *
    */
-  private function processResultsSummary(BaseQuery $query) {
+  private function processResultsSummary(BaseQuery $query, $debug = FALSE) {
 
     $result = $query->execute();
 
@@ -358,6 +358,12 @@ class QueryBuilder {
       ],
     ];
 
+    if ($debug) {
+      $return['results']['debug'] = [
+        'query' => $query->toString(),
+        'args' => $query->getArguments(),
+      ];
+    }
     if (!empty($this->whatTitles)) {
       $return['what'] = (count($this->whatTitles) > 1) ? 'Selected Whats' : $this->whatTitles[0];
     }
@@ -366,7 +372,6 @@ class QueryBuilder {
       foreach (['all', 'me', 'provider'] as $scope) {
         $return['results'][$scope][$alias]['day'] = $this->calculateHrs($result[0], $alias, $scope, 'day');
         $return['results'][$scope][$alias]['week'] = $this->calculateHrs($result[0], $alias, $scope, 'week');
-
       }
     }
 
@@ -433,6 +438,9 @@ class QueryBuilder {
         'me' => [],
         'provider' => [],
       ],
+      'query' => $query->toString(),
+      'arguments' => $query->getArguments(),
+      'debug' => TRUE,
     ];
 
     $unit = ($this->timeframe == 'monthly') ? 'month' : 'quarter';
@@ -450,7 +458,7 @@ class QueryBuilder {
    * Build query.
    */
   protected function buildQuery() {
-    if (!$this->what && !$this->who && !$this->where) {
+    if (!$this->what && !$this->who ) {
       $this->theme = 'what-summary';
       return $this->whatSummary();
     }
@@ -462,12 +470,9 @@ class QueryBuilder {
       $this->theme = 'where-summary';
       return $this->whereSummary();
     }
-    elseif ($this->what) {
+    else {
       $this->theme = 'selected-activities';
       return $this->selectedActivities();
-    }
-    else {
-      return NULL;
     }
   }
 
@@ -485,7 +490,7 @@ class QueryBuilder {
     }
     else {
       $query = new What($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs([$this->what]));
+      $query->buildSelectedSums($this->convertIDs($this->what));
     }
 
     $query->addWhatCondition($this->what);
@@ -498,9 +503,13 @@ class QueryBuilder {
    * @return array
    */
   public function convertIDs($ids) {
+    if (count($ids) <= 1) {
+      return $ids;
+    }
+
     $tmp = $ids[0];
     $qid = key($tmp);
-    return [ $qid => $tmp[$qid][0] ];
+    return [ $qid => $tmp[$qid] ];
   }
   /**
    * Execute what summary query.

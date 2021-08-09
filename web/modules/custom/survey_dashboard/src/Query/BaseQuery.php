@@ -3,6 +3,7 @@
 namespace Drupal\survey_dashboard\Query;
 
 use Drupal\taxonomy\Entity\Term;
+use function GuzzleHttp\Psr7\str;
 
 /**
  * Base Query class.
@@ -133,6 +134,23 @@ class BaseQuery {
     return $this->valueIndex++;
   }
 
+  public function toString() {
+    return (string)$this->query;
+  }
+
+  public function getArguments() {
+    $expressions = $this->query->getExpressions();
+    $args = [];
+    foreach ($expressions as $alias => $expression) {
+      foreach ($expression['arguments'] as $placeholder => $value) {
+        $args[$placeholder] = $value;
+      }
+    }
+
+    $args += $this->query->arguments();
+
+    return print_r($args, TRUE);
+  }
 
   public function addSumsByScope($scope) {
 
@@ -316,7 +334,7 @@ class BaseQuery {
     return $recordSet;
   }
 
-  protected function flattenIds($ids) {
+  public function flattenIds($ids) {
     if (count($ids) == 1) {
       return $ids;
     }
