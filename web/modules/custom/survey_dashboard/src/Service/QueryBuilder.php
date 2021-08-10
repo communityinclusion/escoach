@@ -482,15 +482,15 @@ class QueryBuilder {
   protected function selectedActivities() {
     if ($this->where && $this->where != 'any') {
       $query = new Where($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->where));
+      $query->buildSelectedSums($this->convertIDs($this->where, 'where'));
     }
     elseif ($this->who && $this->who != 'any') {
       $query = new Who($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->who));
+      $query->buildSelectedSums($this->convertIDs($this->who, 'who'));
     }
     else {
       $query = new What($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->what));
+      $query->buildSelectedSums($this->convertIDs($this->what, 'what'));
     }
 
     $query->addWhatCondition($this->what);
@@ -502,8 +502,8 @@ class QueryBuilder {
    * @param array $ids
    * @return array
    */
-  public function convertIDs($ids) {
-    if (count($ids) <= 1) {
+  public function convertIDs($ids, $vid) {
+    if (count($ids) <= 1 && $vid == 'what') {
       return $ids;
     }
 
