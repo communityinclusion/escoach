@@ -39,4 +39,7 @@
   </tr>
   </tbody>
 </table>
-{% include 'debug.html.twig' %}
+{% if data.results.debug %}
+  <div>SQL: {{ data.results.debug.query }}</div>
+  <div>ARGS: {{ data.results.debug.args }}</div>
+{% endif %}
