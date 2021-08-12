@@ -219,7 +219,7 @@ class QueryBuilder {
 
     return [
       '#theme' => $this->theme,
-      '#data' => ($trends) ? $this->processResultsTrends($query) : $this->processResultsSummary($query, $params['debug']),
+      '#data' => ($trends) ? $this->processResultsTrends($query, $params['debug']) : $this->processResultsSummary($query, $params['debug']),
     ];
   }
 
@@ -426,7 +426,7 @@ class QueryBuilder {
   /**
    *
    */
-  private function processResultsTrends($query) : array {
+  private function processResultsTrends($query, $debug = FALSE) : array {
 
     $result = $query->execute();
 
@@ -442,6 +442,13 @@ class QueryBuilder {
       'arguments' => $query->getArguments(),
       'debug' => TRUE,
     ];
+
+    if ($debug) {
+      $return['results']['debug'] = [
+        'query' => $query->toString(),
+        'args' => $query->getArguments(),
+      ];
+    }
 
     $unit = ($this->timeframe == 'monthly') ? 'month' : 'quarter';
     foreach ($result as $record) {
