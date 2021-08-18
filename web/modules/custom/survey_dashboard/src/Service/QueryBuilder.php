@@ -465,9 +465,13 @@ class QueryBuilder {
    * Build query.
    */
   protected function buildQuery() {
-    if (!$this->where && !$this->who ) {
+    if (!$this->where && !$this->who && !$this->what) {
       $this->theme = 'what-summary';
       return $this->whatSummary();
+    }
+    if (!$this->where && !$this->who && $this->what) {
+      $this->theme = 'selected-activities';
+      return $this->selectedActivities();
     }
     elseif ($this->who == 'any' && !$this->where) {
       $this->theme = 'who-summary';
@@ -514,9 +518,13 @@ class QueryBuilder {
       return $ids;
     }
 
-    $tmp = $ids[0];
-    $qid = key($tmp);
-    return [ $qid => $tmp[$qid] ];
+    $ret = [];
+
+    foreach ($ids as $idx => $question) {
+      $ret[key($question)] = $question[key($question)];
+    }
+
+    return $ret;
   }
   /**
    * Execute what summary query.
