@@ -67,6 +67,7 @@
         "drupal/pathauto": "^1.6",
         "drupal/profile": "^1.1",
         "drupal/recaptcha": "^2.4",
+        "drupal/regcode": "^1.1@RC",
         "drupal/registration_role": "^1.1",
         "drupal/rules": "3.x-dev@dev",
         "drupal/scheduler": "^1.0",
