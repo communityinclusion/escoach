@@ -266,10 +266,10 @@ class BaseQuery {
   public function addCondition($field, $value, $operator = '=') {
     if ($value === NULL) {
       if ($operator == '=') {
-        $this->query->havingIsNull($field);
+        $this->query->condition($field, $value, "IS NULL");
       }
       else {
-        $this->query->havingIsNotNull($field);
+        $this->query->condition($field, $value, "IS NOT NULL");
       }
     }
     else {
@@ -351,13 +351,16 @@ class BaseQuery {
    *
    * @param array $ids
    *   Ids of "who/where" items selected by user.
+   *
+   * @param array$what
+   *   Ids of what items selected by user
    */
-  public function buildSelectedSums(array $ids) {
+  public function buildSelectedSums(array $ids, array $what) {
     $this->query->addExpression('count(*)', 'TotalAll');
 
-    $this->addSelectedSums('All', $ids);
-    $this->addSelectedSums('Me', $ids);
-    $this->addSelectedSums('Provider', $ids);
+    $this->addSelectedSums('All', $ids, $what);
+    $this->addSelectedSums('Me', $ids, $what);
+    $this->addSelectedSums('Provider', $ids, $what);
 
     $this->addSelectedSumsTotal('Me');
     $this->addSelectedSumsTotal('Provider');
@@ -389,19 +392,9 @@ class BaseQuery {
       return;
     }
 
-    if (is_array(static::QUESTION_ID)) {
-      $sql = sprintf("sum(case when (((answer%d IS NOT NULL) OR (answer%d IS NOT NULL)) AND %s) then 1 else 0 end)",
-        static::QUESTION_ID[0],
-        static::QUESTION_ID[1],
-        $and
-      );
-    }
-    else {
-      $sql = sprintf('sum(case when ((answer%d IS NOT NULL)  AND (%s)) then 1 else 0 end)',
-        static::QUESTION_ID,
-        $and
-      );
-    }
+    $sql = sprintf('sum(case when (%s) then 1 else 0 end)',
+      $and
+    );
 
     $this->query->addExpression($sql, 'Total' . $scope, $args);
   }
@@ -414,7 +407,7 @@ class BaseQuery {
    * @param array $ids
    *   "What" items selected by user.
    */
-  private function addSelectedSums(string $scope, array $ids) {
+  private function addSelectedSums(string $scope, array $ids, array $what) {
     $args = [];
 
     switch ($scope) {
@@ -430,6 +423,17 @@ class BaseQuery {
 
       default:
         $and = '';
+    }
+
+    if ($what) {
+      $whatIds = $this->flattenIds($what);
+      $conditions = [];
+      $idx = 0;
+      foreach ($whatIds as $qid => $respIDs) {
+        $conditions[] = sprintf( 'answer%d IN (:what%s%d)', $qid, $scope, $idx);
+        $args[ ':what' . $scope . $idx++] = implode(',', $respIDs);
+      }
+      $and .= sprintf(' AND (%s)', implode(' OR ', $conditions) );
     }
 
     $conditions = [];
