@@ -9,11 +9,11 @@
   <tr>
     <th>&nbsp;</th>
     <th>All</th>
-    <th>Me</th>
     <th>My Team</th>
+    <th>Me</th>
     <th>All</th>
-    <th>Me</th>
     <th>My Team</th>
+    <th>Me</th>
   </tr>
   </thead>
   <tbody>
@@ -22,22 +22,22 @@
     <tr>
       <td>{{ idx }}. {{ aliasData.title }}</td>
       <th>{{ data.results.all[alias].day }}</th>
-      <th>{{ data.results.me[alias].day }}</th>
       <th>{{ data.results.provider[alias].day }}</th>
+      <th>{{ data.results.me[alias].day }}</th>
       <th>{{ data.results.all[alias].week }}</th>
-      <th>{{ data.results.me[alias].week }}</th>
       <th>{{ data.results.provider[alias].week }}</th>
+      <th>{{ data.results.me[alias].week }}</th>
     </tr>
     {% set idx = idx + 1 %}
   {% endfor %}
   <tr>
     <td>Total Respondents</td>
     <th>{{ data.results.all.total }}</th>
+    <th>{{ data.results.provider.total }}</th>
     <th>{{ data.results.me.total }}</th>
-    <th>{{ data.results.provider.total }}</th>
     <th>{{ data.results.all.total }}</th>
-    <th>0</th>
     <th>{{ data.results.provider.total }}</th>
+    <th>0</th>
   </tr>
   </tbody>
 </table>
