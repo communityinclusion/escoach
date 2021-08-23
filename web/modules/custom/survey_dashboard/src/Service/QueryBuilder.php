@@ -493,18 +493,18 @@ class QueryBuilder {
   protected function selectedActivities() {
     if ($this->where && $this->where != 'any') {
       $query = new Where($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->where, 'where'));
+      $query->buildSelectedSums($this->convertIDs($this->where, 'where'), $this->what);
     }
     elseif ($this->who && $this->who != 'any') {
       $query = new Who($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->who, 'who'));
+      $query->buildSelectedSums($this->convertIDs($this->who, 'who'), $this->what);
     }
     else {
       $query = new What($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->what, 'what'));
+      $query->buildSelectedSums($this->convertIDs($this->what, 'what'), $this->what);
     }
 
-    $query->addWhatCondition($this->what);
+    $query->addCondition('answer' . What::QUESTION_ID, NULL, '!=');
 
     return $query;
   }
