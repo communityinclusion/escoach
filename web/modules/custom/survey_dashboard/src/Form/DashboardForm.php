@@ -47,7 +47,7 @@ class DashboardForm extends FormBase {
       '#weight' => '1',
       '#default_value' => $form_state->get('who') ?? NULL,
       '#empty_value' => '_none',
-      '#empty_option' => '--',
+      '#empty_option' => 'No Selection',
       '#required' => FALSE,
     ];
     $form['where'] = [
@@ -57,7 +57,7 @@ class DashboardForm extends FormBase {
       '#weight' => '2',
       '#default_value' => $form_state->get('where') ?? NULL,
       '#empty_value' => '_none',
-      '#empty_option' => '--',
+      '#empty_option' => 'No Selection',
       '#required' => FALSE,
     ];
 
