@@ -363,7 +363,7 @@ class TwilioCoachService
                             }
 
 
-                            $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
+                            if ($mobilephone) $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
                         }
                         if($suspenddates['data'][0]) {
                             $database = \Drupal::database();
@@ -545,10 +545,13 @@ class TwilioCoachService
 
                     //compare send date to suspend dates and cancel adding user if suspended
                     $cancelsurvey = false;
-                    $checksuspend = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone);
-                    $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
-                    $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
-                    $inactive = $checksuspend[2];
+                    if ($mobilephone) 
+                    {
+                        $checksuspend = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone);
+                        $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
+                        $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
+                        $inactive = $checksuspend[2];
+                    }
                     //if($suspendstart && ($suspendstart <= $comparedate)) $cancelsurvey = true;
                     if($suspendstart && ($suspendstart <= $comparedate) && ($suspendend >= $comparedate)) $cancelsurvey = true;
                     if($inactive) $cancelsurvey = true;
