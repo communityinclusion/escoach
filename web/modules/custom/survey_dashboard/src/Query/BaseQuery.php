@@ -431,6 +431,9 @@ class BaseQuery {
       $idx = 0;
       foreach ($whatIds as $qid => $respIDs) {
         $conditions[] = sprintf( 'answer%d IN (:what%s%d)', $qid, $scope, $idx);
+        if (!is_array($respIDs)) {
+          $respIDs = [$respIDs];
+        }
         $args[ ':what' . $scope . $idx++] = implode(',', $respIDs);
       }
       $and .= sprintf(' AND (%s)', implode(' OR ', $conditions) );
