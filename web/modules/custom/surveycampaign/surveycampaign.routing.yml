@@ -50,6 +50,13 @@ surveycampaign.surveyconfigpage:
     _title: 'Surveycampaign configuration'
   requirements:
     _permission: 'access arguments page'
+surveycampaign.surveyconfig_codes:
+  path: '/admin/surveyconfig/regcodes'
+  defaults:
+    _form:  '\Drupal\surveycampaign\Form\SurveycampaignRegCodeConfig'
+    _title: 'Survey registration codes configuration'
+  requirements:
+    _permission: 'access arguments page'
 surveycampaign.twiliorespond:
   path: '/surveycampaign/respond/8uYR9NtgO9'
   defaults:
