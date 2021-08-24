@@ -375,6 +375,40 @@ class BaseQuery {
     ];
   }
 
+  public function addNSums($what) {
+    $this->addNSum('All', $what);
+    $this->addNSum('Provider', $what);
+    $this->addNSum('Me', $what);
+  }
+
+  private function addNSum($scope, $what) {
+    $args = [];
+    $and = '';
+    if ($scope == 'Me') {
+      $and = ' AND email = :email';
+      $args[':email'] = $this->email;
+    }
+    elseif ($scope == 'Provider') {
+      $and = ' AND provider = :provider';
+      $args[':provider'] = $this->provider;
+    }
+
+    $ids = $this->flattenIds($what);
+
+    $conditions = [];
+    foreach ($ids as $qid => $values) {
+      $ind = $this->getValueIndex();
+      $conditions[] = sprintf( '(answer%d in (:value%d[]) )', $qid, $ind );
+      if (!is_array($values)) {
+        $values = [$values];
+      }
+      $args[':value' . $ind . '[]'] = $values;
+    }
+
+    $sql = sprintf('sum(case when (%s) %s  then 1 else 0 end)', implode(' OR ', $conditions), $and);
+    $this->query->addExpression($sql, 'n' . $scope, $args);
+  }
+
   /**
    * Add total sums for me and provider.
    */

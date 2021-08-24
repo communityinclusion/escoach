@@ -348,12 +348,15 @@ class QueryBuilder {
       'results' => [
         'all' => [
           'total' => $result[0]['TotalAll'],
+          'n' => $result[0]['nAll'] ?? 0,
         ],
         'me' => [
           'total' => $result[0]['TotalMe'],
+          'n' => $result[0]['nMe'] ?? 0,
         ],
         'provider' => [
           'total' => $result[0]['TotalProvider'],
+          'n' => $result[0]['nProvider'] ?? 0,
         ],
       ],
     ];
@@ -549,6 +552,7 @@ class QueryBuilder {
   protected function whoSummary() {
     $query = new Who($this->email, $this->provider);
     $query->addSums();
+    $query->addNSums($this->what);
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
