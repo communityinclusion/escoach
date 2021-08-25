@@ -507,6 +507,7 @@ class QueryBuilder {
       $query->buildSelectedSums($this->convertIDs($this->what, 'what'));
     }
 
+    $query->addNSums($this->what);
     $query->addCondition('answer' . What::QUESTION_ID, NULL, '!=');
 
     return $query;
