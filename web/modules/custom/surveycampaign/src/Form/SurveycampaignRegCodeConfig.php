@@ -85,11 +85,6 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
    */
   public function formQuery($table,$var,$survid,$day = 0) {
     $database = \Drupal::database();
-    $todaydate = date("Y-m-d");
-    $tomorrowdate = new DateTime("$todaydate");
-    $tomorrowdate->modify('+ 1 day');
-    $tomorrowdate = $tomorrowdate->format('Y-m-d');
-    $daydate = $day == 0 ? $todaydate : $tomorrowdate;
     $result = $database->select($table, 'ta')
     ->fields('ta', array(
     "$var"
@@ -112,10 +107,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
 
     $defaultid = $config->get('defaultid');
     $secondaryid = $config->get('secondaryid');
-    $datereturn = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,0);
-    $datereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,1);
-    $secnddatereturn = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,0);
-    $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
+    
     
     $form['#attached']['library'][] = 'admincss/csslib';
     $form['configuration'] = array(
@@ -313,10 +305,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $todaydate = date("Y-m-d");
-    $tomorrowdate = new DateTime("$todaydate");
-    $tomorrowdate->modify('+ 1 day');
-    $tomorrowdate = $tomorrowdate->format('Y-m-d');
+    
     $namearray = array();
     $holarray = array();
     foreach ($form_state->getValue(array('shell','provider_fieldset')) as $key => $value) {
@@ -335,39 +324,15 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
      
     
     
-    $defaultid = $form_state->getValue('surveycampaign_def_survey');
-    $datereturn = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,0);
-    $datereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,1);
-    $formupdatetoday = new DateTime($form_state->getValue('default_survey_todaytime'));
-    $formupdatetoday = $formupdatetoday->format('Y-m-d H:i:s');
-    $formupdatetomorrow = new DateTime($form_state->getValue('default_survey_tomorrowtime'));
-    $formupdatetomorrow = $formupdatetomorrow->format('Y-m-d H:i:s');
-    $secnddatereturn = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,0);
-    $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
-    // set up variables for creating new survey on form
-    if($form_state->getValue('default_survey_tomorrowtime') && $form_state->getValue('default_survey_tomorrowtime') != '') {
-      $defupdatetomorrow = new DateTime($form_state->getValue('default_survey_tomorrowtime'));
-      $defupdatetomorrow = $defupdatetomorrow->format('Y-m-d H:i:s');
-    }
+    
+    
 
     //set up conditions for update time or create new survey
 
-    if($form_state->getValue('default_survey_todaytime') != $datereturn) {
-      
-      $defupdatetoday = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturn,$formupdatetoday,0);
-
-    }
-    if($datereturntomorrow && $form_state->getValue('default_survey_tomorrowtime') != $datereturntomorrow) {
     
-      $defupdatetomorrow = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturntomorrow,$formupdatetomorrow,1);
-  
-    }
-    elseif(!$datereturntomorrow && $defupdatetomorrow && $defupdatetomorrow != '') {
-      $newdeftomorrow = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_def_survey'),1,1,$defupdatetomorrow);
-    }
     
 
-  parent::submitForm($form, $form_state); 
+    parent::submitForm($form, $form_state); 
   }
 
   /**
