@@ -347,7 +347,8 @@ class TwilioCoachService
                         
                         $startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
                         $endid = $isprimary ? $config->get('def_survey_suspend_end_id') : $config->get('alt_survey_suspend_end_id');
-                        
+                        $startdate = null;
+                        $enddate = null;
                         if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
                             if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
                                 //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
@@ -362,8 +363,9 @@ class TwilioCoachService
                                 $enddate = $enddate->format('Y-m-d');
                             }
 
+                            \Drupal::logger('surveycampaign')->notice("start and end: " . $startdate . " / " . $enddate);
 
-                            $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
+                            if ( $mobilephone && $startdate) $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
                         }
                         if($suspenddates['data'][0]) {
                             $database = \Drupal::database();
@@ -531,7 +533,7 @@ class TwilioCoachService
                     
                     if (!is_bool($output)) {
                         $todaylink = $output->invitelink;
-                        \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
+                    //    \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
                         $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
                     
