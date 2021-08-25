@@ -363,7 +363,7 @@ class TwilioCoachService
                             }
 
 
-                            if ($mobilephone) $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
+                            $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
                         }
                         if($suspenddates['data'][0]) {
                             $database = \Drupal::database();
