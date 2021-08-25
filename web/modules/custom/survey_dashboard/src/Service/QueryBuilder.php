@@ -504,7 +504,7 @@ class QueryBuilder {
     }
     else {
       $query = new What($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->what, 'what'));
+      $query->buildSelectedSums($query->flattenIds($this->what));
     }
 
     $query->addNSums($this->what);
