@@ -504,7 +504,7 @@ class QueryBuilder {
     }
     else {
       $query = new What($this->email, $this->provider);
-      $query->buildSelectedSums($this->convertIDs($this->what, 'what'), $this->what);
+      $query->buildSelectedSums($this->convertIDs($this->what, 'what'));
     }
 
     $query->addCondition('answer' . What::QUESTION_ID, NULL, '!=');

@@ -198,7 +198,7 @@ class BaseQuery {
       else {
         $ind1 = $this->getValueIndex();
         $sql = sprintf('sum(case when answer%d IN (:value%d) %s then 1 else 0 end)',
-          static::QUESTION_ID,
+          $qid,
           $ind1,
           $and
         );
@@ -355,7 +355,7 @@ class BaseQuery {
    * @param array$what
    *   Ids of what items selected by user
    */
-  public function buildSelectedSums(array $ids, array $what) {
+  public function buildSelectedSums(array $ids, array $what = []) {
     $this->query->addExpression('count(*)', 'TotalAll');
 
     $this->addSelectedSums('All', $ids, $what);
