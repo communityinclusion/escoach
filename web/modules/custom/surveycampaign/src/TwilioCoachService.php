@@ -363,7 +363,7 @@ class TwilioCoachService
                                 $enddate = $enddate->format('Y-m-d');
                             }
 
-                            \Drupal::logger('surveycampaign')->notice("start and end: " . $startdate . " / " . $enddate);
+                            //\Drupal::logger('surveycampaign')->notice("start and end: " . $startdate . " / " . $enddate);
 
                             if ( $mobilephone && $startdate) $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
                         }
