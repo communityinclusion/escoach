@@ -121,7 +121,7 @@ function surveycampaign_cron()
   if (($nowTime >= $manageClosingBegin) && ($nowTime <= $manageClosingEnd)){
       
     $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid,$todaydate);
-    $manageclosing2 = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid2,$todaydate);
+    //$manageclosing2 = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid2,$todaydate);
     $saveResponses = \Drupal::service('surveycampaign.survey_responses')->load($surveyid);
     $saveResponses2 = \Drupal::service('surveycampaign.survey_responses')->load($surveyid2);
   }
