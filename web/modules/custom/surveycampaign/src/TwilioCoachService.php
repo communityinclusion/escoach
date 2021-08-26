@@ -355,7 +355,7 @@ class TwilioCoachService
                         if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
                             if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
                                 //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
-                                echo "Suspenddates: "; print_r($suspenddates);
+                                //echo "Suspenddates: "; print_r($suspenddates);
                                 $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
                                 $startdate = $startdate->format('Y-m-d');
                             }
