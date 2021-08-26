@@ -64,13 +64,13 @@ class BaseQuery {
   /**
    * Add all of the sums expresssions.
    */
-  public function addSums() {
+  public function addSums($what = []) {
     $this->query->addExpression('count(*)', 'TotalAll');
     $this->addSumsTotal('Me');
     $this->addSumsTotal('Provider');
-    $this->addSumsByScope('Me');
-    $this->addSumsByScope('Provider');
-    $this->addSumsByScope('All');
+    $this->addSumsByScope('Me', $what);
+    $this->addSumsByScope('Provider', $what);
+    $this->addSumsByScope('All', $what);
   }
 
   /**
@@ -152,7 +152,7 @@ class BaseQuery {
     return print_r($args, TRUE);
   }
 
-  public function addSumsByScope($scope) {
+  public function addSumsByScope($scope, $what = []) {
 
     switch ($scope) {
       case 'Me':
@@ -169,12 +169,28 @@ class BaseQuery {
         $and = '';
     }
 
+    $args = [];
+
+    if ($what) {
+      $whatIds = $this->flattenIds($what);
+      $conditions = [];
+      $idx = 0;
+      foreach ($whatIds as $qid => $respIDs) {
+        $conditions[] = sprintf( 'answer%d IN (:what%s%d[])', $qid, $scope, $idx);
+        if (!is_array($respIDs)) {
+          $respIDs = [$respIDs];
+        }
+        $args[ ':what' . $scope . $idx++ . '[]'] = $respIDs;
+      }
+      $and .= sprintf(' AND (%s)', implode(' OR ', $conditions) );
+    }
+
     foreach ($this->valueAliasMap as $alias => $definition) {
       $value = $definition['response_id'];
       $qid = $definition['question_id'];
 
       if (is_array($value)) {
-        $args = [];
+
         $qids = [];
         foreach ($qid as $idx => $id) {
           $qids[$id][] = $value[$idx];
@@ -464,11 +480,11 @@ class BaseQuery {
       $conditions = [];
       $idx = 0;
       foreach ($whatIds as $qid => $respIDs) {
-        $conditions[] = sprintf( 'answer%d IN (:what%s%d)', $qid, $scope, $idx);
+        $conditions[] = sprintf( 'answer%d IN (:what%s%d[])', $qid, $scope, $idx);
         if (!is_array($respIDs)) {
           $respIDs = [$respIDs];
         }
-        $args[ ':what' . $scope . $idx++] = implode(',', $respIDs);
+        $args[ ':what' . $scope . $idx++ . '[]'] = $respIDs;
       }
       $and .= sprintf(' AND (%s)', implode(' OR ', $conditions) );
     }
