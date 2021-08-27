@@ -658,27 +658,6 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ],
       '#default_value' => $config->get('secondary_reminder_num'),
     ];
-    $form['configuration']['second_settings']['alt_survey_suspend_start_id'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('SG question id for secondary survey suspension start'),
-      '#description' => $this->t('The question id from the secondary survey for the start date of a suspension.  Get this from the survey build mode.'),
-      '#default_value' => $config->get('alt_survey_suspend_start_id'),
-       '#size' => 10,
-      '#maxlength' => 10,
-      '#required' => FALSE,
-      
-    ];
-
-    $form['configuration']['second_settings']['alt_survey_suspend_end_id'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('SG question id for secondary survey suspension end date'),
-      '#description' => $this->t('The question id from the secondary survey for the end date of a suspension.  Get this from the survey build mode.'),
-      '#default_value' => $config->get('alt_survey_suspend_end_id'),
-       '#size' => 10,
-      '#maxlength' => 10,
-      '#required' => FALSE,
-      
-    ];
 
     $form['configuration']['second_settings']['alt_second_text_body'] = [
       '#type' => 'text_format',
@@ -887,8 +866,8 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('secondary_reminder_num',$form_state->getValue('secondary_reminder_num'))
       ->set('def_survey_suspend_start_id',$form_state->getValue('def_survey_suspend_start_id'))
       ->set('def_survey_suspend_end_id',$form_state->getValue('def_survey_suspend_end_id'))
-      ->set('alt_survey_suspend_start_id',$form_state->getValue('alt_survey_suspend_start_id'))
-      ->set('alt_survey_suspend_end_id',$form_state->getValue('alt_survey_suspend_end_id'))
+      //->set('alt_survey_suspend_start_id',$form_state->getValue('alt_survey_suspend_start_id'))
+      //->set('alt_survey_suspend_end_id',$form_state->getValue('alt_survey_suspend_end_id'))
       ->set('def_holiday_name',$namearray)
       ->set('def_holiday_date',$holarray)
       ->save();

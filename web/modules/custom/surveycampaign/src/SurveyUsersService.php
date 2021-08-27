@@ -59,6 +59,7 @@ class SurveyUsersService
     public function handleSuspendDates($userphone,$startdate = null,$enddate = null) {
         $today = new DateTime();
         $today = $today->format('Y-m-d');
+        \Drupal::logger('surveycampaign')->notice("start and end: " . $startdate . " / " . $enddate);
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
