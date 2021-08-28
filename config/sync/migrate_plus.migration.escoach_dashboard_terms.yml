@@ -29,6 +29,8 @@ source:
     -
       alias: alias
     -
+      weight: weight
+    -
       notes: notes
 process:
   name: response_text
@@ -56,6 +58,7 @@ process:
     source: response_id
     delimiter: ','
   field_alias: alias
+  weight: weight
 destination:
   plugin: 'entity:taxonomy_term'
 migration_dependencies: null
