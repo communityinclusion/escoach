@@ -21,6 +21,8 @@ source:
     5:
       alias: alias
     6:
+      weight: weight
+    7:
       notes: notes
 process:
   name: response_text
@@ -48,5 +50,6 @@ process:
     source: response_id
     delimiter: ,
   field_alias: alias
+  weight: weight
 destination:
   plugin: entity:taxonomy_term
