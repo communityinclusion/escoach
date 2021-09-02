@@ -397,7 +397,7 @@ class TwilioCoachService
        $todaydate = date("Y-m-d");
        $filterdate = urlencode("$todaydate 01:00:00");
        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyresponse?filter[field][0]=date_submitted&filter[operator][0]=>=&filter[value][0]={$filterdate}&filter[field][1]=[question(545)]&filter[operator][1]==&filter[value][1]={$email}&api_token={$api_key}&api_token_secret={$api_secret}";
-       \Drupal::logger('surveycampaign')->notice("Response URL: " . $url);
+       //\Drupal::logger('surveycampaign')->notice("Response URL: " . $url);
        
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
