@@ -391,7 +391,6 @@ class TwilioCoachService
 
    function getResponseInfo($surveyid,$contactid,$api_key,$api_secret) {
        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyresponse?filter[field][0]=contact_id&filter[operator][0]=%3E=&filter[value][0]={$contactid}&api_token={$api_key}&api_token_secret={$api_secret}";
-       \Drupal::logger('surveycampaign')->notice("Response URL: " . $url);
        
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
