@@ -39,6 +39,7 @@ function surveycampaign_theme() {
   ];
 } 
 function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  module_set_weight('surveycampaign', 100);
   if($form['#id'] == 'surveymessages-configuration-form' ) {
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
   }
@@ -46,8 +47,6 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
 }
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['account']['mail']['#required'] = TRUE;
-  //$form['survey_participants_profiles'][0]['entity']['field_cell_phone'][0]['#validate'] = array('surveycampaign_profile_cellphone_validate' => array());
-  //$form['account']['mail']['#validate'] = array('surveycampaign_profile_cellphone_validate' => array());
   $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
   
   
