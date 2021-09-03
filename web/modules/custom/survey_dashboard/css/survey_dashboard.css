@@ -1,0 +1,43 @@
+#edit-what--wrapper #edit-what {
+  height: 400px;
+  overflow: scroll;
+}
+
+#edit-what--wrapper #edit-what .checkbox label {
+  margin-bottom: 0;
+}
+
+.escoach-what-clear-wrapper {
+  font-size: 0.5em;
+}
+
+#results td,
+#results th {
+  border: solid 1px #dddddd;
+}
+
+#results thead tr,
+#results tbody tr:last-child {
+  border-bottom: solid 2px #000;
+}
+
+#results thead tr:first-child {
+  border-top: solid 2px #000;
+}
+
+#results thead tr:first-child th:nth-child(3),
+#results thead tr:nth-child(2) th:nth-child(5),
+#results tbody th:nth-child(5) {
+  border-left: solid 2px #000;
+}
+
+#results thead tr th {
+  font-weight: bold;
+}
+
+#results th,
+#results tr {
+  background-color: #fff;
+  color: #000;
+  font-weight: normal;
+}

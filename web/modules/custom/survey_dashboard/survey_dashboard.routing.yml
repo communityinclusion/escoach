@@ -1,0 +1,8 @@
+survey_dashboard.dashboard_form:
+  path: '/dashboard'
+  defaults:
+    _form: '\Drupal\survey_dashboard\Form\DashboardForm'
+    _title: 'DashboardForm'
+  requirements:
+    _access: 'TRUE'
+

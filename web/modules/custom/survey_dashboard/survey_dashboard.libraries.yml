@@ -1,0 +1,7 @@
+dashboard:
+  version: 1.x
+  css:
+    base:
+      css/survey_dashboard.css: {}
+  js:
+    js/survey_dashboard.js: {}

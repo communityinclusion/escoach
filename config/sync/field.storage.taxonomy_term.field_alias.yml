@@ -1,19 +1,20 @@
-uuid: 20f74ec6-5e60-4b12-98bb-c833cd0c3cf6
+uuid: b88ed790-c192-40a1-9e7b-5e6653991c98
 langcode: en
 status: true
 dependencies:
   module:
     - taxonomy
-id: taxonomy_term.field_dashboard_question_id
-field_name: field_dashboard_question_id
+id: taxonomy_term.field_alias
+field_name: field_alias
 entity_type: taxonomy_term
-type: integer
+type: string
 settings:
-  unsigned: false
-  size: normal
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
 module: core
 locked: false
-cardinality: 4
+cardinality: 1
 translatable: true
 indexes: {  }
 persist_with_no_fields: false

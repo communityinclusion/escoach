@@ -1,0 +1,49 @@
+<?php
+/** @file
+ *
+ */
+
+function survey_dashboard_theme() {
+  return [
+    'dashboard-form' => [
+      'render element' => 'form',
+      'template' => 'form--dashboard-form',
+    ],
+    'what-summary' => [
+      'template'  => 'what-summary',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'where-summary' => [
+      'template'  => 'where-summary',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'who-summary' => [
+      'template'  => 'who-summary',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'monthly-trends' => [
+      'template'  => 'trends',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'quarterly-trends' => [
+      'template'  => 'trends',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+    'selected-activities' => [
+      'template'  => 'selected-activities',
+      'variables' => [
+        'data' => null,
+      ],
+    ],
+  ];
+}

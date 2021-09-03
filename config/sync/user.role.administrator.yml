@@ -64,6 +64,7 @@ permissions:
   - 'administer media types'
   - 'administer media_type labels'
   - 'administer menu'
+  - 'administer migrations'
   - 'administer modules'
   - 'administer node display'
   - 'administer node fields'
