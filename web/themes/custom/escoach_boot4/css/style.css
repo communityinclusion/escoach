@@ -16,7 +16,7 @@
         width: min-content;
       }
      .page-user-register #edit-survey-participants-profiles-0-entity-field-partic-suspension-dates-0, .page-user-register #edit-survey-participants-profiles-0-entity-field-set-surveys-to-inactive-wrapper {display: none;}
-     .flexImage { width: 90%; max-width: 500px; margin: 0 0 0 5%; display: block;}
+     .flexImage { width: 90%; max-width: 500px; margin: 0 0 0 5%; display: block; height: 100%;}
      .site-footer__top .region.region-footer-first {width: 95%;}
      .mainLogo {width: 50%;max-width: 550px;}
      .sizeSlogan { font-size: 115%;color: #0077af;font-weight: bold;}
@@ -26,4 +26,7 @@
      #edit-field-other-provider-wrapper {display: none;}
      #edit-field-other-provider-wrapper.showOther { display: block; }
      select#edit-tid--2 option[value="12"] {display: none;}
-      
+    #views-exposed-form-es-coach-library-page-1 #edit-submit-es-coach-library {margin-right: 15px;margin-bottom: 9px;}
+    #views-exposed-form-es-coach-library-page-1 #edit-actions, #views-exposed-form-es-coach-library-page-1 fieldset {width: 100%;}
+    #views-exposed-form-es-coach-library-page-1 #edit-actions input {width: 45%; float: left;}
+    #edit-submit-es-coach-user-library--2 {margin-bottom: 5px;}

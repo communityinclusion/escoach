@@ -29,6 +29,7 @@ class SurveyUsersService
             ->loadByProperties([
                 'uid' => $user,
                 'type' => 'survey_participants',
+                'is_default' => 1,
             ]);
             $userobj = \Drupal\user\Entity\User::load($user);
             $useremail = $userobj->getEmail();
@@ -58,10 +59,12 @@ class SurveyUsersService
     public function handleSuspendDates($userphone,$startdate = null,$enddate = null) {
         $today = new DateTime();
         $today = $today->format('Y-m-d');
+        \Drupal::logger('surveycampaign')->notice("start and end: " . $startdate . " / " . $enddate);
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
+                'is_default' => 1,
                 'field_cell_phone' => $userphone,
             ]);
         
@@ -91,6 +94,7 @@ class SurveyUsersService
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
+                'is_default' => 1,
                 'field_cell_phone' => $userphone,
             ]);
         

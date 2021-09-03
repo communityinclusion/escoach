@@ -118,7 +118,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $secnddatereturn = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,0);
     $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
     
-    
+    $form['#attached']['library'][] = 'admincss/csslib';
     $form['configuration'] = array(
       '#type' => 'vertical_tabs',
     );
@@ -387,6 +387,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#type' => 'select',
       '#title' => $this->t('Select the number of days a user must be inactive to get a warning they will be deactivated'),
       '#options' => [
+        '1' => $this->t('1'),
         '2' => $this->t('2'),
         '3' => $this->t('3'),
         '4' => $this->t('4'),
@@ -539,13 +540,13 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => t('Set secondary survey to require daily completion, or one-time completion. If repeating users will get daily reminders to complete the survey every day.  If one-time, users will get daily reminders to complete the survey until they have completed it once, then no more reminders.'),
       '#default_value' => $config->get('alt_repeat'),
       '#options' => array(
-        t('One-time'),
+        t('One-time (one-time campaign links will remain open until the survey is shut down.'),
         t('Daily (repeating)'),
       )
     );
     $form['configuration']['second_settings']['alt_hour_range_low'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select earliest time to send survey'),
+      '#title' => $this->t('Select earliest time to send survey (1/2 hour before message sends)'),
       '#options' => [
         '21600' => $this->t('6:00 AM'),
         '23400' => $this->t('6:30 AM'),
@@ -577,7 +578,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
   
     $form['configuration']['second_settings']['alt_hour_range_high'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select latest time to send survey'),
+      '#title' => $this->t('Select latest time for survey period (1/2 hour before message sends)'),
       '#options' => [
         '25200' => $this->t('7:00 AM'),
         '27000' => $this->t('7:30 AM'),
@@ -656,27 +657,6 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '2' => $this->t('2'),
       ],
       '#default_value' => $config->get('secondary_reminder_num'),
-    ];
-    $form['configuration']['second_settings']['alt_survey_suspend_start_id'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('SG question id for secondary survey suspension start'),
-      '#description' => $this->t('The question id from the secondary survey for the start date of a suspension.  Get this from the survey build mode.'),
-      '#default_value' => $config->get('alt_survey_suspend_start_id'),
-       '#size' => 10,
-      '#maxlength' => 10,
-      '#required' => FALSE,
-      
-    ];
-
-    $form['configuration']['second_settings']['alt_survey_suspend_end_id'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('SG question id for secondary survey suspension end date'),
-      '#description' => $this->t('The question id from the secondary survey for the end date of a suspension.  Get this from the survey build mode.'),
-      '#default_value' => $config->get('alt_survey_suspend_end_id'),
-       '#size' => 10,
-      '#maxlength' => 10,
-      '#required' => FALSE,
-      
     ];
 
     $form['configuration']['second_settings']['alt_second_text_body'] = [
@@ -886,8 +866,8 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('secondary_reminder_num',$form_state->getValue('secondary_reminder_num'))
       ->set('def_survey_suspend_start_id',$form_state->getValue('def_survey_suspend_start_id'))
       ->set('def_survey_suspend_end_id',$form_state->getValue('def_survey_suspend_end_id'))
-      ->set('alt_survey_suspend_start_id',$form_state->getValue('alt_survey_suspend_start_id'))
-      ->set('alt_survey_suspend_end_id',$form_state->getValue('alt_survey_suspend_end_id'))
+      //->set('alt_survey_suspend_start_id',$form_state->getValue('alt_survey_suspend_start_id'))
+      //->set('alt_survey_suspend_end_id',$form_state->getValue('alt_survey_suspend_end_id'))
       ->set('def_holiday_name',$namearray)
       ->set('def_holiday_date',$holarray)
       ->save();

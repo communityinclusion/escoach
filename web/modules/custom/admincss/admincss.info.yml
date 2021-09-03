@@ -1,0 +1,9 @@
+name: 'admincss'
+type: module
+description: 'CSS for admin theme'
+core: 8.x
+package: 'Custom'
+package: Views
+core: '8.x'
+dependencies:
+  - drupal:views

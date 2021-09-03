@@ -6,6 +6,7 @@ dependencies:
     - system.menu.user-menu
   module:
     - superfish
+    - system
   theme:
     - escoach_boot4
 id: usermenu
@@ -68,4 +69,9 @@ settings:
   custom_list_class: ''
   custom_item_class: ''
   custom_link_class: ''
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    pages: /dashboard
+    negate: true
+    context_mapping: {  }

@@ -62,7 +62,7 @@ class TwilioCoachService
         $seconddate = $enddate->format('g:i a');
         // create new campaign
         // IF this is a one-timer, make the expire data tomorrow.
-        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . "&linkdates[close]=" . ($onetime ? urlencode("$tomorrowdate 23:59:30") : urlencode("$gizmodate 23:59:30")) . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
+        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . ($onetime ? "" : "&linkdates[close]=" . urlencode("$gizmodate 23:59:30")) . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
        
 
         
@@ -278,7 +278,7 @@ class TwilioCoachService
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
                     //setting for secondary survey to send only once.
-
+                    $checkcompletedonce = false;
                   
                     if($onetime) {
                         $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
@@ -345,13 +345,17 @@ class TwilioCoachService
                         // check if user suspended survey.  If so get dates and enter in user profile
                         //delete this individual in this survey/campaign from surveycampaign_mailer 
                         
-                        $startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
-                        $endid = $isprimary ? $config->get('def_survey_suspend_end_id') : $config->get('alt_survey_suspend_end_id');
-                        
+                        // Suspension choices on secondary survey seem to be interfering with setting them from primary survey
+                        //$startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
+                        $startid = $config->get('def_survey_suspend_start_id');
+                        //$endid = $isprimary ? $config->get('def_survey_suspend_end_id') : $config->get('alt_survey_suspend_end_id');
+                        $endid =  $config->get('def_survey_suspend_end_id');
+                        $startdate = null;
+                        $enddate = null;
                         if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
                             if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
                                 //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
-                                echo "Suspenddates: "; print_r($suspenddates);
+                                //echo "Suspenddates: "; print_r($suspenddates);
                                 $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
                                 $startdate = $startdate->format('Y-m-d');
                             }
@@ -362,8 +366,9 @@ class TwilioCoachService
                                 $enddate = $enddate->format('Y-m-d');
                             }
 
+                            //\Drupal::logger('surveycampaign')->notice("start and end: " . $startdate . " / " . $enddate);
 
-                            $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
+                            if ( $mobilephone && $startdate) $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
                         }
                         if($suspenddates['data'][0]) {
                             $database = \Drupal::database();
@@ -399,7 +404,7 @@ class TwilioCoachService
 
 
    }
-   function twilioCall ($tonumber,$name,$link,$textno,$starttime,$endtime,$isprimary) {
+   function twilioCall($tonumber,$name,$link,$textno,$starttime,$endtime,$isprimary) {
         $config =  \Drupal::config('surveycampaign.settings');
         $firsttextconfig = $isprimary ? $config->get('first_text_body.value') : $config->get('alt_first_text_body.value');
         $secondtextconfig = $isprimary ? $config->get('second_text_body.value') : $config->get('alt_second_text_body.value') ;
@@ -524,15 +529,15 @@ class TwilioCoachService
                 $todaylink = null;
                 if($didnotreply >= $cutoff && !$inactive) {
                 
-                    $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink);
+                    $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink,$isprimary);
                     }
                 elseif ($didnotreply == $warning && $warningcount == $warning && !$inactive) 
                 { 
                     
                     if (!is_bool($output)) {
                         $todaylink = $output->invitelink;
-                        \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
-                        $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink);
+                    //    \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
+                        $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
                     
                 }
@@ -545,10 +550,13 @@ class TwilioCoachService
 
                     //compare send date to suspend dates and cancel adding user if suspended
                     $cancelsurvey = false;
-                    $checksuspend = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone);
-                    $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
-                    $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
-                    $inactive = $checksuspend[2];
+                    if ($mobilephone) 
+                    {
+                        $checksuspend = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone);
+                        $suspendstart = $checksuspend[0] ? new DateTime($checksuspend[0]) : false;
+                        $suspendend = $checksuspend[1] ? new DateTime($checksuspend[1]) : false;
+                        $inactive = $checksuspend[2];
+                    }
                     //if($suspendstart && ($suspendstart <= $comparedate)) $cancelsurvey = true;
                     if($suspendstart && ($suspendstart <= $comparedate) && ($suspendend >= $comparedate)) $cancelsurvey = true;
                     if($inactive) $cancelsurvey = true;
@@ -774,9 +782,11 @@ class TwilioCoachService
                 $campaignarray[]= $value;
             }
         }
+        $campaigndisplay = print_r($campaignarray,true);
+        \Drupal::logger('surveycampaign alert')->notice('Campaign array: ' . $campaigndisplay);
         return $campaignarray;
     }
-    protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink) {
+    protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink,$isprimary) {
         $send = false;
         $config =  \Drupal::config('surveycampaign.settings');
         $mailManager = \Drupal::service('plugin.manager.mail');
@@ -792,7 +802,7 @@ class TwilioCoachService
         $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
         $warningtextconfig = $config->get('warning_text_body.value');
         $cutofftextconfig = $config->get('cutoff_text_body.value');
-        if($noreplylevel == 2) {
+        if($noreplylevel == 2 && $isprimary) {
             
              $cutofftextbody = str_replace("@name", "$firstname $lastname",str_replace('@cutoffdays', $dayno, $cutofftextconfig));
             $dayno = $inactiveno;
@@ -808,7 +818,7 @@ class TwilioCoachService
                 $textno = 5;
             } 
         }
-        elseif($noreplylevel == 1)
+        elseif($noreplylevel == 1 && $isprimary)
         {
             $dayno = $warningno;
             $warningtextbody = str_replace("@name", "$firstname $lastname",str_replace('@invitelink', $invitelink,str_replace('@warningdays', $dayno,str_replace("@daystocutoff", $warningdays, $warningtextconfig))));
@@ -824,11 +834,11 @@ class TwilioCoachService
         $langcode = "en";
 
         if($send) { 
-            if($warningmode == '2' || $warningmode == '3') {
+            if(($warningmode == '2' || $warningmode == '3') && $isprimary) {
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
-            if($warningmode == '1' || $warningmode == '3') { 
-                $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,true);
+            if(($warningmode == '1' || $warningmode == '3') && $isprimary) { 
+                $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,$isprimary);
                 
             }
         }

@@ -1,0 +1,4 @@
+csslib:
+  css:
+    theme:
+      css/admincss.css: {}

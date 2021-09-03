@@ -1959,27 +1959,30 @@
     },
     {
         "name": "drupal/admin_toolbar",
-        "version": "2.2.0",
-        "version_normalized": "2.2.0.0",
+        "version": "3.0.2",
+        "version_normalized": "3.0.2.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/admin_toolbar.git",
-            "reference": "8.x-2.2"
+            "reference": "3.0.2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/admin_toolbar-8.x-2.2.zip",
-            "reference": "8.x-2.2",
-            "shasum": "41ea0e3321e6d1e190c486be49a99e60446d8dd7"
+            "url": "https://ftp.drupal.org/files/projects/admin_toolbar-3.0.2.zip",
+            "reference": "3.0.2",
+            "shasum": "a3b7a8030695d0c1d49ec57786321e2dd142184a"
         },
         "require": {
             "drupal/core": "^8.8.0 || ^9.0"
         },
+        "require-dev": {
+            "drupal/admin_toolbar_tools": "*"
+        },
         "type": "drupal-module",
         "extra": {
             "drupal": {
-                "version": "8.x-2.2",
-                "datestamp": "1585017179",
+                "version": "3.0.2",
+                "datestamp": "1629907124",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -1989,7 +1992,7 @@
         "installation-source": "dist",
         "notification-url": "https://packages.drupal.org/8/downloads",
         "license": [
-            "GPL-2.0+"
+            "GPL-2.0-or-later"
         ],
         "authors": [
             {
@@ -2033,7 +2036,7 @@
             "Toolbar"
         ],
         "support": {
-            "source": "http://cgit.drupalcode.org/admin_toolbar",
+            "source": "https://git.drupalcode.org/project/admin_toolbar",
             "issues": "https://www.drupal.org/project/issues/admin_toolbar"
         }
     },
@@ -2562,27 +2565,30 @@
     },
     {
         "name": "drupal/conditional_fields",
-        "version": "1.0.0-alpha10",
-        "version_normalized": "1.0.0.0-alpha10",
+        "version": "4.0.0-alpha1",
+        "version_normalized": "4.0.0.0-alpha1",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/conditional_fields.git",
-            "reference": "8.x-1.0-alpha10"
+            "reference": "4.0.0-alpha1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/conditional_fields-8.x-1.0-alpha10.zip",
-            "reference": "8.x-1.0-alpha10",
-            "shasum": "ac11881a07eaf3ce796dea1cb0e537434d1fbd3d"
+            "url": "https://ftp.drupal.org/files/projects/conditional_fields-4.0.0-alpha1.zip",
+            "reference": "4.0.0-alpha1",
+            "shasum": "2e5f493f1ae09494857f58fde97715cdb7e21553"
         },
         "require": {
             "drupal/core": "^8 || ^9"
         },
+        "require-dev": {
+            "drupal/paragraphs": "*"
+        },
         "type": "drupal-module",
         "extra": {
             "drupal": {
-                "version": "8.x-1.0-alpha10",
-                "datestamp": "1610130227",
+                "version": "4.0.0-alpha1",
+                "datestamp": "1621481938",
                 "security-coverage": {
                     "status": "not-covered",
                     "message": "Project has not opted into security advisory coverage!"
@@ -2596,8 +2602,8 @@
         ],
         "authors": [
             {
-                "name": "Adyax",
-                "homepage": "https://www.adyax.com/"
+                "name": "OlgaRabodzei",
+                "homepage": "https://www.drupal.org/user/3389198"
             },
             {
                 "name": "colan",
@@ -2628,7 +2634,7 @@
                 "homepage": "https://www.drupal.org/user/3589086"
             }
         ],
-        "description": "Conditional fields",
+        "description": "Define dependencies between fields based on their states and values.",
         "homepage": "https://www.drupal.org/project/conditional_fields",
         "support": {
             "source": "https://git.drupalcode.org/project/conditional_fields"
@@ -3117,17 +3123,17 @@
     },
     {
         "name": "drupal/core",
-        "version": "8.9.16",
-        "version_normalized": "8.9.16.0",
+        "version": "8.9.18",
+        "version_normalized": "8.9.18.0",
         "source": {
             "type": "git",
             "url": "https://github.com/drupal/core.git",
-            "reference": "498effa27ae5111f53f04fbe80fd05369a88c53d"
+            "reference": "e536176c45d9d75ec57f7a12c0e3c0aead856841"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/drupal/core/zipball/498effa27ae5111f53f04fbe80fd05369a88c53d",
-            "reference": "498effa27ae5111f53f04fbe80fd05369a88c53d",
+            "url": "https://api.github.com/repos/drupal/core/zipball/e536176c45d9d75ec57f7a12c0e3c0aead856841",
+            "reference": "e536176c45d9d75ec57f7a12c0e3c0aead856841",
             "shasum": ""
         },
         "require": {
@@ -3154,7 +3160,7 @@
             "laminas/laminas-diactoros": "^1.8",
             "laminas/laminas-feed": "^2.12",
             "masterminds/html5": "^2.1",
-            "pear/archive_tar": "^1.4.12",
+            "pear/archive_tar": "^1.4.14",
             "php": "^7.0.8",
             "psr/log": "^1.0",
             "stack/builder": "^1.0",
@@ -3294,7 +3300,7 @@
             "drupal/workflows": "self.version",
             "drupal/workspaces": "self.version"
         },
-        "time": "2021-05-25T09:17:58+00:00",
+        "time": "2021-08-12T17:48:42+00:00",
         "type": "drupal-core",
         "extra": {
             "drupal-scaffold": {
@@ -3439,17 +3445,17 @@
     },
     {
         "name": "drupal/core-recommended",
-        "version": "8.9.16",
-        "version_normalized": "8.9.16.0",
+        "version": "8.9.18",
+        "version_normalized": "8.9.18.0",
         "source": {
             "type": "git",
             "url": "https://github.com/drupal/core-recommended.git",
-            "reference": "ec38f5cb75ca1848f2247a645d4a4dee4abe4c28"
+            "reference": "71839bb9799b70f449b76294b461877ba1e9ff2c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/drupal/core-recommended/zipball/ec38f5cb75ca1848f2247a645d4a4dee4abe4c28",
-            "reference": "ec38f5cb75ca1848f2247a645d4a4dee4abe4c28",
+            "url": "https://api.github.com/repos/drupal/core-recommended/zipball/71839bb9799b70f449b76294b461877ba1e9ff2c",
+            "reference": "71839bb9799b70f449b76294b461877ba1e9ff2c",
             "shasum": ""
         },
         "require": {
@@ -3461,7 +3467,7 @@
             "doctrine/common": "v2.7.3",
             "doctrine/inflector": "v1.2.0",
             "doctrine/lexer": "1.0.2",
-            "drupal/core": "8.9.16",
+            "drupal/core": "8.9.18",
             "easyrdf/easyrdf": "0.9.1",
             "egulias/email-validator": "2.1.17",
             "guzzlehttp/guzzle": "6.5.4",
@@ -3474,7 +3480,7 @@
             "laminas/laminas-zendframework-bridge": "1.0.4",
             "masterminds/html5": "2.3.0",
             "paragonie/random_compat": "v9.99.99",
-            "pear/archive_tar": "1.4.13",
+            "pear/archive_tar": "1.4.14",
             "pear/console_getopt": "v1.4.3",
             "pear/pear-core-minimal": "v1.10.10",
             "pear/pear_exception": "v1.0.1",
@@ -3512,7 +3518,7 @@
         "conflict": {
             "webflo/drupal-core-strict": "*"
         },
-        "time": "2021-05-25T09:17:58+00:00",
+        "time": "2021-08-12T17:48:42+00:00",
         "type": "metapackage",
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -3633,18 +3639,18 @@
     },
     {
         "name": "drupal/ctools",
-        "version": "3.6.0",
-        "version_normalized": "3.6.0.0",
+        "version": "3.7.0",
+        "version_normalized": "3.7.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/ctools.git",
-            "reference": "8.x-3.6"
+            "reference": "8.x-3.7"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/ctools-8.x-3.6.zip",
-            "reference": "8.x-3.6",
-            "shasum": "9a849bb6ac9f4d02603d04b3265b35b7329e1ef5"
+            "url": "https://ftp.drupal.org/files/projects/ctools-8.x-3.7.zip",
+            "reference": "8.x-3.7",
+            "shasum": "b11c0981a1d2ab3cc9e8e614a337d8e2a2a70c0e"
         },
         "require": {
             "drupal/core": "^8.8 || ^9"
@@ -3652,8 +3658,8 @@
         "type": "drupal-module",
         "extra": {
             "drupal": {
-                "version": "8.x-3.6",
-                "datestamp": "1620838181",
+                "version": "8.x-3.7",
+                "datestamp": "1623860918",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -5676,6 +5682,79 @@
         }
     },
     {
+        "name": "drupal/node_export",
+        "version": "1.0.0-alpha1",
+        "version_normalized": "1.0.0.0-alpha1",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/node_export.git",
+            "reference": "8.x-1.0-alpha1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/node_export-8.x-1.0-alpha1.zip",
+            "reference": "8.x-1.0-alpha1",
+            "shasum": "c50801696d54461d3b14ed782dbf030a6b6ebd2e"
+        },
+        "require": {
+            "drupal/core": "^8 || ^9",
+            "ext-json": "*",
+            "php": ">7.0"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "drupal": {
+                "version": "8.x-1.0-alpha1",
+                "datestamp": "1604598439",
+                "security-coverage": {
+                    "status": "not-covered",
+                    "message": "Alpha releases are not covered by Drupal security advisories."
+                }
+            },
+            "drush": {
+                "services": {
+                    "drush.services.yml": "^9"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "James Andres",
+                "homepage": "https://www.drupal.org/user/33827"
+            },
+            {
+                "name": "cgmonroe",
+                "homepage": "https://www.drupal.org/user/563114"
+            },
+            {
+                "name": "chia",
+                "homepage": "https://www.drupal.org/user/398572"
+            },
+            {
+                "name": "danielb",
+                "homepage": "https://www.drupal.org/user/134005"
+            },
+            {
+                "name": "gaurav.kapoor",
+                "homepage": "https://www.drupal.org/user/3495331"
+            }
+        ],
+        "description": "Allows users to export content and then import into another Drupal installation.",
+        "homepage": "https://www.drupal.org/project/node_export",
+        "keywords": [
+            "Drupal"
+        ],
+        "support": {
+            "source": "http://cgit.drupalcode.org/node_export",
+            "issues": "https://www.drupal.org/project/issues/node_export"
+        }
+    },
+    {
         "name": "drupal/nodeaccess",
         "version": "1.0.0",
         "version_normalized": "1.0.0.0",
@@ -7173,27 +7252,33 @@
     },
     {
         "name": "drupal/views_bulk_operations",
-        "version": "2.6.0",
-        "version_normalized": "2.6.0.0",
+        "version": "3.13.0",
+        "version_normalized": "3.13.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/views_bulk_operations.git",
-            "reference": "8.x-2.6"
+            "reference": "8.x-3.13"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/views_bulk_operations-8.x-2.6.zip",
-            "reference": "8.x-2.6",
-            "shasum": "517b671adb55c3ad023032607d360dab77db9f22"
+            "url": "https://ftp.drupal.org/files/projects/views_bulk_operations-8.x-3.13.zip",
+            "reference": "8.x-3.13",
+            "shasum": "70583d08b91be3b5e008f571589425c2176eb73b"
         },
         "require": {
-            "drupal/core": "~8.5"
+            "drupal/core": "^8.8 || ^9"
+        },
+        "require-dev": {
+            "drush/drush": "^10"
+        },
+        "suggest": {
+            "drush/drush": "^9 || ^10"
         },
         "type": "drupal-module",
         "extra": {
             "drupal": {
-                "version": "8.x-2.6",
-                "datestamp": "1580924749",
+                "version": "8.x-3.13",
+                "datestamp": "1619697066",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -7201,14 +7286,14 @@
             },
             "drush": {
                 "services": {
-                    "drush.services.yml": "^9"
+                    "drush.services.yml": "^9 || ^10"
                 }
             }
         },
         "installation-source": "dist",
         "notification-url": "https://packages.drupal.org/8/downloads",
         "license": [
-            "GPL-2.0+"
+            "GPL-2.0-or-later"
         ],
         "authors": [
             {
@@ -7235,7 +7320,7 @@
         "description": "Adds an ability to perform bulk operations on selected entities from view results. Provides an API to create such operations.",
         "homepage": "https://www.drupal.org/project/views_bulk_operations",
         "support": {
-            "source": "https://git.drupalcode.org/project/views_bulk_operations",
+            "source": "https://git.drupalcode.org/project/views_bulk_operations/-/tree/8.x-3.x",
             "issues": "https://www.drupal.org/project/issues/views_bulk_operations?version=8.x",
             "docs": "https://www.drupal.org/docs/8/modules/views-bulk-operations-vbo"
         }
@@ -9005,17 +9090,17 @@
     },
     {
         "name": "pear/archive_tar",
-        "version": "1.4.13",
-        "version_normalized": "1.4.13.0",
+        "version": "1.4.14",
+        "version_normalized": "1.4.14.0",
         "source": {
             "type": "git",
             "url": "https://github.com/pear/Archive_Tar.git",
-            "reference": "2b87b41178cc6d4ad3cba678a46a1cae49786011"
+            "reference": "4d761c5334c790e45ef3245f0864b8955c562caa"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/2b87b41178cc6d4ad3cba678a46a1cae49786011",
-            "reference": "2b87b41178cc6d4ad3cba678a46a1cae49786011",
+            "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/4d761c5334c790e45ef3245f0864b8955c562caa",
+            "reference": "4d761c5334c790e45ef3245f0864b8955c562caa",
             "shasum": ""
         },
         "require": {
@@ -9030,7 +9115,7 @@
             "ext-xz": "Lzma2 compression support.",
             "ext-zlib": "Gzip compression support."
         },
-        "time": "2021-02-16T10:50:50+00:00",
+        "time": "2021-07-20T13:53:39+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

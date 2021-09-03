@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Contains surveycampaign.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\UserSession;
+use Drupal\user\Entity\User;
+function admincss_preprocess_page(&$variables) {
+   $variables['#attached']['library'][] = 'admincss/csslib';
+}
+function admincss_page_attachments(array &$attachments) {
+    $attachments['#attached']['library'][] = 'admincss/csslib';
+}
+

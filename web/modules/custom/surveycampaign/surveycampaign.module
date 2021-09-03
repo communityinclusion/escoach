@@ -52,6 +52,19 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
   
   
 }
+function surveycampaign_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+  foreach (array_keys($form['actions']) as $action) {
+    if ($form_state->get('user_pass_reset')) {
+      $form['actions']['submit']['#submit'][] = '_surveycampaign_user_form_submit';
+    }
+  }
+}
+
+function _surveycampaign_user_form_submit(array $form, FormStateInterface $form_state){
+  //Add logic for checking is this is first time logged in User
+  $form_state->setRedirect('<front>');
+}
 
 function surveycampaign_cron()
 {
@@ -63,7 +76,6 @@ function surveycampaign_cron()
   $accountSwitcher->switchTo(new UserSession(['uid' => 1]));
   
   $message = 'Surveycampaign cron run: ' . date('Y-m-d H:i:s');
-  //\Drupal::logger('surveycampaign')->notice($message);
   
   $config = \Drupal::config('surveycampaign.settings');
   $libconfig = \Drupal::config('surveycampaign.library_settings');
@@ -89,27 +101,30 @@ function surveycampaign_cron()
   ->condition('senddate', $database->escapeLike($todaydate) . '%', 'LIKE')
   ->execute();
   $campaignid2 = $query2->fetchField();
-    
+  $checkTime = date('H:i');
+  $checkTime = date('H:i', strtotime($checkTime));
+  $runTasksBegin = date('H:i', strtotime('07:00'));
+  $runTasksEnd = date('H:i', strtotime('20:00'));
+  if (($checkTime >= $runTasksBegin) && ($checkTime <= $runTasksEnd)){
+    $send2 = $surveyid2 ? \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0) : null;
+    $send = $surveyid ? \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0) : null;
+    $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
+    $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
+    $nowTime = date('H:i');
+    $nowTime = date('H:i', strtotime($nowTime));
+  }
+  // closing screen management and results table population run just a few times in the very early AM
+  $manageClosingBegin = date('H:i', strtotime('07:20'));
+  $manageClosingEnd = date('H:i', strtotime('07:35'));
   
     
- 
-  $send2 = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0);
-  $send = \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0);
-  $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
-  $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
-  $nowTime = date('H:i');
-  $nowTime = date('H:i', strtotime($nowTime));
-// closing screen management and results table population run just a few times in the very early AM
-$manageClosingBegin = date('H:i', strtotime('01:10'));
-$manageClosingEnd = date('H:i', strtotime('01:25'));
-    
-if (($nowTime >= $manageClosingBegin) && ($nowTime <= $manageClosingEnd)){
-    
-  $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid,$todaydate);
-  $manageclosing2 = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid2,$todaydate);
-  $saveResponses = \Drupal::service('surveycampaign.survey_responses')->load($surveyid);
-  $saveResponses2 = \Drupal::service('surveycampaign.survey_responses')->load($surveyid2);
-}
+  if (($nowTime >= $manageClosingBegin) && ($nowTime <= $manageClosingEnd)){
+      
+    $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid,$todaydate);
+    //$manageclosing2 = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid2,$todaydate);
+    $saveResponses = \Drupal::service('surveycampaign.survey_responses')->load($surveyid);
+    $saveResponses2 = \Drupal::service('surveycampaign.survey_responses')->load($surveyid2);
+  }
   
   $accountSwitcher->switchBack();
  
