@@ -167,7 +167,7 @@ class BaseQuery {
         $args[':provider'] = $this->provider;
         break;
 
-      case 'Observe':
+      case 'Observer':
         $and = "AND provider = 'Observer'";
         break;
 
