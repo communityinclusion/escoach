@@ -68,8 +68,10 @@ class BaseQuery {
     $this->query->addExpression('count(*)', 'TotalAll');
     $this->addSumsTotal('Me');
     $this->addSumsTotal('Provider');
+    $this->addSumsTotal('Observer');
     $this->addSumsByScope('Me', $what);
     $this->addSumsByScope('Provider', $what);
+    $this->addSumsByScope('Observer', $what);
     $this->addSumsByScope('All', $what);
   }
 
@@ -165,6 +167,10 @@ class BaseQuery {
         $args[':provider'] = $this->provider;
         break;
 
+      case 'Observe':
+        $and = "AND provider = 'Observer'";
+        break;
+
       default:
         $and = '';
     }
@@ -236,6 +242,9 @@ class BaseQuery {
     elseif ($scope == 'Provider' && !empty($this->provider)) {
       $and = 'provider = :provider';
       $args[':provider'] = $this->provider;
+    }
+    elseif ($scope == 'Observer') {
+      $and = "provider = 'Observer'";
     }
     else {
       return;
@@ -377,9 +386,11 @@ class BaseQuery {
     $this->addSelectedSums('All', $ids, $what);
     $this->addSelectedSums('Me', $ids, $what);
     $this->addSelectedSums('Provider', $ids, $what);
+    $this->addSelectedSums('Observer', $ids, $what);
 
     $this->addSelectedSumsTotal('Me');
     $this->addSelectedSumsTotal('Provider');
+    $this->addSelectedSumsTotal('Observer');
 
     $this->valueAliasMap = [
       'Selected' => [
@@ -394,6 +405,7 @@ class BaseQuery {
   public function addNSums($what) {
     $this->addNSum('All', $what);
     $this->addNSum('Provider', $what);
+    $this->addNSum('Observer', $what);
     $this->addNSum('Me', $what);
   }
 
@@ -408,6 +420,9 @@ class BaseQuery {
       $and = ' AND provider = :provider';
       $args[':provider'] = $this->provider;
     }
+    elseif ($scope == 'Observer') {
+      $and = " AND provider = 'Observer'";
+    }
 
     $ids = $this->flattenIds($what);
 
@@ -419,6 +434,10 @@ class BaseQuery {
         $values = [$values];
       }
       $args[':value' . $ind . '[]'] = $values;
+    }
+
+    if (!$conditions) {
+      $conditions[] = '1 = 1';
     }
 
     $sql = sprintf('sum(case when (%s) %s  then 1 else 0 end)', implode(' OR ', $conditions), $and);
@@ -437,6 +456,9 @@ class BaseQuery {
     elseif ($scope == 'Provider') {
       $and = 'provider = :provider';
       $args[':provider'] = $this->provider;
+    }
+    elseif ($scope == 'Observer') {
+      $and = "provider = 'Observer'";
     }
     else {
       return;
@@ -469,6 +491,10 @@ class BaseQuery {
       case 'Provider':
         $and = 'AND provider = :provider';
         $args[':provider'] = $this->provider;
+        break;
+
+      case 'Observer':
+        $and = "AND provider = 'Observer'";
         break;
 
       default:
