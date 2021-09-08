@@ -338,8 +338,10 @@ class QueryBuilder {
 
     $result = $query->execute();
 
+    $totalAll = $result[0]['TotalAll'] - $result[0]['TotalObserver'];
+
     if ($this->theme == 'selected-activities') {
-      $this->calculateOther($result);
+      $this->calculateOther($result, $totalAll);
     }
 
     $return = [
@@ -347,7 +349,7 @@ class QueryBuilder {
       'aliasMap' => $query->getAliasMap(),
       'results' => [
         'all' => [
-          'total' => $result[0]['TotalAll'] - $result[0]['TotalObserver'],
+          'total' => $totalAll,
           //'n' => $result[0]['nAll'] ?? 0,
           'n' => $this->theme == 'selected-activities' ?
             $result[0]['SelectedAll'] - $result[0]['SelectedObserver'] :
@@ -390,8 +392,8 @@ class QueryBuilder {
   /**
    *
    */
-  private function calculateOther(&$result) {
-    $result[0]['OtherAll'] = $result[0]['TotalAll'] - $result[0]['SelectedAll'];
+  private function calculateOther(&$result, $totalAll) {
+    $result[0]['OtherAll'] = $totalAll - $result[0]['SelectedAll'];
     $result[0]['OtherMe'] = $result[0]['TotalMe'] - $result[0]['SelectedMe'];
     $result[0]['OtherProvider'] = $result[0]['TotalProvider'] - $result[0]['SelectedProvider'];
   }
@@ -418,6 +420,10 @@ class QueryBuilder {
     }
 
     $dayTotal = $results[$dataCell] / $totalValue * 8 / 24;
+    if ($scope == 'all') {
+      $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+    }
+
     return ($term == 'day') ?
       $this->formatDuration($dayTotal) :
       $this->formatDuration($dayTotal * 5);
