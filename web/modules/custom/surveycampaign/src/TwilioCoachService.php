@@ -33,7 +33,7 @@ class TwilioCoachService
         if($onetime) $tomorrowdate->modify("+ 1 day");
         $tomorrowdate = $tomorrowdate->format('Y-m-d');
         $gizmodate = $day == 0 ? $todaydate : $tomorrowdate;
-        //Options Filter examples, uncomment to see these in use
+        //Options Filter examples, uncomment to see these in use..
         $status = "&filter[field][1]=status&filter[operator][1]==&filter[value][1]=Complete";//Only show complete responses
         $datesubmitted = "&filter[field][0]=datesubmitted&filter[operator][0]=>=&filter[value][0]=$gizmodate+01:00:00&resultsperpage=150";//Submit date greater than today at 1:00 AM
         $loginslug = "api_token={$api_key}&api_token_secret={$api_secret}";
@@ -277,6 +277,8 @@ class TwilioCoachService
             print_r($output);
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
+                    $showme = print_r($contact, true);
+                    \Drupal::logger('surveycampaign')->notice("contact array" . $showme);
                     //setting for secondary survey to send only once.
                     $checkcompletedonce = false;
                   
@@ -340,7 +342,7 @@ class TwilioCoachService
                     } elseif ($contact['id'] == $contactid && $contact["subscriber_status"] == "Complete") 
                     {
                         
-                        $suspenddates = $this->getResponseInfo($surveyid,$contactid,$api_key,$api_secret);
+                        $suspenddates = $this->getResponseInfo($surveyid,$contactid,$contact['email_address'],$api_key,$api_secret);
                         //echo "Suspendarray: "; print_r($suspenddates);
                         // check if user suspended survey.  If so get dates and enter in user profile
                         //delete this individual in this survey/campaign from surveycampaign_mailer 
@@ -389,8 +391,13 @@ class TwilioCoachService
          }
    }
 
-   function getResponseInfo($surveyid,$contactid,$api_key,$api_secret) {
-       $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyresponse?filter[field][0]=contact_id&filter[operator][0]=%3E=&filter[value][0]={$contactid}&api_token={$api_key}&api_token_secret={$api_secret}";
+   function getResponseInfo($surveyid,$contactid,$email,$api_key,$api_secret) {
+       //contact_id was deprecated as of SG v. 5.  Stopped working.
+       $email = urlencode($email);
+       $todaydate = date("Y-m-d");
+       $filterdate = urlencode("$todaydate 01:00:00");
+       $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyresponse?filter[field][0]=date_submitted&filter[operator][0]=>=&filter[value][0]={$filterdate}&filter[field][1]=[question(545)]&filter[operator][1]==&filter[value][1]={$email}&api_token={$api_key}&api_token_secret={$api_secret}";
+       //\Drupal::logger('surveycampaign')->notice("Response URL: " . $url);
        
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -491,7 +498,6 @@ class TwilioCoachService
         $onetime = !$isprimary && $config->get('alt_repeat') == '0' ? true : false;
         $contactarray = \Drupal::service('surveycampaign.survey_users')->load();
         foreach($contactarray as $contact) {
-            print_r($contact);
             $email = urlencode($contact[0]);
             $firstname = urlencode($contact[1]);
             $lastname = urlencode($contact[2]);
@@ -521,8 +527,6 @@ class TwilioCoachService
                 $inactive = false;
                 $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
                 // $didnotreplyshort = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) : false;
-                //$displaycutoff = print_r($cutoffcampaigns,true);
-                //$displaywarning = print_r($warningcampaigns,true);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
                 
@@ -782,8 +786,6 @@ class TwilioCoachService
                 $campaignarray[]= $value;
             }
         }
-        $campaigndisplay = print_r($campaignarray,true);
-        \Drupal::logger('surveycampaign alert')->notice('Campaign array: ' . $campaigndisplay);
         return $campaignarray;
     }
     protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink,$isprimary) {

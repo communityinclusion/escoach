@@ -44,8 +44,7 @@ function surveycampaign_theme() {
   ];
 } 
 function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
- //dpm($form['field_registration_code']);
-
+  module_set_weight('surveycampaign', 100);
   if($form['#id'] == 'surveymessages-configuration-form' ) {
     
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
@@ -54,19 +53,7 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
 }
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['account']['mail']['#required'] = TRUE;
-  $form['account']['mail']['#title'] = 'Fuck You';
-  $form['survey_participants_profiles'][0]['field_registration_code']['#title'] = "Fuck All";
-  $form['#validate'][] = '_surveycampaign_profile_register_validate';
-  //$form['actions']['submit']['#submit'][] = '_surveycampaign_form_user_register_form_submit';
-  
-  $form['survey_participants_profiles'][0]['entity']['field_registration_code'][0]['value']['#ajax'] = [
-  
-    'callback' => 'surveycampaignAjaxCallback', // don't forget :: when calling a class method.
-    //'callback' => [$this, 'myAjaxCallback'], //alternative notation
-    'disable-refocus' => FALSE, // Or TRUE to prevent re-focusing on the triggering element.
-    'event' => 'change',
-    'wrapper' => 'edit-survey-participants-profiles-0-entity-field-provider-wrapper', // This element is updated with this AJAX callback.
-  ];
+  $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
   
   
   

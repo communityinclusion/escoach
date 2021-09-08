@@ -1,0 +1,10 @@
+uuid: 5ea41d37-e636-4321-8df8-e14d5029eb37
+langcode: en
+status: true
+dependencies: {  }
+id: escoach_dashboard
+label: 'escoach dashboard terms'
+description: 'Terms associated with the escoach dashboard.'
+source_type: csv
+module: null
+shared_configuration: null

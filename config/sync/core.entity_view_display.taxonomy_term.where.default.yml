@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.where.field_alias
     - field.field.taxonomy_term.where.field_dashboard_question_id
     - field.field.taxonomy_term.where.field_dashboard_response_id
     - taxonomy.vocabulary.where
@@ -18,7 +19,15 @@ id: taxonomy_term.where.default
 targetEntityType: taxonomy_term
 bundle: where
 mode: default
-content: {  }
+content:
+  field_alias:
+    weight: -4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
 hidden:
   description: true
   field_dashboard_question_id: true
