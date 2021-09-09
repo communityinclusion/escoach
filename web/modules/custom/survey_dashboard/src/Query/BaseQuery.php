@@ -156,15 +156,17 @@ class BaseQuery {
 
   public function addSumsByScope($scope, $what = []) {
 
+    $commonArgs = [];
+
     switch ($scope) {
       case 'Me':
         $and = 'AND email = :email';
-        $args[':email'] = $this->email;
+        $commonArgs[':email'] = $this->email;
         break;
 
       case 'Provider':
         $and = 'AND provider = :provider';
-        $args[':provider'] = $this->provider;
+        $commonArgs[':provider'] = $this->provider;
         break;
 
       case 'Observer':
@@ -175,8 +177,6 @@ class BaseQuery {
         $and = '';
     }
 
-    $args = [];
-
     if ($what) {
       $whatIds = $this->flattenIds($what);
       $conditions = [];
@@ -186,12 +186,14 @@ class BaseQuery {
         if (!is_array($respIDs)) {
           $respIDs = [$respIDs];
         }
-        $args[ ':what' . $scope . $idx++ . '[]'] = $respIDs;
+        $commonArgs[ ':what' . $scope . $idx++ . '[]'] = $respIDs;
       }
       $and .= sprintf(' AND (%s)', implode(' OR ', $conditions) );
     }
 
     foreach ($this->valueAliasMap as $alias => $definition) {
+
+      $args = $commonArgs;
       $value = $definition['response_id'];
       $qid = $definition['question_id'];
 
