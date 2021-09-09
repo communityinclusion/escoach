@@ -55,6 +55,7 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
   $form['account']['mail']['#required'] = TRUE;
   $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
   $form['field_survey_first_name']['widget']['#title'] = 'blarg';
+  module_set_weight('surveycampaign', 100); 
   $form['survey_participants_profiles']['widget'][0]['entity']['field_survey_first_name']['widget']['#title'] = 'blarg'; 
   \Drupal::logger('surveycampaign alert')->notice('First name profiley: ' . $form['survey_participants_profiles']['widget'][0]['entity']['field_survey_first_name']['widget']['#title'] . 'First name raw: ' . $form['field_survey_first_name']['widget']['#title'] );
 
