@@ -130,6 +130,17 @@ function _surveycampaign_user_form_submit(array $form, FormStateInterface $form_
   $form_state->setRedirect('<front>');
 }
 
+function surveycampaign_profile_cellphone_validate (&$form, $form_state) {
+  $formphone = $form_state->getValues()['survey_participants_profiles'][0]['entity']['field_cell_phone'][0]['value'];
+  $checknewphone = preg_replace('/\D+/', '',$formphone);
+  $storage = \Drupal::entityTypeManager()->getStorage('profile')
+            ->loadByProperties([
+                'type' => 'survey_participants',
+            ]);
+  if (!preg_match('/^\d{10}$/', $checknewphone)) {
+    $form_state->setErrorByName("survey_participants_profiles][0][entity][field_cell_phone][0][value", "Cellphone number $formphone must be a 10-digit North American phone number in the format (###) ###-####. No leading \"1\"");
+  }
+}
 function surveycampaign_cron()
 {
   
