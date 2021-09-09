@@ -362,6 +362,10 @@ class BaseQuery {
   }
 
   public function flattenIds($ids) {
+    if (!$ids) {
+      return [];
+    }
+
     if (count($ids) == 1) {
       return $ids;
     }

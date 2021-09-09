@@ -550,6 +550,7 @@ class QueryBuilder {
   protected function whatSummary() {
     $query = new What($this->email, $this->provider);
     $query->addSums();
+    $query->addNSums($this->what);
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
