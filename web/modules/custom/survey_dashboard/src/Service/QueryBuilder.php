@@ -349,8 +349,7 @@ class QueryBuilder {
       'aliasMap' => $query->getAliasMap(),
       'results' => [
         'all' => [
-          'total' => $totalAll,
-          //'n' => $result[0]['nAll'] ?? 0,
+          'total' => $result[0]['TotalAll'] - $result[0]['TotalObserver'],
           'n' => $this->theme == 'selected-activities' ?
             $result[0]['SelectedAll'] - $result[0]['SelectedObserver'] :
             $result[0]['nAll'] - $result[0]['nObserver']
@@ -358,12 +357,10 @@ class QueryBuilder {
         ],
         'me' => [
           'total' => $result[0]['TotalMe'],
-          //'n' => $result[0]['nMe'] ?? 0,
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedMe'] : $result[0]['nMe'] ?? 0,
         ],
         'provider' => [
           'total' => $result[0]['TotalProvider'],
-          //'n' => $result[0]['nProvider'] ?? 0,
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedProvider'] : $result[0]['nProvider'] ?? 0,
         ],
       ],
@@ -553,6 +550,7 @@ class QueryBuilder {
   protected function whatSummary() {
     $query = new What($this->email, $this->provider);
     $query->addSums();
+    $query->addNSums($this->what);
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
