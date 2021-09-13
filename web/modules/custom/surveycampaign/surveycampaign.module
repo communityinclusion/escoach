@@ -36,29 +36,38 @@ function surveycampaign_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_theme().
  */
-function surveycampaign_theme() {
+/*function surveycampaign_theme() {
   return [
     'surveycampaign' => [
       'render element' => 'children',
     ],
   ];
-} 
-function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  module_set_weight('surveycampaign', 100);
+} */
+/*function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  module_set_weight('surveycampaign', 900);
   if($form['#id'] == 'surveymessages-configuration-form' ) {
     
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
   }
   
-}
+} */
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['account']['mail']['#required'] = TRUE;
+  module_set_weight('surveycampaign', 900);
+  $form['account']['mail']['#title'] = "Bite me";
+  $form['field_registration_code']['#title'] = "Eat it";
+    $showit = print_r($form['field_registration_code']['#title'], true);
+    $form['field_registration_code']['widget'][0]['value']['#title'] = 'Fuck You';
+    $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#title'] = 'blurg';
+    $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#title'] = 'blurg';
   $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
-  $form['field_survey_first_name']['widget']['#title'] = 'blarg';
-  module_set_weight('surveycampaign', 100); 
-  $form['survey_participants_profiles']['widget'][0]['entity']['field_survey_first_name']['widget']['#title'] = 'blarg'; 
-  \Drupal::logger('surveycampaign alert')->notice('First name profiley: ' . $form['survey_participants_profiles']['widget'][0]['entity']['field_survey_first_name']['widget']['#title'] . 'First name raw: ' . $form['field_survey_first_name']['widget']['#title'] );
+  //$form['field_registration_code']['widget']['#required'] = TRUE;
+  $showit = print_r($form['field_registration_code']['widget'], true);
+  $form['field_registration_code']['widget']['#title'] = 'Fuck You';
+  //$showme = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#validated'],true);
 
+  \Drupal::logger('surveycampaign alert')->notice("Showit: " . $showit );
+  //$showme2 = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#title'],true);
+  //\Drupal::logger('surveycampaign alert')->notice("second time: " . $showme2 );
   
   
 }
