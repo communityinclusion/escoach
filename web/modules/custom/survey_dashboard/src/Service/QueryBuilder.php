@@ -260,7 +260,7 @@ class QueryBuilder {
     if ($profiles) {
       $profile = current($profiles);
     }
-    if ($profile && $profile->field_provider->entity) {
+    if ($profile && isset($profile->field_provider->entity)) {
       $this->provider = $profile->field_provider->entity->getName();
     }
 
@@ -338,27 +338,30 @@ class QueryBuilder {
 
     $result = $query->execute();
 
+    $totalAll = $result[0]['TotalAll'] - $result[0]['TotalObserver'];
+
     if ($this->theme == 'selected-activities') {
-      $this->calculateOther($result);
+      $this->calculateOther($result, $totalAll);
     }
 
     $return = [
       'title' => $this->title,
+      'uid' => \Drupal::currentUser()->id(),
       'aliasMap' => $query->getAliasMap(),
       'results' => [
         'all' => [
-          'total' => $result[0]['TotalAll'],
-          //'n' => $result[0]['nAll'] ?? 0,
-          'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedAll'] : $result[0]['nAll'] ?? 0,
+          'total' => $result[0]['TotalAll'] - $result[0]['TotalObserver'],
+          'n' => $this->theme == 'selected-activities' ?
+            $result[0]['SelectedAll'] - $result[0]['SelectedObserver'] :
+            $result[0]['nAll'] - $result[0]['nObserver']
+            ?? 0,
         ],
         'me' => [
           'total' => $result[0]['TotalMe'],
-          //'n' => $result[0]['nMe'] ?? 0,
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedMe'] : $result[0]['nMe'] ?? 0,
         ],
         'provider' => [
           'total' => $result[0]['TotalProvider'],
-          //'n' => $result[0]['nProvider'] ?? 0,
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedProvider'] : $result[0]['nProvider'] ?? 0,
         ],
       ],
@@ -387,8 +390,8 @@ class QueryBuilder {
   /**
    *
    */
-  private function calculateOther(&$result) {
-    $result[0]['OtherAll'] = $result[0]['TotalAll'] - $result[0]['SelectedAll'];
+  private function calculateOther(&$result, $totalAll) {
+    $result[0]['OtherAll'] = $totalAll - $result[0]['SelectedAll'];
     $result[0]['OtherMe'] = $result[0]['TotalMe'] - $result[0]['SelectedMe'];
     $result[0]['OtherProvider'] = $result[0]['TotalProvider'] - $result[0]['SelectedProvider'];
   }
@@ -398,18 +401,27 @@ class QueryBuilder {
    *
    * @param array $results
    * @param string $alias
-   * @param string $who
+   * @param string $scope
    * @param string $term
    */
-  private function calculateHrs($results, $alias, $who, $term) {
-    $totalCell = 'Total' . ucfirst($who);
-    $dataCell = $alias . ucfirst($who);
+  private function calculateHrs($results, $alias, $scope, $term) {
+    $totalCell = 'Total' . ucfirst($scope);
+    $dataCell = $alias . ucfirst($scope);
 
     if (! isset($results[$totalCell]) || $results[$totalCell] == 0) {
       return '0:00';
     }
 
-    $dayTotal = $results[$dataCell] / $results[$totalCell] * 8 / 24;
+    $totalValue = $results[$totalCell];
+    if ($scope == 'all') {
+      $totalValue -= $results['TotalObserver'];
+    }
+
+    $dayTotal = $results[$dataCell] / $totalValue * 8 / 24;
+    if ($scope == 'all') {
+      $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+    }
+
     return ($term == 'day') ?
       $this->formatDuration($dayTotal) :
       $this->formatDuration($dayTotal * 5);
@@ -539,6 +551,7 @@ class QueryBuilder {
   protected function whatSummary() {
     $query = new What($this->email, $this->provider);
     $query->addSums();
+    $query->addNSums($this->what);
     if ($this->where && $this->where != 'any') {
       $query->addWhereCondition($this->where);
     }
