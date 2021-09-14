@@ -260,7 +260,7 @@ class QueryBuilder {
     if ($profiles) {
       $profile = current($profiles);
     }
-    if ($profile && $profile->field_provider->entity) {
+    if ($profile && isset($profile->field_provider->entity)) {
       $this->provider = $profile->field_provider->entity->getName();
     }
 
@@ -346,6 +346,7 @@ class QueryBuilder {
 
     $return = [
       'title' => $this->title,
+      'uid' => \Drupal::currentUser()->id(),
       'aliasMap' => $query->getAliasMap(),
       'results' => [
         'all' => [
