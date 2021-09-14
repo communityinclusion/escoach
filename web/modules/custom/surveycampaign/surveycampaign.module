@@ -16,6 +16,8 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\HtmlCommand;
+use \Drupal\Core\Ajax\InsertCommand;
 
 /**
  * Implements hook_help().
@@ -36,36 +38,56 @@ function surveycampaign_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_theme().
  */
-/*function surveycampaign_theme() {
+function surveycampaign_theme() {
   return [
     'surveycampaign' => [
       'render element' => 'children',
     ],
   ];
-} */
-/*function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+} 
+function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   module_set_weight('surveycampaign', 900);
   if($form['#id'] == 'surveymessages-configuration-form' ) {
     
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
   }
   
-} */
+}
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $triggeringevent = $form_state->getTriggeringElement();
+  $trigger = $triggeringevent['#name'];
+  if ($trigger == 'survey_participants_profiles[0][entity][field_registration_code][0][value]') {
+    if($form_state->getValue(['survey_participants_profiles',0,'entity','field_registration_code',0,'value']) && $form_state->getValue(['survey_participants_profiles',0,'entity','field_registration_code',0,'value']) != "") 
+    {
+      //$response->addCommand(new InsertCommand('#codemessage',$message ));
+    }
+    else 
+    {
+    } 
+
+  }
+  
+  
+
   module_set_weight('surveycampaign', 900);
-  $form['account']['mail']['#title'] = "Bite me";
-  $form['field_registration_code']['#title'] = "Eat it";
-    $showit = print_r($form['field_registration_code']['#title'], true);
-    $form['field_registration_code']['widget'][0]['value']['#title'] = 'Fuck You';
-    $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#title'] = 'blurg';
-    $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#title'] = 'blurg';
+  $form['account']['mail']['#required'] = TRUE;
   $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
+  $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#ajax'] = array(
+    'callback' => 'surveycampaignAjaxCallback',
+    'event' => 'change',
+    'wrapper' => 'edit-survey-participants-profiles-0-entity-field-provider-0-target-id',
+  );
+  $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#prefix'] = '<div id="codemessage"></div>';
+  //$showit = print_r($form['field_registration_code']['#title'], true);
+  $form['field_registration_code']['widget'][0]['value']['#title'] = 'Fuck You';
+  //$form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#title'] = 'blurg';
+  //$form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#title'] = 'blurg';
   //$form['field_registration_code']['widget']['#required'] = TRUE;
-  $showit = print_r($form['field_registration_code']['widget'], true);
+  //$showit = print_r($form['field_registration_code']['widget'], true);
   $form['field_registration_code']['widget']['#title'] = 'Fuck You';
   //$showme = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#validated'],true);
 
-  \Drupal::logger('surveycampaign alert')->notice("Showit: " . $showit );
+  //\Drupal::logger('surveycampaign alert')->notice("Showit: " . $showit );
   //$showme2 = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#title'],true);
   //\Drupal::logger('surveycampaign alert')->notice("second time: " . $showme2 );
   
@@ -76,45 +98,65 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  * @return \Drupal\Core\Ajax\AjaxResponse
  */
+function surveycampaignAjaxCallbackTwo(array &$form, FormStateInterface $form_state) {
+  $response = new AjaxResponse();
+  $response->addCommand(new InsertCommand('#codemessage',$message ));
+
+  return $response;
+
+}
 function surveycampaignAjaxCallback(array &$form, FormStateInterface $form_state) {
   // Prepare our textfield. check if the example select field has a selected option.
+  $formcode = $form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0,'value']);
+  if (!empty($formcode) && $formcode != "" ) {
   
-  if (!empty($form_state->getValue('survey_participants_profiles')[0]['entity']['field_registration_code'][0]['value']) ) {
-      // Get the text of the selected option.
-      $formcode = $form_state->getValue('survey_participants_profiles')[0]['entity']['field_registration_code'][0]['value'];
+    // Get the text of the selected option.
+    
+    //$showit = var_export($form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0]), true);
+    
 
-       // use code Dt54UiP0n
-      $configuser = \Drupal::config('surveycampaign.settings');
-      \Drupal::logger('surveycampaign')->notice("Code : " . $formcode);
-      $provcodes = $configuser->get('def_provider_code');
-      $provnames = $configuser->get('def_provider_name');
-      $countcodes = is_array($provcodes) ? count($provcodes) : 0;
+      // use code Dt54UiP0n
+    $configuser = \Drupal::config('surveycampaign.settings');
+    $provcodes = $configuser->get('def_provider_code');
+    $provnames = $configuser->get('def_provider_name');
+    $countcodes = is_array($provcodes) ? count($provcodes) : 0;
 
+    
+    for ($i = 0; $i < $countcodes; $i++) {
+      $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
+      $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
+      $term = taxonomy_term_load($thisname);
+
+      if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
+        
+        $term = taxonomy_term_load($thisname);
+        $termarray = array($term->getName());
+        
+
+
+        // Instantiate a new ajax response object.
+        $response = new AjaxResponse();
+
+        // Will invoke the jQuery method .val() https://api.jquery.com/val/
+        $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val', [$termarray]));
+
+        // Return the AJAX response.
+        return $response;
       
-        for ($i = 0; $i < $countcodes; $i++) {
-          $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
-          $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
-          $term = taxonomy_term_load($thisname);
-          if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
-            \Drupal::logger('surveycampaign')->notice("Code and provider id and UID: " . $thiscode . "--" . $thisname);
-            $term = taxonomy_term_load($thisname);
-            
+      }
+      
+      
+    } 
+    $message = "That is not a valid registration code";
+    $response = new AjaxResponse();
+    
+    $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val',['']));
 
+    return $response;
 
-           // Instantiate a new ajax response object.
-            $response = new AjaxResponse();
-
-            // Will invoke the jQuery method .val() https://api.jquery.com/val/
-            $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id', 'val', [$term]));
-
-            // Return the AJAX response.
-            return $response;
-          
-          }
-        }
+    
   }
-  // Return the prepared textfield.
-  //return $form['field_provider']; 
+  
 }
 
 
@@ -250,7 +292,7 @@ function surveycampaign_mail($key, &$message, $params) {
 /**
 * Implements hook_entity_insert().
 */
-/*function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
 
   if($entity->getEntityTypeId() === 'user')
   {  
@@ -287,7 +329,6 @@ function surveycampaign_mail($key, &$message, $params) {
         $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
         $term = taxonomy_term_load($thisname);
         if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
-          \Drupal::logger('surveycampaign')->notice("Code and provider id and UID: " . $thiscode . "--" . $thisname . "--" . $pid);
           $term = taxonomy_term_load($thisname);
           $profile->set('field_provider',array(
           'value' => $term));
@@ -301,7 +342,7 @@ function surveycampaign_mail($key, &$message, $params) {
   
 
 
-} */
+}
 
 
   
