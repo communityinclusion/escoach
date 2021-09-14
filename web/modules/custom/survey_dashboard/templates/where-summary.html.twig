@@ -1,19 +1,27 @@
+{% set colspan = '' %}
+{% if data.uid == 0 %}
+  {% set colspan = ' colspan="3"' %}
+{% endif %}
 <div id="google-charts"></div>
 <table id="where-table">
   <thead>
   <tr>
     <th>{% if data.what %}{{ data.what }} & {% endif %}WHERE</th>
-    <th colspan="3">Hrs/day</th>
-    <th colspan="3">Hrs/week</th>
+    <th{{ colspan }}>Hrs/day</th>
+    <th{{ colspan }}>Hrs/week</th>
   </tr>
   <tr>
     <th>&nbsp;</th>
     <th>All</th>
+{% if data.uid > 0 %}
     <th>My Team</th>
     <th>Me</th>
+{% endif %}
     <th>All</th>
+{% if data.uid > 0 %}
     <th>My Team</th>
     <th>Me</th>
+{% endif %}
   </tr>
   </thead>
   <tbody>
@@ -21,21 +29,29 @@
     <tr>
       <td>{{ aliasData.title }}</td>
       <th>{{ data.results.all[alias].day }}</th>
+{% if data.uid > 0 %}
       <th>{{ data.results.provider[alias].day }}</th>
       <th>{{ data.results.me[alias].day }}</th>
+{% endif %}
       <th>{{ data.results.all[alias].week }}</th>
+{% if data.uid > 0 %}
       <th>{{ data.results.provider[alias].week }}</th>
       <th>{{ data.results.me[alias].week }}</th>
+{% endif %}
     </tr>
   {% endfor %}
   <tr>
     <td>Total responses</td>
     <th>{{ data.results.all.n }}</th>
+{% if data.uid > 0 %}
     <th>{{ data.results.provider.n }}</th>
     <th>{{ data.results.me.n }}</th>
+{% endif %}
     <th>{{ data.results.all.n }}</th>
+{% if data.uid > 0 %}
     <th>{{ data.results.provider.n }}</th>
     <th>{{ data.results.me.n }}</th>
+{% endif %}
   </tr>
   </tbody>
 </table>
