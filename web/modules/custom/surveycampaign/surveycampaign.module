@@ -54,19 +54,26 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
   
 }
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  /*$triggeringevent = $form_state->getTriggeringElement();
-  if($triggeringevent && $triggeringevent['#name'] == 'survey_participants_profiles[0][entity][field_registration_code][0][value]';)
+/* $triggeringevent = $form_state->getTriggeringElement();
+  if($triggeringevent && $triggeringevent['#name'] == 'survey_participants_profiles[0][entity][field_registration_code][0][value]')
   {
+    \Drupal::logger('surveycampaign alert')->notice("You've been triggered" );
+   
   
     if($form_state->getValue(['survey_participants_profiles',0,'entity','field_registration_code',0,'value']) && $form_state->getValue(['survey_participants_profiles',0,'entity','field_registration_code',0,'value']) != "") 
     {
-      
-      //$response->addCommand(new InsertCommand('#codemessage',$message ));
+      \Drupal::logger('surveycampaign alert')->notice("There is a registration code value" );
+      $formcode = $form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0,'value']);
+      if(surveycampaignCheckRegCode($formcode)) {
+        $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#states'][
+          ['visible'] = FALSE;;
+        $form['#rebuild'] = TRUE; 
+        $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#states'][
+          ['visible'] = FALSE;
+        $showit = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id'],true);
+        \Drupal::logger('surveycampaign alert')->notice("Attributes: " . $showit);
+      }
     }
-    else 
-    {
-      $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#prefix'] = '<div id="codemessage"></div>';
-    } 
 
     
   } */
@@ -100,13 +107,7 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  * @return \Drupal\Core\Ajax\AjaxResponse
  */
-function surveycampaignAjaxCallbackTwo(array &$form, FormStateInterface $form_state) {
-  $response = new AjaxResponse();
-  $response->addCommand(new InsertCommand('#codemessage',$message ));
 
-  return $response;
-
-}
 function surveycampaignCheckRegCode($formcode) {
   // use code Dt54UiP0n
   $configuser = \Drupal::config('surveycampaign.settings');
@@ -183,21 +184,15 @@ function surveycampaignAjaxCallback(array &$form, FormStateInterface $form_state
        return $response;
 
     }
-    $message = "That is not a valid registration code";
-    $response = new AjaxResponse();
+    $response2 = new AjaxResponse();
+    $response2->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val',['']));
+   
+    return $response2;
+
     
-    $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val',['']));
-    //$response->addCommand(new InsertCommand('#codemessage',$message ));
-    return $response;
     
   }
-  $message = "Registration code cannot be blank.";
-    $response = new AjaxResponse();
-    
-    $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val',['']));
-    //$response->addCommand(new InsertCommand('#codemessage',$message ));
-    return $response;
-
+  
   
 }
 
