@@ -260,10 +260,11 @@ class QueryBuilder {
     if ($profiles) {
       $profile = current($profiles);
     }
-    if ($profile && isset($profile->field_provider->entity)) {
-      $this->provider = $profile->field_provider->entity->getName();
+    if (isset($profile)) {
+      if (isset($profile->field_provider->entity)) {
+        $this->provider = $profile->field_provider->entity->getName();
+      }
     }
-
   }
 
   /**
@@ -357,11 +358,11 @@ class QueryBuilder {
             ?? 0,
         ],
         'me' => [
-          'total' => $result[0]['TotalMe'],
+          'total' => isset($result[0]['TotalMe']) ?? $result[0]['TotalMe'],
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedMe'] : $result[0]['nMe'] ?? 0,
         ],
         'provider' => [
-          'total' => $result[0]['TotalProvider'],
+          'total' => isset($result[0]['TotalProvider']) ?? $result[0]['TotalProvider'],
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedProvider'] : $result[0]['nProvider'] ?? 0,
         ],
       ],
