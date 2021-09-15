@@ -11,6 +11,13 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\UserSession;
 use Drupal\user\Entity\User;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\HtmlCommand;
+use \Drupal\Core\Ajax\InsertCommand;
 
 /**
  * Implements hook_help().
@@ -39,32 +46,197 @@ function surveycampaign_theme() {
   ];
 } 
 function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  module_set_weight('surveycampaign', 100);
+
   if($form['#id'] == 'surveymessages-configuration-form' ) {
+    
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
   }
   
 }
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /*$triggeringevent = $form_state->getTriggeringElement();
+  if($triggeringevent && $triggeringevent['#name'] == 'survey_participants_profiles[0][entity][field_registration_code][0][value]';)
+  {
+  
+    if($form_state->getValue(['survey_participants_profiles',0,'entity','field_registration_code',0,'value']) && $form_state->getValue(['survey_participants_profiles',0,'entity','field_registration_code',0,'value']) != "") 
+    {
+      
+      //$response->addCommand(new InsertCommand('#codemessage',$message ));
+    }
+    else 
+    {
+      $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#prefix'] = '<div id="codemessage"></div>';
+    } 
+
+    
+  } */
+  
+  
   $form['account']['mail']['#required'] = TRUE;
   $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
+  $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#ajax'] = array(
+    'callback' => 'surveycampaignAjaxCallback',
+    'event' => 'change',
+    'wrapper' => 'edit-survey-participants-profiles-0-entity-field-provider-0-target-id',
+  );
+  //$form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#prefix'] = '<div id="codemessage"></div>';
+  //$showit = print_r($form['field_registration_code']['#title'], true);
+  $form['field_registration_code']['widget'][0]['value']['#title'] = 'Fuck You';
+  //$form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#title'] = 'blurg';
+  //$form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#title'] = 'blurg';
+  //$form['field_registration_code']['widget']['#required'] = TRUE;
+  //$showit = print_r($form['field_registration_code']['widget'], true);
+  $form['field_registration_code']['widget']['#title'] = 'Fuck You';
+  //$showme = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#validated'],true);
+
+  //\Drupal::logger('surveycampaign alert')->notice("Showit: " . $showit );
+  //$showme2 = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#title'],true);
+  //\Drupal::logger('surveycampaign alert')->notice("second time: " . $showme2 );
   
   
 }
+/**
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @return \Drupal\Core\Ajax\AjaxResponse
+ */
+function surveycampaignAjaxCallbackTwo(array &$form, FormStateInterface $form_state) {
+  $response = new AjaxResponse();
+  $response->addCommand(new InsertCommand('#codemessage',$message ));
+
+  return $response;
+
+}
+function surveycampaignCheckRegCode($formcode) {
+  // use code Dt54UiP0n
+  $configuser = \Drupal::config('surveycampaign.settings');
+  $provcodes = $configuser->get('def_provider_code');
+  $provnames = $configuser->get('def_provider_name');
+  $countcodes = is_array($provcodes) ? count($provcodes) : 0;
+
+  
+  for ($i = 0; $i < $countcodes; $i++) {
+    $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
+    $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
+    $term = taxonomy_term_load($thisname);
+
+    if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
+      
+      $term = taxonomy_term_load($thisname);
+      $termarray = array($term->getName());
+      return $termarray;
+    }
+  }
+  return FALSE;
+}
+function surveycampaignAjaxCallback(array &$form, FormStateInterface $form_state) {
+  // Prepare our textfield. check if the example select field has a selected option.
+  $formcode = $form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0,'value']);
+  if (!empty($formcode) && $formcode != "" ) {
+    $termarray = surveycampaignCheckRegCode($formcode);
+  
+    // Get the text of the selected option.
+    
+    //$showit = var_export($form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0]), true);
+    
+
+      // use code Dt54UiP0n
+   /* $configuser = \Drupal::config('surveycampaign.settings');
+    $provcodes = $configuser->get('def_provider_code');
+    $provnames = $configuser->get('def_provider_name');
+    $countcodes = is_array($provcodes) ? count($provcodes) : 0;
+
+    
+    for ($i = 0; $i < $countcodes; $i++) {
+      $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
+      $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
+      $term = taxonomy_term_load($thisname);
+
+      if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
+        
+        $term = taxonomy_term_load($thisname);
+        $termarray = array($term->getName());
+        
+
+
+        // Instantiate a new ajax response object.
+        $response = new AjaxResponse();
+
+        // Will invoke the jQuery method .val() https://api.jquery.com/val/
+        $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val', [$termarray]));
+
+        // Return the AJAX response.
+        return $response;
+      
+      }
+      
+      
+    } */
+    if($termarray){
+       // Instantiate a new ajax response object.
+       $response = new AjaxResponse();
+
+       // Will invoke the jQuery method .val() https://api.jquery.com/val/
+       $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val', [$termarray]));
+
+       // Return the AJAX response.
+       return $response;
+
+    }
+    $message = "That is not a valid registration code";
+    $response = new AjaxResponse();
+    
+    $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val',['']));
+    //$response->addCommand(new InsertCommand('#codemessage',$message ));
+    return $response;
+    
+  }
+  $message = "Registration code cannot be blank.";
+    $response = new AjaxResponse();
+    
+    $response->addCommand(new InvokeCommand('#edit-survey-participants-profiles-0-entity-field-provider-0-target-id','val',['']));
+    //$response->addCommand(new InsertCommand('#codemessage',$message ));
+    return $response;
+
+  
+}
+
+
+
+
 function surveycampaign_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
 {
   foreach (array_keys($form['actions']) as $action) {
     if ($form_state->get('user_pass_reset')) {
       $form['actions']['submit']['#submit'][] = '_surveycampaign_user_form_submit';
+      
     }
   }
+  if ($form_id == 'user_register_form' ) { 
+    $form['#submit'][] = 'surveycampaign_user_register_submit';
+    }
 }
+
 
 function _surveycampaign_user_form_submit(array $form, FormStateInterface $form_state){
   //Add logic for checking is this is first time logged in User
   $form_state->setRedirect('<front>');
 }
 
+function surveycampaign_profile_cellphone_validate (&$form, $form_state) {
+  $formphone = $form_state->getValues()['survey_participants_profiles'][0]['entity']['field_cell_phone'][0]['value'];
+  $checknewphone = preg_replace('/\D+/', '',$formphone);
+  $storage = \Drupal::entityTypeManager()->getStorage('profile')
+            ->loadByProperties([
+                'type' => 'survey_participants',
+            ]);
+  if (!preg_match('/^\d{10}$/', $checknewphone)) {
+    $form_state->setErrorByName("survey_participants_profiles][0][entity][field_cell_phone][0][value", "Cellphone number $formphone must be a 10-digit North American phone number in the format (###) ###-####. No leading \"1\"");
+  }
+  $formcode = $form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0,'value']);
+  $termarray = surveycampaignCheckRegCode($formcode);
+  if !$termarray) $form_state->setErrorByName("survey_participants_profiles][0][entity][field_registration_code][0][value", "You must enter a valid registration code associated with your organization.");
+}
 function surveycampaign_cron()
 {
   
@@ -167,36 +339,60 @@ function surveycampaign_mail($key, &$message, $params) {
 */
 function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
 
-  if ($entity->getEntityTypeId() !== 'node' || ($entity->getEntityTypeId() === 'node' && $entity->bundle() !== 'job')) {
-  return;
-  }
-  $config = \Drupal::config('surveycampaign.customize_messages');
-  $mailbody = $config->get('surveymessages');
-  $userfirstmailbody = $config->get('firstusermsg');
-  $mailManager = \Drupal::service('plugin.manager.mail');
+  if($entity->getEntityTypeId() === 'user')
+  {  
+    //$entity->save();
+    $uid = $entity->id();
+    \Drupal::logger('surveycampaign')->notice("User inserted UID: " . $uid);
+    //$profilechange = surveycampaign_profile_update($uid);
+    
+  } 
+  if($entity->getEntityTypeId() === 'profile')
+  {  
+    //$entity->save();
+    $pid = $entity->id();
+    \Drupal::logger('surveycampaign')->notice("Profile inserted ID: " . $pid);
+    $storage = \Drupal::entityTypeManager()->getStorage('profile')
+    ->loadByProperties([
+        'profile_id' => $pid,
+        'type' => 'survey_participants',
+        'is_default' => 1,
+    ]);
+    $storereport = print_r($storage, true);
+    \Drupal::logger('surveycampaign')->notice("Profile array: " . $storereport);
+    // use code Dt54UiP0n
+    $configuser = \Drupal::config('surveycampaign.settings');
+    //\Drupal::logger('surveycampaign')->notice("Default id : " . $checkconfig);
+    $provcodes = $configuser->get('def_provider_code');
+    $provnames = $configuser->get('def_provider_name');
+    $countcodes = is_array($provcodes) ? count($provcodes) : 0;
+
+    foreach($storage as $profile) {
+      $formcode = $profile->get('field_registration_code')->value ?  preg_replace('/\s+/', '',$profile->get('field_registration_code')->value) : null;
+      for ($i = 0; $i < $countcodes; $i++) {
+        $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
+        $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
+        $term = taxonomy_term_load($thisname);
+        if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
+          $term = taxonomy_term_load($thisname);
+          $profile->set('field_provider',array(
+          'value' => $term));
+          $profile->save();
+        }
+      }
+   }
+    
+    
+  } 
   
-  $module = 'surveycampaign';
-  $key = 'create_job';
-  $to = $entity->get('field_email')->getString();
-  
-  $params['message'] = $userfirstmailbody;
-  
-  $params['node_title'] = $entity->label();
-  $langcode = 'und';
-  $send = true;
-  
-  $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
-  if ($result['result'] !== true) {
-  $message = t('There was a problem sending alert email notification to @email for creating ticket @id.', array('@email' => $to, '@id' => $entity->id()));
-  //drupal dblog
-  return;
-  }
-  
-  $message = t('An email notification has been sent to @email for creating node @id.', array('@email' => $to, '@id' => $entity->id()));
-  //drupal dblog
+
+
 }
+
+
   
-function surveycampaign_profile_cellphone_validate (&$form, $form_state) {
+function _surveycampaign_profile_register_validate (&$form, $form_state) {
+
   $formphone = $form_state->getValues()['survey_participants_profiles'][0]['entity']['field_cell_phone'][0]['value'];
   $checknewphone = preg_replace('/\D+/', '',$formphone);
   $storage = \Drupal::entityTypeManager()->getStorage('profile')
