@@ -235,7 +235,7 @@ function surveycampaign_profile_cellphone_validate (&$form, $form_state) {
   }
   $formcode = $form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0,'value']);
   $termarray = surveycampaignCheckRegCode($formcode);
-  if !$termarray) $form_state->setErrorByName("survey_participants_profiles][0][entity][field_registration_code][0][value", "You must enter a valid registration code associated with your organization.");
+  if (!$termarray) $form_state->setErrorByName("survey_participants_profiles][0][entity][field_registration_code][0][value", "You must enter a valid registration code associated with your organization.");
 }
 function surveycampaign_cron()
 {
