@@ -1,5 +1,13 @@
+.path-dashboard h1.title {
+  display: none;
+}
+
+.path-dashboard .form-item-debug {
+  display: none;
+}
+
 #edit-what--wrapper #edit-what {
-  height: 400px;
+  height: 500px;
   overflow: scroll;
 }
 

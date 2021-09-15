@@ -1,6 +1,6 @@
 {% set colspan = '' %}
 {% if data.uid == 0 %}
-  {% set colspan = ' colspan="3"' %}
+  {% set colspan = ' colspan=3' %}
 {% endif %}
 <div id="google-charts"></div>
 <table id="who-table">
@@ -55,5 +55,5 @@
 {% endif %}
   </tr>
 </table>
-<div>SQL: {{ data.results.debug.query }}</div>
-<div>ARGS: {{ data.results.debug.args }}</div>
+{#<div>SQL: {{ data.results.debug.query }}</div>#}
+{#<div>ARGS: {{ data.results.debug.args }}</div>#}
