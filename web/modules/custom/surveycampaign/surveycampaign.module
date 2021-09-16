@@ -54,7 +54,7 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
   
 }
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-/* $triggeringevent = $form_state->getTriggeringElement();
+  /*$triggeringevent = $form_state->getTriggeringElement();
   if($triggeringevent && $triggeringevent['#name'] == 'survey_participants_profiles[0][entity][field_registration_code][0][value]')
   {
     \Drupal::logger('surveycampaign alert')->notice("You've been triggered" );
@@ -65,13 +65,12 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
       \Drupal::logger('surveycampaign alert')->notice("There is a registration code value" );
       $formcode = $form_state->getValue( ['survey_participants_profiles',0,'entity','field_registration_code',0,'value']);
       if(surveycampaignCheckRegCode($formcode)) {
-        $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#states'][
-          ['visible'] = FALSE;;
+        
+        
         $form['#rebuild'] = TRUE; 
-        $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#states'][
-          ['visible'] = FALSE;
+        $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#attributes']['readonly'] = 'readonly';
         $showit = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id'],true);
-        \Drupal::logger('surveycampaign alert')->notice("Attributes: " . $showit);
+        \Drupal::logger('surveycampaign alert')->notice("THere is a valid registration code");
       }
     }
 
@@ -79,6 +78,7 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
   } */
   
   
+  $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#attributes']['readonly'] = 'readonly';
   $form['account']['mail']['#required'] = TRUE;
   $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
   $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#ajax'] = array(
@@ -86,21 +86,9 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
     'event' => 'change',
     'wrapper' => 'edit-survey-participants-profiles-0-entity-field-provider-0-target-id',
   );
-  //$form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#prefix'] = '<div id="codemessage"></div>';
-  //$showit = print_r($form['field_registration_code']['#title'], true);
-  $form['field_registration_code']['widget'][0]['value']['#title'] = 'Fuck You';
-  //$form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#title'] = 'blurg';
-  //$form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#title'] = 'blurg';
-  //$form['field_registration_code']['widget']['#required'] = TRUE;
-  //$showit = print_r($form['field_registration_code']['widget'], true);
-  $form['field_registration_code']['widget']['#title'] = 'Fuck You';
-  //$showme = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#validated'],true);
 
-  //\Drupal::logger('surveycampaign alert')->notice("Showit: " . $showit );
-  //$showme2 = print_r($form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget']['#title'],true);
-  //\Drupal::logger('surveycampaign alert')->notice("second time: " . $showme2 );
-  
-  
+  //$form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#title'] = 'blurg';
+
 }
 /**
  * @param $form
