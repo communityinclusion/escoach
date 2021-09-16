@@ -2,3 +2,5 @@ csslib:
   css:
     theme:
       css/admincss.css: {}
+  js:
+    js/taxonomyfix.js: {}
