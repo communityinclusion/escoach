@@ -23,6 +23,13 @@
           evt.preventDefault();
           alert('Please select at least one "What" option');
         }
+        if ($('#edit-timeframe').val() == 'up-to-date' && $('input:checked[name^="what"]').length == 0 ) {
+          if ($('select[name="where"]').prop('selectedIndex') > 1 || $('select[name="who"]').prop('selectedIndex') > 1) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            alert('Please select at least one "What" option');
+          }
+        }
       });
 
     }
