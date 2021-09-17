@@ -51,6 +51,16 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
     
     $form['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
   }
+  $roles = \Drupal::currentUser()->getRoles();
+
+  if(!in_array($roles, 'administrator')) {
+    
+    if($form['#id'] == 'profile-survey-participants-edit-form') 
+    {
+      $form['field_provider']['widget'][0]['target_id']['#attributes']['readonly'] = 'readonly';
+      $form['field_registration_code']['widget'][0]['value']['#attributes']['readonly'] = 'readonly';
+    }
+  }
   
 }
 function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
