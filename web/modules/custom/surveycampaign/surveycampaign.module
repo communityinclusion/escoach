@@ -72,6 +72,7 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
     'callback' => 'surveycampaignAjaxCallback',
     'event' => 'change',
     'wrapper' => 'edit-survey-participants-profiles-0-entity-field-provider-0-target-id',
+    'disable-refocus' => true,
   );
 
   //$form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#title'] = 'blurg';
@@ -276,7 +277,10 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
   {  
     //$entity->save();
     $uid = $entity->id();
-    \Drupal::logger('surveycampaign')->notice("User inserted UID: " . $uid);
+    
+      drupal_set_message(t('Your user account has been created.  You will receive an email with a link for one-time login. Check your spam or junk mail if you don\'t see it soon.'), 'status');
+    
+    
     //$profilechange = surveycampaign_profile_update($uid);
     
   } 
