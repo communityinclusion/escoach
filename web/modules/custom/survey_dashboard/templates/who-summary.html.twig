@@ -1,7 +1,7 @@
 {% set colspan = '' %}
-{% if data.uid > 0 %}
+{#{% if data.uid > 0 %}#}
   {% set colspan = ' colspan=3' %}
-{% endif %}
+{#{% endif %}#}
 <div id="google-charts"></div>
 <table id="who-table">
   <thead>
@@ -13,15 +13,15 @@
   <tr>
     <th>&nbsp;</th>
     <th>All</th>
-{% if data.uid > 0 %}
+{#{% if data.uid > 0 %}#}
     <th>My Team</th>
     <th>Me</th>
-{% endif %}
+{#{% endif %}#}
     <th>All</th>
-{% if data.uid > 0 %}
+{#{% if data.uid > 0 %}#}
     <th>My Team</th>
     <th>Me</th>
-{% endif %}
+{#{% endif %}#}
   </tr>
   </thead>
   <tbody>
@@ -32,11 +32,17 @@
 {% if data.uid > 0 %}
       <th>{{ data.results.provider[alias].day }}</th>
       <th>{{ data.results.me[alias].day }}</th>
+{% else %}
+      <th> - </th>
+      <th> - </th>
 {% endif %}
       <th>{{ data.results.all[alias].week }}</th>
 {% if data.uid > 0 %}
       <th>{{ data.results.provider[alias].week }}</th>
       <th>{{ data.results.me[alias].week }}</th>
+{% else %}
+  <th> - </th>
+  <th> - </th>
 {% endif %}
     </tr>
   {% endfor %}
@@ -47,11 +53,17 @@
 {% if data.uid > 0 %}
     <th>{{ data.results.provider.n }}</th>
     <th>{{ data.results.me.n }}</th>
+{% else %}
+  <th> - </th>
+  <th> - </th>
 {% endif %}
     <th>{{ data.results.all.n }}</th>
 {% if data.uid > 0 %}
     <th>{{ data.results.provider.n }}</th>
     <th>{{ data.results.me.n }}</th>
+{% else %}
+  <th> - </th>
+  <th> - </th>
 {% endif %}
   </tr>
 </table>
