@@ -358,11 +358,11 @@ class QueryBuilder {
             ?? 0,
         ],
         'me' => [
-          'total' => isset($result[0]['TotalMe']) ?? $result[0]['TotalMe'],
+          'total' => $result[0]['TotalMe'] ?? 0,
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedMe'] : $result[0]['nMe'] ?? 0,
         ],
         'provider' => [
-          'total' => isset($result[0]['TotalProvider']) ?? $result[0]['TotalProvider'],
+          'total' => $result[0]['TotalProvider'] ?? 0,
           'n' => $this->theme == 'selected-activities' ? $result[0]['SelectedProvider'] : $result[0]['nProvider'] ?? 0,
         ],
       ],

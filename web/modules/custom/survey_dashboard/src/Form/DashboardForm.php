@@ -91,6 +91,7 @@ class DashboardForm extends FormBase {
       '#weight' => 5,
       '#attributes' => [
         'id' => 'results',
+        'class' => 'escoach-dashboard-results',
       ],
       'widget' => [
         '#type' => 'markup',
