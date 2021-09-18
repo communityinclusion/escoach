@@ -49,3 +49,20 @@
   color: #000;
   font-weight: normal;
 }
+
+/* Dashboard table column widths. */
+.escoach-dashboard-results, .escoach-dashboard-table {
+  width: 100%;
+}
+.escoach-desc {
+  width: 58%;
+}
+.escoach-all-day, .escoach-all-week {
+  width: 7%;
+}
+.escoach-team-day, .escoach-team-week {
+  width: 7%;
+}
+.escoach-me-day, .escoach-me-week {
+  width: 7%;
+}

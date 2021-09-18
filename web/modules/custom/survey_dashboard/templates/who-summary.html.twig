@@ -3,7 +3,7 @@
   {% set colspan = ' colspan=3' %}
 {#{% endif %}#}
 <div id="google-charts"></div>
-<table id="who-table">
+<table id="who-table" class="escoach-dashboard-table">
   <thead>
   <tr>
     <th>{% if data.what %}{{ data.what }} & {% endif %}WHO</th>
@@ -11,16 +11,16 @@
     <th{{ colspan }}>Hrs/week</th>
   </tr>
   <tr>
-    <th>&nbsp;</th>
-    <th>All</th>
+    <th class="escoach-desc">&nbsp;</th>
+    <th class="escoach-all-day">All</th>
 {#{% if data.uid > 0 %}#}
-    <th>My Team</th>
-    <th>Me</th>
+    <th class="escoach-team-day">My Team</th>
+    <th class="escoach-me-day">Me</th>
 {#{% endif %}#}
-    <th>All</th>
+    <th class="escoach-all-week">All</th>
 {#{% if data.uid > 0 %}#}
-    <th>My Team</th>
-    <th>Me</th>
+    <th class="escoach-team-week">My Team</th>
+    <th class="escoach-me-week">Me</th>
 {#{% endif %}#}
   </tr>
   </thead>

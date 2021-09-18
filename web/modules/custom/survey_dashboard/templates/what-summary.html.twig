@@ -1,10 +1,10 @@
 {% set colspan = '' %}
-{% if data.uid > 0 %}
+{#{% if data.uid > 0 %}#}
   {% set colspan = ' colspan=3' %}
-{% endif %}
+{#{% endif %}#}
 <h3>{{ data.title }}</h3>
 <div id="google-charts"></div>
-<table id="what-table">
+<table id="what-table" class="escoach-dashboard-table">
   <thead>
   <tr>
     <th>WHAT</th>
@@ -12,17 +12,17 @@
     <th{{ colspan }}>Hrs/week</th>
   </tr>
   <tr>
-    <th>&nbsp;</th>
-    <th>All</th>
-{% if data.uid > 0 %}
-    <th>My Team</th>
-    <th>Me</th>
-{% endif %}
-    <th>All</th>
-{% if data.uid > 0 %}
-    <th>My Team</th>
-    <th>Me</th>
-{% endif %}
+    <th class="escoach-desc">&nbsp;</th>
+    <th class="escoach-all-day">All</th>
+    {#{% if data.uid > 0 %}#}
+      <th class="escoach-team-day">My Team</th>
+      <th class="escoach-me-day">Me</th>
+    {#{% endif %}#}
+    <th class="escoach-all-week">All</th>
+    {#{% if data.uid > 0 %}#}
+      <th class="escoach-team-week">My Team</th>
+      <th class="escoach-me-week">Me</th>
+    {#{% endif %}#}
   </tr>
   </thead>
   <tbody>
@@ -33,11 +33,17 @@
 {% if data.uid > 0 %}
     <th>{{ data.results.provider[alias].day }}</th>
     <th>{{ data.results.me[alias].day }}</th>
+{% else %}
+    <th> - </th>
+    <th> - </th>
 {% endif %}
     <th>{{ data.results.all[alias].week }}</th>
 {% if data.uid > 0 %}
     <th>{{ data.results.provider[alias].week }}</th>
     <th>{{ data.results.me[alias].week }}</th>
+{% else %}
+    <th> - </th>
+    <th> - </th>
 {% endif%}
   </tr>
   {% endfor %}
@@ -47,11 +53,17 @@
 {% if data.uid > 0 %}
     <th>{{ data.results.provider.total }}</th>
     <th>{{ data.results.me.total }}</th>
+{% else %}
+    <th> - </th>
+    <th> - </th>
 {% endif %}
     <th>{{ data.results.all.total }}</th>
 {% if data.uid > 0 %}
     <th>{{ data.results.provider.total }}</th>
     <th>{{ data.results.me.total }}</th>
+{% else %}
+    <th> - </th>
+    <th> - </th>
 {% endif %}
   </tr>
   </tbody>
