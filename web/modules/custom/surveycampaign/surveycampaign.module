@@ -53,7 +53,7 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
   }
   $roles = \Drupal::currentUser()->getRoles();
 
-  if(!in_array($roles, 'administrator')) {
+  if(!in_array('administrator',$roles)) {
     
     if($form['#id'] == 'profile-survey-participants-edit-form') 
     {
