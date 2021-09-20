@@ -67,6 +67,7 @@ function surveycampaign_form_user_register_form_alter(&$form, FormStateInterface
   
   $form['survey_participants_profiles']['widget'][0]['entity']['field_provider']['widget'][0]['target_id']['#attributes']['readonly'] = 'readonly';
   $form['account']['mail']['#required'] = TRUE;
+ $form['account']['mail']['#description'] = t('A valid email address. All emails from the system will be sent to this address. The email address is not made public and will only be used for project-related purposes. ');
   $form['#validate'][] = 'surveycampaign_profile_cellphone_validate';
   $form['survey_participants_profiles']['widget'][0]['entity']['field_registration_code']['widget'][0]['value']['#ajax'] = array(
     'callback' => 'surveycampaignAjaxCallback',
