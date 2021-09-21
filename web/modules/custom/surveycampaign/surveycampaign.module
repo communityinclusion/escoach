@@ -58,7 +58,7 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
     if($form['#id'] == 'profile-survey-participants-edit-form') 
     {
       $form['field_provider']['widget'][0]['target_id']['#attributes']['readonly'] = 'readonly';
-      $form['field_registration_code']['widget'][0]['value']['#attributes']['readonly'] = 'readonly';
+      $form['field_registration_code']['widget'][0]['value']['#access'] = FALSE;
     }
   }
   
