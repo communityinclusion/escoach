@@ -24,7 +24,7 @@ class SurveyResponsesService
                     ->range(0, 1)
                     ->execute()
                     ->fetchField();
-        $gethighest = $gethighestquery ? $gethighestquery : '2020-03-29 10:00:00';
+        $gethighest = $gethighestquery ? $gethighestquery : '2021-09-23 10:00:00';
         // make a call to SG, get number of pages, filter by date
         // URL calls to page through data
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
