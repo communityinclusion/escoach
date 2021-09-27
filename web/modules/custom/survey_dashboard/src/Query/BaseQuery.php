@@ -274,12 +274,19 @@ class BaseQuery {
    */
   public function addMonthlyParams() {
     $this->query->addExpression('MONTH(date_submitted)', 'month');
+    $date = new \DateTime('first day of this month');
+    $to_date = $date->sub(\DateInterval::createFromDateString('1 days'));
+
+    $date = new \DateTime('first day of this month');
+    $from_date = $date->sub(\DateInterval::createFromDateString('1 years'));
     $this->query->condition('date_submitted',
       [
-        'DATE_SUB(DATE_SUB(LAST_DAY(NOW()),INTERVAL DAY(LAST_DAY(NOW()))- 1 DAY), INTERVAL 1 YEAR)',
-        'DATE_SUB(LAST_DAY(NOW()), INTERVAL DAY(LAST_DAY(NOW())) DAY)'
-      ], 'BETWEEN');
+        $from_date->format('Y-m-d 00:00:00'),
+        $to_date->format('Y-m-d 23:59:59'),
+      ],
+      'BETWEEN');
     $this->query->groupBy('MONTH(date_submitted)');
+    $this->query->orderBy('date_submitted');
   }
 
   /**
