@@ -415,12 +415,20 @@ class QueryBuilder {
 
     $totalValue = $results[$totalCell];
     if ($scope == 'all') {
-      $totalValue -= $results['TotalObserver'];
+      $totalNotSelected = $totalValue - $results['SelectedAll']; // A - B
+      $totalObserverNotSelected = $results['TotalObserver'] - $results['SelectedObserver']; // H - E
+      $totalValue -= $results['TotalObserver']; // B - E
     }
 
     $dayTotal = $results[$dataCell] / $totalValue * 8 / 24;
     if ($scope == 'all') {
-      $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+      if ($alias == 'Selected') {
+        $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / ($totalValue + $totalNotSelected - $totalObserverNotSelected) * 8 / 24;
+      }
+      else {
+        $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+      }
+
     }
 
     return ($term == 'day') ?
