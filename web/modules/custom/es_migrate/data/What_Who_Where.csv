@@ -18,8 +18,8 @@ question_id,response_id,response_text,parent_response_id,vocabulary,alias,weight
 483,11659,"Finding, securing jobs",,What,Finding,1
 483,11660,Any supports AFTER hire,,What,After,3
 483,11661,Other supports BEFORE hire,,What,Before,2
-483,11662,"Day programs, residential, etc…",,What,Day,5
-483,11663,"Staff meetings, professional development, billing, etc..",,What,Staff,4
+483,11662,"Non-employment related e.g. day programs",,What,Day,5
+483,11663,"Paperwork, meetings, program business",,What,Staff,4
 537,11836,Reviewing records,11658,What,,4
 537,11838,Observing a job seeker,11658,What,,2
 537,11839,Other,11658,What,,8
@@ -53,11 +53,11 @@ question_id,response_id,response_text,parent_response_id,vocabulary,alias,weight
 540,11861,Meeting regarding a person I support,11660,What,,5
 541,11867,Staff or other general meetings,11663,What,,1
 541,11868,Travelling,11663,What,,4
-541,11871,Case notes/incident reporting,11663,What,,5
+541,11871,"Case notes, reporting, forms",11663,What,,5
 541,11874,"Professional development (e.g. webinars, conferences)",11663,What,,2
 541,11875,Other,11663,What,,7
 541,11877,Authorization/billing paperwork,11663,What,,3
-541,12117,Other forms/reports,11663,What,,6
+541,12117,"Program administration/development",11663,What,,6
 542,11878,Facility-based non-work support,11662,What,,1
 542,11879,Facility-based work support,11662,What,,2
 542,11880,Community-based non-work support,11662,What,,3

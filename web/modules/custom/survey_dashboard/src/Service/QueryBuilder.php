@@ -405,7 +405,7 @@ class QueryBuilder {
    * @param string $scope
    * @param string $term
    */
-  private function calculateHrs($results, $alias, $scope, $term) {
+  private function calculateHrs($results, $alias, $scope, $term, $which = 'up-to-date') {
     $totalCell = 'Total' . ucfirst($scope);
     $dataCell = $alias . ucfirst($scope);
 
@@ -415,12 +415,23 @@ class QueryBuilder {
 
     $totalValue = $results[$totalCell];
     if ($scope == 'all') {
-      $totalValue -= $results['TotalObserver'];
+      if ($alias == 'Selected') {
+        $totalNotSelected = $totalValue - $results['SelectedAll']; // A - B
+        $totalObserverNotSelected = $results['TotalObserver'] - $results['SelectedObserver']; // H - E
+        $totalSelectedLessObserver = $results['SelectedAll'] - $results['SelectedObserver']; // B - E
+      }
+      $totalValue -= $results['TotalObserver']; // A - E
     }
 
     $dayTotal = $results[$dataCell] / $totalValue * 8 / 24;
     if ($scope == 'all') {
-      $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+      if ($alias == 'Selected' && $which == 'Trends') {
+        $dayTotal = ($totalSelectedLessObserver) / ($totalSelectedLessObserver + ($totalNotSelected - $totalObserverNotSelected)) * 8 / 24;
+      }
+      else {
+        $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+      }
+
     }
 
     return ($term == 'day') ?
@@ -473,8 +484,8 @@ class QueryBuilder {
     foreach ($result as $record) {
 
       foreach (['all', 'me', 'provider'] as $scope) {
-        $return['results'][$scope][$record[$unit]]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day');
-        $return['results'][$scope][$record[$unit]]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week');
+        $return['results'][$scope][$record[$unit]]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day', 'Trends');
+        $return['results'][$scope][$record[$unit]]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week', 'Trends');
       }
     }
     return $return;
