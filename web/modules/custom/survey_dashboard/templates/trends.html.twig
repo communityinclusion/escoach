@@ -9,11 +9,11 @@
   <tr>
     <th>&nbsp;</th>
     <th>All</th>
-    <th>Me</th>
     <th>My Team</th>
+    <th>Me</th>
     <th>All</th>
-    <th>Me</th>
     <th>My Team</th>
+    <th>Me</th>
   </tr>
   </thead>
   <tbody>
@@ -21,11 +21,11 @@
     <tr>
       <td>{{ aliasData.title }}</td>
       <th>{{ data.results.all[alias].Selected.day }}</th>
-      <th>{{ data.results.me[alias].Selected.day }}</th>
       <th>{{ data.results.provider[alias].Selected.day }}</th>
+      <th>{{ data.results.me[alias].Selected.day }}</th>
       <th>{{ data.results.all[alias].Selected.week }}</th>
-      <th>{{ data.results.me[alias].Selected.week }}</th>
       <th>{{ data.results.provider[alias].Selected.week }}</th>
+      <th>{{ data.results.me[alias].Selected.week }}</th>
     </tr>
   {% endfor %}
   <tr>
