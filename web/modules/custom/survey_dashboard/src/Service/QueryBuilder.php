@@ -480,14 +480,18 @@ class QueryBuilder {
       ];
     }
 
+    $alias_map = [];
     $unit = ($this->timeframe == 'monthly') ? 'month' : 'quarter';
     foreach ($result as $record) {
-
+      $time_period = $record[$unit];
+      $alias_map[$time_period] = $return['aliasMap'][$time_period];
       foreach (['all', 'me', 'provider'] as $scope) {
-        $return['results'][$scope][$record[$unit]]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day', 'Trends');
-        $return['results'][$scope][$record[$unit]]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week', 'Trends');
+        $return['results'][$scope][$time_period]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day', 'Trends');
+        $return['results'][$scope][$time_period]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week', 'Trends');
       }
     }
+
+    $return['aliasMap'] = $alias_map;
     return $return;
   }
 
