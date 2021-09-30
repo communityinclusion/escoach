@@ -272,7 +272,10 @@ class QueryBuilder {
    */
   private function getTrendAliasMap() {
     if ($this->timeframe == 'monthly') {
-      return [
+      $now = new \Datetime();
+      $current_month = $now->format('m');
+      $current_year = $now->format('Y');
+      $months = [
         1 => [
           'title' => 'January',
         ],
@@ -310,6 +313,17 @@ class QueryBuilder {
           'title' => 'December',
         ],
       ];
+
+      foreach ($months as $num => $title) {
+        if ($num >= $current_month) {
+          $months[$num]['title'] .= ' ' . ($current_year -1);
+        }
+        else {
+          $months[$num]['title'] .= ' ' . $current_year;
+        }
+      }
+
+      return $months;
     }
 
     if ($this->timeframe == 'quarterly') {
