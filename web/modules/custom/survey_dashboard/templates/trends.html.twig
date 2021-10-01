@@ -1,5 +1,5 @@
 <div id="google-charts"></div>
-<table id="selected-table">
+<table id="selected-table" class="escoach-dashboard-table">
   <thead>
   <tr>
     <th>{{ title }}</th>
@@ -7,13 +7,13 @@
     <th colspan="3">Hrs/week</th>
   </tr>
   <tr>
-    <th>&nbsp;</th>
-    <th>All</th>
-    <th>My Team</th>
-    <th>Me</th>
-    <th>All</th>
-    <th>My Team</th>
-    <th>Me</th>
+    <th class="escoach-desc escoach-trends">&nbsp;</th>
+    <th class="escoach-all-day escoach-trends">All</th>
+    <th class="escoach-team-day escoach-trends">My Team</th>
+    <th class="escoach-me-day escoach-trends">Me</th>
+    <th class="escoach-all-week escoach-trends">All</th>
+    <th class="escoach-team-week escoach-trends">My Team</th>
+    <th class="escoach-me-week escoach-trends">Me</th>
   </tr>
   </thead>
   <tbody>
@@ -39,7 +39,7 @@
   </tr>
   </tbody>
 </table>
-{% if data.results.debug %}
-  <div>SQL: {{ data.results.debug.query }}</div>
-  <div>ARGS: {{ data.results.debug.args }}</div>
-{% endif %}
+
+<div>SQL: {{ data.results.debug.query }}</div>
+<div>ARGS: {{ data.results.debug.args }}</div>
+

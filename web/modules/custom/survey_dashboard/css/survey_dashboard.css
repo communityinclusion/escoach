@@ -3,7 +3,7 @@
 }
 
 .path-dashboard .form-item-debug {
-  display: none;
+  /* display: none; */
 }
 
 #edit-what--wrapper #edit-what {
@@ -65,4 +65,17 @@
 }
 .escoach-me-day, .escoach-me-week {
   width: 7%;
+}
+
+.escoach-desc.escoach-trends {
+  width: 28%;
+}
+.escoach-all-day.escoach-trends, .escoach-all-week.escoach-trends {
+  width: 12%;
+}
+.escoach-team-day.escoach-trends, .escoach-team-week.escoach-trends {
+  width: 12%;
+}
+.escoach-me-day.escoach-trends, .escoach-me-week.escoach-trends {
+  width: 12%;
 }
