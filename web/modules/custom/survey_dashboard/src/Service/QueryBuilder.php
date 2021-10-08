@@ -272,7 +272,10 @@ class QueryBuilder {
    */
   private function getTrendAliasMap() {
     if ($this->timeframe == 'monthly') {
-      return [
+      $now = new \Datetime();
+      $current_month = $now->format('m');
+      $current_year = $now->format('Y');
+      $months = [
         1 => [
           'title' => 'January',
         ],
@@ -310,6 +313,17 @@ class QueryBuilder {
           'title' => 'December',
         ],
       ];
+
+      foreach ($months as $num => $title) {
+        if ($num >= $current_month) {
+          $months[$num]['title'] .= ' ' . ($current_year -1);
+        }
+        else {
+          $months[$num]['title'] .= ' ' . $current_year;
+        }
+      }
+
+      return $months;
     }
 
     if ($this->timeframe == 'quarterly') {
@@ -480,14 +494,18 @@ class QueryBuilder {
       ];
     }
 
+    $alias_map = [];
     $unit = ($this->timeframe == 'monthly') ? 'month' : 'quarter';
     foreach ($result as $record) {
-
+      $time_period = $record[$unit];
+      $alias_map[$time_period] = $return['aliasMap'][$time_period];
       foreach (['all', 'me', 'provider'] as $scope) {
-        $return['results'][$scope][$record[$unit]]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day', 'Trends');
-        $return['results'][$scope][$record[$unit]]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week', 'Trends');
+        $return['results'][$scope][$time_period]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day', 'Trends');
+        $return['results'][$scope][$time_period]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week', 'Trends');
       }
     }
+
+    $return['aliasMap'] = $alias_map;
     return $return;
   }
 
