@@ -546,7 +546,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     );
     $form['configuration']['second_settings']['alt_delay_period'] = [
       '#type' => 'select',
-      '#title' => $this->t('Secondary survey delay: Select the number of times a user must have responded to the daily survey before they will get the one-time survey.'),
+      '#title' => $this->t('Secondary survey delay: Select the number of times a user must have responded to the daily survey before they will get the one-time survey. Must be a one-time survey.'),
       '#description' => $this->t('This setting will prevent new users from getting the follow-up survey on the designated day if they have not answered the daily survey x number of times. New users don\'t have any basis to evaluate the daily survey yet.'),
       '#options' => [
         '0' => $this->t('0'),
