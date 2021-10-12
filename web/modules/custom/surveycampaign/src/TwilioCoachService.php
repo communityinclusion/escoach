@@ -212,7 +212,7 @@ class TwilioCoachService
      $config =  \Drupal::config('surveycampaign.settings');
      $defaultid = $config->get('defaultid');
      $delayperiod = $config->get('alt_delay_period');
-     $delayover = false;
+     $delayineffect = false;
       $database = \Drupal::database();
       $query =  $database->select('surveycampaign_mailer','sm')
       ->condition('sm.Complete', 1)
@@ -220,9 +220,9 @@ class TwilioCoachService
       ->condition('sm.mobilephone', "$mobilephone") ->countQuery()
       ->execute();
       $results = $query->fetchField();
-      \Drupal::logger('surveycampaign')->notice("Count completed: " . $results . " Delay period: " . $delayperiod);
-      $delayover = $results > $delayperiod ? true: false;
-      return $delayover;
+      //\Drupal::logger('surveycampaign')->notice("Count completed: " . $results . " Delay period: " . $delayperiod);
+      $delayineffect = $results > $delayperiod ? false: true;
+      return $delayineffect;
 
    }
 
@@ -527,12 +527,12 @@ class TwilioCoachService
             $provider = $contact[8] ? urlencode($contact[8]) : 'no provider';
             $sendtime = urlencode($seconddate);
             $checkcompletedonce = false;
-            $delayover = false;
+            $delayineffect = false;
             if($onetime) {
                 $checkcompletedonce = $this->checkCompletedOnce($surveyid,$mobilephone);
-                if (!$checkcompletedonce)  $delayover = $this->checkDelaySetting($surveyid,$mobilephone);
+                if (!$checkcompletedonce)  $delayineffect = $this->checkDelaySetting($surveyid,$mobilephone);
             }
-            if(!$checkcompletedonce && $delayover)
+            if(!$checkcompletedonce && !$delayineffect)
             {
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
