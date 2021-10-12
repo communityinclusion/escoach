@@ -102,7 +102,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
   }
   public function buildForm(array $form, FormStateInterface $form_state) {
-    
+
     $i = 0;
     $name_field = $form_state->get('num_hols');
     $config = $this->configFactory->get('surveycampaign.settings');
@@ -117,12 +117,12 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $datereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,1);
     $secnddatereturn = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,0);
     $secnddatereturntomorrow = $this->formQuery('surveycampaign_campaigns','senddate',$secondaryid,1);
-    
+
     $form['#attached']['library'][] = 'admincss/csslib';
     $form['configuration'] = array(
       '#type' => 'vertical_tabs',
     );
-    
+
     $form['configuration']['default_settings'] = array(
       '#type' => 'details',
       '#title' => t('Default survey settings'),
@@ -136,9 +136,9 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
        '#size' => 60,
       '#maxlength' => 128,
       '#required' => TRUE,
-      
+
     ];
-   
+
     $form['configuration']['default_settings']['surveycampaign_def_survey'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Default survey id'),
@@ -147,7 +147,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
        '#size' => 60,
       '#maxlength' => 128,
       '#required' => TRUE,
-      
+
     ];
     $form['configuration']['default_settings']['default_disable'] = array(
       '#type' => 'radios',
@@ -190,7 +190,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         ],
         '#default_value' => $config->get('hour_range_low'),
       ];
-    
+
       $form['configuration']['default_settings']['hour_range_high'] = [
         '#type' => 'select',
         '#title' => $this->t('Select latest time to start random survey period'),
@@ -230,7 +230,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#options' => ['Sunday' => $this->t('Sunday'), 'Monday' => $this->t('Monday'), 'Tuesday' => $this->t('Tuesday'), 'Wednesday' => $this->t('Wednesday'), 'Thursday' => $this->t('Thursday'), 'Friday' => $this->t('Friday'), 'Saturday' => $this->t('Saturday')],
         '#title' => $this->t('Days to send the default survey'),
         '#default_value' => $config->get('def_send_days'),
-        
+
       ];
 
     $form['configuration']['default_settings']['shell'] = array(
@@ -245,18 +245,18 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#prefix' => "<div id='names-fieldset-wrapper'>",
         '#suffix' => '</div>',
       ];
-  
+
       if (empty($name_field) || $counthols < 1) {
         $name_field = $counthols <= 1 ? $form_state->set('num_hols', 1) : $form_state->set('num_hols', $counthols);
 
       }
 
-  
+
       for ($i = 0; $i < $form_state->get('num_hols'); $i++) {
         $thisdate = !empty($holdates) && $holdates[$i] ? $holdates[$i] : '';
         $thisname = !empty($holnames) && $holnames[$i] ? $holnames[$i] : '';
         $j = $i + 1;
-        
+
 
         $form['configuration']['default_settings']['shell']['holiday_fieldset'][$i]['holiday_name'] = [
           '#type' => 'textfield',
@@ -273,7 +273,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
           '#size' => 20,
           '#default_value' => $thisdate,
         ];
-        
+
       }
         $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions'] = [
           '#type' => 'actions',
@@ -298,7 +298,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
             ],
           ];
         }
-      
+
 
 
 
@@ -309,7 +309,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#size' => 20,
       // '#date_date_element' => 'none', // hide date element
       // '#date_time_element' => 'time', // you can use text element here as well
-      
+
       '#default_value' => ($datereturn ? DrupalDateTime::createFromTimestamp(strtotime($datereturn)) : ""),
     ];
     $form['configuration']['default_settings']['default_survey_tomorrowtime'] = [
@@ -320,7 +320,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#size' => 20,
       // '#date_date_element' => 'none', // hide date element
       // '#date_time_element' => 'time', // you can use text element here as well
-      
+
       '#default_value' => ($datereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($datereturntomorrow)) : ""),
     ];
     $form['configuration']['default_settings']['first_text_body'] = [
@@ -349,7 +349,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
        '#size' => 10,
       '#maxlength' => 10,
       '#required' => FALSE,
-      
+
     ];
 
     $form['configuration']['default_settings']['def_survey_suspend_end_id'] = [
@@ -360,7 +360,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
        '#size' => 10,
       '#maxlength' => 10,
       '#required' => FALSE,
-      
+
     ];
 
     $form['configuration']['default_settings']['second_text_body'] = [
@@ -380,7 +380,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#default_value' => $config->get('third_text_body.value'),
      // '#format' => $config->get('third_text_body.format'),
     ];
-    
+
 
 
     $form['configuration']['default_settings']['def_warning_trigger'] = [
@@ -460,7 +460,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#size' => 5,
       '#maxlength' => 128,
       '#required' => TRUE,
-      
+
     );
     $form['configuration']['default_settings']['sg_clos_page_id'] = array(
       '#type' => 'textfield',
@@ -470,7 +470,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#size' => 5,
       '#maxlength' => 128,
       '#required' => TRUE,
-      
+
     );
     $form['configuration']['default_settings']['finalpageheading'] = array(
       '#type' => 'textfield',
@@ -486,10 +486,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => $this->t('Default final screen body text if no library item chosen.'),
       '#required' => TRUE,
       '#default_value' => $libconfig->get('defaultlibrarytext.value'),
-      
-      
+
+
       '#format' => $config->get('full_html'),
-    
+
     );
     $form['configuration']['default_settings']['defaultfootertext'] = array(
       '#type' => 'text_format',
@@ -497,10 +497,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => $this->t('Default final screen footer if footer not disabled in library item'),
       '#required' => TRUE,
       '#default_value' => $libconfig->get('defaultfootertext.value'),
-      
-      
+
+
       '#format' => $config->get('full_html'),
-    
+
     );
 
 
@@ -522,7 +522,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
        '#size' => 60,
       '#maxlength' => 128,
       '#required' => FALSE,
-      
+
     ];
     $form['configuration']['second_settings']['second_disable'] = array(
       '#type' => 'radios',
@@ -544,6 +544,35 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         t('Daily (repeating)'),
       )
     );
+    $form['configuration']['second_settings']['alt_delay_period'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Secondary survey delay: Select the number of times a user must have responded to the daily survey before they will get the one-time survey.'),
+      '#description' => $this->t('This setting will prevent new users from getting the follow-up survey on the designated day if they have not answered the daily survey x number of times. New users don\'t have any basis to evaluate the daily survey yet.'),
+      '#options' => [
+        '0' => $this->t('0'),
+          '1' => $this->t('1'),
+        '2' => $this->t('2'),
+        '3' => $this->t('3'),
+        '4' => $this->t('4'),
+        '5' => $this->t('5'),
+        '6' => $this->t('6'),
+        '7' => $this->t('7'),
+        '8' => $this->t('8'),
+        '9' => $this->t('9'),
+        '10' => $this->t('10'),
+        '11' => $this->t('11'),
+        '12' => $this->t('12'),
+        '13' => $this->t('13'),
+        '14' => $this->t('14'),
+        '15' => $this->t('15'),
+        '16' => $this->t('16'),
+        '17' => $this->t('17'),
+        '18' => $this->t('18'),
+        '19' => $this->t('19'),
+        '20' => $this->t('20'),
+      ],
+      '#default_value' => $config->get('alt_delay_period'),
+    ];
     $form['configuration']['second_settings']['alt_hour_range_low'] = [
       '#type' => 'select',
       '#title' => $this->t('Select earliest time to send survey (1/2 hour before message sends)'),
@@ -575,7 +604,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ],
       '#default_value' => $config->get('alt_hour_range_low'),
     ];
-  
+
     $form['configuration']['second_settings']['alt_hour_range_high'] = [
       '#type' => 'select',
       '#title' => $this->t('Select latest time for survey period (1/2 hour before message sends)'),
@@ -615,9 +644,9 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#options' => ['Sunday' => $this->t('Sunday'), 'Monday' => $this->t('Monday'), 'Tuesday' => $this->t('Tuesday'), 'Wednesday' => $this->t('Wednesday'), 'Thursday' => $this->t('Thursday'), 'Friday' => $this->t('Friday'), 'Saturday' => $this->t('Saturday')],
       '#title' => $this->t('Days to send the secondary survey'),
       '#default_value' => $config->get('alt_send_days'),
-      
+
     ];
-  
+
     $form['configuration']['second_settings']['secondary_survey_todaytime'] = [
       '#type' => 'datetime',
       '#title' => $this->t('Secondary survey: set text send time of today\'s survey: format 00:00 (24 hour time)'),
@@ -625,10 +654,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#size' => 20,
       // '#date_date_element' => 'none', // hide date element
       // '#date_time_element' => 'time', // you can use text element here as well
-      
+
       '#default_value' => ($secnddatereturn ? DrupalDateTime::createFromTimestamp(strtotime($secnddatereturn)) : ""),
     ];
-   
+
 
     $form['configuration']['second_settings']['secondary_survey_tomorrowtime'] = [
       '#type' => 'datetime',
@@ -637,7 +666,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => t('This field will be populated automatically tomorrow in early AM.  You can manually set the time of tomorrow\' survey here.  Only use tomorrow\'s date for now.'),
       // '#date_date_element' => 'none', // hide date element
       // '#date_time_element' => 'time', // you can use text element here as well
-      
+
       '#default_value' => ($secnddatereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($secnddatereturntomorrow)) : ""),
     ];
     $form['configuration']['second_settings']['alt_first_text_body'] = [
@@ -687,7 +716,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#size' => 5,
       '#maxlength' => 128,
       '#required' => TRUE,
-      
+
     );
     $form['configuration']['second_settings']['alt_sg_clos_page_id'] = array(
       '#type' => 'textfield',
@@ -697,7 +726,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#size' => 5,
       '#maxlength' => 128,
       '#required' => TRUE,
-      
+
     );
     $form['configuration']['second_settings']['alt_finalpageheading'] = array(
       '#type' => 'textfield',
@@ -713,10 +742,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => $this->t('Default final screen body text if no library item chosen.'),
       '#required' => TRUE,
       '#default_value' => $libconfig->get('alt_defaultlibrarytext.value'),
-      
-      
+
+
       '#format' => $config->get('full_html'),
-    
+
     );
 
     $form['configuration']['second_settings']['alt_defaultfootertext'] = array(
@@ -725,13 +754,13 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => $this->t('Default final screen footer for alt survey if footer not disabled in library item'),
       '#required' => TRUE,
       '#default_value' => $libconfig->get('alt_defaultfootertext.value'),
-      
-      
+
+
       '#format' => $config->get('full_html'),
-    
+
     );
 
-   
+
 
     $form_state->setCached(FALSE);
     return parent::buildForm($form, $form_state);
@@ -837,7 +866,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       if(is_numeric($key)) $holarray[]= $form_state->getValue(array('shell','holiday_fieldset',$key, 'holiday_date'));
     }
     $config = $this->configFactory->get('surveycampaign.settings');
-    
+
     $this->configFactory->getEditable('surveycampaign.settings')
       ->set('defaultid', $form_state->getValue('surveycampaign_def_survey'))
       ->set('defaultenable', $form_state->getValue('default_disable'))
@@ -846,6 +875,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('alt_repeat', $form_state->getValue('alt_repeat'))
       ->set('hour_range_low', $form_state->getValue('hour_range_low'))
       ->set('hour_range_high', $form_state->getValue('hour_range_high'))
+        ->set('alt_delay_period', $form_state->getValue('alt_delay_period'))
       ->set('alt_hour_range_low', $form_state->getValue('alt_hour_range_low'))
       ->set('alt_hour_range_high', $form_state->getValue('alt_hour_range_high'))
       ->set('def_send_days', $form_state->getValue('def_send_days'))
@@ -887,9 +917,9 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       //Future: this is how you remove a single value in an array
       //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_holiday_date.1')->save();
       //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_holiday_name.1')->save();
-     
-    
-    
+
+
+
     $defaultid = $form_state->getValue('surveycampaign_def_survey');
     $secondaryid = $form_state->getValue('surveycampaign_alt_survey');
     $datereturn = $this->formQuery('surveycampaign_campaigns','senddate',$defaultid,0);
@@ -908,7 +938,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     if($form_state->getValue('secondary_survey_todaytime') && $form_state->getValue('secondary_survey_todaytime') != '') {
       $secndformupdatetoday = new DateTime($form_state->getValue('secondary_survey_todaytime'));
       $secndformupdatetoday = $secndformupdatetoday->format('Y-m-d H:i:s');
-    
+
     }
     if($form_state->getValue('secondary_survey_tomorrowtime') && $form_state->getValue('secondary_survey_tomorrowtime') != '') {
       $secndformupdatetomorrow = new DateTime($form_state->getValue('secondary_survey_tomorrowtime'));
@@ -918,22 +948,22 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     //set up conditions for update time or create new survey
 
     if($form_state->getValue('default_survey_todaytime') != $datereturn) {
-      
+
       $defupdatetoday = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturn,$formupdatetoday,0);
 
     }
     if($datereturntomorrow && $form_state->getValue('default_survey_tomorrowtime') != $datereturntomorrow) {
-    
+
       $defupdatetomorrow = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($defaultid,$datereturntomorrow,$formupdatetomorrow,1);
-  
+
     }
     elseif(!$datereturntomorrow && $defupdatetomorrow && $defupdatetomorrow != '') {
       $newdeftomorrow = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_def_survey'),1,1,$defupdatetomorrow);
     }
     if($secnddatereturn && $secndformupdatetoday && $secndformupdatetoday != $secnddatereturn) {
-    
+
         $altupdatetoday = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($secondaryid,$secnddatereturn,$secndformupdatetoday,0);
-  
+
         }
     elseif(!$secnddatereturn && $secndformupdatetoday && $secndformupdatetoday != '') {
       $newalttoday = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_alt_survey'),2,0,$secndformupdatetoday);
@@ -942,25 +972,25 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
       $altupdatetomorrow = \Drupal::service('surveycampaign.twilio_coach')->updateCampaignTime($secondaryid,$secnddatereturntomorrow,$secndformupdatetomorrow,1);
 
-      
+
     }
     elseif(!$secnddatereturntomorrow && $secndformupdatetomorrow && $secndformupdatetomorrow != '') {
       $newalttomorrow = \Drupal::service('surveycampaign.twilio_coach')->load($form_state->getValue('surveycampaign_alt_survey'),2,1,$secndformupdatetomorrow);
     }
-    
 
-  parent::submitForm($form, $form_state); 
+
+  parent::submitForm($form, $form_state);
   }
   protected function timzoneAdjust($basetime){
     $senddate = new DateTime($basetime);
                 $invitelink = $output->invitelink;
-               
+
                 switch($timezone) {
                     case 'ET':
                         $senddate = $senddate;
-                
+
                         break;
-                    case 'CT': 
+                    case 'CT':
                         $senddate = $senddate->modify("+ 1 hour");
                     break;
                     case 'MT':
@@ -973,7 +1003,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
                         $senddate = $senddate;
                     break;
                 }
-                   
+
                 $senddate = $senddate->format('Y-m-d H:i:s');
 
   }

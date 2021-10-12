@@ -209,9 +209,24 @@ class TwilioCoachService
         return $completedonce;
    }
    function checkDelaySetting($surveyid,$mobilephone) {
- 
+     $config =  \Drupal::config('surveycampaign.settings');
+     $defaultid = $config->get('defaultid');
+     $delayperiod = $config->get('alt_delay_period');
+     $delayover = false;
+      $database = \Drupal::database();
+      $query =  $database->select('surveycampaign_mailer','sm')
+      ->condition('sm.Complete', 1)
+      ->condition('sm.surveyid', $defaultid)
+      ->condition('sm.mobilephone', "$mobilephone") ->countQuery()
+      ->execute();
+      $results = $query->fetchField();
+      \Drupal::logger('surveycampaign')->notice("Count completed: " . $results . " Delay period: " . $delayperiod);
+      $delayover = $results > $delayperiod ? true: false;
+      return $delayover;
 
    }
+
+
    function textSchedule($surveyid, $campaignid) {
         $config =  \Drupal::config('surveycampaign.settings');
         $isprimary = $surveyid == $config->get('defaultid') ? true :false;
@@ -512,11 +527,12 @@ class TwilioCoachService
             $provider = $contact[8] ? urlencode($contact[8]) : 'no provider';
             $sendtime = urlencode($seconddate);
             $checkcompletedonce = false;
+            $delayover = false;
             if($onetime) {
                 $checkcompletedonce = $this->checkCompletedOnce($surveyid,$mobilephone);
-                // check if this onetime survey has a delay  $delayover = checkDelaySetting($surveyid,$mobilephone);
+                if (!$checkcompletedonce)  $delayover = $this->checkDelaySetting($surveyid,$mobilephone);
             }
-            if(!$checkcompletedonce)
+            if(!$checkcompletedonce && $delayover)
             {
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
