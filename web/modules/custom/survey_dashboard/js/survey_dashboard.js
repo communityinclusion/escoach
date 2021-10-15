@@ -97,11 +97,12 @@
         var data = google.visualization.arrayToDataTable(drupalSettings.survey_dashboard.chart);
 
         var options = {
-          width: 800,
-          height: 200,
-          legend: {position: 'bottom'},
+          width: '100%',
+          height: 300,
+          legend: {position: 'top', maxLines:4},
           bar: { groupWidth: '75%' },
           isStacked: 'percent',
+          chartArea:{left:100,top:100,width:'100%',height:'100%'},
           hAxis: {
             minValue: 0,
             ticks: [ 0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1]
