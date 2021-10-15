@@ -5,3 +5,4 @@ dashboard:
       css/survey_dashboard.css: {}
   js:
     js/survey_dashboard.js: {}
+    https://www.gstatic.com/charts/loader.js: { type: external, minified: true }

@@ -217,10 +217,49 @@ class QueryBuilder {
       }
     }
 
-    return [
+    $return = [
       '#theme' => $this->theme,
       '#data' => ($trends) ? $this->processResultsTrends($query, $params['debug']) : $this->processResultsSummary($query, $params['debug']),
     ];
+
+    $return['#attached'] = [
+      'drupalSettings' => [
+        'survey_dashboard' => [
+          'chart' => $this->buildChart($return, $trends),
+        ],
+      ],
+    ];
+
+    return $return;
+  }
+
+  private function buildChart(array $return, bool $trends) {
+    print '';
+    $chart = [];
+
+    $row = ['Who'];
+    foreach ($return['#data']['aliasMap'] as $alias => $def) {
+      $row[] = $def['title'];
+    }
+
+    $chart[] = $row;
+
+    $rows = [
+      'me' => 'My Data',
+      'provider' => 'My Provider Data',
+      'all' => 'All Data',
+    ];
+    foreach ($rows as $scope => $label) {
+      $row = [];
+      $row[] = $label;
+      foreach ($return['#data']['aliasMap'] as $alias => $def) {
+        $row[] = 3 * $return['#data']['results'][$scope][$alias]['total'];
+      }
+      $row[] = '';
+      $chart[] = $row;
+    }
+
+    return $chart;
   }
 
   /**
@@ -394,8 +433,10 @@ class QueryBuilder {
 
     foreach (array_keys($return['aliasMap']) as $alias) {
       foreach (['all', 'me', 'provider'] as $scope) {
-        $return['results'][$scope][$alias]['day'] = $this->calculateHrs($result[0], $alias, $scope, 'day');
-        $return['results'][$scope][$alias]['week'] = $this->calculateHrs($result[0], $alias, $scope, 'week');
+        $dayTotal = $this->calculateHrs($result[0], $alias, $scope, 'day');
+        $return['results'][$scope][$alias]['day'] = $this->formatDuration($dayTotal);
+        $return['results'][$scope][$alias]['week'] = $this->formatDuration($dayTotal * 5);
+        $return['results'][$scope][$alias]['total'] = $dayTotal;
       }
     }
 
@@ -448,9 +489,7 @@ class QueryBuilder {
 
     }
 
-    return ($term == 'day') ?
-      $this->formatDuration($dayTotal) :
-      $this->formatDuration($dayTotal * 5);
+    return $dayTotal;
   }
 
   /**
@@ -500,8 +539,10 @@ class QueryBuilder {
       $time_period = $record[$unit];
       $alias_map[$time_period] = $return['aliasMap'][$time_period];
       foreach (['all', 'me', 'provider'] as $scope) {
-        $return['results'][$scope][$time_period]['Selected']['day'] = $this->calculateHrs($record, 'Selected', $scope, 'day', 'Trends');
-        $return['results'][$scope][$time_period]['Selected']['week'] = $this->calculateHrs($record, 'Selected', $scope, 'week', 'Trends');
+        $dayTotal = $this->calculateHrs($result, 'Selected', $scope, 'day', 'Trends');
+        $return['results'][$scope][$time_period]['Selected']['day'] = $this->formatDuration($dayTotal);
+        $return['results'][$scope][$time_period]['Selected']['week'] = $this->formatDuration($dayTotal * 5);
+        $return['results'][$scope][$time_period]['Selected']['total'] = $dayTotal;
       }
     }
 
