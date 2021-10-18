@@ -14,7 +14,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use \DateTime;
 
 /**
- * Form with examples on how to use cron.
+ * Form with examples on how to use cron
  */
 class SurveycampaignConfigurationForm extends ConfigFormBase {
 
