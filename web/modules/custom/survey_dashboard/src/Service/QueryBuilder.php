@@ -245,9 +245,9 @@ class QueryBuilder {
     $chart[] = $row;
 
     $rows = [
-      'me' => 'My Data',
-      'provider' => 'My Provider Data',
-      'all' => 'All Data',
+      'me' => 'Me',
+      'provider' => 'My Team',
+      'all' => 'All',
     ];
     foreach ($rows as $scope => $label) {
       $row = [];
