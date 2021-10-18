@@ -193,7 +193,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
       $form['configuration']['default_settings']['hour_range_high'] = [
         '#type' => 'select',
-        '#title' => $this->t('Select latest time to start random survey period'). (The text message will be sent 1/2 hour after this time, at the end of the survey period.),
+        '#title' => $this->t('Select latest time to start random survey period. (The text message will be sent 1/2 hour after this time, at the end of the survey period.')),
         '#options' => [
           '25200' => $this->t('7:00 AM'),
           '27000' => $this->t('7:30 AM'),
