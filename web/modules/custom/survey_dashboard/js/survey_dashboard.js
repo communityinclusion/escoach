@@ -120,6 +120,10 @@
           }
         };
 
+        if (drupalSettings.survey_dashboard.colors) {
+          options.colors = drupalSettings.survey_dashboard.colors;
+        }
+
         var chart = new google.visualization.BarChart(document.getElementById('google-charts'));
 
         chart.draw(data, options);

@@ -121,6 +121,7 @@ class BaseQuery {
             'question_id' => $qid,
             'response_id' => $value,
             'title' => $term->name,
+            'color' => $termObj->field_bar_chart_color->value ?? '',
           ];
         }
       }
@@ -412,9 +413,11 @@ class BaseQuery {
     $this->valueAliasMap = [
       'Selected' => [
         'title' => 'Selected Activities',
+        'color' => '#0000FF',
       ],
       'Other' => [
         'title' => 'Other Activities',
+        'color' => '#C0C0C0',
       ],
     ];
   }
