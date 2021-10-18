@@ -222,10 +222,12 @@ class QueryBuilder {
       '#data' => ($trends) ? $this->processResultsTrends($query, $params['debug']) : $this->processResultsSummary($query, $params['debug']),
     ];
 
+    $chart = $this->buildChart($return, $trends);
     $return['#attached'] = [
       'drupalSettings' => [
         'survey_dashboard' => [
-          'chart' => $this->buildChart($return, $trends),
+          'chart' => $chart['chart'],
+          'colors' => $chart['colors'],
         ],
       ],
     ];
@@ -237,17 +239,42 @@ class QueryBuilder {
     print '';
     $chart = [];
 
+    $default_colors = [
+      '#0000FF',
+      '#1E90FF',
+      '#87CEFA',
+      '#008000',
+      '#808080',
+      '#FFA500',
+      '#000088',
+      '#BB0000',
+      '#00BB00',
+      '#0000BB',
+      '#FF0000',
+      '#00FF00',
+      '#0000FF',
+      '#404040',
+      '#808080',
+      '#B0B0B0',
+      '#F0F0F0',
+    ];
+
+    $colors = [];
     $row = ['Who'];
+    $i = 0;
     foreach ($return['#data']['aliasMap'] as $alias => $def) {
       $row[] = $def['title'];
+
+      $colors[] = (!empty($def['color'])) ? $def['color'] : $default_colors[$i];
+      $i++;
     }
 
     $chart[] = $row;
 
     $rows = [
-      'me' => 'Me',
-      'provider' => 'My Team',
       'all' => 'All',
+      'provider' => 'My Team',
+      'me' => 'Me',
     ];
     foreach ($rows as $scope => $label) {
       $row = [];
@@ -259,7 +286,10 @@ class QueryBuilder {
       $chart[] = $row;
     }
 
-    return $chart;
+    return [
+      'chart' => $chart,
+      'colors' => $colors,
+    ];
   }
 
   /**
