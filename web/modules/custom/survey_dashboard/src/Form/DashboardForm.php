@@ -86,6 +86,11 @@ class DashboardForm extends FormBase {
 
     $results = $this->surveyDashboardQueryBuilder->process($params);
 
+    if ($results['#attached']['drupalSettings']) {
+      $settings = $results['#attached']['drupalSettings'];
+      unset($results['#attached']['drupalSettings']);
+    }
+
     $form['results'] = [
       '#type' => 'container',
       '#weight' => 5,
@@ -97,6 +102,9 @@ class DashboardForm extends FormBase {
         '#type' => 'markup',
         '#markup' => render($results) ,
       ],
+      '#attached' => [
+        'drupalSettings' => $settings,
+      ]
     ];
 
     $form['debug'] = [

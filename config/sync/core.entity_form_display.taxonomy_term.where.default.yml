@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.where.field_alias
+    - field.field.taxonomy_term.where.field_bar_chart_color
     - field.field.taxonomy_term.where.field_dashboard_question_id
     - field.field.taxonomy_term.where.field_dashboard_response_id
     - taxonomy.vocabulary.where
@@ -32,6 +33,14 @@ content:
     third_party_settings: {  }
   field_alias:
     weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_bar_chart_color:
+    weight: 7
     settings:
       size: 60
       placeholder: ''

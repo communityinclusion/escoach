@@ -72,14 +72,25 @@
   Drupal.behaviors.surveyDashboardChart = {
     attach: function (context, settings) {
 
+      $(document).once('school-name').on('ajaxSuccess', function (evt, data) {
+        google.charts.load('current', {packages: ['corechart', 'bar']});
+        google.charts.setOnLoadCallback(drawBasic);
+        for( var i in data.responseJSON) {
+          var setting = data.responseJSON[i];
+          if (setting.settings.survey_dashboard.chart) {
+            drupalSettings.survey_dashboard.chart = setting.settings.survey_dashboard.chart;
+            break;
+          }
+        }
+      });
+
       $('#google-charts').once('chart').each(function () {
         google.charts.load('current', {packages: ['corechart', 'bar']});
-        google.charts.setOnLoadCallback(drawBasic, settings);
-        drawBasic(settings);
-
+        google.charts.setOnLoadCallback(drawBasic);
       });
 
       function drawBasic() {
+
         if (!drupalSettings.survey_dashboard) {
           console.log('Dashboard settings not available');
           return;
@@ -108,6 +119,10 @@
             ticks: [ 0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1]
           }
         };
+
+        if (drupalSettings.survey_dashboard.colors) {
+          options.colors = drupalSettings.survey_dashboard.colors;
+        }
 
         var chart = new google.visualization.BarChart(document.getElementById('google-charts'));
 
