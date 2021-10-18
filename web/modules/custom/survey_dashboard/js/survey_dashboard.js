@@ -116,6 +116,7 @@
           chartArea:{left:100,top:100,width:'100%',height:'100%'},
           hAxis: {
             minValue: 0,
+            format: 'percent',
             ticks: [ 0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1]
           }
         };
