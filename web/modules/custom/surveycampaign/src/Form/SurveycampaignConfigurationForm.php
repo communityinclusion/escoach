@@ -193,7 +193,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
       $form['configuration']['default_settings']['hour_range_high'] = [
         '#type' => 'select',
-        '#title' => $this->t('Select latest time to start random survey period. (The text message will be sent 1/2 hour after this time, at the end of the survey period.'),
+        '#title' => $this->t('Select latest time to start random survey period. (The text message will be sent 1/2 hour after this time, at the end of the survey period.)'),
         '#options' => [
           '25200' => $this->t('7:00 AM'),
           '27000' => $this->t('7:30 AM'),
@@ -432,6 +432,20 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ],
       '#default_value' => $config->get('def_inactive_mode'),
     ];
+    $form['configuration']['default_settings']['def_days_past_inactive'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select the number of days after a user has been deactivated which will trigger an invitation to come back.'),
+      '#options' => [
+        '1' => $this->t('1 (for testing purposes)'),
+        '7' => $this->t('One week'),
+        '14' => $this->t('Two weeks'),
+        '21' => $this->t('Three weeks'),
+        '28' => $this->t('Four weeks'),
+        '35' => $this->t('Five weeks'),
+        '42' => $this->t('Six weeks'),
+      ],
+      '#default_value' => $config->get('def_days_past_inactive'),
+    ];
     $form['configuration']['default_settings']['warning_text_body'] = [
       '#type' => 'text_format',
       '#title' => 'First reminder about non-response to survey',
@@ -447,6 +461,16 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#description' => t('You can use these tokens to add personalized messages to the text: @name,@cutoffdays'),
       '#format' => 'plain_text',
       '#default_value' => $config->get('cutoff_text_body.value'),
+     // '#format' => $config->get('cutoff_text_body.format'),
+    ];
+
+
+    $form['configuration']['default_settings']['comeback_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'Invitation to come back to the survey for x days expired users',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name,@cutoffdays'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('comeback_text_body.value'),
      // '#format' => $config->get('cutoff_text_body.format'),
     ];
 
@@ -882,12 +906,14 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('alt_send_days', $form_state->getValue('alt_send_days'))
       ->set('def_warning_trigger', $form_state->getValue('def_warning_trigger'))
       ->set('def_inactive_mode', $form_state->getValue('def_inactive_mode'))
+      ->set('def_days_past_inactive', $form_state->getValue('def_days_past_inactive'))
       ->set('def_inactive_trigger', $form_state->getValue('def_inactive_trigger'))
       ->set('first_text_body', $form_state->getValue('first_text_body'))
       ->set('second_text_body', $form_state->getValue('second_text_body'))
       ->set('third_text_body', $form_state->getValue('third_text_body'))
       ->set('warning_text_body', $form_state->getValue('warning_text_body'))
       ->set('cutoff_text_body', $form_state->getValue('cutoff_text_body'))
+      ->set('comeback_text_body', $form_state->getValue('comeback_text_body'))
       ->set('alt_first_text_body', $form_state->getValue('alt_first_text_body'))
       ->set('alt_second_text_body', $form_state->getValue('alt_second_text_body'))
       ->set('alt_third_text_body', $form_state->getValue('alt_third_text_body'))

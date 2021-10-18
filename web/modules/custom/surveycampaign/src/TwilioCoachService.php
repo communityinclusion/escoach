@@ -530,7 +530,7 @@ class TwilioCoachService
             $delayineffect = false;
             if($onetime) {
                 $checkcompletedonce = $this->checkCompletedOnce($surveyid,$mobilephone);
-                if (!$checkcompletedonce)  $delayineffect = $this->checkDelaySetting($surveyid,$mobilephone);
+                if (!$checkcompletedonce && !$isprimary)  $delayineffect = $this->checkDelaySetting($surveyid,$mobilephone);
             }
             if(!$checkcompletedonce && !$delayineffect)
             {
@@ -547,6 +547,7 @@ class TwilioCoachService
                 $didnotreply = false;
                 $inactive = false;
                 $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
+                // if($inactive && $isprimary) $this->checkSuspendedReminder($mobilephone,$fullname,$email,$surveyid);
                 // $didnotreplyshort = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) : false;
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
@@ -793,7 +794,7 @@ class TwilioCoachService
         $limitno = intval($limitno);
         $query =  $database->select('surveycampaign_campaigns','sc')
         ->fields('sc', array(
-        'campaignid'
+        'senddate'
           )
         )
         ->condition('sc.surveyid', $surveyid)
@@ -808,6 +809,32 @@ class TwilioCoachService
             }
         }
         return $campaignarray;
+    }
+    protected function checkSuspendedReminder($mobilephone,$fullname,$email,$surveyid) {
+      $database = \Drupal::database();
+      $config =  \Drupal::config('surveycampaign.settings');
+      $dayspastinactive = $config->get('def_days_past_inactive');
+
+      $query =  $database->select('surveycampaign_mailer','sm')
+      ->fields('sc', array(
+      'campaignid')
+      )
+      ->condition('sm.surveyid', $surveyid)
+      ->condition('sm.mobilephone', $mobilephone)
+      ->condition('sm.fullname', $fullname)
+      ->orderBy('senddate','DESC')
+      ->range(1, $limitno);
+      $result = $query->execute()->fetchField();
+      $lastsurveydate = substr($result, 0, 10);  // abcd
+      $todaydate = date("Y-m-d");
+      $triggerdate = new DateTime("$lastsurveydate");
+      $triggerdate->modify("+ $dayspastinactive days");
+      $triggerdate = $triggerdate->format('Y-m-d');
+      if($triggerdate == $todaydate) {
+        //send the reminder
+      }
+      //$lastactivedate = "select  DATE_FORMAT(senddate, "%Y-%m-%d") truncatedate from surveycampaign_mailer where mobilephone = 6125015804 AND surveyid =  5420562 ORDER BY senddate DESC LIMIT 1";
+
     }
     protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink,$isprimary) {
         $send = false;
