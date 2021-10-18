@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.who.field_alias
+    - field.field.taxonomy_term.who.field_bar_chart_color
     - field.field.taxonomy_term.who.field_dashboard_question_id
     - field.field.taxonomy_term.who.field_dashboard_response_id
     - taxonomy.vocabulary.who
@@ -22,6 +23,14 @@ mode: default
 content:
   field_alias:
     weight: -4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_bar_chart_color:
+    weight: -3
     label: above
     settings:
       link_to_entity: false
