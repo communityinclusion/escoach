@@ -1,25 +1,25 @@
-question_id,response_id,response_text,parent_response_id,vocabulary,alias,weight,notes
-"481,590","11640,12118",1. A person I support,,Who,Aperson,0
-"481,590","11641,12119","2. Family, friends, or acquaintances of a person I support",,Who,Family,1
-"481,590","11643,12121",3. Disability professionals,,Who,Disability,2
-"481,590","11642,12120",4. Someone from a business,,Who,Someone,3
-"481,590","11752,12122",5. Other,,Who,Other,4
-"481","11749",6. None,,Who,None,5
+question_id,response_id,response_text,parent_response_id,vocabulary,alias,weight,bar_chart_color,notes
+"481,590","11640,12118",1. A person I support,,Who,Aperson,0,Yellow
+"481,590","11641,12119","2. Family, friends, or acquaintances of a person I support",,Who,Family,1,Magenta
+"481,590","11643,12121",3. Disability professionals,,Who,Disability,2,Chocolate
+"481,590","11642,12120",4. Someone from a business,,Who,Someone,3,Cyan
+"481,590","11752,12122",5. Other,,Who,Other,4,Orange
+"481","11749",6. None,,Who,None,5,Gray
 "481, 590, 481, 590","11641, 12119, 11642, 12120","Either 2 or 4",,Who,3and5,6
-482,11649,1. In my office or home office,,Where,Office,0
-482,11650,2. At the residence of a person I support,,Where,Residence,1
-482,11651,3. At a business (Not provider-owned),,Where,Business,2
-482,11652,4. In other community integrated settings,,Where,Community,3
-482,11653,5. In a vehicle,,Where,Vehicle,4
-482,11753,6. Other,,Where,Other,5
+482,11649,1. In my office or home office,,Where,Office,0,MediumVioletRed
+482,11650,2. At the residence of a person I support,,Where,Residence,1,Lime
+482,11651,3. At a business (Not provider-owned),,Where,Business,2,Gold
+482,11652,4. In other community integrated settings,,Where,Community,3,Brown
+482,11653,5. In a vehicle,,Where,Vehicle,4,Violet
+482,11753,6. Other,,Where,Other,5,Gray
 "482,482,482","11650,11651,11652","Either 2 or 3 or 4",,Where,3and4and5,6
 "482,482,482","11649,11650,11652","Either 1 or 2 or 4",,Where,2and3and5,7
-483,11658,Getting to know a job seeker,,What,JobSeeker,0
-483,11659,"Finding, securing jobs",,What,Finding,1
-483,11660,Any supports AFTER hire,,What,After,3
-483,11661,Other supports BEFORE hire,,What,Before,2
-483,11662,"Non-employment related e.g. day programs",,What,Day,5
-483,11663,"Paperwork, meetings, program business",,What,Staff,4
+483,11658,Getting to know a job seeker,,What,JobSeeker,0,DarkBlue
+483,11659,"Finding, securing jobs",,What,Finding,1,Blue
+483,11660,Any supports AFTER hire,,What,After,3,Green
+483,11661,Other supports BEFORE hire,,What,Before,2,SkyBlue
+483,11662,"Non-employment related e.g. day programs",,What,Day,5,Orange
+483,11663,"Paperwork, meetings, program business",,What,Staff,4,Gray
 537,11836,Reviewing records,11658,What,,4
 537,11838,Observing a job seeker,11658,What,,2
 537,11839,Other,11658,What,,8
