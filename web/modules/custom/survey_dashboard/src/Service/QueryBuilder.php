@@ -263,10 +263,12 @@ class QueryBuilder {
     $row = ['Who'];
     $i = 0;
     foreach ($return['#data']['aliasMap'] as $alias => $def) {
-      $row[] = $def['title'];
+      if (substr($def['title'], 0, 6) != 'Either') {
+        $row[] = $def['title'];
 
-      $colors[] = (!empty($def['color'])) ? $def['color'] : $default_colors[$i];
-      $i++;
+        $colors[] = (!empty($def['color'])) ? $def['color'] : $default_colors[$i];
+        $i++;
+      }
     }
 
     $chart[] = $row;
@@ -280,7 +282,9 @@ class QueryBuilder {
       $row = [];
       $row[] = $label;
       foreach ($return['#data']['aliasMap'] as $alias => $def) {
-        $row[] = 3 * $return['#data']['results'][$scope][$alias]['total'];
+        if (substr($def['title'], 0, 6) != 'Either') {
+          $row[] = 3 * $return['#data']['results'][$scope][$alias]['total'];
+        }
       }
       $row[] = '';
       $chart[] = $row;
