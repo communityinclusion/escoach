@@ -17,7 +17,7 @@ use Drupal\webform\WebformInterface;
  * @see \Drupal\webform\Plugin\WebformVariantManagerInterface
  * @see plugin_api
  */
-interface WebformVariantInterface extends PluginInspectionInterface, ConfigurableInterface, ContainerFactoryPluginInterface, PluginFormInterface, WebformEntityInjectionInterface {
+interface WebformVariantInterface extends PluginInspectionInterface, ConfigurableInterface, ContainerFactoryPluginInterface, PluginFormInterface, WebformEntityInjectionInterface, WebformPluginSettingsInterface {
 
   /**
    * Returns a render array summarizing the configuration of the webform variant.
@@ -42,6 +42,22 @@ interface WebformVariantInterface extends PluginInspectionInterface, Configurabl
    *   The webform variant description.
    */
   public function description();
+
+  /**
+   * Returns the webform variant machine name replacement pattern.
+   *
+   * @return string|NULL
+   *   The webform variant machine name replacement pattern.
+   */
+  public function getMachineNameReplacePattern();
+
+  /**
+   * Returns the webform variant machine name replacement character.
+   *
+   * @return string|NULL
+   *   The webform variant machine name replacement character.
+   */
+  public function getMachineNameReplace();
 
   /**
    * Returns the unique ID representing the webform variant.
@@ -199,6 +215,19 @@ interface WebformVariantInterface extends PluginInspectionInterface, Configurabl
    *   TRUE if this variant is applicable to the webform.
    */
   public function isApplicable(WebformInterface $webform);
+
+  /**
+   * Get configuration form's off-canvas width.
+   *
+   * @return string
+   *   The off-canvas width.
+   *
+   * @see WebformDialogHelper::DIALOG_NARROW
+   * @see WebformDialogHelper::DIALOG_NORMAL
+   * @see WebformDialogHelper::DIALOG_WIDE
+   * @see WebformDialogHelper::DIALOG_NONE
+   */
+  public function getOffCanvasWidth();
 
   /**
    * Apply variant to the webform.

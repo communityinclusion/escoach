@@ -5,6 +5,7 @@ namespace Drupal\webform\Element;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\OptGroup;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
@@ -150,7 +151,7 @@ abstract class WebformOtherBase extends FormElement {
     $element['other']['#wrapper_attributes']['class'][] = "js-webform-$type-other-input";
     $element['other']['#wrapper_attributes']['class'][] = "webform-$type-other-input";
 
-    if ($element['other']['#type'] == 'datetime') {
+    if ($element['other']['#type'] === 'datetime') {
       $element['other']['#prefix'] = '<div class="' . implode(' ', $element['other']['#wrapper_attributes']['class']) . '">';
       $element['other']['#suffix'] = '</div>';
       unset($element['other']['#wrapper_attributes']['class']);
@@ -160,6 +161,14 @@ abstract class WebformOtherBase extends FormElement {
     if (isset($element['#parents'])) {
       $element[$type]['#parents'] = array_merge($element['#parents'], [$type]);
       $element['other']['#parents'] = array_merge($element['#parents'], ['other']);
+    }
+
+    // Add custom required error message so that clientside_validation.module
+    // can display it.
+    // @see https://www.drupal.org/project/clientside_validation/issues/3084798
+    if (\Drupal::moduleHandler()->moduleExists('clientside_validation')
+      && isset($element['other']['#required_error'])) {
+      $element['other']['#attributes']['data-msg-required'] = $element['other']['#required_error'];
     }
 
     // Initialize the type and other elements to allow for webform enhancements.
@@ -209,9 +218,6 @@ abstract class WebformOtherBase extends FormElement {
   public static function validateWebformOther(&$element, FormStateInterface $form_state, &$complete_form) {
     $type = static::getElementType();
 
-    // Determine if the element is visible. (#access !== FALSE)
-    $has_access = (!isset($element['#access']) || $element['#access'] === TRUE);
-
     // Determine if the element has multiple values.
     $is_multiple = static::isMultiple($element);
 
@@ -239,7 +245,7 @@ abstract class WebformOtherBase extends FormElement {
     $other_is_empty = (isset($element_value[static::OTHER_OPTION]) && $other_value === '');
 
     // Display missing other or missing value error.
-    if ($has_access) {
+    if (Element::isVisibleElement($element)) {
       $required_error_title = (isset($element['#title'])) ? $element['#title'] : NULL;
       if ($other_is_empty) {
         WebformElementHelper::setRequiredError($element['other'], $form_state, $required_error_title);
@@ -315,7 +321,7 @@ abstract class WebformOtherBase extends FormElement {
    *   TRUE if the webform element contains multiple values.
    */
   protected static function isMultiple(array $element) {
-    return (!empty($element['#multiple']) || static::$type == 'checkboxes') ? TRUE : FALSE;
+    return (!empty($element['#multiple']) || static::$type === 'checkboxes') ? TRUE : FALSE;
   }
 
   /**
@@ -330,7 +336,7 @@ abstract class WebformOtherBase extends FormElement {
   protected static function convertDefaultValueToElementValue(array $element) {
     $type = str_replace('webform_', '', static::$type);
 
-    $default_value = isset($element['#default_value']) ? $element['#default_value'] : NULL;
+    $default_value = isset($element['#default_value']) && $element['#default_value'] !== '' ? $element['#default_value'] : NULL;
     if (static::isMultiple($element)) {
       // Handle edge case where $default_value is not an array.
       if (!is_array($default_value)) {
@@ -349,7 +355,7 @@ abstract class WebformOtherBase extends FormElement {
       return [$type => $default_options, 'other' => NULL];
     }
     else {
-      if (!empty($default_value) && !WebformOptionsHelper::hasOption($default_value, $element['#options'])) {
+      if ($default_value !== NULL && !WebformOptionsHelper::hasOption($default_value, $element['#options'])) {
         return [$type => static::OTHER_OPTION, 'other' => $default_value];
       }
 

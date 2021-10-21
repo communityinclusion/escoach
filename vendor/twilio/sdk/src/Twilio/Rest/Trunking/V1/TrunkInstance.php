@@ -17,6 +17,7 @@ use Twilio\Rest\Trunking\V1\Trunk\CredentialListList;
 use Twilio\Rest\Trunking\V1\Trunk\IpAccessControlListList;
 use Twilio\Rest\Trunking\V1\Trunk\OriginationUrlList;
 use Twilio\Rest\Trunking\V1\Trunk\PhoneNumberList;
+use Twilio\Rest\Trunking\V1\Trunk\RecordingList;
 use Twilio\Values;
 use Twilio\Version;
 
@@ -28,6 +29,8 @@ use Twilio\Version;
  * @property string $friendlyName
  * @property bool $secure
  * @property array $recording
+ * @property string $transferMode
+ * @property string $transferCallerId
  * @property bool $cnamLookupEnabled
  * @property string $authType
  * @property string[] $authTypeSet
@@ -42,6 +45,7 @@ class TrunkInstance extends InstanceResource {
     protected $_credentialsLists;
     protected $_ipAccessControlLists;
     protected $_phoneNumbers;
+    protected $_recordings;
 
     /**
      * Initialize the TrunkInstance
@@ -62,6 +66,8 @@ class TrunkInstance extends InstanceResource {
             'friendlyName' => Values::array_get($payload, 'friendly_name'),
             'secure' => Values::array_get($payload, 'secure'),
             'recording' => Values::array_get($payload, 'recording'),
+            'transferMode' => Values::array_get($payload, 'transfer_mode'),
+            'transferCallerId' => Values::array_get($payload, 'transfer_caller_id'),
             'cnamLookupEnabled' => Values::array_get($payload, 'cnam_lookup_enabled'),
             'authType' => Values::array_get($payload, 'auth_type'),
             'authTypeSet' => Values::array_get($payload, 'auth_type_set'),
@@ -146,6 +152,13 @@ class TrunkInstance extends InstanceResource {
      */
     protected function getPhoneNumbers(): PhoneNumberList {
         return $this->proxy()->phoneNumbers;
+    }
+
+    /**
+     * Access the recordings
+     */
+    protected function getRecordings(): RecordingList {
+        return $this->proxy()->recordings;
     }
 
     /**

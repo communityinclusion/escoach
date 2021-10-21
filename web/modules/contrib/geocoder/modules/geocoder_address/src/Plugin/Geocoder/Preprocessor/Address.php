@@ -3,7 +3,7 @@
 namespace Drupal\geocoder_address\Plugin\Geocoder\Preprocessor;
 
 use Drupal\geocoder_field\PreprocessorBase;
-use Drupal\Core\Locale\CountryManager;
+use Drupal\Core\Locale\CountryManagerInterface;
 use Drupal\geocoder_address\AddressService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -23,7 +23,7 @@ class Address extends PreprocessorBase {
   /**
    * The address service.
    *
-   * @var Drupal\geocoder_address\AddressService
+   * @var \Drupal\geocoder_address\AddressService
    */
   protected $addressService;
 
@@ -36,12 +36,12 @@ class Address extends PreprocessorBase {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Locale\CountryManager $country_manager
+   * @param \Drupal\Core\Locale\CountryManagerInterface $country_manager
    *   The Country Manager service.
-   * @param Drupal\geocoder_address\AddressService $address_service
+   * @param \Drupal\geocoder_address\AddressService $address_service
    *   The Geocoder Address service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CountryManager $country_manager, AddressService $address_service) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CountryManagerInterface $country_manager, AddressService $address_service) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $country_manager);
     $this->addressService = $address_service;
   }

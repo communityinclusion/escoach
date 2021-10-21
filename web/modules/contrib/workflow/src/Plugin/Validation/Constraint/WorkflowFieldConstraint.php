@@ -9,6 +9,8 @@ use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
  *
  * @see https://drupalwatchdog.com/volume-5/issue-2/introducing-drupal-8s-entity-validation-api
  *
+ * @todo D8: CommentForm & constraints on Field. Show allowed field names.
+ *
  * @Constraint(
  *   id = "WorkflowField",
  *   label = @Translation("Workflow field name", context = "Validation"),
@@ -17,11 +19,10 @@ use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
 class WorkflowFieldConstraint extends CompositeConstraintBase {
 
   /**
-   * Message shown when a comment fieldname doesn't match an entity field name.
+   * Message shown when Comment fieldname does not match any Entity field name.
    *
    * @var string
    */
-  // @todo D8: CommentForm & constraints on Field. Show allowed field names.
   public $messageFieldname = 'A workflow field on a comment must have
     the same field_name as the commented Entity. Please maintain the entity
     first, or choose another field name.';
@@ -30,7 +31,7 @@ class WorkflowFieldConstraint extends CompositeConstraintBase {
    * {@inheritdoc}
    */
   public function coversFields() {
-    return ['field_name', ];
+    return ['field_name'];
   }
 
 }

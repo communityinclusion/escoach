@@ -29,7 +29,7 @@ trait WebformEntityReferenceTrait {
     $elements = $this->elementManager->getInstances();
     foreach ($elements as $element_name => $element_instance) {
       // Skip self.
-      if ($plugin_id == $element_instance->getPluginId()) {
+      if ($plugin_id === $element_instance->getPluginId()) {
         continue;
       }
       if ($element_instance instanceof WebformElementEntityReferenceInterface) {
@@ -108,7 +108,7 @@ trait WebformEntityReferenceTrait {
         return $entity->id();
 
       case 'breadcrumb':
-        if ($entity->getEntityTypeId() == 'taxonomy_term') {
+        if ($entity->getEntityTypeId() === 'taxonomy_term') {
           /** @var \Drupal\taxonomy\TermStorageInterface $taxonomy_storage */
           $taxonomy_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
           $parents = $taxonomy_storage->loadAllParents($entity->id());
@@ -209,15 +209,6 @@ trait WebformEntityReferenceTrait {
   /**
    * {@inheritdoc}
    */
-  public function getExportDefaultOptions() {
-    return [
-      'entity_reference_items' => ['id', 'title', 'url'],
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function buildExportOptionsForm(array &$form, FormStateInterface $form_state, array $export_options) {
     if (isset($form['entity_reference'])) {
       return;
@@ -262,7 +253,7 @@ trait WebformEntityReferenceTrait {
     if (!$this->hasMultipleValues($element)) {
       $default_options = $this->getExportDefaultOptions();
       $header = isset($options['entity_reference_items']) ? $options['entity_reference_items'] : $default_options['entity_reference_items'];
-      if ($options['header_format'] == 'label') {
+      if ($options['header_format'] === 'label') {
         foreach ($header as $index => $column) {
           switch ($column) {
             case 'id':
@@ -342,7 +333,7 @@ trait WebformEntityReferenceTrait {
       return $record;
     }
     else {
-      if ($entity_reference_items == ['id']) {
+      if ($entity_reference_items === ['id']) {
         $element['#format'] = 'raw';
       }
       return parent::buildExportRecord($element, $webform_submission, $export_options);
@@ -369,6 +360,11 @@ trait WebformEntityReferenceTrait {
     }
 
     WebformEntityTrait::setOptions($element, $settings);
+
+    // Set options all after entity options are defined.
+    if (!empty($element['#options_all'])) {
+      $element['#options'][$element['#options_all_value']] = $element['#options_all_text'];
+    }
   }
 
   /**
@@ -442,7 +438,7 @@ trait WebformEntityReferenceTrait {
       $selection_settings = (!empty($user_input['properties']['selection_settings'])) ? $user_input['properties']['selection_settings'] : [];
       // If the default selection handler has changed when need to update its
       // value.
-      if (strpos($selection_handler, 'default:') === 0 && $selection_handler != "default:$target_type") {
+      if (strpos($selection_handler, 'default:') === 0 && $selection_handler !== "default:$target_type") {
         $selection_handler = "default:$target_type";
         $selection_settings = [];
         NestedArray::setValue($form_state->getUserInput(), ['properties', 'selection_handler'], $selection_handler);
@@ -467,9 +463,9 @@ trait WebformEntityReferenceTrait {
     // "Warning: Invalid argument supplied for foreach()
     // in Drupal\Core\Render\Element\Checkboxes::valueCallback()"
     // @see \Drupal\user\Plugin\EntityReferenceSelection\UserSelection::buildConfigurationForm
-    if ($target_type == 'user'
+    if ($target_type === 'user'
       && isset($selection_settings['filter']['type'])
-      && $selection_settings['filter']['type'] == 'role'
+      && $selection_settings['filter']['type'] === 'role'
       && empty($selection_settings['filter']['role'])) {
       $selection_settings['filter']['role'] = [];
     }
@@ -532,8 +528,7 @@ trait WebformEntityReferenceTrait {
     $entity_reference_selection_handler = $entity_reference_selection_manager->getInstance([
       'target_type' => $target_type,
       'handler' => $selection_handler,
-      'handler_settings' => $selection_settings,
-    ]);
+    ] + $selection_settings);
     $form['entity_reference']['selection_settings'] = $entity_reference_selection_handler->buildConfigurationForm([], $form_state);
     $form['entity_reference']['selection_settings']['#tree'] = TRUE;
 
@@ -544,7 +539,7 @@ trait WebformEntityReferenceTrait {
     );
 
     // Remove auto create, except for entity_autocomplete.
-    if ($this->getPluginId() != 'entity_autocomplete' || $target_type != 'taxonomy_term') {
+    if ($this->getPluginId() !== 'entity_autocomplete' || $target_type !== 'taxonomy_term') {
       unset(
         $form['entity_reference']['selection_settings']['auto_create'],
         $form['entity_reference']['selection_settings']['auto_create_bundle']
@@ -608,7 +603,7 @@ trait WebformEntityReferenceTrait {
     if (isset($values['selection_settings']['target_bundles']) && empty($values['selection_settings']['target_bundles'])) {
       unset($values['selection_settings']['target_bundles']);
     }
-    if (isset($values['selection_settings']['sort']['field']) && $values['selection_settings']['sort']['field'] == '_none') {
+    if (isset($values['selection_settings']['sort']['field']) && $values['selection_settings']['sort']['field'] === '_none') {
       unset($values['selection_settings']['sort']);
     }
     // Convert auto_create and include_anonymous into boolean.
@@ -644,6 +639,32 @@ trait WebformEntityReferenceTrait {
       unset($element[$key]['#ajax'], $element[$key]['#limit_validation_errors']);
       $this->buildAjaxElementTriggerRecursive($id, $element[$key]);
     }
+  }
+
+  /****************************************************************************/
+  // Display submission value methods.
+  /****************************************************************************/
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function formatHtmlItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    $format = $this->getItemsFormat($element);
+    if (strpos($format, 'checklist:') === 0) {
+      $this->setOptions($element);
+    }
+    return parent::formatHtmlItems($element, $webform_submission, $options);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function formatTextItems(array &$element, WebformSubmissionInterface $webform_submission, array $options = []) {
+    $format = $this->getItemsFormat($element);
+    if (strpos($format, 'checklist:') === 0) {
+      $this->setOptions($element);
+    }
+    return parent::formatTextItems($element, $webform_submission, $options);
   }
 
 }

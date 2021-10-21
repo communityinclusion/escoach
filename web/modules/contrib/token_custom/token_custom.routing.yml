@@ -47,6 +47,13 @@ entity.token_custom.collection:
   requirements:
     _permission: 'administer custom tokens'
 
+entity.token_custom_type.canonical:
+  path: '/admin/structure/token-custom/type/manage/{token_custom_type}/edit'
+  defaults:
+    _entity_list: 'token_custom_type'
+    _title: 'Edit custom token types'
+  requirements:
+    _permission: 'administer custom token types'
 
 entity.token_custom_type.collection:
   path: '/admin/structure/token-custom/type'

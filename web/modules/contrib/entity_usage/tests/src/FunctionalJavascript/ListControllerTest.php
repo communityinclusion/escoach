@@ -95,7 +95,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
     // Make sure that all elements of the table are the expected ones.
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals('Node 3', $first_row_title_link->getText());
-    $this->assertContains($node3->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($node3->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_type = $this->xpath('//table/tbody/tr[1]/td[2]')[0];
     $this->assertEquals('Content', $first_row_type->getText());
     $first_row_langcode = $this->xpath('//table/tbody/tr[1]/td[3]')[0];
@@ -107,7 +107,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
 
     $second_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[2]/td[1]/a');
     $this->assertEquals('Node 2', $second_row_title_link->getText());
-    $this->assertContains($node2->toUrl()->toString(), $second_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($node2->toUrl()->toString(), $second_row_title_link->getAttribute('href'));
     $second_row_type = $this->xpath('//table/tbody/tr[2]/td[2]')[0];
     $this->assertEquals('Content', $second_row_type->getText());
     $second_row_langcode = $this->xpath('//table/tbody/tr[2]/td[3]')[0];

@@ -82,7 +82,7 @@ class MailgunHandler implements MailgunHandlerInterface {
         $this->logger->error('Failed to send message from %from to %to. Please check the Mailgun settings.',
           [
             '%from' => $mailgunMessage['from'],
-            '%to' => $mailgunMessage['to'],
+            '%to' => $this->getRecipients($mailgunMessage),
           ]
         );
         return FALSE;
@@ -93,7 +93,7 @@ class MailgunHandler implements MailgunHandlerInterface {
         $this->logger->error('Failed to send message from %from to %to. Could not retrieve domain from sender info.',
           [
             '%from' => $mailgunMessage['from'],
-            '%to' => $mailgunMessage['to'],
+            '%to' => $this->getRecipients($mailgunMessage),
           ]
         );
         return FALSE;
@@ -106,7 +106,7 @@ class MailgunHandler implements MailgunHandlerInterface {
         $this->logger->notice('Successfully sent message from %from to %to. %id %message.',
           [
             '%from' => $mailgunMessage['from'],
-            '%to' => is_array($mailgunMessage['to']) ? implode(', ', $mailgunMessage['to']) : $mailgunMessage['to'],
+            '%to' => $this->getRecipients($mailgunMessage),
             '%id' => $response->getId(),
             '%message' => $response->getMessage(),
           ]
@@ -118,7 +118,7 @@ class MailgunHandler implements MailgunHandlerInterface {
       $this->logger->error('Exception occurred while trying to send test email from %from to %to. Error code @code: @message',
         [
           '%from' => $mailgunMessage['from'],
-          '%to' => is_array($mailgunMessage['to']) ? implode(', ', $mailgunMessage['to']) : $mailgunMessage['to'],
+          '%to' => $this->getRecipients($mailgunMessage),
           '@code' => $e->getCode(),
           '@message' => $e->getMessage(),
         ]
@@ -241,6 +241,29 @@ class MailgunHandler implements MailgunHandlerInterface {
       $this->messenger->addMessage('The Mailgun library has not been installed correctly.', 'warning');
     }
     return $libraryStatus;
+  }
+
+  /**
+   * Returns a list of recipients for error/debug log message.
+   *
+   * @param array $mailgunMessage
+   *   A message array, as described in
+   *   https://documentation.mailgun.com/en/latest/api-sending.html#sending.
+   *
+   * @return string
+   *   Recipients list in the following format:
+   *   user@test.com, user1@test.com; cc: user2@test.com; bcc: user3@test.com.
+   */
+  protected function getRecipients(array $mailgunMessage) {
+    $recipients = is_array($mailgunMessage['to']) ? implode(', ', $mailgunMessage['to']) : $mailgunMessage['to'];
+
+    // Add all recipients (including 'cc' and 'bcc').
+    foreach (['cc', 'bcc'] as $parameter) {
+      if (!empty($mailgunMessage[$parameter])) {
+        $recipients .= "; {$parameter}: {$mailgunMessage[$parameter]}";
+      }
+    }
+    return $recipients;
   }
 
 }

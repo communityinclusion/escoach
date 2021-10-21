@@ -4,6 +4,7 @@ namespace Drupal\field_group;
 
 use Drupal;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Security\TrustedCallbackInterface;
 
 /**
@@ -114,12 +115,65 @@ class FormatterHelper implements TrustedCallbackInterface {
     return $element;
   }
 
+  /**
+   * Pre render callback for rendering groups in forms.
+   *
+   * @param array $element
+   *   Form that is being rendered.
+   *
+   * @return array
+   */
+  public static function formGroupPreRender(array $element) {
+    // Open any closed field groups that contain elements with errors.
+    if (!empty($element['#fieldgroups'])) {
+      foreach ($element['#fieldgroups'] as $fieldgroup) {
+        $closed = isset($element[$fieldgroup->group_name]['#open']) && !$element[$fieldgroup->group_name]['#open'];
+        if ($closed) {
+          foreach ($fieldgroup->children as $child) {
+            if (static::groupElementsContainErrors($element[$child])) {
+              $element[$fieldgroup->group_name]['#open'] = TRUE;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return $element;
+  }
+
+  /**
+   * Determines if an elements array contains validation errors.
+   *
+   * @param array $elements
+   *   The elements array to check for errors.
+   *
+   * @return bool
+   *   TRUE if the elements array contains validation errors, otherwise FALSE.
+   */
+  protected static function groupElementsContainErrors(array $elements) {
+    // Any errors at this level of the elements array?
+    if (!empty($elements['#errors']) || !empty($elements['#children_errors'])) {
+      return TRUE;
+    }
+
+    // Dive down.
+    foreach (Element::children($elements) as $child) {
+      if (static::groupElementsContainErrors($elements[$child])) {
+        return TRUE;
+      }
+    }
+
+    // No errors.
+    return FALSE;
+  }
+
 
   /**
    * {@inheritdoc}
    */
   public static function trustedCallbacks() {
-    return ['entityViewPrender', 'formProcess'];
+    return ['entityViewPrender', 'formProcess', 'formGroupPreRender'];
   }
 
 

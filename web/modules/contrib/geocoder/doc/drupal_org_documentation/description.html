@@ -113,5 +113,17 @@ An upgrade path is provided but any code that was relying on the 2.x simple conf
     (you will find that as a possible geocoder provider choice in the "add provider"
     options of the Geocoder module settings page ('/admin/config/system/geocoder')</li>
 </ol>
-<h3>Detailed Documentation and APIs</h3>
-Find detailed documentation, also on its APIs in the README.md file.
+
+<h3>Upgrading from Geocoder 2.x to 3.x</h3>
+
+Geocoder 3.x is not back compatible with Geocoder 2.x and no upgrade path has been provided so for general and fields configurations settings.
+
+<strong>At the moment, upgrading to Geocoder 3.x requires a complete uninstall and removal of Geocoder 2.x</strong> with the following steps:
+
+<ol>
+  <li>Uninstall Geocoder 2.x, via Drupal backend or with `drush pmu geocoder`</li>
+  <li>Remove Geocoder 2.x via composer: `composer require drupal/geocoder`</li>
+  <li>Make sure also its dependency willdurand/geocoder": "^3.0" library is removed</li>
+</ol>
+
+Further Detailed Documentation and APIs provided in the Geocoder 3.x Readme.md file.

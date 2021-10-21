@@ -421,17 +421,6 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#default_value' => $config->get('def_inactive_trigger'),
     ];
 
-    $form['configuration']['default_settings']['def_inactive_mode'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Select mode by which the inactivity messages below will be received'),
-      '#options' => [
-        '0' => $this->t('Do not send'),
-        '1' => $this->t('SMS text only'),
-        '2' => $this->t('Email only'),
-        '3' => $this->t('Email and SMS'),
-      ],
-      '#default_value' => $config->get('def_inactive_mode'),
-    ];
     $form['configuration']['default_settings']['def_days_past_inactive'] = [
       '#type' => 'select',
       '#title' => $this->t('Select the number of days after a user has been deactivated which will trigger an invitation to come back.'),
@@ -445,6 +434,18 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '42' => $this->t('Six weeks'),
       ],
       '#default_value' => $config->get('def_days_past_inactive'),
+    ];
+
+    $form['configuration']['default_settings']['def_inactive_mode'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select mode by which the inactivity  and invitation messages below will be received'),
+      '#options' => [
+        '0' => $this->t('Do not send'),
+        '1' => $this->t('SMS text only'),
+        '2' => $this->t('Email only'),
+        '3' => $this->t('Email and SMS'),
+      ],
+      '#default_value' => $config->get('def_inactive_mode'),
     ];
     $form['configuration']['default_settings']['warning_text_body'] = [
       '#type' => 'text_format',
@@ -468,7 +469,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     $form['configuration']['default_settings']['comeback_text_body'] = [
       '#type' => 'text_format',
       '#title' => 'Invitation to come back to the survey for x days expired users',
-      '#description' => t('You can use these tokens to add personalized messages to the text: @name,@cutoffdays'),
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name'),
       '#format' => 'plain_text',
       '#default_value' => $config->get('comeback_text_body.value'),
      // '#format' => $config->get('cutoff_text_body.format'),

@@ -17,7 +17,10 @@ class MailgunUiPageTest extends MailgunFunctionalTestBase {
    *
    * @var array
    */
-  private $adminPages = ['mailgun.admin_settings_form', 'mailgun.test_email_form'];
+  private $adminPages = [
+    'mailgun.admin_settings_form',
+    'mailgun.test_email_form',
+  ];
 
   /**
    * Tests admin pages provided by Mailgun.

@@ -9,7 +9,6 @@ use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\mailgun\MailgunHandlerInterface;
 use Html2Text\Html2Text;
-use Drupal\Component\Utility\Html;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -98,13 +97,18 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
       $message['body'] = check_markup($message['body'], $format, $message['langcode']);
     }
 
+    // Skip theme formatting if the message does not support HTML.
+    if (isset($message['params']['html']) && !$message['params']['html']) {
+      return $message;
+    }
+
     // Wrap body with theme function.
     if ($this->mailgunConfig->get('use_theme')) {
       $render = [
         '#theme' => isset($message['params']['theme']) ? $message['params']['theme'] : 'mailgun',
         '#message' => $message,
       ];
-      $message['body'] = $this->renderer->renderRoot($render);
+      $message['body'] = $this->renderer->renderPlain($render);
     }
 
     return $message;
@@ -176,15 +180,20 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
       'from' => $message['headers']['From'],
       'to' => $message['to'],
       'subject' => $message['subject'],
-      'text' => Html::escape($message['body']),
       'html' => $message['body'],
     ];
 
+    // Remove HTML version if the message does not support HTML.
+    if (isset($message['params']['html']) && !$message['params']['html']) {
+      unset($mailgun_message['html']);
+    }
+
+    // Set text version of the message.
     if (isset($message['plain'])) {
       $mailgun_message['text'] = $message['plain'];
     }
     else {
-      $converter = new Html2Text($message['body']);
+      $converter = new Html2Text($message['body'], ['width' => 0]);
       $mailgun_message['text'] = $converter->getText();
     }
 
@@ -244,6 +253,12 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
         if (!empty($attachment['filepath']) && file_exists($attachment['filepath'])) {
           $attachments[] = ['filePath' => $attachment['filepath']];
         }
+        elseif (!empty($attachment['filecontent']) && !empty($attachment['filename'])) {
+          $attachments[] = [
+            'fileContent' => $attachment['filecontent'],
+            'filename' => $attachment['filename'],
+          ];
+        }
       }
 
       if (count($attachments) > 0) {
@@ -279,9 +294,10 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
    */
   protected function checkTracking(array $message) {
     $tracking = TRUE;
-    $tracking_exception = $this->mailgunConfig->get('tracking_exception');
-    if (!empty($tracking_exception)) {
-      $tracking = !in_array($message['module'] . ':' . $message['key'], explode("\n", $tracking_exception));
+    $exceptions = $this->mailgunConfig->get('tracking_exception');
+    if (!empty($exceptions)) {
+      $exceptions = str_replace(["\r\n", "\r"], "\n", $exceptions);
+      $tracking = !in_array($message['module'] . ':' . $message['key'], explode("\n", $exceptions));
     }
     return $tracking;
   }

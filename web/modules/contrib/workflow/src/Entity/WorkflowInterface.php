@@ -72,9 +72,9 @@ interface WorkflowInterface {
    * Uses WorkflowState::getOptions(), because this does an access check.
    * The first State ID is user-dependent!
    *
-   * @param \Drupal\Core\Entity\EntityInterface | null $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity at hand. May be NULL (E.g., on a Field settings page).
-   * @param $field_name
+   * @param string $field_name
    * @param \Drupal\Core\Session\AccountInterface $user
    * @param bool $force
    *
@@ -85,16 +85,17 @@ interface WorkflowInterface {
 
   /**
    * Returns the next state for the current state.
-   * Is used in VBO Bulk actions.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity at hand.
-   * @param $field_name
+   * @param string $field_name
    * @param \Drupal\Core\Session\AccountInterface $user
    * @param bool $force
    *
    * @return string
    *   A State ID.
+   *
+   * @usage Is used in VBO Bulk actions.
    */
   public function getNextSid(EntityInterface $entity, $field_name, AccountInterface $user, $force = FALSE);
 
@@ -108,7 +109,7 @@ interface WorkflowInterface {
    *   - 'CREATION' = only Active states, including Creation.
    * @param bool $reset
    *
-   * @return WorkflowState[]
+   * @return \Drupal\workflow\Entity\WorkflowState[]
    *   An array of WorkflowState objects.
    */
   public function getStates($all = FALSE, $reset = FALSE);
@@ -119,7 +120,7 @@ interface WorkflowInterface {
    * @param string $sid
    *   A state ID.
    *
-   * @return WorkflowState
+   * @return \Drupal\workflow\Entity\WorkflowState
    *   A WorkflowState object.
    */
   public function getState($sid);
@@ -131,9 +132,9 @@ interface WorkflowInterface {
    * @param string $to_sid
    * @param array $values
    *
-   * @return WorkflowConfigTransitionInterface
+   * @return \Drupal\workflow\Entity\WorkflowConfigTransitionInterface
    */
-  public function createTransition($from_sid, $to_sid, $values = []);
+  public function createTransition($from_sid, $to_sid, array $values = []);
 
   /**
    * Sorts all Transitions for this workflow, according to State weight.
@@ -166,5 +167,59 @@ interface WorkflowInterface {
    * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
    */
   public function getTransitionsByStateId($from_sid, $to_sid);
+
+  /*
+   * The following are copied from PluginSettingsInterface.php.
+   */
+
+  /**
+   * Defines the default settings for this plugin.
+   *
+   * @return array
+   *   A list of default settings, keyed by the setting name.
+   */
+  public static function defaultSettings();
+
+  /**
+   * Returns the array of settings, including defaults for missing settings.
+   *
+   * @return array
+   *   The array of settings.
+   */
+  public function getSettings();
+
+  /**
+   * Returns the value of a setting, or its default value if absent.
+   *
+   * @param string $key
+   *   The setting name.
+   *
+   * @return mixed
+   *   The setting value.
+   */
+  public function getSetting($key);
+
+  /**
+   * Sets the settings for the plugin.
+   *
+   * @param array $settings
+   *   The array of settings, keyed by setting names. Missing settings will be
+   *   assigned their default values.
+   *
+   * @return $this
+   */
+  public function setSettings(array $settings);
+
+  /**
+   * Sets the value of a setting for the plugin.
+   *
+   * @param string $key
+   *   The setting name.
+   * @param mixed $value
+   *   The setting value.
+   *
+   * @return $this
+   */
+  public function setSetting($key, $value);
 
 }

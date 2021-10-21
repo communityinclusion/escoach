@@ -211,7 +211,7 @@ class ParagraphsTest extends EntityUsageJavascriptTestBase {
     $this->assertEquals('Direct media', $first_row_field_label->getText());
     // The second row contains the reference from the first paragraph.
     $second_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[2]/td[1]/a');
-    $this->assertContains('Node 1 > field_paragraphs', $second_row_title_link->getText());
+    $this->assertStringContainsStringIgnoringCase('Node 1 > field_paragraphs', $second_row_title_link->getText());
     // The link points to the host node.
     $this->assertEquals($node1->toUrl()->toString(), $second_row_title_link->getAttribute('href'));
     $second_row_type = $this->xpath('//table/tbody/tr[2]/td[2]')[0];
@@ -222,7 +222,7 @@ class ParagraphsTest extends EntityUsageJavascriptTestBase {
     $this->assertEquals('Media assets', $second_row_field_label->getText());
     // The third row contains the reference from the nested paragraph.
     $third_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[3]/td[1]/a');
-    $this->assertContains('Node 1 > field_paragraphs', $third_row_title_link->getText());
+    $this->assertStringContainsStringIgnoringCase('Node 1 > field_paragraphs', $third_row_title_link->getText());
     // The link points to the host node.
     $this->assertEquals($node1->toUrl()->toString(), $third_row_title_link->getAttribute('href'));
     $third_row_type = $this->xpath('//table/tbody/tr[3]/td[2]')[0];

@@ -2,14 +2,14 @@ name: Custom tokens
 type: module
 description: 'Allow users to define custom tokens to use thoughout the site'
 configure: token_custom.settings
-# core: '8.x'
+core_version_requirement: ^8.8 || ^9
+
 dependencies:
   - drupal:filter
   - drupal:text
   - token:token
 
-# Information added by Drupal.org packaging script on 2018-04-03
-version: '8.x-1.0-alpha2'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2020-12-20
+version: '8.x-1.0-alpha3'
 project: 'token_custom'
-datestamp: 1522784284
+datestamp: 1608490206

@@ -8,6 +8,7 @@ use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -166,7 +167,7 @@ class SearchApiQuery extends QueryPluginBase {
   /**
    * Retrieves the contained entity from a Views result row.
    *
-   * @param \Drupal\views\ResultRow $row
+   * @param \Drupal\search_api\Plugin\views\ResultRow $row
    *   The Views result row.
    * @param string $relationship_id
    *   The ID of the view relationship to use.
@@ -282,10 +283,13 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @return $this
    *
-   * @deprecated in 8.x-1.11. Use ::addRetrievedFieldValue() instead.
+   * @deprecated in search_api:8.x-1.11 and is removed from search_api:2.0.0. Use
+   *   addRetrievedFieldValue() instead.
+   *
+   * @see https://www.drupal.org/node/3011060
    */
   public function addRetrievedProperty($combined_property_path) {
-    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::addRetrievedProperty() is deprecated in Search API 8.x-1.11. Use addRetrievedFieldValue() instead. See https://www.drupal.org/node/3009136', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::addRetrievedProperty() is deprecated in search_api:8.x-1.11 and is removed from search_api:2.0.0. Use addRetrievedFieldValue() instead. See https://www.drupal.org/node/3011060', E_USER_DEPRECATED);
     $this->addField(NULL, $combined_property_path);
     return $this;
   }
@@ -417,11 +421,13 @@ class SearchApiQuery extends QueryPluginBase {
    *   containing entities to their entity types. Otherwise, TRUE if there is at
    *   least one such datasource.
    *
-   * @deprecated Will be removed in a future version of the module. Use
+   * @deprecated in search_api:8.x-1.5 and is removed from search_api:2.0.0. Use
    *   \Drupal\search_api\IndexInterface::getEntityTypes() instead.
+   *
+   * @see https://www.drupal.org/node/2899682
    */
   public function getEntityTypes($return_bool = FALSE) {
-    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::getEntityTypes() is deprecated in Search API 8.x-1.5. Use \Drupal\search_api\IndexInterface::getEntityTypes() instead. See https://www.drupal.org/node/2899678', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\search_api\Plugin\views\query\SearchApiQuery::getEntityTypes() is deprecated in Search API 8.x-1.5. Use \Drupal\search_api\IndexInterface::getEntityTypes() instead. See https://www.drupal.org/node/2899682', E_USER_DEPRECATED);
     $types = $this->index->getEntityTypes();
     return $return_bool ? (bool) $types : $types;
   }
@@ -667,6 +673,9 @@ class SearchApiQuery extends QueryPluginBase {
         if ($object) {
           $values['_object'] = $object;
           $values['_relationship_objects'][NULL] = [$object];
+          if ($object instanceof EntityAdapter) {
+            $values['_entity'] = $object->getEntity();
+          }
         }
       }
       catch (SearchApiException $e) {

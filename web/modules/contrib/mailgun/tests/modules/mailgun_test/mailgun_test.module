@@ -26,6 +26,6 @@ function mailgun_test_settings_form_validate($form, FormStateInterface $form_sta
     // Do nothing. It's just to emulate correct API key.
   }
   elseif ($mailgun_handler->validateMailgunApiKey($form_state->getValue('api_key')) === FALSE) {
-    $form_state->setErrorByName('api_key', t("Couldn't connect to the Mailgun API. Please check your API settings."));
+    $form_state->setErrorByName('api_key', "Couldn't connect to the Mailgun API. Please check your API settings.");
   }
 }

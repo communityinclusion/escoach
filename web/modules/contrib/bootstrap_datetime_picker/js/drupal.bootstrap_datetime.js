@@ -19,7 +19,7 @@
 
         // Get hour format - 12 or 24.
         var hourFormat = input.data('hourFormat');
-        var timeFormat = (hourFormat === '12h') ? 'YYYY-MM-DD hh:mm' : 'YYYY-MM-DD  HH:mm';
+        var timeFormat = (hourFormat === '12h') ? 'YYYY-MM-DD hh:mm A' : 'YYYY-MM-DD HH:mm';
 
         // Get excluded dates.
         var excludeDates = '';

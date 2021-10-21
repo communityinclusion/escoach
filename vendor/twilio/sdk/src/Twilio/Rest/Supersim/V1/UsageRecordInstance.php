@@ -15,10 +15,13 @@ use Twilio\Values;
 use Twilio\Version;
 
 /**
- * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
+ * PLEASE NOTE that this class contains beta products that are subject to change. Use them with caution.
  *
  * @property string $accountSid
  * @property string $simSid
+ * @property string $networkSid
+ * @property string $fleetSid
+ * @property string $isoCountry
  * @property array $period
  * @property string $dataUpload
  * @property string $dataDownload
@@ -38,6 +41,9 @@ class UsageRecordInstance extends InstanceResource {
         $this->properties = [
             'accountSid' => Values::array_get($payload, 'account_sid'),
             'simSid' => Values::array_get($payload, 'sim_sid'),
+            'networkSid' => Values::array_get($payload, 'network_sid'),
+            'fleetSid' => Values::array_get($payload, 'fleet_sid'),
+            'isoCountry' => Values::array_get($payload, 'iso_country'),
             'period' => Values::array_get($payload, 'period'),
             'dataUpload' => Values::array_get($payload, 'data_upload'),
             'dataDownload' => Values::array_get($payload, 'data_download'),

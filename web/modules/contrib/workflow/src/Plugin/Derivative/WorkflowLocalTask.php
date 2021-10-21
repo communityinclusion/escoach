@@ -12,7 +12,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides local task definitions for all entity bundles.
  *
- * @see \Drupal\workflow\Controller\EntityDebugController
  * @see \Drupal\workflow\Routing\RouteSubscriber
  */
 class WorkflowLocalTask extends DeriverBase implements ContainerDeriverInterface {

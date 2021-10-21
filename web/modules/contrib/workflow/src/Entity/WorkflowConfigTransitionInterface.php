@@ -14,7 +14,9 @@ use Drupal\user\UserInterface;
 interface WorkflowConfigTransitionInterface {
 
   /**
-   * Determines if the current transition between 2 states is allowed:
+   * Determines if the current transition between 2 states is allowed.
+   *
+   * This is checked in the following locations:
    * - in settings;
    * - in permissions;
    * - by permission hooks, implemented by other modules.
@@ -68,7 +70,9 @@ interface WorkflowConfigTransitionInterface {
 
   /**
    * Determines if the State changes by this Transition.
+   *
    * @return bool
    */
   public function hasStateChange();
+
 }

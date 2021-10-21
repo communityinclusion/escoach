@@ -3,7 +3,9 @@
 namespace Drupal\Tests\entity_usage\Kernel;
 
 use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\entity_test\Entity\EntityTest;
+use Drupal\entity_test\Entity\EntityTestMulRevPub;
 use Drupal\entity_usage\Events\EntityUsageEvent;
 use Drupal\entity_usage\Events\Events;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
@@ -72,6 +74,7 @@ class EntityUsageTest extends EntityKernelTestBase {
 
     $this->injectedDatabase = $this->container->get('database');
 
+    $this->installEntitySchema('entity_test_mulrevpub');
     $this->installSchema('entity_usage', ['entity_usage']);
     $this->tableName = 'entity_usage';
 
@@ -107,19 +110,7 @@ class EntityUsageTest extends EntityKernelTestBase {
     $source_entity = $this->testEntities[1];
     $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
     $field_name = 'body';
-    $this->injectedDatabase->insert($this->tableName)
-      ->fields([
-        'target_id' => $target_entity->id(),
-        'target_type' => $target_entity->getEntityTypeId(),
-        'source_id' => $source_entity->id(),
-        'source_type' => $source_entity->getEntityTypeId(),
-        'source_langcode' => $source_entity->language()->getId(),
-        'source_vid' => $source_vid,
-        'method' => 'entity_reference',
-        'field_name' => $field_name,
-        'count' => 1,
-      ])
-      ->execute();
+    $this->insertEntityUsage($source_entity, $target_entity, $field_name);
 
     /** @var \Drupal\entity_usage\EntityUsage $entity_usage */
     $entity_usage = $this->container->get('entity_usage.usage');
@@ -155,6 +146,114 @@ class EntityUsageTest extends EntityKernelTestBase {
 
     // Clean back the environment.
     $this->injectedDatabase->truncate($this->tableName);
+  }
+
+  /**
+   * Tests the listTargets() method using the revision option.
+   *
+   * @covers \Drupal\entity_usage\EntityUsage::listTargets
+   */
+  public function testListTargetRevisions() {
+    /** @var \Drupal\Core\Entity\EntityInterface $target_entity */
+    $target_entity = $this->testEntities[0];
+
+    $storage = $this->entityTypeManager->getStorage('entity_test_mulrevpub');
+    /** @var \Drupal\entity_usage\EntityUsage $entity_usage */
+    $entity_usage = $this->container->get('entity_usage.usage');
+    $field_name = 'body';
+
+    // Original entity with no usage.
+    $source_entity = EntityTestMulRevPub::create(['name' => $this->randomMachineName()]);
+    $source_entity->save();
+    $original_revision_id = $source_entity->getRevisionId();
+
+    // Revisioned entity with 1 usage.
+    $source_entity->set('name', $this->randomMachineName());
+    $source_entity->setNewRevision(TRUE);
+    $source_entity->save();
+    $revision1_revision_id = $source_entity->getRevisionId();
+    $this->insertEntityUsage($source_entity, $target_entity, $field_name);
+
+    // Revisioned again with 1 usage.
+    $source_entity->set('name', $this->randomMachineName());
+    $source_entity->setNewRevision(TRUE);
+    $source_entity->save();
+    $this->insertEntityUsage($source_entity, $target_entity, $field_name);
+
+    // Get targets across all revisions.
+    $real_target_list = $entity_usage->listTargets($source_entity);
+
+    $expected_target_list = [
+      $target_entity->getEntityTypeId() => [
+        (string) $target_entity->id() => [
+          0 => [
+            'method' => 'entity_reference',
+            'field_name' => $field_name,
+            'count' => 1,
+          ],
+          1 => [
+            'method' => 'entity_reference',
+            'field_name' => $field_name,
+            'count' => 1,
+          ],
+        ],
+      ],
+    ];
+    $this->assertEquals($expected_target_list, $real_target_list);
+
+    // Get targets from original entity.
+    $real_target_list = $entity_usage->listTargets($source_entity, $original_revision_id);
+    $this->assertEquals([], $real_target_list);
+
+    // Get targets from revisioned entity.
+    $real_target_list = $entity_usage->listTargets($source_entity, $revision1_revision_id);
+
+    $expected_target_list = [
+      $target_entity->getEntityTypeId() => [
+        (string) $target_entity->id() => [
+          0 => [
+            'method' => 'entity_reference',
+            'field_name' => $field_name,
+            'count' => 1,
+          ],
+        ],
+      ],
+    ];
+
+    $this->assertEquals($expected_target_list, $real_target_list);
+
+    // Invalid revision ID.
+    $real_target_list = $entity_usage->listTargets($source_entity, 9999);
+    $this->assertEquals([], $real_target_list);
+
+    // Clean back the environment.
+    $this->injectedDatabase->truncate($this->tableName);
+  }
+
+  /**
+   * Inserts a row into the usage table.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $source
+   *   The source entity.
+   * @param \Drupal\Core\Entity\EntityInterface $target
+   *   The target entity.
+   */
+  protected function insertEntityUsage(EntityInterface $source, EntityInterface $target, string $field_name) {
+    $source_vid = ($source instanceof RevisionableInterface && $source->getRevisionId()) ? $source->getRevisionId() : 0;
+
+    $this->injectedDatabase->insert($this->tableName)
+      ->fields([
+        'target_id' => $target->id(),
+        'target_type' => $target->getEntityTypeId(),
+        'source_id' => $source->id(),
+        'source_type' => $source->getEntityTypeId(),
+        'source_langcode' => $source->language()->getId(),
+        'source_vid' => $source_vid,
+        'method' => 'entity_reference',
+        'field_name' => $field_name,
+        'count' => 1,
+      ])
+      ->execute();
   }
 
   /**
@@ -232,6 +331,8 @@ class EntityUsageTest extends EntityKernelTestBase {
    */
   public function testEntityUsageBlockTrackingHook() {
     $this->container->get('module_installer')->install([
+      'image',
+      'media',
       'path',
       'views',
       'entity_usage_test',

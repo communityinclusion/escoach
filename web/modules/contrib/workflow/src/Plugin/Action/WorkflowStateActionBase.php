@@ -76,7 +76,7 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
     }
 
     // In 'after saving new content', the node is already saved. Avoid second insert.
-    // @todo: clone?
+    // @todo Clone?
     $entity->enforceIsNew(FALSE);
 
     $config = $this->configuration;
@@ -112,13 +112,13 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     // If we are on admin/config/system/actions and use CREATE AN ADVANCED ACTION
     // Then $context only contains:
-    // - $context['actions_label'] = "Change workflow state of post to new state"
-    // - $context['actions_type'] = "entity"
+    // - $context['actions_label'] = "Change workflow state of post to new state";
+    // - $context['actions_type'] = "entity".
     //
     // If we are on a VBO action form, then $context only contains:
-    // - $context['entity_type'] = "node"
-    // - $context['view'] = "(Object) view"
-    // - $context['settings'] = "[]"
+    // - $context['entity_type'] = "node";
+    // - $context['view'] = "(Object) view";
+    // - $context['settings'] = "[]".
     $config = $this->configuration;
     $field_name = $config['field_name'];
     $wids = workflow_get_workflow_names();
@@ -188,20 +188,21 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
     $element['#default_value'] = $transition;
 
     // Avoid Action Buttons. That removes the options box&more. No Buttons in config screens!
-    $original_options = $transition->getWorkflow()->options['options'];
-    $transition->getWorkflow()->options['options'] = 'select';
+    $original_options = $transition->getWorkflow()->getSetting('options');
+    $transition->getWorkflow()->setSetting('options', 'select');
     // Generate and add the Workflow form element.
     $element = WorkflowTransitionElement::transitionElement($element, $form_state, $form);
     // Just to be sure, reset the options box setting.
-    $transition->getWorkflow()->options['options'] = $original_options;
+    $transition->getWorkflow()->setSetting('options', $original_options);
 
     // Make adaptations for VBO-form:
     $element['field_name']['#access'] = TRUE;
     $element['force']['#access'] = TRUE;
     $element['to_sid']['#description'] = $this->t('Please select the state that should be assigned when this action runs.');
     $element['comment']['#title'] = $this->t('Message');
-    $element['comment']['#description'] = $this->t('This message will be written into the workflow history log when the action
-      runs. You may include the following variables: %state, %title, %user.');
+    $element['comment']['#description'] = $this->t('This message will be written
+      into the workflow history log when the action runs.
+      You may include the following variables: %state, %title, %user.');
 
     $form['workflow_transition_action_config'] = $element;
     return $form;

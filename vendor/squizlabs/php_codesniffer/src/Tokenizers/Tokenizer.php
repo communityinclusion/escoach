@@ -250,7 +250,7 @@ abstract class Tokenizer
                 || $this->tokens[$i]['code'] === T_DOC_COMMENT_TAG
                 || ($inTests === true && $this->tokens[$i]['code'] === T_INLINE_HTML)
             ) {
-                $commentText      = ltrim($this->tokens[$i]['content'], " \t/*");
+                $commentText      = ltrim($this->tokens[$i]['content'], " \t/*#");
                 $commentText      = rtrim($commentText, " */\t\r\n");
                 $commentTextLower = strtolower($commentText);
                 if (strpos($commentText, '@codingStandards') !== false) {
@@ -424,10 +424,10 @@ abstract class Tokenizer
                         $disabledSniffs = [];
 
                         $additionalText = substr($commentText, 14);
-                        if ($additionalText === false) {
+                        if (empty($additionalText) === true) {
                             $ignoring = ['.all' => true];
                         } else {
-                            $parts = explode(',', substr($commentText, 13));
+                            $parts = explode(',', $additionalText);
                             foreach ($parts as $sniffCode) {
                                 $sniffCode = trim($sniffCode);
                                 $disabledSniffs[$sniffCode] = true;
@@ -459,10 +459,10 @@ abstract class Tokenizer
                             $enabledSniffs = [];
 
                             $additionalText = substr($commentText, 13);
-                            if ($additionalText === false) {
+                            if (empty($additionalText) === true) {
                                 $ignoring = null;
                             } else {
-                                $parts = explode(',', substr($commentText, 13));
+                                $parts = explode(',', $additionalText);
                                 foreach ($parts as $sniffCode) {
                                     $sniffCode = trim($sniffCode);
                                     $enabledSniffs[$sniffCode] = true;
@@ -520,10 +520,10 @@ abstract class Tokenizer
                         $ignoreRules = [];
 
                         $additionalText = substr($commentText, 13);
-                        if ($additionalText === false) {
+                        if (empty($additionalText) === true) {
                             $ignoreRules = ['.all' => true];
                         } else {
-                            $parts = explode(',', substr($commentText, 13));
+                            $parts = explode(',', $additionalText);
                             foreach ($parts as $sniffCode) {
                                 $ignoreRules[trim($sniffCode)] = true;
                             }
@@ -739,6 +739,40 @@ abstract class Tokenizer
                     $this->tokens[$i]['parenthesis_opener']      = $opener;
                     $this->tokens[$i]['parenthesis_closer']      = $i;
                     $this->tokens[$opener]['parenthesis_closer'] = $i;
+                }//end if
+            } else if ($this->tokens[$i]['code'] === T_ATTRIBUTE) {
+                $openers[] = $i;
+                if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                    echo str_repeat("\t", count($openers));
+                    echo "=> Found attribute opener at $i".PHP_EOL;
+                }
+
+                $this->tokens[$i]['attribute_opener'] = $i;
+                $this->tokens[$i]['attribute_closer'] = null;
+            } else if ($this->tokens[$i]['code'] === T_ATTRIBUTE_END) {
+                $numOpeners = count($openers);
+                if ($numOpeners !== 0) {
+                    $opener = array_pop($openers);
+                    if (isset($this->tokens[$opener]['attribute_opener']) === true) {
+                        $this->tokens[$opener]['attribute_closer'] = $i;
+
+                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                            echo str_repeat("\t", (count($openers) + 1));
+                            echo "=> Found attribute closer at $i for $opener".PHP_EOL;
+                        }
+
+                        for ($x = ($opener + 1); $x <= $i; ++$x) {
+                            if (isset($this->tokens[$x]['attribute_closer']) === true) {
+                                continue;
+                            }
+
+                            $this->tokens[$x]['attribute_opener'] = $opener;
+                            $this->tokens[$x]['attribute_closer'] = $i;
+                        }
+                    } else if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                        echo str_repeat("\t", (count($openers) + 1));
+                        echo "=> Found unowned attribute closer at $i for $opener".PHP_EOL;
+                    }
                 }//end if
             }//end if
 
@@ -1111,6 +1145,13 @@ abstract class Tokenizer
                         continue;
                     }
 
+                    if ($tokenType === T_NAMESPACE) {
+                        // PHP namespace keywords are special because they can be
+                        // used as blocks but also inline as operators.
+                        // So if we find them nested inside another opener, just skip them.
+                        continue;
+                    }
+
                     if ($tokenType === T_FUNCTION
                         && $this->tokens[$stackPtr]['code'] !== T_FUNCTION
                     ) {
@@ -1291,11 +1332,12 @@ abstract class Tokenizer
                                 // a new statement, it isn't a scope opener.
                                 $disallowed  = Util\Tokens::$assignmentTokens;
                                 $disallowed += [
-                                    T_DOLLAR           => true,
-                                    T_VARIABLE         => true,
-                                    T_OBJECT_OPERATOR  => true,
-                                    T_COMMA            => true,
-                                    T_OPEN_PARENTHESIS => true,
+                                    T_DOLLAR                   => true,
+                                    T_VARIABLE                 => true,
+                                    T_OBJECT_OPERATOR          => true,
+                                    T_NULLSAFE_OBJECT_OPERATOR => true,
+                                    T_COMMA                    => true,
+                                    T_OPEN_PARENTHESIS         => true,
                                 ];
 
                                 if (isset($disallowed[$this->tokens[$x]['code']]) === true) {

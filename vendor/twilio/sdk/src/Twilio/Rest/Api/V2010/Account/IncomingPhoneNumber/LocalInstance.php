@@ -38,6 +38,7 @@ use Twilio\Version;
  * @property string $statusCallbackMethod
  * @property string $trunkSid
  * @property string $uri
+ * @property string $voiceReceiveMode
  * @property string $voiceApplicationSid
  * @property bool $voiceCallerIdLookup
  * @property string $voiceFallbackMethod
@@ -46,7 +47,9 @@ use Twilio\Version;
  * @property string $voiceUrl
  * @property string $emergencyStatus
  * @property string $emergencyAddressSid
+ * @property string $emergencyAddressStatus
  * @property string $bundleSid
+ * @property string $status
  */
 class LocalInstance extends InstanceResource {
     /**
@@ -83,6 +86,7 @@ class LocalInstance extends InstanceResource {
             'statusCallbackMethod' => Values::array_get($payload, 'status_callback_method'),
             'trunkSid' => Values::array_get($payload, 'trunk_sid'),
             'uri' => Values::array_get($payload, 'uri'),
+            'voiceReceiveMode' => Values::array_get($payload, 'voice_receive_mode'),
             'voiceApplicationSid' => Values::array_get($payload, 'voice_application_sid'),
             'voiceCallerIdLookup' => Values::array_get($payload, 'voice_caller_id_lookup'),
             'voiceFallbackMethod' => Values::array_get($payload, 'voice_fallback_method'),
@@ -91,7 +95,9 @@ class LocalInstance extends InstanceResource {
             'voiceUrl' => Values::array_get($payload, 'voice_url'),
             'emergencyStatus' => Values::array_get($payload, 'emergency_status'),
             'emergencyAddressSid' => Values::array_get($payload, 'emergency_address_sid'),
+            'emergencyAddressStatus' => Values::array_get($payload, 'emergency_address_status'),
             'bundleSid' => Values::array_get($payload, 'bundle_sid'),
+            'status' => Values::array_get($payload, 'status'),
         ];
 
         $this->solution = ['accountSid' => $accountSid, ];

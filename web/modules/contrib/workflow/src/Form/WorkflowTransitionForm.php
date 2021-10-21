@@ -23,15 +23,13 @@ class WorkflowTransitionForm extends ContentEntityForm {
   public function getFormId() {
     // We need a proprietary Form ID, to identify the unique forms
     // when multiple fields or entities are shown on 1 page.
-    // Test this f.i. by checking the'scheduled' box. It wil
-    // not unfold.
+    // Test this f.i. by checking the'scheduled' box. It will not unfold.
     // $form_id = parent::getFormId();
 
-    /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $transition = $this->entity;
     $field_name = $transition->getFieldName();
 
-    /** @var $entity \Drupal\Core\Entity\EntityInterface */
     // Entity may be empty on VBO bulk form.
     // $entity = $transition->getTargetEntity();
     // Compose Form Id from string + Entity Id + Field name.
@@ -41,13 +39,12 @@ class WorkflowTransitionForm extends ContentEntityForm {
     // Field name contains implicit entity_type & bundle (since 1 field per entity)
     // $entity_type = $transition->getTargetEntityTypeId();
     // $entity_id = $transition->getTargetEntityId();;
-
     $suffix = 'form';
     // Emulate nodeForm convention.
     if ($transition->id()) {
       $suffix = 'edit_form';
     }
-    $form_id = implode('_', ['workflow_transition', $field_name, $suffix]);
+    $form_id = implode('_', ['workflow_transition', $transition->getTargetEntityTypeId(), $transition->getTargetEntityId(), $field_name, $suffix]);
     $form_id = Html::getUniqueId($form_id);
 
     return $form_id;
@@ -61,6 +58,7 @@ class WorkflowTransitionForm extends ContentEntityForm {
 
   /**
    * This function is called by buildForm().
+   *
    * Caveat: !! It is not declared in the EntityFormInterface !!
    *
    * {@inheritdoc}
@@ -70,7 +68,7 @@ class WorkflowTransitionForm extends ContentEntityForm {
     // This might cause baseFieldDefinitions to appear twice.
     $form = parent::form($form, $form_state);
 
-    /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $transition = $this->entity;
 
     // Do not pass the element, but the form.
@@ -85,6 +83,7 @@ class WorkflowTransitionForm extends ContentEntityForm {
 
   /**
    * Returns an array of supported actions for the current entity form.
+   *
    * Caveat: !! It is not declared in the EntityFormInterface !!
    *
    * @param array $form
@@ -134,7 +133,6 @@ class WorkflowTransitionForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  /** @noinspection PhpMissingParentCallCommonInspection */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
     $entity = clone $this->entity;
@@ -151,7 +149,8 @@ class WorkflowTransitionForm extends ContentEntityForm {
    */
   public function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
-    // Use a proprietary version of copyFormValuesToEntity(), passing $entity by reference...
+    // Use a proprietary version of copyFormValuesToEntity(),
+    // passing $entity by reference...
     $values = $form_state->getValues();
     // ... but only the returning object is OK (!).
     return WorkflowTransitionElement::copyFormValuesToTransition($entity, $form, $form_state, $values);
@@ -162,11 +161,11 @@ class WorkflowTransitionForm extends ContentEntityForm {
    *
    * This is called from submitForm().
    */
-  /** @noinspection PhpMissingParentCallCommonInspection */
   public function save(array $form, FormStateInterface $form_state) {
     // Execute transition and update the attached entity.
-    /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $transition = $this->getEntity();
     return $transition->executeAndUpdateEntity();
   }
+
 }

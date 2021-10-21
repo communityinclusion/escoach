@@ -4,7 +4,7 @@ description: Helpful module for test staff.
 core_version_requirement: ^8 || ^9
 package: Mail
 
-# Information added by Drupal.org packaging script on 2020-04-28
-version: '8.x-1.0-rc3'
+# Information added by Drupal.org packaging script on 2020-10-22
+version: '8.x-1.0'
 project: 'mailgun'
-datestamp: 1588087974
+datestamp: 1603387822

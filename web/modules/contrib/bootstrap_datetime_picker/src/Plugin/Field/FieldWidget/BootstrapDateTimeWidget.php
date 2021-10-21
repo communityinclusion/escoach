@@ -11,6 +11,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\datetime\Plugin\Field\FieldWidget\DateTimeWidgetBase;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**
  * Plugin implementation of the BootstrapDateTimeWidget widget.
@@ -30,6 +31,8 @@ class BootstrapDateTimeWidget extends DateTimeWidgetBase implements ContainerFac
    */
   public static function defaultSettings() {
     return [
+      'wrapper_class' => 'container',
+      'column_size_class' => 'col-sm-6',
       'hour_format' => '24h',
       'allow_times' => '15',
       'disable_days' => [],
@@ -43,6 +46,40 @@ class BootstrapDateTimeWidget extends DateTimeWidgetBase implements ContainerFac
   public function settingsForm(array $form, FormStateInterface $form_state) {
 
     $elements = [];
+
+    $elements['wrapper_class'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Wrapper Class'),
+      '#options' => [
+        'container' => $this->t('Container'),
+        'fluid-container' => $this->t('Fluid Container'),
+      ],
+      '#description' => $this->t('Select the wrapper class. Check https://getbootstrap.com/docs/4.3/layout/overview/'),
+      '#default_value' => $this->getSetting('wrapper_class'),
+    ];
+
+    $elements['column_size_class'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Column Size'),
+      '#description' => $this->t('Select the column size based on bootstrap\'s grid system. Check https://getbootstrap.com/docs/4.0/layout/grid/'),
+      '#options' => [
+        'col-sm-1' => 1,
+        'col-sm-2' => 2,
+        'col-sm-3' => 3,
+        'col-sm-4' => 4,
+        'col-sm-5' => 5,
+        'col-sm-6' => 6,
+        'col-sm-7' => 7,
+        'col-sm-8' => 8,
+        'col-sm-9' => 9,
+        'col-sm-10' => 10,
+        'col-sm-11' => 11,
+        'col-sm-12' => 12,
+      ],
+      '#default_value' => $this->getSetting('column_size_class'),
+    ];
+
+
     $elements['hour_format'] = [
       '#type' => 'select',
       '#title' => $this->t('Hours Format'),
@@ -100,6 +137,8 @@ class BootstrapDateTimeWidget extends DateTimeWidgetBase implements ContainerFac
   public function settingsSummary() {
     $summary = [];
 
+    $summary[] = t('Wrapper Class: @wrapper_class', ['@wrapper_class' => $this->getSetting('wrapper_class')]);
+    $summary[] = t('Column Size: @column_size_class', ['@column_size_class' => $this->getSetting('column_size_class')]);
     $summary[] = t('Hours Format: @hour_format', ['@hour_format' => $this->getSetting('hour_format')]);
     $summary[] = t('Minutes Granularity: @allow_times', ['@allow_times' => $this->getSetting('allow_times')]);
 
@@ -143,17 +182,17 @@ class BootstrapDateTimeWidget extends DateTimeWidgetBase implements ContainerFac
           case DateTimeItem::DATETIME_TYPE_DATE:
             // If this is a date-only field, set it to the default time so the
             // timezone conversion can be reversed.
-            datetime_date_default_time($date);
-            $format = DATETIME_DATE_STORAGE_FORMAT;
+            $date->setDefaultDateTime();
+            $format = DateTimeItemInterface::DATE_STORAGE_FORMAT;
             break;
 
           default:
-            $format = DATETIME_DATETIME_STORAGE_FORMAT;
+            $format = DateTimeItemInterface::DATETIME_STORAGE_FORMAT;
             break;
         }
 
         // Adjust the date for storage.
-        $date->setTimezone(new \DateTimezone(DATETIME_STORAGE_TIMEZONE));
+        $date->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
         $item['value'] = $date->format($format);
       }
 
@@ -212,10 +251,10 @@ class BootstrapDateTimeWidget extends DateTimeWidgetBase implements ContainerFac
       case DateTimeItem::DATETIME_TYPE_DATE:
         // A date-only field should have no timezone conversion performed, so
         // use the same timezone as for storage.
-        $element['value']['#date_timezone'] = DATETIME_STORAGE_TIMEZONE;
+        $element['value']['#date_timezone'] = DateTimeItemInterface::STORAGE_TIMEZONE;
 
         // If field is date only, use default time format.
-        $format = DATETIME_DATE_STORAGE_FORMAT;
+        $format = DateTimeItemInterface::DATE_STORAGE_FORMAT;
 
         // Type of the field.
         $element['value']['#date_type'] = $this->getFieldSetting('datetime_type');
@@ -239,7 +278,7 @@ class BootstrapDateTimeWidget extends DateTimeWidgetBase implements ContainerFac
       if ($this->getFieldSetting('datetime_type') == DateTimeItem::DATETIME_TYPE_DATE) {
         // A date without time will pick up the current time, use the default
         // time.
-        datetime_date_default_time($date);
+        $date->setDefaultDateTime();
       }
 
       $date->setTimezone(new \DateTimeZone($element['value']['#date_timezone']));
@@ -248,6 +287,8 @@ class BootstrapDateTimeWidget extends DateTimeWidgetBase implements ContainerFac
       $element['value']['#default_value'] = $date->format($format);
     }
 
+    $element['value']['#wrapper_class'] = $this->getSetting('wrapper_class');
+    $element['value']['#column_size_class'] = $this->getSetting('column_size_class');
     $element['value']['#hour_format'] = $this->getSetting('hour_format');
     $element['value']['#allow_times'] = $this->getSetting('allow_times');
     $element['value']['#disable_days'] = $this->getSetting('disable_days');

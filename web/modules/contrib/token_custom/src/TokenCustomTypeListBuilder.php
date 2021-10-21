@@ -38,7 +38,7 @@ class TokenCustomTypeListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    $row['type'] = $entity->link();
+    $row['type'] = $entity->toLink()->toString();
     $row['description']['data']['#markup'] = $entity->getDescription();
     return $row + parent::buildRow($entity);
   }

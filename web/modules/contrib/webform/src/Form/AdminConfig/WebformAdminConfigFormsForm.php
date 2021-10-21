@@ -247,6 +247,13 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       '#size' => 20,
       '#default_value' => $settings['default_reset_button_label'],
     ];
+    $form['form_settings']['default_delete_button_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Default delete button label'),
+      '#required' => TRUE,
+      '#size' => 20,
+      '#default_value' => $settings['default_delete_button_label'],
+    ];
     $form['form_settings']['form_classes'] = [
       '#type' => 'webform_codemirror',
       '#title' => $this->t('Form CSS classes'),
@@ -374,6 +381,20 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       '#required' => TRUE,
       '#size' => 20,
       '#default_value' => $settings['default_wizard_confirmation_label'],
+    ];
+    $form['wizard_settings']['default_wizard_toggle_show_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Default wizard show all elements label'),
+      '#required' => TRUE,
+      '#size' => 20,
+      '#default_value' => $settings['default_wizard_toggle_show_label'],
+    ];
+    $form['wizard_settings']['default_wizard_toggle_hide_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Default wizard hide all elements label'),
+      '#required' => TRUE,
+      '#size' => 20,
+      '#default_value' => $settings['default_wizard_toggle_hide_label'],
     ];
 
     // Preview settings.
@@ -543,6 +564,9 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       '#default_value' => $settings['default_share_theme_name'],
     ];
 
+    // Bulk operation settings.
+    $form['bulk_form_settings'] = $this->buildBulkOperations($settings, 'webform');
+
     // Dialog settings.
     $form['dialog_settings'] = [
       '#type' => 'details',
@@ -711,11 +735,12 @@ class WebformAdminConfigFormsForm extends WebformAdminConfigBaseForm {
       + $form_state->getValue('confirmation_settings')
       + $form_state->getValue('share_settings')
       + $form_state->getValue('ajax_settings')
+      + $form_state->getValue('bulk_form_settings')
       + $form_state->getValue('dialog_settings');
 
     // Track if we need to trigger an update of all webform paths
     // because the 'default_page_base_path' changed.
-    $update_paths = ($settings['default_page_base_path'] != $this->config('webform.settings')->get('settings.default_page_base_path')) ? TRUE : FALSE;
+    $update_paths = ($settings['default_page_base_path'] !== $this->config('webform.settings')->get('settings.default_page_base_path')) ? TRUE : FALSE;
 
     // Filter empty dialog options.
     foreach ($settings['dialog_options'] as $dialog_name => $dialog_options) {

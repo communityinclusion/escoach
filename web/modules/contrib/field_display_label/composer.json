@@ -1,0 +1,21 @@
+{
+    "name": "drupal/field_display_label",
+    "description": "Defines a label for fields that is used for displaying content which can be different than the form label.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/field_display_label",
+    "authors": [
+        {
+            "name": "Neslee Canil Pinto",
+            "homepage": "https://www.drupal.org/u/neslee-canil-pinto",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/field_display_label",
+        "source": "https://git.drupalcode.org/project/field_display_label"
+    },
+    "require": {
+        "drupal/core": "^8 || ^9"
+    }
+}

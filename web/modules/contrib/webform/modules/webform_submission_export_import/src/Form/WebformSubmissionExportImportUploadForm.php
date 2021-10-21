@@ -154,7 +154,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
           $this->t('File uploads must use publicly access URLs which begin with http:// or https://.'),
           $this->t('Entity references can use UUIDs or entity IDs.'),
           $this->t('Composite (single) values are annotated using double underscores. (e.g. ELEMENT_KEY__SUB_ELEMENT_KEY)'),
-          $this->t('Multiple values are comma delimited with any nested commas URI escaped (%2E).'),
+          $this->t('Multiple values are comma delimited with any nested commas URI escaped (%2C).'),
           $this->t('Multiple composite values are formatted using <a href=":href">inline YAML</a>.', [':href' => 'https://en.wikipedia.org/wiki/YAML#Basic_components']),
           $this->t('Import maximum execution time limit is @time.', ['@time' => $this->dateFormatter->formatInterval($temporary_maximum_age)]),
         ],
@@ -288,14 +288,8 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
 
     // If a managed file has been create to the file's id and rebuild the form.
     if ($file) {
-      // Normalize carriage returns.
-      // This prevent issues with CSV files created in Excel.
-      $contents = file_get_contents($file->getFileUri());
-      $contents = preg_replace('~\R~u', "\r\n", $contents);
-      file_put_contents($file->getFileUri(), $contents);
-
       $this->importer->setImportUri($file->getFileUri());
-      if ($this->importer->getTotal()) {
+      if ($this->importer->getTotal() > 0) {
         $form_state->set('import_fid', $file->id());
         $form_state->setRebuild();
       }
@@ -631,7 +625,7 @@ class WebformSubmissionExportImportUploadForm extends ConfirmFormBase {
     $context['message'] = t('Imported @count of @total submissions…', ['@count' => $context['sandbox']['progress'], '@total' => $context['sandbox']['max']]);
 
     // Track finished.
-    if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    if ($context['sandbox']['progress'] !== $context['sandbox']['max']) {
       $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
     }
 

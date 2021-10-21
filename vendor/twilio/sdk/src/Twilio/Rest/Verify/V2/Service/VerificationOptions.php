@@ -14,10 +14,12 @@ use Twilio\Values;
 
 abstract class VerificationOptions {
     /**
+     * @param string $customFriendlyName A custom user defined friendly name
      * @param string $customMessage The text of a custom message to use for the
      *                              verification
      * @param string $sendDigits The digits to send after a phone call is answered
-     * @param string $locale The locale to use for the verification SMS or call
+     * @param string $locale The locale to use for the verification SMS, WhatsApp
+     *                       or call
      * @param string $customCode A pre-generated code
      * @param string $amount The amount of the associated PSD2 compliant
      *                       transaction.
@@ -29,17 +31,19 @@ abstract class VerificationOptions {
      * @param string $appHash Your App Hash to be appended at the end of an SMS.
      * @return CreateVerificationOptions Options builder
      */
-    public static function create(string $customMessage = Values::NONE, string $sendDigits = Values::NONE, string $locale = Values::NONE, string $customCode = Values::NONE, string $amount = Values::NONE, string $payee = Values::NONE, array $rateLimits = Values::ARRAY_NONE, array $channelConfiguration = Values::ARRAY_NONE, string $appHash = Values::NONE): CreateVerificationOptions {
-        return new CreateVerificationOptions($customMessage, $sendDigits, $locale, $customCode, $amount, $payee, $rateLimits, $channelConfiguration, $appHash);
+    public static function create(string $customFriendlyName = Values::NONE, string $customMessage = Values::NONE, string $sendDigits = Values::NONE, string $locale = Values::NONE, string $customCode = Values::NONE, string $amount = Values::NONE, string $payee = Values::NONE, array $rateLimits = Values::ARRAY_NONE, array $channelConfiguration = Values::ARRAY_NONE, string $appHash = Values::NONE): CreateVerificationOptions {
+        return new CreateVerificationOptions($customFriendlyName, $customMessage, $sendDigits, $locale, $customCode, $amount, $payee, $rateLimits, $channelConfiguration, $appHash);
     }
 }
 
 class CreateVerificationOptions extends Options {
     /**
+     * @param string $customFriendlyName A custom user defined friendly name
      * @param string $customMessage The text of a custom message to use for the
      *                              verification
      * @param string $sendDigits The digits to send after a phone call is answered
-     * @param string $locale The locale to use for the verification SMS or call
+     * @param string $locale The locale to use for the verification SMS, WhatsApp
+     *                       or call
      * @param string $customCode A pre-generated code
      * @param string $amount The amount of the associated PSD2 compliant
      *                       transaction.
@@ -50,7 +54,8 @@ class CreateVerificationOptions extends Options {
      *                                    format.
      * @param string $appHash Your App Hash to be appended at the end of an SMS.
      */
-    public function __construct(string $customMessage = Values::NONE, string $sendDigits = Values::NONE, string $locale = Values::NONE, string $customCode = Values::NONE, string $amount = Values::NONE, string $payee = Values::NONE, array $rateLimits = Values::ARRAY_NONE, array $channelConfiguration = Values::ARRAY_NONE, string $appHash = Values::NONE) {
+    public function __construct(string $customFriendlyName = Values::NONE, string $customMessage = Values::NONE, string $sendDigits = Values::NONE, string $locale = Values::NONE, string $customCode = Values::NONE, string $amount = Values::NONE, string $payee = Values::NONE, array $rateLimits = Values::ARRAY_NONE, array $channelConfiguration = Values::ARRAY_NONE, string $appHash = Values::NONE) {
+        $this->options['customFriendlyName'] = $customFriendlyName;
         $this->options['customMessage'] = $customMessage;
         $this->options['sendDigits'] = $sendDigits;
         $this->options['locale'] = $locale;
@@ -60,6 +65,17 @@ class CreateVerificationOptions extends Options {
         $this->options['rateLimits'] = $rateLimits;
         $this->options['channelConfiguration'] = $channelConfiguration;
         $this->options['appHash'] = $appHash;
+    }
+
+    /**
+     * A custom user defined friendly name that overwrites the existing one in the verification message
+     *
+     * @param string $customFriendlyName A custom user defined friendly name
+     * @return $this Fluent Builder
+     */
+    public function setCustomFriendlyName(string $customFriendlyName): self {
+        $this->options['customFriendlyName'] = $customFriendlyName;
+        return $this;
     }
 
     /**
@@ -86,9 +102,10 @@ class CreateVerificationOptions extends Options {
     }
 
     /**
-     * The locale to use for the verification SMS or call. Can be: `af`, `ar`, `ca`, `cs`, `da`, `de`, `el`, `en`, `en-GB`, `es`, `fi`, `fr`, `he`, `hi`, `hr`, `hu`, `id`, `it`, `ja`, `ko`, `ms`, `nb`, `nl`, `pl`, `pt`, `pr-BR`, `ro`, `ru`, `sv`, `th`, `tl`, `tr`, `vi`, `zh`, `zh-CN`, or `zh-HK.`
+     * The locale to use for the verification SMS, WhatsApp or call. Can be: `af`, `ar`, `ca`, `cs`, `da`, `de`, `el`, `en`, `en-GB`, `es`, `fi`, `fr`, `he`, `hi`, `hr`, `hu`, `id`, `it`, `ja`, `ko`, `ms`, `nb`, `nl`, `pl`, `pt`, `pr-BR`, `ro`, `ru`, `sv`, `th`, `tl`, `tr`, `vi`, `zh`, `zh-CN`, or `zh-HK.`
      *
-     * @param string $locale The locale to use for the verification SMS or call
+     * @param string $locale The locale to use for the verification SMS, WhatsApp
+     *                       or call
      * @return $this Fluent Builder
      */
     public function setLocale(string $locale): self {

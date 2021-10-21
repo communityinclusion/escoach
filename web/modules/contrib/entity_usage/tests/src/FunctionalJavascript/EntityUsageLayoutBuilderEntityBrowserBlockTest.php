@@ -178,7 +178,7 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
     $block_selector = '.layout-builder__layout .layout-builder__region .layout-builder-block.block-entity-browser-blockeu-test-browser';
     $block = $assert_session->elementExists('css', $block_selector);
     $rendered_node = $assert_session->elementExists('css', 'article.node', $block);
-    $this->assertContains('First target node', $rendered_node->getText());
+    $this->assertStringContainsString('First target node', $rendered_node->getText());
     // Save the Layout and verify the node appears in the FE as well.
     $page->pressButton('Save layout');
     $this->saveHtmlOutput();
@@ -186,7 +186,7 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
     $block_selector = '.node__content .layout__region--content .block-entity-browser-blockeu-test-browser';
     $block = $assert_session->elementExists('css', $block_selector);
     $rendered_node = $assert_session->elementExists('css', 'article.node', $block);
-    $this->assertContains('First target node', $rendered_node->getText());
+    $this->assertStringContainsStringIgnoringCase('First target node', $rendered_node->getText());
 
     $first_target_node = $this->getLastEntityOfType('node', TRUE);
 
@@ -199,7 +199,7 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
     $assert_session->pageTextContains('Entity usage information for First target node');
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals($host_node->getTitle(), $first_row_title_link->getText());
-    $this->assertContains($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_field_label = $this->xpath('//table/tbody/tr[1]/td[4]')[0];
     $this->assertEquals('Layout', $first_row_field_label->getText());
     $assert_session->pageTextNotContains('Translations or previous revisions');
@@ -231,13 +231,13 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
     $assert_session->pageTextContains('You have unsaved changes');
     $blocks = $page->findAll('css', '.layout-builder__layout .layout-builder__region .layout-builder-block.block-entity-browser-blockeu-test-browser');
     $rendered_node = $assert_session->elementExists('css', 'article.node', $blocks[1]);
-    $this->assertContains('Second target node', $rendered_node->getText());
+    $this->assertStringContainsString('Second target node', $rendered_node->getText());
     $page->pressButton('Save layout');
     $this->saveHtmlOutput();
     $assert_session->pageTextContains('The layout override has been saved');
     $blocks = $page->findAll('css', '.node__content .layout__region--content .block-entity-browser-blockeu-test-browser');
     $rendered_node = $assert_session->elementExists('css', 'article.node', $blocks[1]);
-    $this->assertContains('Second target node', $rendered_node->getText());
+    $this->assertStringContainsString('Second target node', $rendered_node->getText());
 
     // Visit the node, click the "Usage" tab in there, and check usage is OK.
     $page->clickLink('Second target node');
@@ -245,7 +245,7 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
     $assert_session->pageTextContains('Entity usage information for Second target node');
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals($host_node->getTitle(), $first_row_title_link->getText());
-    $this->assertContains($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_field_label = $this->xpath('//table/tbody/tr[1]/td[4]')[0];
     $this->assertEquals('Layout', $first_row_field_label->getText());
 
@@ -256,7 +256,7 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
     $assert_session->pageTextContains('Entity usage information for First target node');
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals($host_node->getTitle(), $first_row_title_link->getText());
-    $this->assertContains($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_field_label = $this->xpath('//table/tbody/tr[1]/td[4]')[0];
     $this->assertEquals('Layout', $first_row_field_label->getText());
 
@@ -286,7 +286,7 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
     $assert_session->pageTextContains('Entity usage information for First target node');
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals($host_node->getTitle(), $first_row_title_link->getText());
-    $this->assertContains($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_field_label = $this->xpath('//table/tbody/tr[1]/td[4]')[0];
     $this->assertEquals('Layout', $first_row_field_label->getText());
     $first_row_used_in = $this->xpath('//table/tbody/tr[1]/td[6]')[0];

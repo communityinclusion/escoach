@@ -20,8 +20,6 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
   /**
    * A variable to pass the entity of a transition to the ListBuilder.
    *
-   * @todo: There should be a better way.
-   *
    * @var \Drupal\Core\Entity\EntityInterface
    */
   public $workflow_entity;
@@ -49,13 +47,13 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function load() {
-    /** @var $entity \Drupal\Core\Entity\EntityInterface */
+    /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $this->workflow_entity; // N.B. This is a custom variable.
     $entity_type = $entity->getEntityTypeId();
     $entity_id = $entity->id();
     $field_name = workflow_url_get_field_name();
 
-    // @todo D8-port: document $limit. Should be used in pager, not in load().
+    // @todo D8: document $limit. Should be used in pager, not in load().
     // N.B. Using the provided default History view is recommended.
     $this->limit = \Drupal::config('workflow.settings')->get('workflow_states_per_page');
     $limit = $this->limit;
@@ -92,8 +90,8 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $transition) {
     // Show the history table.
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $current_themed = FALSE;
-    /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
     $entity = $transition->getTargetEntity();
     $field_name = $transition->getFieldName();
     $current_sid = workflow_node_current_state($entity, $field_name);
@@ -159,7 +157,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
     // Allow other modules to modify the row.
     \Drupal::moduleHandler()->alter('workflow_history', $variables);
 
-    // 'class' => array('workflow_history_row'), // @todo D8-port
+    // 'class' => array('workflow_history_row'), // @todo D8-port.
     $row['timestamp']['data'] = $transition->getTimestampFormatted(); // 'class' => array('timestamp')
     // html_entity_decode() transforms chars like '&' correctly.
     if ($this->showColumnFieldname($entity)) {
@@ -181,14 +179,15 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
   public function render() {
     $build = [];
 
-    // @todo d8-port: get pager working.
-    $this->limit = \Drupal::config('workflow.settings')->get('workflow_states_per_page'); // @todo D8-port
-    // $output .= theme('pager', array('tags' => $limit)); // @todo D8-port
+    // @todo D8: get pager working.
+    $this->limit = \Drupal::config('workflow.settings')->get('workflow_states_per_page'); // @todo D8-port.
+    // $output .= theme('pager', array('tags' => $limit)); // @todo D8-port.
 
     $build += parent::render();
 
     // Add a footer. This is not yet added in EntityListBuilder::render()
-    if ($this->footer_needed) { // @todo D8-port: test this.
+    if ($this->footer_needed) {
+      // @todo D8-port: test this.
       // Two variants. First variant is official, but I like 2nd better.
       /*
       $build['table']['#footer'] = [
@@ -196,7 +195,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
           'class' => ['footer-class'],
           'data' => [
             [
-              'data' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' ' . t('State is no longer available.'),
+              'data' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' ' . $this->t('State is no longer available.'),
               'colspan' => count($build['table']['#header']),
             ],
           ],
@@ -204,7 +203,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
       ];
        */
       $build['workflow_footer'] = [
-        '#markup' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' ' . t('State is no longer available.'),
+        '#markup' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' ' . $this->t('State is no longer available.'),
         '#weight' => 500, // @todo Make this better.
       ];
     }
@@ -245,7 +244,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
    */
   protected function showColumnFieldname(EntityInterface $entity) {
     if (is_null($this->show_column_fieldname)) {
-      // @todo: also remove when field_name is set in route??
+      // @todo Also remove when field_name is set in route??
       if (count(_workflow_info_fields($entity)) > 1) {
         $this->show_column_fieldname = TRUE;
       }

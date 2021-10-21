@@ -52,9 +52,11 @@ use Twilio\Version;
  * @property array[] $integrations
  * @property array $outboundCallFlows
  * @property string[] $serverlessServiceSids
- * @property array[] $wfmIntegrations
  * @property array $queueStatsConfiguration
+ * @property array $notifications
+ * @property array $markdown
  * @property string $url
+ * @property array $flexInsightsHr
  */
 class ConfigurationInstance extends InstanceResource {
     /**
@@ -103,9 +105,11 @@ class ConfigurationInstance extends InstanceResource {
             'integrations' => Values::array_get($payload, 'integrations'),
             'outboundCallFlows' => Values::array_get($payload, 'outbound_call_flows'),
             'serverlessServiceSids' => Values::array_get($payload, 'serverless_service_sids'),
-            'wfmIntegrations' => Values::array_get($payload, 'wfm_integrations'),
             'queueStatsConfiguration' => Values::array_get($payload, 'queue_stats_configuration'),
+            'notifications' => Values::array_get($payload, 'notifications'),
+            'markdown' => Values::array_get($payload, 'markdown'),
             'url' => Values::array_get($payload, 'url'),
+            'flexInsightsHr' => Values::array_get($payload, 'flex_insights_hr'),
         ];
 
         $this->solution = [];

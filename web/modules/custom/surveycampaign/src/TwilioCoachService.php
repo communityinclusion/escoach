@@ -437,12 +437,14 @@ class TwilioCoachService
         $thirdtextconfig = $isprimary ? $config->get('third_text_body.value') : $config->get('alt_third_text_body.value');
         $warningtextconfig = $config->get('warning_text_body.value');
         $cutofftextconfig = $config->get('cutoff_text_body.value');
+        $comebacktextconfig = $config->get('comeback_text_body.value');
 
         $firsttextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $firsttextconfig))));
         $secondtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $secondtextconfig))));
         $thirdtextbody = str_replace('@endtime',$endtime,str_replace('@starttime',$starttime,str_replace('@link', $link,str_replace("@name", $name, $thirdtextconfig))));
         $warningtextbody = str_replace("@name", $name,str_replace('@warningdays', $starttime,str_replace("@daystocutoff", $endtime,str_replace('@invitelink', $link, $warningtextconfig))));
         $cutofftextbody = str_replace("@name", $name,str_replace('@cutoffdays', $starttime, $cutofftextconfig));
+        $comebacktextbody = str_replace("@name", $name, $comebacktextconfig);
         switch($textno) {
             case 1 :
                 $bodytext = $firsttextbody;
@@ -458,6 +460,9 @@ class TwilioCoachService
                 break;
             case 5 :
                 $bodytext = $cutofftextbody;
+                break;
+            case 6 :
+                $bodytext = $comebacktextbody;
                 break;
             default :
                 $bodytext = $firsttextbody;
@@ -545,10 +550,11 @@ class TwilioCoachService
                 //The standard return from the API is JSON, decode to php.
                 $output= json_decode($output);
                 $didnotreply = false;
-                $inactive = false;
+                $inactive = true;
                 $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
-                // if($inactive && $isprimary) $this->checkSuspendedReminder($mobilephone,$fullname,$email,$surveyid);
-                // $didnotreplyshort = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) : false;
+                $cancelled = false;
+                if($inactive && $isprimary)$cancelled = $this->checkSuspendedReminder($mobilephone,$fullname,$surveyid);
+                if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
 
@@ -762,31 +768,31 @@ class TwilioCoachService
 
     }
 
-  protected function checkDayName($dayarray) {
-        $today = date('w');
-        $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday','Thursday','Friday', 'Saturday');
+    protected function checkDayName($dayarray) {
+          $today = date('w');
+          $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday','Thursday','Friday', 'Saturday');
 
 
 
-        if ($dayarray[$days[$today]] !== 0 ) {
+          if ($dayarray[$days[$today]] !== 0 ) {
 
 
-            return true;
-        }
+              return true;
+          }
 
-        else { return false; }
+          else { return false; }
     }
     protected function checkNonReplies($surveyid,$mobilephone,$fullname,$campaignarray) {
-        $database = \Drupal::database();
-        $query =  $database->select('surveycampaign_mailer','sm')
-        ->condition('sm.surveyid', $surveyid)
-        ->condition('sm.mobilephone', $mobilephone)
-        ->condition('sm.fullname', $fullname)
-        ->condition('sm.campaignid', $campaignarray, 'IN')
-        ->condition('sm.Complete', '0')
-        ->countQuery();
-        $result = $query->execute()->fetchField();
-        return $result;
+          $database = \Drupal::database();
+          $query =  $database->select('surveycampaign_mailer','sm')
+          ->condition('sm.surveyid', $surveyid)
+          ->condition('sm.mobilephone', $mobilephone)
+          ->condition('sm.fullname', $fullname)
+          ->condition('sm.campaignid', $campaignarray, 'IN')
+          ->condition('sm.Complete', '0')
+          ->countQuery();
+          $result = $query->execute()->fetchField();
+          return $result;
 
     }
     protected function getRecentCampaigns($surveyid,$limitno) {
@@ -810,7 +816,7 @@ class TwilioCoachService
         }
         return $campaignarray;
     }
-    protected function checkSuspendedReminder($mobilephone,$fullname,$email,$surveyid) {
+    protected function checkSuspendedReminder($mobilephone,$fullname,$surveyid) {
       $database = \Drupal::database();
       $config =  \Drupal::config('surveycampaign.settings');
       $dayspastinactive = $config->get('def_days_past_inactive');
@@ -825,12 +831,14 @@ class TwilioCoachService
       ->orderBy('senddate','DESC')
       ->range(1, $limitno);
       $result = $query->execute()->fetchField();
-      $lastsurveydate = substr($result, 0, 10);  // abcd
+      $lastsurveydate = substr($result, 0, 10);
       $todaydate = date("Y-m-d");
       $triggerdate = new DateTime("$lastsurveydate");
       $triggerdate->modify("+ $dayspastinactive days");
       $triggerdate = $triggerdate->format('Y-m-d');
-      if($triggerdate == $todaydate) {
+      $cancelled = false;
+      $cancelled = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
+      if($triggerdate == $todaydate && $cancelled) {
         //send the reminder
       }
       //$lastactivedate = "select  DATE_FORMAT(senddate, "%Y-%m-%d") truncatedate from surveycampaign_mailer where mobilephone = 6125015804 AND surveyid =  5420562 ORDER BY senddate DESC LIMIT 1";
@@ -852,6 +860,19 @@ class TwilioCoachService
         $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
         $warningtextconfig = $config->get('warning_text_body.value');
         $cutofftextconfig = $config->get('cutoff_text_body.value');
+        $comebacktextconfig = $config->get('comeback_text_body.value');
+        if($noreplylevel == 3 && $isprimary) {
+
+             $comebacktextbody = str_replace("@name", "$firstname $lastname", $comebacktextconfig);
+            $dayno = $inactiveno;
+            $params['title'] = t('Come back to the daily survey');
+            $params['message'] = t("$comebacktextbody");
+
+            $langcode = "en";
+            $send = true;
+                $textno = 6;
+            
+        }
         if($noreplylevel == 2 && $isprimary) {
 
              $cutofftextbody = str_replace("@name", "$firstname $lastname",str_replace('@cutoffdays', $dayno, $cutofftextconfig));
@@ -863,7 +884,7 @@ class TwilioCoachService
             $checkinactive = false;
             $checkinactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$lastname);
             if(!$checkinactive) {
-                $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,2);
+                $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,2,3);
                 $send = true;
                 $textno = 5;
             }

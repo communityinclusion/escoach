@@ -214,10 +214,10 @@ class GeofieldGoogleStaticMapFormatter extends FormatterBase implements Containe
       '#title' => $this->t('Marker Size'),
       '#default_value' => $settings['marker_size'],
       '#options' => [
-        'normal' => 'normal',
-        'tiny' => 'tiny',
-        'mid' => 'mid',
-        'small' => 'small',
+        'normal' => $this->t('normal'),
+        'tiny' => $this->t('tiny'),
+        'mid' => $this->t('mid'),
+        'small' => $this->t('small'),
       ],
       '#description' => $this->t("Refer to the @marker_styles_link if you are unsure what values to use here", [
         '@marker_styles_link' => $this->link->generate($this->t('Marker Styles documentation'), Url::fromUri('https://developers.google.com/maps/documentation/maps-static/dev-guide#MarkerStyles', [
@@ -293,7 +293,7 @@ class GeofieldGoogleStaticMapFormatter extends FormatterBase implements Containe
     $locations = [];
     $settings = $this->getSettings();
     $language = ($langcode !== Language::LANGCODE_NOT_SPECIFIED) ? $langcode : 'en';
-    foreach ($items as $delta => $item) {
+    foreach ($items as $item) {
       if ($item->isEmpty()) {
         continue;
       }
@@ -304,7 +304,9 @@ class GeofieldGoogleStaticMapFormatter extends FormatterBase implements Containe
       $locations[] = urlencode($value['latlon']);
     }
 
-    return [
+    $elements = [];
+    // Return a single item.
+    $elements[0] = [
       '#theme' => 'geofield_static_google_map',
       '#width' => $settings['width'],
       '#height' => $settings['height'],
@@ -317,6 +319,8 @@ class GeofieldGoogleStaticMapFormatter extends FormatterBase implements Containe
       '#marker_color' => $settings['marker_color'],
       '#marker_size' => $settings['marker_size'],
     ];
+
+    return $elements;
   }
 
 }

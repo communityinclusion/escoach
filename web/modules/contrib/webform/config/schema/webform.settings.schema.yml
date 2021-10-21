@@ -30,6 +30,9 @@ webform.settings:
         default_reset_button_label:
           type: label
           label: 'Default reset button label'
+        default_delete_button_label:
+          type: label
+          label: 'Default delete button label'
         default_form_submit_once:
           type: boolean
           label: 'Prevent duplicate submissions'
@@ -87,6 +90,12 @@ webform.settings:
         default_wizard_confirmation_label:
           type: label
           label: 'Default wizard confirmation label'
+        default_wizard_toggle_show_label:
+          type: label
+          label: 'Default wizard show all elements label'
+        default_wizard_toggle_hide_label:
+          type: label
+          label: 'Default wizard hide all elements label'
         default_preview_next_button_label:
           type: label
           label: 'Default preview button label'
@@ -233,6 +242,24 @@ webform.settings:
         default_share_theme_name:
           type: string
           label: 'Default shared form theme'
+        webform_bulk_form:
+          type: boolean
+          label: 'Enable webform operations bulk form'
+        webform_bulk_form_actions:
+          type: sequence
+          label: 'Webform operations bulk form actions'
+          sequence:
+            type: string
+            label: Action
+        webform_submission_bulk_form:
+          type: boolean
+          label: 'Enable submission operations bulk form'
+        webform_submission_bulk_form_actions:
+          type: sequence
+          label: 'Webform submission operations bulk form actions'
+          sequence:
+            type: string
+            label: Action
         dialog:
           type: boolean
           label: 'Enable webform dialog support'
@@ -556,12 +583,18 @@ webform.settings:
         promotions_disabled:
           type: boolean
           label: 'Disable promotions'
+        support_disabled:
+          type: boolean
+          label: 'Disable support options'
         details_save:
           type: boolean
           label: 'Save details open/close state'
         description_help:
           type: boolean
           label: 'Display element description as help text (tooltip)'
+        toolbar_item:
+          type: boolean
+          label: 'Display webforms as a top-level item in toolbar'
     libraries:
       type: mapping
       label: 'Library settings'
@@ -579,6 +612,9 @@ webform.settings:
         cdn:
           type: boolean
           label: 'Check if CDN is being used for external libraries'
+        clientside_validation:
+          type: boolean
+          label: 'Check if Webform Clientside Validation module is installed when using the Clientside Validation module'
         bootstrap:
           type: boolean
           label: 'Check if Webform Bootstrap Integration module is installed when using the Bootstrap theme'

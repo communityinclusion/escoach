@@ -14,12 +14,7 @@ class WorkflowTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    $fieldset_options = [
-      0 => $this->t('No fieldset'),
-      1 => $this->t('Collapsible fieldset'),
-      2 => $this->t('Collapsed fieldset'),
-    ];
-    /* @var $workflow \Drupal\workflow\Entity\Workflow */
+    /** @var \Drupal\workflow\Entity\Workflow $workflow */
     $workflow = $this->entity;
 
     $form['label'] = [
@@ -55,7 +50,7 @@ class WorkflowTypeForm extends EntityForm {
     $form['permissions'] = [
       '#type' => 'details',
       '#title' => $this->t('Workflow permissions'),
-      '#open' => TRUE, // Controls the HTML5 'open' attribute. Defaults to FALSE.
+      '#open' => TRUE, // Controls HTML5 'open' attribute. Defaults to FALSE.
       '#description' => $this->t(
         'To enable further Workflow functionality, go to the
          /admin/people/permissions page and select any roles that should
@@ -98,59 +93,65 @@ class WorkflowTypeForm extends EntityForm {
     $form['basic'] = [
       '#type' => 'details',
       '#title' => $this->t('Workflow form settings'),
-      '#open' => TRUE, // Controls the HTML5 'open' attribute. Defaults to FALSE.
+      '#open' => TRUE, // Controls HTML5 'open' attribute. Defaults to FALSE.
     ];
-
     $form['basic']['fieldset'] = [
       '#type' => 'select',
-      '#options' => $fieldset_options,
+      '#options' => [
+        0 => $this->t('No fieldset'),
+        1 => $this->t('Collapsible fieldset'),
+        2 => $this->t('Collapsed fieldset'),
+      ],
       '#title' => $this->t('Show the form in a fieldset?'),
-      '#default_value' => isset($workflow->options['fieldset'])
-        ? $workflow->options['fieldset'] : 0,
+      '#default_value' => $workflow->getSetting('fieldset'),
     ];
     $form['basic']['options'] = [
       '#type' => 'select',
       '#title' => $this->t('How to show the available states'),
       '#required' => FALSE,
-      '#default_value' => isset($workflow->options['options'])
-        ? $workflow->options['options'] : 'radios',
+      '#default_value' => $workflow->getSetting('options'),
       // '#multiple' => TRUE / FALSE,
       '#options' => [
         // These options are taken from options.module.
-        'select' => 'Select list',
-        'radios' => 'Radio buttons',
-        'buttons' => 'Action buttons',
-        'dropbutton' => 'Drop button',
+        'select' => $this->t('Select list'),
+        'radios' => $this->t('Radio buttons'),
+        'buttons' => $this->t('Action buttons'),
+        'dropbutton' => $this->t('Drop button'),
       ],
       '#description' => $this->t(
         'The Widget shows all available states.
          Decide which is the best way to show them.'
       ),
     ];
-
     $form['basic']['name_as_title'] = [
       '#type' => 'checkbox',
       '#attributes' => ['class' => ['container-inline']],
       '#title' => $this->t(
         'Use the workflow name as the title of the workflow form'
       ),
-      '#default_value' => isset($workflow->options['name_as_title'])
-        ? $workflow->options['name_as_title'] : 0,
+      '#default_value' => $workflow->getSetting('name_as_title'),
       '#description' => $this->t(
         'The workflow section of the editing form is in its own fieldset.
          Checking the box will add the workflow name as the title of workflow
          section of the editing form.'
       ),
     ];
-
+    $form['basic']['schedule_enable'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable scheduling in Workflow Transition form'),
+      '#required' => FALSE,
+      '#default_value' => $workflow->getSetting('schedule_enable'),
+      '#description' => $this->t(
+        'Scheduling may be enabled per Role on /admin/people/permissions page,
+        but only if it is enable here.'
+      ),
+    ];
     $form['basic']['schedule_timezone'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Show a timezone when scheduling a transition.'),
+      '#title' => $this->t('Show a timezone when scheduling a transition'),
       '#required' => FALSE,
-      '#default_value' => isset($workflow->options['schedule_timezone'])
-        ? $workflow->options['schedule_timezone'] : 1,
+      '#default_value' => $workflow->getSetting('schedule_timezone'),
     ];
-
     // @todo D9: remove this, and set default to 1.
     $form['basic']['always_update_entity'] = [
       '#type' => 'checkbox',
@@ -160,10 +161,8 @@ class WorkflowTypeForm extends EntityForm {
         indicate that the entity is updated even when transition sid remains
         the same.'),
       '#required' => FALSE,
-      '#default_value' => isset($workflow->options['always_update_entity'])
-        ? $workflow->options['always_update_entity'] : 0,
+      '#default_value' => $workflow->getSetting('always_update_entity'),
     ];
-
     $form['basic']['comment_log_node'] = [
       '#type' => 'select',
       '#required' => FALSE,
@@ -175,8 +174,7 @@ class WorkflowTypeForm extends EntityForm {
       ],
       '#attributes' => ['class' => ['container-inline']],
       '#title' => $this->t('How to show the Comment sub-field'),
-      '#default_value' => isset($workflow->options['comment_log_node'])
-        ? $workflow->options['comment_log_node'] : 1,
+      '#default_value' => $workflow->getSetting('comment_log_node'),
       '#description' => $this->t(
         'A Comment area can be shown on the Workflow Transition form so that
          the person making a state change can record reasons for doing so.
@@ -191,13 +189,12 @@ class WorkflowTypeForm extends EntityForm {
         'Informational watchdog messages can be logged when a transition is
          executed (state of a node is changed).'
       ),
-      '#open' => TRUE, // Controls the HTML5 'open' attribute. Defaults to FALSE.
+      '#open' => TRUE, // Controls HTML5 'open' attribute. Defaults to FALSE.
     ];
-
     $form['watchdog']['watchdog_log'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Log watchdog messages upon state change'),
-      '#default_value' => isset($workflow->options['watchdog_log']) ? $workflow->options['watchdog_log'] : 0,
+      '#default_value' => $workflow->getSetting('watchdog_log'),
       '#description' => '',
     ];
 
@@ -217,7 +214,7 @@ class WorkflowTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /** @var $entity \Drupal\workflow\Entity\Workflow */
+    /** @var \Drupal\workflow\Entity\Workflow $entity */
     $entity = $this->entity;
 
     // Prevent leading and trailing spaces.
@@ -227,6 +224,7 @@ class WorkflowTypeForm extends EntityForm {
       'name_as_title' => $form_state->getValue('name_as_title'),
       'fieldset' => $form_state->getValue('fieldset'),
       'options' => $form_state->getValue('options'),
+      'schedule_enable' => $form_state->getValue('schedule_enable'),
       'schedule_timezone' => $form_state->getValue('schedule_timezone'),
       'always_update_entity' => $form_state->getValue('always_update_entity'),
       'comment_log_node' => $form_state->getValue('comment_log_node'),
@@ -268,7 +266,7 @@ class WorkflowTypeForm extends EntityForm {
     // Make sure workflow name is not numeric.
     // @todo D8: this was a prerequisite in D7. Remove in D8?
     if (ctype_digit($name)) {
-      $form_state->setErrorByName('id', t('Please choose a non-numeric name for your workflow.'));
+      $form_state->setErrorByName('id', $this->t('Please choose a non-numeric name for your workflow.'));
     }
 
     parent::validateForm($form, $form_state);

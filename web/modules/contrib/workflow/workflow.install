@@ -11,12 +11,13 @@ use Drupal\Core\Url;
  * Implements hook_install().
  */
 function workflow_install() {
-  $url = Url::fromRoute('system.modules_list', [], ['fragment' => 'edit-modules-workflow']);
-  $message = t('Thanks for using Workflow. To maintain workflows,
-    <a href=":url">install the Workflow UI module</a>. To start using
-    a Workflow, add a Workflow Field to your entity.',
-    [':url' => $url->toString()]
-  );
+  $url = Url::fromRoute('user.admin_permissions', [],
+    ['fragment' => 'module-workflow']);
+  $message = t("Thanks for using Workflow module.
+    To start using a Workflow, add a Workflow Field to your entity.
+    Please review which roles may 'participate in workflows'
+    <a href=':url'>on the Permissions page</a>.",
+    [':url' => $url->toString()]);
   \Drupal::messenger()->addStatus($message);
 }
 
@@ -24,8 +25,6 @@ function workflow_install() {
  * Implements hook_requirements().
  *
  * Let admins know that Workflow is in use.
- *
- * @todo: extend workflow_requirements() for use with Workflow Field API.
  *
  * @param $phase
  *
@@ -41,10 +40,8 @@ function workflow_requirements($phase) {
       break;
 
     case 'runtime':
-      // workflow_debug(__FILE__), __FUNCTION__, __LINE__, $form_id);  // @todo D8-port: still test this snippet.
-
+      // @todo Show info on admin/reports/status page.
       /*
-      // Show info on admin/reports/status.
       $type_list = 'Not yet determined.';
 
       // $types = db_query('SELECT wid, type FROM {workflow_type_map} WHERE wid <> 0 ORDER BY type')->fetchAllKeyed();
@@ -102,4 +99,11 @@ function workflow_schema() {
  */
 function workflow_update_8001(&$sandbox) {
   \Drupal::messenger()->addStatus("Update from version beta1 to beta2 is not possible. Please re-install this module.");
+}
+
+/**
+ * Please check Workflow permissions "Revert own\/any state transition' and "Edit own\/any comments" before continuing.
+ */
+function workflow_update_8002(&$sandbox) {
+  \Drupal::messenger()->addStatus("Please check Workflow permissions 'Revert own/any state transition and 'Edit own/any comments' before continuing.");
 }

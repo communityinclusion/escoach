@@ -35,7 +35,7 @@ class WebformHelpTest extends WebformBrowserTestBase {
     $this->drupalGet('/admin/structure/webform');
     $this->assertRaw('This is a warning notification.');
     $this->assertRaw('This is an info notification.');
-    $this->assertRaw('If you enjoy and value Drupal and the Webform module,');
+    $this->assertRaw('If you enjoy and value Drupal and the Webform module consider');
 
     // Close all notifications, promotion, and welcome messages.
     $this->drupalGet('/admin/structure/webform');
@@ -49,11 +49,11 @@ class WebformHelpTest extends WebformBrowserTestBase {
     $this->drupalGet('/admin/structure/webform');
     $this->assertNoRaw('This is a warning notification.');
     $this->assertNoRaw('This is an info notification.');
-    $this->assertNoRaw('If you enjoy and value Drupal and the Webform module,');
+    $this->assertNoRaw('If you enjoy and value Drupal and the Webform module consider');
 
     // Check that help is enabled.
     $this->drupalGet('/admin/structure/webform/config/advanced');
-    $this->assertRaw('block block-help block-help-block');
+    $this->assertPattern('#<div id="block-[^"]+" role="complementary">#');
     $this->assertRaw('The <strong>Advanced configuration</strong> page allows an administrator to enable/disable UI behaviors, manage requirements and define data used for testing webforms.');
 
     // Disable help via the UI which will clear the cached help block.
@@ -61,7 +61,7 @@ class WebformHelpTest extends WebformBrowserTestBase {
 
     // Check that help is disabled.
     $this->drupalGet('/admin/structure/webform/config/advanced');
-    $this->assertNoRaw('block block-help block-help-block');
+    $this->assertNoPattern('#<div id="block-[^"]+" role="complementary">#');
     $this->assertNoRaw('The <strong>Advanced configuration</strong> page allows an administrator to enable/disable UI behaviors, manage requirements and define data used for testing webforms.');
 
   }

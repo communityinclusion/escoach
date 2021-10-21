@@ -5,6 +5,8 @@
  * Defines a Workflow field, widget and formatter. (copied from list field).
  */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\workflow\Entity\WorkflowState;
 
@@ -14,8 +16,8 @@ use Drupal\workflow\Entity\WorkflowState;
  * Changes the hook_field_settings_form.
  * Fixes some Field settings and Field Instance settings, and makes sure users cannot change it.
  *
- * @todo: perhaps this is core functionality, but these values are only saved
- *        when the site builder explicitly save the instance settings. :-(
+ * @todo Perhaps this is core functionality, but these values are only saved
+ *       when the site builder explicitly save the instance settings. :-(
  */
 function workflow_form_field_storage_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $field_name = $form_state->getFormObject()->getEntity()->getType();
@@ -35,8 +37,8 @@ function workflow_form_field_storage_config_edit_form_alter(&$form, FormStateInt
  */
 function workflow_form_field_config_edit_form_alter(&$form,
                                                     FormStateInterface $form_state,
-  /** @noinspection PhpUnusedParameterInspection */ $form_id) {
-  /** @noinspection PhpUndefinedMethodInspection */
+  /* @noinspection PhpUnusedParameterInspection */  $form_id) {
+  /* @noinspection PhpUndefinedMethodInspection */
   $field_name = $form_state->getFormObject()->getEntity()->getType();
 
   if ($field_name == 'workflow') {
@@ -90,7 +92,7 @@ function workflow_field_widget_info_alter(&$info) {
  *   Form element, resembling the formatter of List module.
  *   If state 0 is given, return an empty form element.
  */
-function workflow_state_formatter($entity, $field_name, $current_sid = '') {
+function workflow_state_formatter(EntityInterface $entity, $field_name, $current_sid = '') {
   $element = [];
 
   if (!$current_sid) {
@@ -116,7 +118,7 @@ function workflow_state_formatter($entity, $field_name, $current_sid = '') {
   $list_display['type'] = 'list_default';
   $element = $entity->{$field_name}->view($list_display);
 
-  // @todo D8: make weight better (even better: hook_field_extra_fields).
+  // @todo D8: Make weight better (even better: hook_field_extra_fields).
   // Make sure the current value is before the form. (which has weight = 0.005)
   // $element['#weight'] = 0;
 
@@ -124,6 +126,8 @@ function workflow_state_formatter($entity, $field_name, $current_sid = '') {
 }
 
 /**
+ * Returns the allowed values for a field.
+ *
  * This function is a residue for installations that have v8.x-1.0
  * The setting for options_allowed_values is still in the Field configuration
  * Saving the field data again does not remove the settings.
@@ -133,7 +137,7 @@ function workflow_state_formatter($entity, $field_name, $current_sid = '') {
  *
  * @return mixed
  */
-function workflow_state_allowed_values(\Drupal\Core\Field\FieldStorageDefinitionInterface $definition) {
+function workflow_state_allowed_values(FieldStorageDefinitionInterface $definition) {
   $values = $definition->getSetting('allowed_values');
   return $values;
 }

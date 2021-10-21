@@ -8,7 +8,7 @@ dependencies:
 
 configure: geofield_map.settings
 
-# Information added by Drupal.org packaging script on 2020-06-06
-version: '8.x-2.65'
+# Information added by Drupal.org packaging script on 2021-07-17
+version: '8.x-2.70'
 project: 'geofield_map'
-datestamp: 1591461616
+datestamp: 1626553820

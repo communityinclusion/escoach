@@ -151,7 +151,7 @@ class ConfigEntityTrackingTest extends EntityUsageJavascriptTestBase {
     $page->clickLink('Usage');
     $this->saveHtmlOutput();
     // We should be at /webform/contact/usage.
-    $this->assertContains("/webform/contact/usage", $session->getCurrentUrl());
+    $this->assertStringContainsString("/webform/contact/usage", $session->getCurrentUrl());
     $assert_session->elementContains('css', 'main table', 'Node that points to a webform');
     $assert_session->elementContains('css', 'main table', 'Related Webforms');
   }
@@ -258,7 +258,7 @@ class ConfigEntityTrackingTest extends EntityUsageJavascriptTestBase {
     $this->drupalGet('/admin/structure/views/view/content_recent/usage');
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals($host_node->label(), $first_row_title_link->getText());
-    $this->assertContains($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_type = $this->xpath('//table/tbody/tr[1]/td[2]')[0];
     $this->assertEquals('Content', $first_row_type->getText());
     $first_row_langcode = $this->xpath('//table/tbody/tr[1]/td[3]')[0];
@@ -375,7 +375,7 @@ class ConfigEntityTrackingTest extends EntityUsageJavascriptTestBase {
     $this->drupalGet("/block/{$block_content->id()}/usage");
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals($host_node->label(), $first_row_title_link->getText());
-    $this->assertContains($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $this->assertStringContainsString($host_node->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_type = $this->xpath('//table/tbody/tr[1]/td[2]')[0];
     $this->assertEquals('Content', $first_row_type->getText());
     $first_row_langcode = $this->xpath('//table/tbody/tr[1]/td[3]')[0];

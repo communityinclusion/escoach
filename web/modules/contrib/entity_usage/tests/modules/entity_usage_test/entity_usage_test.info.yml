@@ -5,14 +5,13 @@ core_version_requirement: ^8.8 || ^9
 package: Testing
 # version: VERSION
 dependencies:
-  - entity_usage
-  - entity_embed
-  - text
-  - node
-  - ckeditor
-  - media
+   - entity_usage:entity_usage
+   - entity_embed:entity_embed
+   - drupal:text
+   - drupal:node
+   - drupal:ckeditor
 
-# Information added by Drupal.org packaging script on 2020-03-25
-version: '8.x-2.0-beta3'
+# Information added by Drupal.org packaging script on 2021-10-08
+version: '8.x-2.0-beta6'
 project: 'entity_usage'
-datestamp: 1585145910
+datestamp: 1633676595

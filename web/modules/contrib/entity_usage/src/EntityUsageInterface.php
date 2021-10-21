@@ -156,6 +156,8 @@ interface EntityUsageInterface {
    *
    * @param \Drupal\Core\Entity\EntityInterface $source_entity
    *   The source entity to check for references.
+   * @param int $vid
+   *   The revision id to return the references for. Defaults to all revisions.
    *
    * @return array
    *   A nested array with usage data. The first level is keyed by the type of
@@ -165,7 +167,7 @@ interface EntityUsageInterface {
    *
    * @see \Drupal\entity_usage\EntityUsageInterface::listSources()
    */
-  public function listTargets(EntityInterface $source_entity);
+  public function listTargets(EntityInterface $source_entity, $vid = NULL);
 
   /**
    * Determines where an entity is used (deprecated).

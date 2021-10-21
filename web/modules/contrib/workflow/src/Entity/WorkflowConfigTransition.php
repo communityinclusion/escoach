@@ -56,7 +56,9 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
    */
   use WorkflowURLRouteParametersTrait;
 
-  // Transition data.
+  /**
+   * Transition data.
+   */
   public $id;
   public $from_sid;
   public $to_sid;
@@ -80,20 +82,19 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
     // Please be aware that $entity_type and $entityType are different things!
     parent::__construct($values, $entity_type = 'workflow_config_transition');
     $state = WorkflowState::load($this->to_sid ? $this->to_sid : $this->from_sid);
-    if($state) {
+    if ($state) {
       $this->setWorkflow($state->getWorkflow());
     }
   }
 
   /**
-   * Helper function for __construct. Used for all children of WorkflowTransition (aka WorkflowScheduledTransition)
-   * @param $from_sid
-   * @param $to_sid
+   * Helper function for __construct.
+   *
+   * Used for WorkflowTransition ánd WorkflowScheduledTransition.
    */
-  public function setValues($from_sid, $to_sid) {
-    // @todo : unused parameters. Remove the method/parameters?
+  public function setValues() {
     $state = WorkflowState::load($this->to_sid ? $this->to_sid : $this->from_sid);
-    if($state) {
+    if ($state) {
       $this->setWorkflow($state->getWorkflow());
     }
   }
@@ -125,10 +126,15 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
       }
     }
 
-    // Create the machine_name. This can be used to rebuild/revert the Feature in a target system.
+    // Create the machine_name.
+    // This can be used to rebuild/revert the Feature in a target system.
     if (empty($this->id())) {
       $wid = $workflow->id();
-      $this->set('id', implode('', [$wid, substr($this->from_sid, strlen($wid)), substr($this->to_sid, strlen($wid))]));
+      $this->set('id', implode('', [
+        $wid,
+        substr($this->from_sid, strlen($wid)),
+        substr($this->to_sid, strlen($wid)),
+      ]));
     }
 
     $status = parent::save();
@@ -148,26 +154,33 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
   /**
    * {@inheritdoc}
    */
-  /** @noinspection PhpMissingParentCallCommonInspection */
   public static function sort(ConfigEntityInterface $a, ConfigEntityInterface $b) {
     // Sort the entities using the entity class's sort() method.
     // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
-    /** @var WorkflowTransitionInterface $a */
-    /** @var WorkflowTransitionInterface $b */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $a */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $b */
     if (!$a->getFromSid() || !$b->getFromSid()) {
       return 0;
     }
     // First sort on From-State.
     $from_state_a = $a->getFromState();
     $from_state_b = $b->getFromState();
-    if ($from_state_a->weight < $from_state_b->weight) return -1;
-    if ($from_state_a->weight > $from_state_b->weight) return +1;
+    if ($from_state_a->weight < $from_state_b->weight) {
+      return -1;
+    }
+    if ($from_state_a->weight > $from_state_b->weight) {
+      return +1;
+    }
 
     // Then sort on To-State.
     $to_state_a = $a->getToState();
     $to_state_b = $b->getToState();
-    if ($to_state_a->weight < $to_state_b->weight) return -1;
-    if ($to_state_a->weight > $to_state_b->weight) return +1;
+    if ($to_state_a->weight < $to_state_b->weight) {
+      return -1;
+    }
+    if ($to_state_a->weight > $to_state_b->weight) {
+      return +1;
+    }
 
     return 0;
   }
@@ -228,6 +241,7 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
    * Determines if the State changes by this Transition.
    *
    * @return bool
+   *   TRUE if this Transition changes the state value.
    */
   public function hasStateChange() {
     if ($this->from_sid == $this->to_sid) {

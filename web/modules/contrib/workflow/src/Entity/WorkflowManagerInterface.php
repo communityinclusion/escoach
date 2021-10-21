@@ -33,14 +33,13 @@ interface WorkflowManagerInterface {
    * To keep things simple, this is done for both insert() and update().
    *
    * This is referenced in from WorkflowDefaultWidget::massageFormValues().
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    */
   public static function executeTransitionsOfEntity(EntityInterface $entity);
 
   /********************************************************************
-   *
    * Hook-implementing functions.
-   *
    */
 
   /**
@@ -49,7 +48,6 @@ interface WorkflowManagerInterface {
    * Make sure some roles are allowed to participate in a Workflow by default.
    *
    * @param \Drupal\Core\Entity\EntityInterface $workflow
-   * @return
    */
   public static function participateUserRoles(EntityInterface $workflow);
 
@@ -62,6 +60,7 @@ interface WorkflowManagerInterface {
 
   /**
    * Implements hook_user_cancel().
+   *
    * Implements deprecated workflow_update_workflow_transition_history_uid().
    *
    * " When cancelling the account
@@ -78,9 +77,7 @@ interface WorkflowManagerInterface {
   public static function cancelUser($edit, AccountInterface $account, $method);
 
   /********************************************************************
-   *
    * Helper functions.
-   *
    */
 
   /**
@@ -93,7 +90,7 @@ interface WorkflowManagerInterface {
    *   An array of workflow field map definitions, keyed by field name. Each
    *   value is an array with two entries:
    *   - type: The field type.
-   *   - bundles: The bundles in which the field appears, as an array with entity
+   *   - bundles: The bundles in which the field appears, as array with entity
    *     types as keys and the array of bundle names as values.
    *
    * @see \Drupal\Core\Entity\EntityManagerInterface::getFieldMap()
@@ -103,18 +100,21 @@ interface WorkflowManagerInterface {
 
   /**
    * Gets the TransitionWidget in a form (for e.g., Workflow History Tab)
+   *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    * @param string $field_name
    * @param array $form_state_additions
-   * @return
+   *
+   * @return array
+   *   The form.
    */
   public static function getWorkflowTransitionForm(EntityInterface $entity, $field_name, array $form_state_additions = []);
 
   /**
    * Returns the attached fields (via Field UI)
    *
-   * @param $entity_type_id
-   * @param $bundle
+   * @param string $entity_type_id
+   * @param string $bundle
    *
    * @return array
    */
@@ -162,11 +162,12 @@ interface WorkflowManagerInterface {
 
   /**
    * Determine if the entity is Workflow* entity type.
-   * Use it when a function should not operate on Workflow objects.
    *
    * @param string $entity_type_id
    *
    * @return bool
+   *
+   * @usage Use it when a function should not operate on Workflow objects.
    */
   public static function isWorkflowEntityType($entity_type_id);
 

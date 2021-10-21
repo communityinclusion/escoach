@@ -9,4 +9,4 @@ tracking_exception: 'user:password_reset'
 format_filter: 'plain_text'
 use_queue: false
 use_theme: false
-tagging_mailkey: true
+tagging_mailkey: false

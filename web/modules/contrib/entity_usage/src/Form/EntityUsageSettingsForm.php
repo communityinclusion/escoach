@@ -105,6 +105,8 @@ class EntityUsageSettingsForm extends ConfigFormBase {
         $tabs_options[$entity_type->id()] = $entity_type->getLabel();
       }
     }
+    natcasesort($entity_type_options);
+
     // Files and users shouldn't be tracked by default.
     unset($content_entity_types['file']);
     unset($content_entity_types['user']);

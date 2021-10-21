@@ -7,6 +7,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\workflow\WorkflowTypeAttributeTrait;
 use Drupal\workflow\WorkflowURLRouteParametersTrait;
 
@@ -27,7 +28,7 @@ use Drupal\workflow\WorkflowURLRouteParametersTrait;
  *   translatable = FALSE,
  *   handlers = {
  *     "access" = "Drupal\workflow\WorkflowAccessControlHandler",
- *     "list_builder" = "Drupal\workflow_ui\Controller\WorkflowStateListBuilder",
+ *     "list_builder" = "Drupal\workflow\WorkflowStateListBuilder",
  *     "form" = {
  *        "delete" = "Drupal\Core\Entity\EntityDeleteForm",
  *      }
@@ -60,6 +61,10 @@ class WorkflowState extends ConfigEntityBase {
    */
   use WorkflowTypeAttributeTrait;
   /*
+   * Add translation trait.
+   */
+  use StringTranslationTrait;
+  /*
    * Provide URL route parameters for entity links.
    */
   use WorkflowURLRouteParametersTrait;
@@ -89,6 +94,9 @@ class WorkflowState extends ConfigEntityBase {
    * @var int
    */
   public $sysid = 0;
+  /**
+   * @var int
+   */
   public $status = 1;
 
   /**
@@ -114,7 +122,7 @@ class WorkflowState extends ConfigEntityBase {
     $sid = isset($values['id']) ? $values['id'] : '';
 
     // Keep official name and external name equal. Both are required.
-    // @todo: still needed? test import, manual creation, programmatic creation, etc.
+    // @todo Still needed? test import, manual creation, programmatic creation, etc.
     if (!isset($values['label']) && $sid) {
       $values['label'] = $sid;
     }
@@ -124,7 +132,7 @@ class WorkflowState extends ConfigEntityBase {
       $values['sysid'] = WORKFLOW_CREATION_STATE;
       $values['weight'] = WORKFLOW_CREATION_DEFAULT_WEIGHT;
       // Do not translate the machine_name.
-      $values['label'] = t('Creation');
+      $values['label'] = $this->t('Creation');
     }
     parent::__construct($values, $entityType);
   }
@@ -180,17 +188,19 @@ class WorkflowState extends ConfigEntityBase {
   /**
    * Get all states in the system, with options to filter, only where a workflow exists.
    *
-   * @_deprecated WorkflowState::getStates() ==> WorkflowState::loadMultiple()
-   *
    * {@inheritdoc}
    *
-   * @param $wid
+   * @param array $ids
+   *   An array of State IDs, or NULL to load all states.
+   * @param string $wid
    *   The requested Workflow ID.
    * @param bool $reset
    *   An option to refresh all caches.
    *
    * @return WorkflowState[]
    *   An array of cached states, keyed by state_id.
+   *
+   * @_deprecated WorkflowState::getStates() ==> WorkflowState::loadMultiple()
    */
   public static function loadMultiple(array $ids = NULL, $wid = '', $reset = FALSE) {
     $states = parent::loadMultiple();
@@ -212,8 +222,8 @@ class WorkflowState extends ConfigEntityBase {
    * {@inheritdoc}
    */
   public static function sort(ConfigEntityInterface $a, ConfigEntityInterface $b) {
-    /** @var WorkflowState $a */
-    /** @var WorkflowState $b */
+    /** @var \Drupal\workflow\Entity\WorkflowState $a */
+    /** @var \Drupal\workflow\Entity\WorkflowState $b */
     $a_wid = $a->getWorkflowId();
     $b_wid = $b->getWorkflowId();
     if ($a_wid == $b_wid) {
@@ -246,10 +256,10 @@ class WorkflowState extends ConfigEntityBase {
     // @todo D8-port: State should not know about Transition: move this to Workflow->DeactivateState.
     if ($new_sid) {
       // A candidate for the batch API.
-      // @todo: Future updates should seriously consider setting this with batch.
+      // @todo Future updates should seriously consider setting this with batch.
       // Use global user, since deactivate() is a UI-only function.
       $user = \Drupal::currentUser();
-      $comment = t('Previous state deleted');
+      $comment = $this->t('Previous state deleted');
 
       foreach (_workflow_info_fields() as $field_info) {
         $entity_type_id = $field_info->getTargetEntityTypeId();
@@ -280,8 +290,8 @@ class WorkflowState extends ConfigEntityBase {
 
     // Delete the transitions this state is involved in.
     $workflow = Workflow::load($this->getWorkflowId());
-    /** @var WorkflowInterface $workflow */
-    /** @var WorkflowTransitionInterface $transition */
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     foreach ($workflow->getTransitionsByStateId($current_sid, '') as $transition) {
       $transition->delete();
     }
@@ -325,6 +335,7 @@ class WorkflowState extends ConfigEntityBase {
    * Checks if the given state is the 'Create' state.
    *
    * @return bool
+   *   TRUE if the state is the Creation state, else FALSE.
    */
   public function isCreationState() {
     return $this->sysid == WORKFLOW_CREATION_STATE;
@@ -375,6 +386,7 @@ class WorkflowState extends ConfigEntityBase {
   public function getTransitions(EntityInterface $entity = NULL, $field_name = '', AccountInterface $account = NULL, $force = FALSE) {
     $transitions = [];
 
+    /** @var \Drupal\workflow\Entity\Workflow $workflow */
     if (!$workflow = $this->getWorkflow()) {
       // No workflow, no options ;-)
       return $transitions;
@@ -385,32 +397,29 @@ class WorkflowState extends ConfigEntityBase {
       return $transitions;
     }
 
-    // @todo: Keep below code aligned between WorkflowState, ~Transition, ~TransitionListController
-    /**
-     * Get permissions of user, adding a Role to user, depending on situation.
+    // @todo Keep below code aligned between WorkflowState, ~Transition, ~HistoryAccess
+    /*
+     * Get user's permissions.
      */
-    // Determine if user is owner of the entity.
-    $is_owner = WorkflowManager::isOwner($user, $entity);
-
-    // Check allow-ability of state change if user is not superuser (might be cron)
     $type_id = $this->getWorkflowId();
     if ($user->hasPermission("bypass $type_id workflow_transition access")) {
-      // Superuser is special. And $force allows Rules to cause transition.
+      // Superuser is special (might be cron).
+      // And $force allows Rules to cause transition.
       $force = TRUE;
     }
-
+    // Determine if user is owner of the entity. If so, add role.
+    $is_owner = WorkflowManager::isOwner($user, $entity);
     if ($is_owner) {
       $user->addRole(WORKFLOW_ROLE_AUTHOR_RID);
     }
 
-    /**
+    /*
      * Get the object and its permissions.
      */
-    /** @var WorkflowConfigTransition[] $transitions */
-    /** @var Workflow $workflow */
+    /** @var \Drupal\workflow\Entity\WorkflowConfigTransition[] $transitions */
     $transitions = $workflow->getTransitionsByStateId($this->id(), '');
 
-    /**
+    /*
      * Determine if user has Access.
      */
     // Use default module permissions.
@@ -424,39 +433,15 @@ class WorkflowState extends ConfigEntityBase {
     // Modules may veto a choice by removing a transition from the list.
     // Lots of data can be fetched via the $transition object.
     $context = [
-      'entity' => $entity, // ConfigEntities do not have entity attached
-      'field_name' => $field_name, // or field.
-      'user' => $user, // user may have the custom role AUTHOR.
+      'entity' => $entity, // ConfigEntities do not have entity attached.
+      'field_name' => $field_name, // Or field.
+      'user' => $user, // User may have the custom role AUTHOR.
       'workflow' => $workflow,
       'state' => $this,
       'force' => $force,
     ];
     \Drupal::moduleHandler()->alter('workflow_permitted_state_transitions', $transitions, $context);
 
-    /**
-     * Determine if user has Access.
-     */
-    // As of 8.x-1.x, below hook() is removed, in favour of above alter().
-    // Let custom code change the options, using old_style hook.
-    // Above drupal_alter() calls hook_workflow_permitted_state_transitions_alter() only once.
-//    foreach ($transitions as $transition) {
-//      $to_sid = $transition->to_sid;
-//      $permitted = [];
-//
-//      // We now have a list of config_transitions. Check each against the Entity.
-//      // Invoke a callback indicating that we are collecting state choices.
-//      // Modules may veto a choice by returning FALSE.
-//      // In this case, the choice is never presented to the user.
-//      if (!$force) {
-//        // @todo: D8-port: simplify interface for workflow_hook. Remove redundant context.
-//        $permitted = \Drupal::moduleHandler()->invokeAll('workflow', ['transition permitted', $transition, $user]);
-//      }
-//
-//      // If vetoed by a module, remove from list.
-//      if (in_array(FALSE, $permitted, TRUE)) {
-//        unset($transitions[$transition->id()]);
-//      }
-//    }
     return $transitions;
   }
 
@@ -501,10 +486,10 @@ class WorkflowState extends ConfigEntityBase {
       // If no State ID is given, we return all states.
       // We cannot use getTransitions, since there are no ConfigTransitions
       // from State with ID 0, and we do not want to repeat States.
-      /** @var WorkflowState $state */
-      /** @var Workflow $workflow */
-      foreach ($workflow->getStates() as $state) {
-        $options[$state->id()] = html_entity_decode(t('@label', ['@label' => $state->label()]));
+      foreach ($workflow->getStates('CREATION') as $state) {
+        // #3119998
+        /** @var \Drupal\workflow\Entity\WorkflowState $state */
+        $options[$state->id()] = html_entity_decode($this->t('@label', ['@label' => $state->label()]));
       }
     }
     else {
@@ -518,7 +503,7 @@ class WorkflowState extends ConfigEntityBase {
           $label = $to_state ? $to_state->label() : '';
         }
         $to_sid = $transition->to_sid;
-        $options[$to_sid] = html_entity_decode(t('@label', ['@label' => $label]));
+        $options[$to_sid] = html_entity_decode($this->t('@label', ['@label' => $label]));
       }
 
       // Save to entity-specific cache.
@@ -534,7 +519,7 @@ class WorkflowState extends ConfigEntityBase {
    * @return int
    *   Counted number.
    *
-   * @todo: add $options to select on entity type, etc.
+   * @todo Add $options to select on entity type, etc.
    */
   public function count() {
     $count = 0;
@@ -546,7 +531,7 @@ class WorkflowState extends ConfigEntityBase {
       // @see #2285983 for using SQLite on D7.
       $count += $query
         ->condition($field_name, $sid, '=')
-        ->count() // We only need the count.
+        ->count()
         ->execute();
     }
 

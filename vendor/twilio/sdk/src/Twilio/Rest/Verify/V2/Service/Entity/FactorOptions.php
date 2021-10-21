@@ -13,185 +13,26 @@ use Twilio\Options;
 use Twilio\Values;
 
 /**
- * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
+ * PLEASE NOTE that this class contains beta products that are subject to change. Use them with caution.
  */
 abstract class FactorOptions {
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @param string $authorization The Authorization HTTP request header
-     * @return CreateFactorOptions Options builder
-     */
-    public static function create(string $twilioSandboxMode = Values::NONE, string $authorization = Values::NONE): CreateFactorOptions {
-        return new CreateFactorOptions($twilioSandboxMode, $authorization);
-    }
-
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @return DeleteFactorOptions Options builder
-     */
-    public static function delete(string $twilioSandboxMode = Values::NONE): DeleteFactorOptions {
-        return new DeleteFactorOptions($twilioSandboxMode);
-    }
-
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @return FetchFactorOptions Options builder
-     */
-    public static function fetch(string $twilioSandboxMode = Values::NONE): FetchFactorOptions {
-        return new FetchFactorOptions($twilioSandboxMode);
-    }
-
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @return ReadFactorOptions Options builder
-     */
-    public static function read(string $twilioSandboxMode = Values::NONE): ReadFactorOptions {
-        return new ReadFactorOptions($twilioSandboxMode);
-    }
-
     /**
      * @param string $authPayload Optional payload to verify the Factor for the
      *                            first time
      * @param string $friendlyName The friendly name of this Factor
-     * @param string $config The config for this Factor as a json string
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
+     * @param string $configNotificationToken For APN, the device token. For FCM
+     *                                        the registration token
+     * @param string $configSdkVersion The Verify Push SDK version used to
+     *                                 configure the factor
+     * @param int $configTimeStep How often, in seconds, are TOTP codes generated
+     * @param int $configSkew The number of past and future time-steps valid at a
+     *                        given time
+     * @param int $configCodeLength Number of digits for generated TOTP codes
+     * @param string $configAlg The algorithm used to derive the TOTP codes
      * @return UpdateFactorOptions Options builder
      */
-    public static function update(string $authPayload = Values::NONE, string $friendlyName = Values::NONE, string $config = Values::NONE, string $twilioSandboxMode = Values::NONE): UpdateFactorOptions {
-        return new UpdateFactorOptions($authPayload, $friendlyName, $config, $twilioSandboxMode);
-    }
-}
-
-class CreateFactorOptions extends Options {
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @param string $authorization The Authorization HTTP request header
-     */
-    public function __construct(string $twilioSandboxMode = Values::NONE, string $authorization = Values::NONE) {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-        $this->options['authorization'] = $authorization;
-    }
-
-    /**
-     * The Twilio-Sandbox-Mode HTTP request header
-     *
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @return $this Fluent Builder
-     */
-    public function setTwilioSandboxMode(string $twilioSandboxMode): self {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-        return $this;
-    }
-
-    /**
-     * The Authorization HTTP request header
-     *
-     * @param string $authorization The Authorization HTTP request header
-     * @return $this Fluent Builder
-     */
-    public function setAuthorization(string $authorization): self {
-        $this->options['authorization'] = $authorization;
-        return $this;
-    }
-
-    /**
-     * Provide a friendly representation
-     *
-     * @return string Machine friendly representation
-     */
-    public function __toString(): string {
-        $options = \http_build_query(Values::of($this->options), '', ' ');
-        return '[Twilio.Verify.V2.CreateFactorOptions ' . $options . ']';
-    }
-}
-
-class DeleteFactorOptions extends Options {
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     */
-    public function __construct(string $twilioSandboxMode = Values::NONE) {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-    }
-
-    /**
-     * The Twilio-Sandbox-Mode HTTP request header
-     *
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @return $this Fluent Builder
-     */
-    public function setTwilioSandboxMode(string $twilioSandboxMode): self {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-        return $this;
-    }
-
-    /**
-     * Provide a friendly representation
-     *
-     * @return string Machine friendly representation
-     */
-    public function __toString(): string {
-        $options = \http_build_query(Values::of($this->options), '', ' ');
-        return '[Twilio.Verify.V2.DeleteFactorOptions ' . $options . ']';
-    }
-}
-
-class FetchFactorOptions extends Options {
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     */
-    public function __construct(string $twilioSandboxMode = Values::NONE) {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-    }
-
-    /**
-     * The Twilio-Sandbox-Mode HTTP request header
-     *
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @return $this Fluent Builder
-     */
-    public function setTwilioSandboxMode(string $twilioSandboxMode): self {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-        return $this;
-    }
-
-    /**
-     * Provide a friendly representation
-     *
-     * @return string Machine friendly representation
-     */
-    public function __toString(): string {
-        $options = \http_build_query(Values::of($this->options), '', ' ');
-        return '[Twilio.Verify.V2.FetchFactorOptions ' . $options . ']';
-    }
-}
-
-class ReadFactorOptions extends Options {
-    /**
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     */
-    public function __construct(string $twilioSandboxMode = Values::NONE) {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-    }
-
-    /**
-     * The Twilio-Sandbox-Mode HTTP request header
-     *
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
-     * @return $this Fluent Builder
-     */
-    public function setTwilioSandboxMode(string $twilioSandboxMode): self {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
-        return $this;
-    }
-
-    /**
-     * Provide a friendly representation
-     *
-     * @return string Machine friendly representation
-     */
-    public function __toString(): string {
-        $options = \http_build_query(Values::of($this->options), '', ' ');
-        return '[Twilio.Verify.V2.ReadFactorOptions ' . $options . ']';
+    public static function update(string $authPayload = Values::NONE, string $friendlyName = Values::NONE, string $configNotificationToken = Values::NONE, string $configSdkVersion = Values::NONE, int $configTimeStep = Values::NONE, int $configSkew = Values::NONE, int $configCodeLength = Values::NONE, string $configAlg = Values::NONE): UpdateFactorOptions {
+        return new UpdateFactorOptions($authPayload, $friendlyName, $configNotificationToken, $configSdkVersion, $configTimeStep, $configSkew, $configCodeLength, $configAlg);
     }
 }
 
@@ -200,14 +41,25 @@ class UpdateFactorOptions extends Options {
      * @param string $authPayload Optional payload to verify the Factor for the
      *                            first time
      * @param string $friendlyName The friendly name of this Factor
-     * @param string $config The config for this Factor as a json string
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
+     * @param string $configNotificationToken For APN, the device token. For FCM
+     *                                        the registration token
+     * @param string $configSdkVersion The Verify Push SDK version used to
+     *                                 configure the factor
+     * @param int $configTimeStep How often, in seconds, are TOTP codes generated
+     * @param int $configSkew The number of past and future time-steps valid at a
+     *                        given time
+     * @param int $configCodeLength Number of digits for generated TOTP codes
+     * @param string $configAlg The algorithm used to derive the TOTP codes
      */
-    public function __construct(string $authPayload = Values::NONE, string $friendlyName = Values::NONE, string $config = Values::NONE, string $twilioSandboxMode = Values::NONE) {
+    public function __construct(string $authPayload = Values::NONE, string $friendlyName = Values::NONE, string $configNotificationToken = Values::NONE, string $configSdkVersion = Values::NONE, int $configTimeStep = Values::NONE, int $configSkew = Values::NONE, int $configCodeLength = Values::NONE, string $configAlg = Values::NONE) {
         $this->options['authPayload'] = $authPayload;
         $this->options['friendlyName'] = $friendlyName;
-        $this->options['config'] = $config;
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
+        $this->options['configNotificationToken'] = $configNotificationToken;
+        $this->options['configSdkVersion'] = $configSdkVersion;
+        $this->options['configTimeStep'] = $configTimeStep;
+        $this->options['configSkew'] = $configSkew;
+        $this->options['configCodeLength'] = $configCodeLength;
+        $this->options['configAlg'] = $configAlg;
     }
 
     /**
@@ -223,7 +75,7 @@ class UpdateFactorOptions extends Options {
     }
 
     /**
-     * The new friendly name of this Factor
+     * The new friendly name of this Factor. It can be up to 64 characters.
      *
      * @param string $friendlyName The friendly name of this Factor
      * @return $this Fluent Builder
@@ -234,24 +86,71 @@ class UpdateFactorOptions extends Options {
     }
 
     /**
-     * The new config for this Factor. It must be a json string with the required properties for the given factor type
+     * For APN, the device token. For FCM the registration token. It used to send the push notifications. Required when `factor_type` is `push`. If specified, this value must be between 32 and 255 characters long.
      *
-     * @param string $config The config for this Factor as a json string
+     * @param string $configNotificationToken For APN, the device token. For FCM
+     *                                        the registration token
      * @return $this Fluent Builder
      */
-    public function setConfig(string $config): self {
-        $this->options['config'] = $config;
+    public function setConfigNotificationToken(string $configNotificationToken): self {
+        $this->options['configNotificationToken'] = $configNotificationToken;
         return $this;
     }
 
     /**
-     * The Twilio-Sandbox-Mode HTTP request header
+     * The Verify Push SDK version used to configure the factor
      *
-     * @param string $twilioSandboxMode The Twilio-Sandbox-Mode HTTP request header
+     * @param string $configSdkVersion The Verify Push SDK version used to
+     *                                 configure the factor
      * @return $this Fluent Builder
      */
-    public function setTwilioSandboxMode(string $twilioSandboxMode): self {
-        $this->options['twilioSandboxMode'] = $twilioSandboxMode;
+    public function setConfigSdkVersion(string $configSdkVersion): self {
+        $this->options['configSdkVersion'] = $configSdkVersion;
+        return $this;
+    }
+
+    /**
+     * Defines how often, in seconds, are TOTP codes generated. i.e, a new TOTP code is generated every time_step seconds. Must be between 20 and 60 seconds, inclusive
+     *
+     * @param int $configTimeStep How often, in seconds, are TOTP codes generated
+     * @return $this Fluent Builder
+     */
+    public function setConfigTimeStep(int $configTimeStep): self {
+        $this->options['configTimeStep'] = $configTimeStep;
+        return $this;
+    }
+
+    /**
+     * The number of time-steps, past and future, that are valid for validation of TOTP codes. Must be between 0 and 2, inclusive
+     *
+     * @param int $configSkew The number of past and future time-steps valid at a
+     *                        given time
+     * @return $this Fluent Builder
+     */
+    public function setConfigSkew(int $configSkew): self {
+        $this->options['configSkew'] = $configSkew;
+        return $this;
+    }
+
+    /**
+     * Number of digits for generated TOTP codes. Must be between 3 and 8, inclusive
+     *
+     * @param int $configCodeLength Number of digits for generated TOTP codes
+     * @return $this Fluent Builder
+     */
+    public function setConfigCodeLength(int $configCodeLength): self {
+        $this->options['configCodeLength'] = $configCodeLength;
+        return $this;
+    }
+
+    /**
+     * The algorithm used to derive the TOTP codes. Can be `sha1`, `sha256` or `sha512`
+     *
+     * @param string $configAlg The algorithm used to derive the TOTP codes
+     * @return $this Fluent Builder
+     */
+    public function setConfigAlg(string $configAlg): self {
+        $this->options['configAlg'] = $configAlg;
         return $this;
     }
 

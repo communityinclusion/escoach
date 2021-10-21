@@ -30,19 +30,20 @@ class WorkflowHistoryAccess implements AccessInterface {
   public function access(AccountInterface $account, RouteMatchInterface $routeMatch, Route $route) {
     static $access = [];
 
-    $uid = ($account) ? $account->id() : -1;
-
     $entity = workflow_url_get_entity(NULL, $routeMatch);
+    if (!$entity) {
+      return AccessResult::forbidden();
+    }
+
     $entity_id = $entity->id();
     $entity_type = $entity->getEntityTypeId();
     $entity_bundle = $entity->bundle();
-    $field_name = workflow_url_get_parameter('field_name'); // @todo: this doesn't work.
+    $field_name = workflow_url_get_parameter('field_name'); // @todo This doesn't work.
 
+    $uid = ($account) ? $account->id() : -1;
     if (isset($access[$uid][$entity_type][$entity_id][$field_name ? $field_name : 'no_field'])) {
       return $access[$uid][$entity_type][$entity_id][$field_name ? $field_name : 'no_field'];
     }
-
-    $access_result = AccessResult::forbidden();
 
     // When having multiple workflows per bundle, use Views display
     // 'Workflow history per entity' instead!
@@ -51,15 +52,17 @@ class WorkflowHistoryAccess implements AccessInterface {
       return AccessResult::forbidden();
     }
 
-    // @todo: Keep below code aligned between WorkflowState, ~Transition, ~TransitionListController
+    $access_result = AccessResult::forbidden();
+
+    // @todo Keep below code aligned between WorkflowState, ~Transition, ~HistoryAccess
     // Determine if user is owner of the entity.
     $is_owner = WorkflowManager::isOwner($account, $entity);
 
     /*
      * Determine if user has Access. Fill the cache.
      */
-    // @todo: what to do with multiple workflow_fields per bundle? Use Views instead! Or introduce a setting.
-    // @todo D8-port: workflow_tab_access: use proper 'WORKFLOW_TYPE' permissions
+    // @todo What to do with multiple workflow_fields per bundle? Use Views instead! Or introduce a setting.
+    // @todo Use proper 'WORKFLOW_TYPE' permissions for workflow_tab_access.
     foreach ($fields as $definition) {
       $type_id = $definition->getSetting('workflow_type');
       if ($account->hasPermission("access any $type_id workflow_transion overview")) {
@@ -76,4 +79,5 @@ class WorkflowHistoryAccess implements AccessInterface {
 
     return $access_result;
   }
+
 }

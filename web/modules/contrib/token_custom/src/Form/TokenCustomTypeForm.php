@@ -91,10 +91,10 @@ class TokenCustomTypeForm extends BundleEntityFormBase {
     $t_args = ['%name' => $entity->label()];
 
     if ($status == SAVED_UPDATED) {
-      drupal_set_message($this->t('The token_custom type %name has been updated.', $t_args));
+      $this->messenger()->addStatus($this->t('The token_custom type %name has been updated.', $t_args));
     }
     elseif ($status == SAVED_NEW) {
-      drupal_set_message($this->t('The token_custom type %name has been added.', $t_args));
+      $this->messenger()->addStatus($this->t('The token_custom type %name has been added.', $t_args));
       $context = array_merge($t_args, ['link' => $entity->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('token_custom')->notice('Added token_custom type %name.', $context);
     }

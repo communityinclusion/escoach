@@ -41,10 +41,10 @@ class RouteSubscriber extends RouteSubscriberBase {
     foreach ($field_list as $entityTypeId => $fields) {
 
       /*
-       * @todo: For entities with +1 workflow fields, Create an
-       * Entity workflow field list page and a route
-       * that redirect to the correct page.
-       * @todo: Routes for 3 workflow fields on 3 different bundles of 1 entity type.
+       * @todo For entities with multiple workflow fields, Create an
+       *   Entity workflow field list page and a route
+       *   that redirect to the correct page.
+       * @todo Routes for multiple workflow fields on 3 different bundles of 1 entity type.
        */
 
       // Generate route for default field. Redirect to workflow/{field_name}.
@@ -90,7 +90,7 @@ class RouteSubscriber extends RouteSubscriberBase {
       ],
       [
         '_admin_route' => TRUE,
-        '_workflow_entity_type_id' => $entityTypeId, // @todo: remove
+        '_workflow_entity_type_id' => $entityTypeId, // @todo Remove this.
         'parameters' => [
           $entityTypeId => ['type' => 'entity:' . $entityTypeId],
         ],

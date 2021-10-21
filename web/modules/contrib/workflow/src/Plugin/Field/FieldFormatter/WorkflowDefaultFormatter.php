@@ -2,7 +2,6 @@
 
 namespace Drupal\workflow\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -45,7 +44,7 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
   protected $currentUser;
 
   /**
-   * The  render controller.
+   * The render controller.
    *
    * @var \Drupal\Core\Entity\EntityViewBuilderInterface
    */
@@ -57,31 +56,6 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-
-  /**
-   * The entity form builder.
-   *
-   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
-   */
-  protected $entityFormBuilder;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $plugin_id,
-      $plugin_definition,
-      $configuration['field_definition'],
-      $configuration['settings'],
-      $configuration['label'],
-      $configuration['view_mode'],
-      $configuration['third_party_settings'],
-      $container->get('current_user'),
-      $container->get('entity.manager'),
-      $container->get('entity.form_builder')
-    );
-  }
 
   /**
    * Constructs a new WorkflowDefaultFormatter.
@@ -102,18 +76,32 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
    *   Third party settings.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
-   *   The entity manager
-   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
-   *   The entity form builder.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity_type manager.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AccountInterface $current_user, EntityTypeManagerInterface $entity_manager, EntityFormBuilderInterface $entity_form_builder) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
-    $this->viewBuilder = $entity_manager->getViewBuilder('workflow_transition');
-    $this->storage = $entity_manager->getStorage('workflow_transition');
+    $this->viewBuilder = $entity_type_manager->getViewBuilder('workflow_transition');
+    $this->storage = $entity_type_manager->getStorage('workflow_transition');
     $this->currentUser = $current_user;
-    $this->entityTypeManager = $entity_manager;
-    $this->entityFormBuilder = $entity_form_builder;
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['label'],
+      $configuration['view_mode'],
+      $configuration['third_party_settings'],
+      $container->get('current_user'),
+      $container->get('entity_type.manager')
+    );
   }
 
   /**
@@ -128,15 +116,15 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
     $entity = $items->getEntity();
     $entity_type = $entity->getEntityTypeId();
 
-    $user = \Drupal::currentUser(); // @todo #2287057: OK?
-    // @todo: Perhaps global user is not always the correct user.
+    // @todo Perhaps global user is not always the correct user.
     // E.g., on ScheduledTransition->execute()? But this function is mostly used in UI.
+    $user = $this->currentUser; // @todo #2287057: OK?
 
     $current_sid = WorkflowManager::getCurrentStateId($entity, $field_name);
     // First compose the current value with the normal formatter from list.module.
     $elements = workflow_state_formatter($entity, $field_name, $current_sid);
 
-    /* @var $current_state WorkflowState */
+    /** @var \Drupal\workflow\Entity\WorkflowState $current_state */
     $current_state = WorkflowState::load($current_sid);
     // The state must not be deleted, or corrupted.
     if (!$current_state) {
@@ -146,7 +134,7 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
     // Check permission, so that even with state change rights,
     // the form can be suppressed from the entity view (#1893724).
     $type_id = $current_state->getWorkflowId();
-    if (!\Drupal::currentUser()->hasPermission("access $type_id workflow_transition form")) {
+    if (!$this->currentUser->hasPermission("access $type_id workflow_transition form")) {
       return $elements;
     }
 
@@ -171,7 +159,7 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
     // Remove the default formatter. We are now building the widget.
     $elements = [];
 
-    // BEGIN Copy from CommentDefaultFormatter
+    // BEGIN Copy from CommentDefaultFormatter.
     $elements['#cache']['contexts'][] = 'user.permissions';
     // Add the WorkflowTransitionForm to the page.
     $output['workflows'] = WorkflowManager::getWorkflowTransitionForm($entity, $field_name, []);
@@ -183,23 +171,9 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
       '#workflow_type' => $this->getFieldSetting('workflow_type'),
       '#workflow_display_mode' => $this->getFieldSetting('default_mode'),
       'workflows' => [],
-      ];
-    // END Copy from CommentDefaultFormatter
-
+    ];
+    // END Copy from CommentDefaultFormatter.
     return $elements;
-  }
-
-  /**
-   * Retrieves the entity form builder.
-   *
-   * @return \Drupal\Core\Entity\EntityFormBuilderInterface
-   *   The entity form builder.
-   */
-  protected function entityFormBuilder() {
-    if (!$this->entityFormBuilder) {
-      $this->entityFormBuilder = $this->container()->get('entity.form_builder');
-    }
-    return $this->entityFormBuilder;
   }
 
 }

@@ -17,6 +17,11 @@ class EntityUsageBatchManager implements ContainerInjectionInterface {
   use StringTranslationTrait;
 
   /**
+   * The size of the batch for the revision queries.
+   */
+  const REVISION_BATCH_SIZE = 15;
+
+  /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -132,42 +137,83 @@ class EntityUsageBatchManager implements ContainerInjectionInterface {
         ->accessCheck(FALSE)
         ->count()
         ->execute();
+      $context['sandbox']['batch_entity_revision'] = [
+        'status' => 0,
+        'current_vid' => 0,
+        'start' => 0,
+      ];
+    }
+    if ($context['sandbox']['batch_entity_revision']['status']) {
+      $op = '=';
+    }
+    else {
+      $op = '>';
     }
 
     $entity_ids = $entity_storage->getQuery()
-      ->condition($entity_type_key, $context['sandbox']['current_id'], '>')
+      ->condition($entity_type_key, $context['sandbox']['current_id'], $op)
       ->range(0, 1)
       ->accessCheck(FALSE)
       ->sort($entity_type_key)
       ->execute();
+    $entity_id = reset($entity_ids);
 
-    /** @var \Drupal\Core\Entity\EntityInterface $entity */
-    $entity = $entity_storage->load(reset($entity_ids));
-    if ($entity) {
-      if ($entity->getEntityType()->isRevisionable()) {
-        // Track all revisions and translations of the source entity. Sources
-        // are tracked as if they were new entities.
-        $result = $entity_storage->getQuery()->allRevisions()
-          ->condition($entity->getEntityType()->getKey('id'), $entity->id())
-          ->sort($entity->getEntityType()->getKey('revision'), 'DESC')
-          ->execute();
-        $revision_ids = array_keys($result);
-
-        foreach ($revision_ids as $revision_id) {
-          /** @var \Drupal\Core\Entity\EntityInterface $entity_revision */
-          if (!$entity_revision = $entity_storage->loadRevision($revision_id)) {
-            continue;
+    if ($entity_id && $entity = $entity_storage->load($entity_id)) {
+      /** @var \Drupal\Core\Entity\EntityInterface $entity */
+      try {
+        if ($entity->getEntityType()->isRevisionable()) {
+          // We cannot query the revisions due to this bug
+          // https://www.drupal.org/project/drupal/issues/2766135
+          // so we will use offsets.
+          $start = $context['sandbox']['batch_entity_revision']['start'];
+          // Track all revisions and translations of the source entity. Sources
+          // are tracked as if they were new entities.
+          $result = $entity_storage->getQuery()->allRevisions()
+            ->condition($entity->getEntityType()->getKey('id'), $entity->id())
+            ->accessCheck(FALSE)
+            ->sort($entity->getEntityType()->getKey('revision'), 'DESC')
+            ->range($start, static::REVISION_BATCH_SIZE)
+            ->execute();
+          $revision_ids = array_keys($result);
+          if (count($revision_ids) === static::REVISION_BATCH_SIZE) {
+            $context['sandbox']['batch_entity_revision'] = [
+              'status' => 1,
+              'current_vid' => min($revision_ids),
+              'start' => $start + static::REVISION_BATCH_SIZE,
+            ];
+          }
+          else {
+            $context['sandbox']['batch_entity_revision'] = [
+              'status' => 0,
+              'current_vid' => 0,
+              'start' => 0,
+            ];
           }
 
-          \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity_revision);
+          foreach ($revision_ids as $revision_id) {
+            /** @var \Drupal\Core\Entity\EntityInterface $entity_revision */
+            if (!$entity_revision = $entity_storage->loadRevision($revision_id)) {
+              continue;
+            }
+
+            \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity_revision);
+          }
+        }
+        else {
+          // Sources are tracked as if they were new entities.
+          \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
         }
       }
-      else {
-        // Sources are tracked as if they were new entities.
-        \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
+      catch (\Exception $e) {
+        watchdog_exception('entity_usage.batch', $e);
       }
 
-      $context['sandbox']['progress']++;
+      if (
+        $context['sandbox']['batch_entity_revision']['status'] === 0 ||
+        intval($context['sandbox']['progress']) === 0
+      ) {
+        $context['sandbox']['progress']++;
+      }
       $context['sandbox']['current_id'] = $entity->id();
       $context['results'][] = $entity_type_id . ':' . $entity->id();
     }

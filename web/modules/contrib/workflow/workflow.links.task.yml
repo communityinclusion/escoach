@@ -1,3 +1,26 @@
+# Menu tasks for Workflow Config UI.
+
+workflow.ui.workflows:
+  title: 'Workflows'
+  route_name: entity.workflow_type.collection
+  base_route: entity.workflow_type.collection
+  weight: 1
+workflow.ui.workflow_states:
+  title: 'States'
+  route_name: entity.workflow_state.collection
+  base_route: entity.workflow_type.edit_form
+  weight: -4
+workflow.ui.workflow_transitions:
+  title: 'Transitions'
+  route_name: entity.workflow_transition.collection
+  base_route: entity.workflow_type.edit_form
+  weight: -3
+workflow.ui.workflow_transition_labels:
+  title: 'Transition labels'
+  route_name: entity.workflow_transition_label.collection
+  base_route: entity.workflow_type.edit_form
+  weight: -2
+
 #workflow.entities:
 #  class: \Drupal\Core\Menu\LocalTaskDefault
 #  deriver: \Drupal\workflow\Plugin\Derivative\WorkflowLocalTask

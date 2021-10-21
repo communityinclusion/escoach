@@ -29,6 +29,8 @@ class WorkflowState extends ManyToOne {
   }
 
   /**
+   * Returns the valid options for this State.
+   *
    * Child classes should be used to override this function and set the
    * 'value options', unless 'options callback' is defined as a valid function
    * or static public method to generate these values.
@@ -45,10 +47,11 @@ class WorkflowState extends ManyToOne {
       return $this->valueOptions;
     }
 
-    // @todo: implement the below code, and remove the line from init.
-    // @todo: follow Options patterns
+    // @todo Implement the below code, and remove the line from init.
+    // @todo Follow Options patterns.
     // @see callback_allowed_values_function()
     // @see options_allowed_values()
     return parent::getValueOptions();
   }
+
 }

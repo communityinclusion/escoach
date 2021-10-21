@@ -5,7 +5,6 @@ namespace Drupal\mailgun\Plugin\QueueWorker;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\Core\Queue\RequeueException;
 use Drupal\mailgun\MailgunHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -76,7 +75,7 @@ class SendMailBase extends QueueWorkerBase implements ContainerFactoryPluginInte
     }
 
     if (!$result) {
-      throw new RequeueException('Mailgun: email did not pass through API.');
+      throw new \Exception('Mailgun: email did not pass through API.');
     }
   }
 

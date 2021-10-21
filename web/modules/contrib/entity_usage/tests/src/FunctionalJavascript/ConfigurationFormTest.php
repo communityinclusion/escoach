@@ -147,7 +147,7 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
     $page->clickLink('Usage');
     $this->saveHtmlOutput();
     // We should be at /node/*/usage.
-    $this->assertContains("/node/{$node1->id()}/usage", $session->getCurrentUrl());
+    $this->assertStringContainsString("/node/{$node1->id()}/usage", $session->getCurrentUrl());
     $assert_session->pageTextContains('There are no recorded usages for ');
     // We still have the local tabs available.
     $page->clickLink('View');

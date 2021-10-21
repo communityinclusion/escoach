@@ -29,10 +29,13 @@ abstract class RoomOptions {
      * @param string[] $videoCodecs An array of the video codecs that are supported
      *                              when publishing a track in the room
      * @param string $mediaRegion The region for the media server in Group Rooms
+     * @param array $recordingRules A collection of Recording Rules
+     * @param bool $audioOnly Indicates whether the room will only contain audio
+     *                        track participants for group rooms.
      * @return CreateRoomOptions Options builder
      */
-    public static function create(bool $enableTurn = Values::NONE, string $type = Values::NONE, string $uniqueName = Values::NONE, string $statusCallback = Values::NONE, string $statusCallbackMethod = Values::NONE, int $maxParticipants = Values::NONE, bool $recordParticipantsOnConnect = Values::NONE, array $videoCodecs = Values::ARRAY_NONE, string $mediaRegion = Values::NONE): CreateRoomOptions {
-        return new CreateRoomOptions($enableTurn, $type, $uniqueName, $statusCallback, $statusCallbackMethod, $maxParticipants, $recordParticipantsOnConnect, $videoCodecs, $mediaRegion);
+    public static function create(bool $enableTurn = Values::NONE, string $type = Values::NONE, string $uniqueName = Values::NONE, string $statusCallback = Values::NONE, string $statusCallbackMethod = Values::NONE, int $maxParticipants = Values::NONE, bool $recordParticipantsOnConnect = Values::NONE, array $videoCodecs = Values::ARRAY_NONE, string $mediaRegion = Values::NONE, array $recordingRules = Values::ARRAY_NONE, bool $audioOnly = Values::NONE): CreateRoomOptions {
+        return new CreateRoomOptions($enableTurn, $type, $uniqueName, $statusCallback, $statusCallbackMethod, $maxParticipants, $recordParticipantsOnConnect, $videoCodecs, $mediaRegion, $recordingRules, $audioOnly);
     }
 
     /**
@@ -66,8 +69,11 @@ class CreateRoomOptions extends Options {
      * @param string[] $videoCodecs An array of the video codecs that are supported
      *                              when publishing a track in the room
      * @param string $mediaRegion The region for the media server in Group Rooms
+     * @param array $recordingRules A collection of Recording Rules
+     * @param bool $audioOnly Indicates whether the room will only contain audio
+     *                        track participants for group rooms.
      */
-    public function __construct(bool $enableTurn = Values::NONE, string $type = Values::NONE, string $uniqueName = Values::NONE, string $statusCallback = Values::NONE, string $statusCallbackMethod = Values::NONE, int $maxParticipants = Values::NONE, bool $recordParticipantsOnConnect = Values::NONE, array $videoCodecs = Values::ARRAY_NONE, string $mediaRegion = Values::NONE) {
+    public function __construct(bool $enableTurn = Values::NONE, string $type = Values::NONE, string $uniqueName = Values::NONE, string $statusCallback = Values::NONE, string $statusCallbackMethod = Values::NONE, int $maxParticipants = Values::NONE, bool $recordParticipantsOnConnect = Values::NONE, array $videoCodecs = Values::ARRAY_NONE, string $mediaRegion = Values::NONE, array $recordingRules = Values::ARRAY_NONE, bool $audioOnly = Values::NONE) {
         $this->options['enableTurn'] = $enableTurn;
         $this->options['type'] = $type;
         $this->options['uniqueName'] = $uniqueName;
@@ -77,10 +83,12 @@ class CreateRoomOptions extends Options {
         $this->options['recordParticipantsOnConnect'] = $recordParticipantsOnConnect;
         $this->options['videoCodecs'] = $videoCodecs;
         $this->options['mediaRegion'] = $mediaRegion;
+        $this->options['recordingRules'] = $recordingRules;
+        $this->options['audioOnly'] = $audioOnly;
     }
 
     /**
-     * Deprecated. Whether to enable [Twilio's Network Traversal TURN service](https://www.twilio.com/stun-turn). TURN service is used when direct peer-to-peer media connections cannot be established due to firewall restrictions. This setting only applies to rooms with type `peer-to-peer`.
+     * Deprecated, now always considered to be true.
      *
      * @param bool $enableTurn Enable Twilio's Network Traversal TURN service
      * @return $this Fluent Builder
@@ -91,7 +99,7 @@ class CreateRoomOptions extends Options {
     }
 
     /**
-     * The type of room. Can be: `peer-to-peer`, `group-small`, or `group`. The default value is `group`.
+     * The type of room. Can be: `go`, `peer-to-peer`, `group-small`, or `group`. The default value is `group`.
      *
      * @param string $type The type of room
      * @return $this Fluent Builder
@@ -181,6 +189,29 @@ class CreateRoomOptions extends Options {
      */
     public function setMediaRegion(string $mediaRegion): self {
         $this->options['mediaRegion'] = $mediaRegion;
+        return $this;
+    }
+
+    /**
+     * A collection of Recording Rules that describe how to include or exclude matching tracks for recording
+     *
+     * @param array $recordingRules A collection of Recording Rules
+     * @return $this Fluent Builder
+     */
+    public function setRecordingRules(array $recordingRules): self {
+        $this->options['recordingRules'] = $recordingRules;
+        return $this;
+    }
+
+    /**
+     * When set to true, indicates that the participants in the room will only publish audio. No video tracks will be allowed. Group rooms only.
+     *
+     * @param bool $audioOnly Indicates whether the room will only contain audio
+     *                        track participants for group rooms.
+     * @return $this Fluent Builder
+     */
+    public function setAudioOnly(bool $audioOnly): self {
+        $this->options['audioOnly'] = $audioOnly;
         return $this;
     }
 

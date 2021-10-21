@@ -16,22 +16,22 @@ function field_display_label_form_field_config_edit_form_alter(&$form, FormState
   if (!isset($field)) {
     return;
   }
-  $form['display_label'] = array(
+  $form['display_label'] = [
     '#type' => 'textfield',
     '#title' => t('Display label'),
     '#description' => t('A separate label for viewing this field. Leave blank to use the default field label.'),
-    '#weight' => $form['label']['#weight'] + 1,
+    '#weight' => isset($form['label']['#weight']) ? ($form['label']['#weight'] + 1) : 0,
     '#default_value' => !empty($field->getThirdPartySetting('field_display_label', 'display_label')) ? $field->getThirdPartySetting('field_display_label', 'display_label') : '',
-  );
+  ];
   $form['actions']['submit']['#submit'][] = 'field_display_label_form_field_config_edit_form_submit';
 }
 
 /**
- * Form submission handler for field_display_label_form_field_config_edit_form_alter.
+ * Form submission handler for form_field_config_edit_form_alter.
  *
  * @param array $form
  *   The form array.
- * @param FormStateInterface $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
  */
 function field_display_label_form_field_config_edit_form_submit(array $form, FormStateInterface $form_state) {
@@ -54,6 +54,9 @@ function field_display_label_form_field_config_edit_form_submit(array $form, For
 function field_display_label_preprocess_field(&$variables) {
   $element = $variables['element'];
   $entity = $element['#object'];
+  if (empty($entity)){
+    return;
+  }
   $field_definition = $entity->getFieldDefinition($element['#field_name']);
   if ($field_definition instanceof ThirdPartySettingsInterface) {
     $definition = $field_definition->getThirdPartySetting('field_display_label', 'display_label');

@@ -14,9 +14,7 @@ use Drupal\mailgun\MailgunHandlerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Class MailgunTestEmailForm.
- *
- * @package Drupal\mailgun\Form
+ * Provides test email form with common email parameters.
  */
 class MailgunTestEmailForm extends FormBase {
 

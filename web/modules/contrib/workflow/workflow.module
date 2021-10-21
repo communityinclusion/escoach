@@ -33,21 +33,18 @@ use Drupal\workflow\Entity\WorkflowState;
 use Drupal\workflow\Entity\WorkflowTransition;
 use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
-\Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.form');
+\Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.devel');
+\Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.entity');
 \Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.field');
+\Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.form');
+\Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.rules');
 
 /**********************************************************************
  * Info hooks.
  */
 
 /**
- * Implements hook_help().
- *
- * @param string $route_name
- *   A route.
- *
- * @return string
- *   The html output.
+ * @inheritdoc
  */
 function workflow_help($route_name) {
   $output = '';
@@ -58,6 +55,52 @@ function workflow_help($route_name) {
       $output .= '<p>' . t('The Workflow module adds a field to Entities to
         store field values as Workflow states. You can control "state transitions"
         and add action to specific transitions.') . '</p>';
+      return $output;
+    case 'entity.workflow_transition.field_ui_fields':
+      return t('This page allows you to add fields to the Workflow form.
+        Normally this is an advanced action, which is not needed in
+        regular use cases.');
+
+    case 'entity.workflow_type.collection':
+      return t('This page allows you to maintain Workflows. Once a workflow is
+        created, you can maintain your entity type and add a Field of type
+        \'Workflow\'.');
+
+    case 'entity.workflow_state.collection':
+      return t("To create a new state, enter its name in the last row of the
+        'State' column. Check the 'Active' box to make it effective. You may
+        also drag it to the appropriate position.") . '<br />'
+      . t("A state must be marked as active, to be available in the
+        workflow's transitions.") . '<br />'
+      . t("If you wish to inactivate a state that has content (i.e. count is
+        not zero), then you need to select a state to which to reassign that
+        content.");
+
+    case 'entity.workflow_transition.collection':
+      $url = Url::fromRoute('user.admin_permissions', [],
+        ['fragment' => 'module-workflow']);
+      return t('You are currently viewing the possible transitions to and from
+        workflow states. The state is shown in the left column; the state to be
+        moved to is to the right. For each transition, check the box next to
+        the role(s) that may initiate the transition. For example, if only the
+        "production editor" role may move content from Review state to the
+        Published state, check the box next to "production editor". The author
+        role is built in and refers to the user who authored the content.')
+      . '<br /><i>'
+      . t("If not all roles are in the list, please review which roles may
+        'participate in workflows' on <a href=':url'>the Permissions page</a>.
+        On that page, uncheck the 'Authenticated user' role temporarily to
+        view the permissions of each separate role.</i>",
+        [':url' => $url->toString()]);
+
+    case 'entity.workflow_transition_label.collection':
+      return t('You can add labels to transitions if you don\'t like the
+        standard state labels. They will modify the Workflow form options, so
+        specific workflow transitions can have their own labels, relative to
+        the beginning and ending states. Rather than showing the user a
+        workflow box containing options like "review required" as a state in
+        the workflow, it could say "move to the editing department for grammar
+        review".');
   }
   return $output;
 }
@@ -102,7 +145,7 @@ function workflow_user_cancel($edit, AccountInterface $account, $method) {
  * @param \Drupal\Core\Session\AccountInterface $account
  *   An account object.
  *
- * @todo: hook_user_delete does not exist. hook_ENTITY_TYPE_delete?
+ * @todo Hook hook_user_delete does not exist. hook_ENTITY_TYPE_delete?
  */
 function workflow_user_delete($account) {
   WorkflowManager::deleteUser($account);
@@ -174,7 +217,7 @@ function _workflow_execute_transitions(EntityInterface $entity) {
  *   An Entity.
  */
 function workflow_entity_delete(EntityInterface $entity) {
-  // @todo: test with multiple workflows.
+  // @todo Test with multiple workflows.
   if (get_class($entity) == 'Drupal\field\Entity\FieldConfig'
     || get_class($entity) == 'Drupal\field\Entity\FieldStorageConfig') {
     // A Workflow Field is removed from an entity.
@@ -182,7 +225,7 @@ function workflow_entity_delete(EntityInterface $entity) {
     /** @var \Drupal\Core\Entity\ContentEntityBase $field_config */
     $entity_type = $field_config->get('entity_type');
     $field_name = $field_config->get('field_name');
-    /** @var $transition Drupal\workflow\Entity\WorkflowTransitionInterface */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     foreach (WorkflowScheduledTransition::loadMultipleByProperties($entity_type, [], [], $field_name) as $transition) {
       $transition->delete();
     }
@@ -196,7 +239,7 @@ function workflow_entity_delete(EntityInterface $entity) {
       $entity_id = $entity->id();
       $entity_type = $field_storage->getTargetEntityTypeId();
       $field_name = $field_storage->getName();
-      /** @var $transition Drupal\workflow\Entity\WorkflowTransitionInterface */
+      /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
       foreach (WorkflowScheduledTransition::loadMultipleByProperties($entity_type, [$entity_id], [], $field_name) as $transition) {
         $transition->delete();
       }
@@ -214,6 +257,18 @@ function workflow_entity_delete(EntityInterface $entity) {
  */
 function workflow_cron() {
   WorkflowManager::executeScheduledTransitionsBetween(0, \Drupal::time()->getRequestTime());
+}
+
+/**
+ * Implements hook_theme().
+ */
+function workflow_theme() {
+  return [
+    'workflow_transition' => [
+      'render element' => 'elements',
+      'file' => 'workflow.theme.inc',
+    ]
+  ];
 }
 
 /**
@@ -269,7 +324,7 @@ function workflow_execute_transition(WorkflowTransitionInterface $transition, $f
  */
 function workflow_get_user_role_names($permission) {
   static $roles = NULL;
-  if ($roles[$permission]) {
+  if ($roles && isset($roles[$permission])) {
     return $roles[$permission];
   }
 
@@ -296,9 +351,9 @@ function workflow_get_user_role_names($permission) {
 function workflow_get_workflow_state_names($wid = '', $grouped = FALSE) {
   $options = [];
 
-  // @todo: implement $add parameter.
+  // @todo Implement $add parameter.
   //
-  // @todo: follow Options pattern
+  // @todo Follow Options pattern.
   // @see callback_allowed_values_function()
   // @see options_allowed_values()
 
@@ -306,13 +361,13 @@ function workflow_get_workflow_state_names($wid = '', $grouped = FALSE) {
   // Since this function is only used in UI, it is save to use the global $user.
   $user = workflow_current_user();
 
-  /** @var $workflows Workflow[] */
+  /** @var \Drupal\workflow\Entity\Workflow[] $workflows */
   $workflows = Workflow::loadMultiple($wid ? [$wid] : NULL);
   // Do not group if only 1 Workflow is configured or selected.
   $grouped = count($workflows) == 1 ? FALSE : $grouped;
 
   foreach ($workflows as $wid => $workflow) {
-    /** @var $state WorkflowState */
+    /** @var \Drupal\workflow\Entity\WorkflowState $state */
     $state = WorkflowState::create(['wid' => $wid]);
     $workflow_options = $state->getOptions(NULL, '', $user, FALSE);
     if (!$grouped) {
@@ -344,7 +399,7 @@ function workflow_get_workflow_names($required = TRUE) {
     $options[''] = t('- Select a value -');
   }
   foreach (Workflow::loadMultiple() as $wid => $workflow) {
-    /** @var $workflow Workflow */
+    /** @var \Drupal\workflow\Entity\Workflow $workflow */
     if ($workflow->isValid()) {
       $options[$wid] = $workflow->label();
     }
@@ -434,16 +489,17 @@ function workflow_get_field_name(EntityInterface $entity, $field_name = '') {
 
 /**
  * Wrapper function to get a UserInterface object.
- * We use UserInterface to check permissions.
  *
  * @param \Drupal\Core\Session\AccountInterface|null $account
  *   An Account.
  *
  * @return \Drupal\user\UserInterface
- *   A User.
+ *   A User to check permissions, since we can't add Roles to AccountInterface.
  */
 function workflow_current_user(AccountInterface $account = NULL) {
-  $account = ($account) ? $account : \Drupal::currentUser();
+  if (!$account) {
+    $account = \Drupal::currentUser();
+  }
   return User::load($account->id());
 }
 
@@ -481,7 +537,7 @@ function workflow_node_previous_state(EntityInterface $entity, $field_name = '')
  * Get a specific workflow, given an entity type.
  * Only one workflow is possible per node type.
  * Caveat: gives undefined results with multiple workflows per entity.
- * @todo: support multiple workflows per entity.
+ * @todo Support multiple workflows per entity.
  *
  * @param string $entity_bundle
  *   An entity bundle.
@@ -569,14 +625,14 @@ function _workflow_info_fields($entity = NULL, $entity_type = '', $entity_bundle
               // not a configurable Field via Field UI.
               // Re-fetch the field definitions, with extra data.
               $field_definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions($e_type, $entity_bundle);
-              // @todo: ?? Loop over bundles?
+              // @todo Loop over bundles?
               /** @var \Drupal\Core\Field\BaseFieldDefinition $field_config */
               $field_config = $field_definitions[$f_name];
               if ($field_config) {
                 $field_info[$field_config->getUniqueStorageIdentifier()] = $field_config;
               }
               else {
-                // @todo: ?? Loop over bundles?
+                // @todo Loop over bundles?
               }
             }
           }
@@ -683,7 +739,7 @@ function workflow_url_get_parameter($parameter) {
  *   Workflow Object.
  */
 function workflow_url_get_workflow() {
-  /** @var $workflows \Drupal\workflow\Entity\Workflow[] */
+  /** @var \Drupal\workflow\Entity\Workflow[] $workflows */
   static $workflows = [];
 
   $wid = workflow_url_get_parameter('workflow_type');
@@ -702,7 +758,7 @@ function workflow_url_get_workflow() {
 /**
  * Helper function to determine the title of the page.
  *
- * Used in file workflow_ui.routing.yml.
+ * Used in file workflow.routing.yml.
  *
  * @return \Drupal\Core\StringTranslation\TranslatableMarkup
  *   the page title.
@@ -711,7 +767,7 @@ function workflow_url_get_title() {
   $label = '';
 
   // Get the Workflow from the page.
-  /** @var $workflow \Drupal\workflow\Entity\Workflow */
+  /** @var \Drupal\workflow\Entity\Workflow $workflow */
   /** @noinspection PhpAssignmentInConditionInspection */
   if ($workflow = workflow_url_get_workflow()) {
     $label = $workflow->label();
@@ -738,37 +794,4 @@ function workflow_url_get_form_type($url = '') {
   $string = substr($url, strpos($url, $base_url) + strlen($base_url));
   $type = explode('/', $string)[1];
   return $type;
-}
-
-/**
- * Helper function for D8-port: Get some info on screen.
- *
- * @param string $class_name
- * @param string $function_name
- * @param string $line_nr
- * @param string $value1
- * @param string $value2
- *
- * @see workflow_devel-module
- *
- * Usage:
- *   workflow_debug( __FILE__, __FUNCTION__, __LINE__, '', '');
- */
-function workflow_debug($class_name, $function_name, $line_nr = '', $value1 = '', $value2 = '') {
-  $debug_switch = FALSE;
-//  $debug_switch = TRUE;
-
-  if (!$debug_switch) {
-    return;
-  }
-
-  $class_name_elements = explode("\\", $class_name);
-  $output = 'Testing... function ' . end($class_name_elements) . '::' . $function_name . '/' . $line_nr;
-  if ($value1) {
-    $output .= ' = ' . $value1;
-  }
-  if ($value2) {
-    $output .= ' > ' . $value2;
-  }
-  \Drupal::messenger()->addWarning($output, TRUE);
 }

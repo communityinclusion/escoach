@@ -15,8 +15,6 @@ use Drupal\search_api_test\PluginTestTrait;
 /**
  * Tests the admin UI for processors.
  *
- * @todo Move this whole class into a single IntegrationTest check*() method?
- *
  * @group search_api
  */
 class ProcessorIntegrationTest extends SearchApiBrowserTestBase {
@@ -102,7 +100,7 @@ class ProcessorIntegrationTest extends SearchApiBrowserTestBase {
       'add_url',
       'aggregated_field',
       'language_with_fallback',
-      'rendered_item'
+      'rendered_item',
     ];
     $actual_processors = array_keys($this->loadIndex()->getProcessors());
     sort($actual_processors);
@@ -219,6 +217,13 @@ class ProcessorIntegrationTest extends SearchApiBrowserTestBase {
     sort($actual_processors);
     $this->assertEquals($enabled, $actual_processors);
 
+    $this->checkNumberFieldBoostIntegration();
+    $enabled[] = 'number_field_boost';
+    sort($enabled);
+    $actual_processors = array_keys($this->loadIndex()->getProcessors());
+    sort($actual_processors);
+    $this->assertEquals($enabled, $actual_processors);
+
     // The 'add_url' processor is not available to be removed because it's
     // locked.
     $this->checkUrlFieldIntegration();
@@ -269,7 +274,7 @@ class ProcessorIntegrationTest extends SearchApiBrowserTestBase {
     // After disabling some datasource, all related processors should be
     // disabled also.
     $this->drupalGet('admin/config/search/search-api/index/' . $this->indexId . '/edit');
-    $this->drupalPostForm(NULL, ['datasources[entity:user]' => FALSE], 'Save');
+    $this->submitForm(['datasources[entity:user]' => FALSE], 'Save');
     $processors = $this->loadIndex()->getProcessors();
     $this->assertArrayNotHasKey('role_filter', $processors);
     $this->drupalGet('admin/config/search/search-api/index/' . $this->indexId . '/processors');
@@ -683,6 +688,27 @@ TAGS
       'exceptions' => 'indian=india',
     ];
     $this->editSettingsForm($configuration, 'stemmer', $form_values);
+  }
+
+  /**
+   * Tests the UI for the "Number field-based boosting" processor.
+   */
+  public function checkNumberFieldBoostIntegration() {
+    $this->enableProcessor('number_field_boost');
+    $configuration = $form_values = [
+      'boosts' => [
+        'term_field' => [
+          'boost_factor' => '8.0',
+          'aggregation' => 'avg',
+        ],
+        'parent_reference' => [
+          'boost_factor' => '',
+          'aggregation' => 'sum',
+        ],
+      ],
+    ];
+    unset($configuration['boosts']['parent_reference']);
+    $this->editSettingsForm($configuration, 'number_field_boost', $form_values);
   }
 
   /**

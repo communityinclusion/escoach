@@ -29,9 +29,6 @@ use Drupal\workflow\Entity\WorkflowState;
  * )
  */
 class WorkflowItem extends ListItemBase {
-  // class WorkflowItem extends FieldItemBase implements OptionsProviderInterface {
-  // @todo D8-port: perhaps even:
-  // class WorkflowItem extends FieldStringItem {
   use MessengerTrait;
 
   /**
@@ -80,9 +77,8 @@ class WorkflowItem extends ListItemBase {
         ->addConstraint('Length', ['max' => 128])
         ->setRequired(TRUE);
 
-      //workflow_debug( __FILE__ , __FUNCTION__, __LINE__);  // @todo D8-port: still test this snippet.
+      //workflow_debug(__FILE__, __FUNCTION__, __LINE__);  // @todo D8: test this snippet.
       /*
-      // @todo D8-port: test this.
       $propertyDefinitions[$key]['workflow_transition'] = DataDefinition::create('any')
         //    $properties['workflow_transition'] = DataDefinition::create('WorkflowTransition')
         ->setLabel(t('Transition'))
@@ -140,7 +136,7 @@ class WorkflowItem extends ListItemBase {
    * {@inheritdoc}
    */
   public function onChange($property_name, $notify = TRUE) {
-    //workflow_debug( __FILE__ , __FUNCTION__, __LINE__);  // @todo D8-port: still test this snippet.
+    //workflow_debug(__FILE__, __FUNCTION__, __LINE__);  // @todo D8: test this snippet.
 
     // @todo D8: use this function onChange for adding a line in table workflow_transition_*
     // Enforce that the computed date is recalculated.
@@ -186,9 +182,9 @@ class WorkflowItem extends ListItemBase {
     foreach ($violation_list->getIterator() as $violation) {
       switch ($violation->getPropertyPath()) {
         case 'fieldnameOnComment':
-          // @todo D8: CommentForm & constraints on storageSettingsForm()
+          // @todo D8: CommentForm & constraints on storageSettingsForm().
           // A 'comment' field name MUST be equal to content field name.
-          // @todo: Still not waterproof. You could have a field on a non-relevant entity_type.
+          // @todo Fix fields on a non-relevant entity_type.
           $this->messenger()->addError($violation->getMessage());
           $workflows = [];
           break;
@@ -198,7 +194,7 @@ class WorkflowItem extends ListItemBase {
       }
     }
 
-    // @todo D8: CommentForm & constraints on storageSettingsForm
+    // @todo D8: CommentForm & constraints on storageSettingsForm.
     // Set the required workflow_type on 'comment' fields.
     // N.B. the following must BELOW the (count($workflows) == 1) snippet.
     /** @var \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage */
@@ -301,16 +297,6 @@ class WorkflowItem extends ListItemBase {
     }
     return implode("\n", $lines);
   }
-
-//  /**
-//   * {@inheritdoc}
-//   */
-//  public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-//    // @todo Implement this once https://www.drupal.org/node/2238085 lands.
-//    $values['value'] = rand(pow(10, 8), pow(10, 9)-1);
-//    return $values;
-//  }
-
 
   /**
    * Implementation of TypedDataInterface.

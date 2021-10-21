@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\workflow\WorkflowURLRouteParametersTrait;
 
 /**
@@ -26,7 +27,7 @@ use Drupal\workflow\WorkflowURLRouteParametersTrait;
  *   translatable = TRUE,
  *   handlers = {
  *     "storage" = "Drupal\workflow\Entity\WorkflowStorage",
- *     "list_builder" = "Drupal\workflow_ui\Controller\WorkflowListBuilder",
+ *     "list_builder" = "Drupal\workflow\WorkflowListBuilder",
  *     "form" = {
  *        "add" = "Drupal\workflow\Form\WorkflowTypeForm",
  *        "delete" = "Drupal\Core\Entity\EntityDeleteForm",
@@ -61,6 +62,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    * Provide URL route parameters for entity links.
    */
   use MessengerTrait;
+  use StringTranslationTrait;
   use WorkflowURLRouteParametersTrait;
 
   /**
@@ -76,20 +78,34 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    */
   public $label;
   /**
-   * @todo D8-port: Complete below variables, adding get()-functions.
-   * @see https://www.drupal.org/node/1809494
-   * @see https://codedrop.com.au/blog/creating-custom-config-entities-drupal-8
+   * The Workflow settings (which would be a better name).
+   *
+   * @var array
    */
   public $options = [];
   /**
    * The workflow-specific creation state.
+   *
+   * @var \Drupal\workflow\Entity\WorkflowState
    */
-  private $creation_state;
+  private $creation_state = NULL;
+  /**
+   * The workflow-specific creation state ID.
+   *
+   * @var string
+   */
   private $creation_sid = 0;
   /**
-   * Attached States and Transitions.
+   * Attached States.
+   *
+   * @var \Drupal\workflow\Entity\WorkflowState[]
    */
   public $states = [];
+  /**
+   * Attached Transitions.
+   *
+   * @var \Drupal\workflow\Entity\WorkflowConfigTransitionInterface[]
+   */
   public $transitions = [];
   /**
    * The module implementing this object, for config_export.
@@ -97,13 +113,6 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    * @var string
    */
   protected $module = 'workflow';
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    parent::calculateDependencies();
-  }
 
   /**
    * CRUD functions.
@@ -115,13 +124,13 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    * This also handles importing, rebuilding, reverting from Features,
    * as defined in workflow.features.inc.
    *
-   * @todo D8: clean up this function, since we are config entity now.
+   * @todo D8: Clean up this function, since we are config entity now.
    *
    * When changing this function, test with the following situations:
    * - maintain Workflow in Admin UI;
    * - clone Workflow in Admin UI;
    * - create/revert/rebuild Workflow with Features; @see workflow.features.inc
-   * - save Workflow programmatic;
+   * - save Workflow programmatically;
    *
    * @inheritdoc
    */
@@ -139,7 +148,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    * {@inheritdoc}
    */
   public static function postLoad(EntityStorageInterface $storage, array &$entities) {
-    /** @var Workflow $workflow */
+    /** @var \Drupal\workflow\Entity\Workflow $workflow */
     foreach ($entities as &$workflow) {
       // Better performance, together with Annotation static_cache = TRUE.
       // Load the states, and set the creation state.
@@ -153,7 +162,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    */
   public function delete() {
     if (!$this->isDeletable()) {
-      $message = t('Workflow %workflow is not Deletable. Please delete the field where this workflow type is referred',
+      $message = $this->t('Workflow %workflow is not Deletable. Please delete the field where this workflow type is referred',
         ['%workflow' => $this->label()]);
       $this->messenger()->addError($message);
       return;
@@ -176,11 +185,12 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
   public function isValid() {
     $is_valid = TRUE;
 
-    // Don't allow Workflow without states. There should always be a creation state.
+    // Don't allow Workflow without states.
+    // There should always be a creation state.
     $states = $this->getStates(FALSE);
     if (count($states) < 1) {
       // That's all, so let's remind them to create some states.
-      $message = t('Workflow %workflow has no states defined, so it cannot be assigned to content yet.',
+      $message = $this->t('Workflow %workflow has no states defined, so it cannot be assigned to content yet.',
         ['%workflow' => $this->label()]);
       $this->messenger()->addWarning($message);
 
@@ -188,11 +198,12 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
       $is_valid = FALSE;
     }
 
-    // Also check for transitions, at least out of the creation state. Don't filter for roles.
+    // Also check for transitions, at least out of the creation state.
+    // Don't filter for roles.
     $transitions = $this->getTransitionsByStateId($this->getCreationSid(), '');
     if (count($transitions) < 1) {
       // That's all, so let's remind them to create some transitions.
-      $message = t('Workflow %workflow has no transitions defined, so it cannot be assigned to content yet.',
+      $message = $this->t('Workflow %workflow has no transitions defined, so it cannot be assigned to content yet.',
         ['%workflow' => $this->label()]);
       $this->messenger()->addWarning($message);
 
@@ -233,7 +244,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    */
   public function createState($sid, $save = TRUE) {
     $wid = $this->id();
-    /* @var $state WorkflowState */
+    /** @var \Drupal\workflow\Entity\WorkflowState $state */
     $state = WorkflowState::load($sid);
     if (!$state || $wid != $state->getWorkflowId()) {
       $values = ['id' => $sid, 'wid' => $wid];
@@ -253,6 +264,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    * {@inheritdoc}
    */
   public function getCreationState() {
+
     // First, find it.
     if (!$this->creation_state) {
       foreach ($this->getStates(TRUE) as $state) {
@@ -263,8 +275,11 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
       }
     }
 
-    // First, then, create it.
-    if (!$this->creation_state) {
+    // Then, create it.
+    if (\Drupal::isConfigSyncing()) {
+      // Do not create the default state while configuration are importing.
+    }
+    elseif (!$this->creation_state) {
       $state = $this->createState(WORKFLOW_CREATION_STATE_NAME);
       $this->creation_state = $state;
       $this->creation_sid = $state->id();
@@ -296,7 +311,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
     }
     else {
       // This should never happen, but it did during testing.
-      $this->messenger()->addError(t('There are no workflow states available. Please notify your site administrator.'));
+      $this->messenger()->addError($this->t('There are no workflow states available. Please notify your site administrator.'));
       $sid = 0;
     }
     return $sid;
@@ -307,7 +322,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    */
   public function getNextSid(EntityInterface $entity, $field_name, AccountInterface $user, $force = FALSE) {
     $current_sid = WorkflowManager::getCurrentStateId($entity, $field_name);
-    /* @var $current_state WorkflowState */
+    /** @var \Drupal\workflow\Entity\WorkflowState $current_state */
     $current_state = WorkflowState::load($current_sid);
     $options = $current_state->getOptions($entity, $field_name, $user, $force);
     // Loop over every option. To find the next one.
@@ -378,7 +393,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
   /**
    * {@inheritdoc}
    */
-  public function createTransition($from_sid, $to_sid, $values = []) {
+  public function createTransition($from_sid, $to_sid, array $values = []) {
     $config_transition = NULL;
 
     // First check if this transition already exists.
@@ -404,7 +419,10 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    */
   public function sortTransitions() {
     // Sort the transitions on state weight.
-    uasort($this->transitions, ['Drupal\workflow\Entity\WorkflowConfigTransition', 'sort']);
+    uasort($this->transitions, [
+      'Drupal\workflow\Entity\WorkflowConfigTransition',
+      'sort',
+    ]);
   }
 
   /**
@@ -426,10 +444,10 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
       $this->sortTransitions();
     }
 
-    /* @var $config_transition WorkflowConfigTransition */
+    /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $config_transition */
     foreach ($this->transitions as &$config_transition) {
       if (!isset($states[$config_transition->getFromSid()])) {
-        // Not a valid transition for this workflow. @todo: delete them.
+        // Not a valid transition for this workflow. @todo Delete them.
       }
       elseif ($from_sid && $from_sid != $config_transition->getFromSid()) {
         // Not the requested 'from' state.
@@ -461,6 +479,80 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
       'to_sid' => $to_sid,
     ];
     return $this->getTransitions(NULL, $conditions);
+  }
+
+  /*
+   * The following is copied from interface PluginSettingsInterface.
+   */
+
+  /**
+   * Whether default settings have been merged into the current $settings.
+   *
+   * @var bool
+   */
+  protected $defaultSettingsMerged = FALSE;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultSettings() {
+    return [
+      'name_as_title' => 0,
+      'fieldset' => 0,
+      'options' => 'radios',
+      'schedule_enable' => 1,
+      'schedule_timezone' => 1,
+      'always_update_entity' => 0,
+      'comment_log_node' => '1',
+      'watchdog_log' => TRUE,
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSettings() {
+    // Merge defaults before returning the array.
+    if (!$this->defaultSettingsMerged) {
+      $this->mergeDefaults();
+    }
+    return $this->options;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSetting($key) {
+    // Merge defaults if we have no value for the key.
+    if (!$this->defaultSettingsMerged && !array_key_exists($key, $this->options)) {
+      $this->mergeDefaults();
+    }
+    return isset($this->options[$key]) ? $this->options[$key] : NULL;
+  }
+
+  /**
+   * Merges default settings values into $settings.
+   */
+  protected function mergeDefaults() {
+    $this->options += static::defaultSettings();
+    $this->defaultSettingsMerged = TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSettings(array $settings) {
+    $this->options = $settings;
+    $this->defaultSettingsMerged = FALSE;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSetting($key, $value) {
+    $this->options[$key] = $value;
+    return $this;
   }
 
 }

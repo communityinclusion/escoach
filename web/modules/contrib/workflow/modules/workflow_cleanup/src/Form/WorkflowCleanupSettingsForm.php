@@ -8,7 +8,7 @@ use Drupal\workflow\Entity\WorkflowConfigTransition;
 use Drupal\workflow\Entity\WorkflowState;
 
 /**
- * Class WorkflowCleanupSettingsForm.
+ * Provides a Form for organizing obsolete States.
  *
  * @package Drupal\workflow_cleanup\Form
  */
@@ -30,8 +30,8 @@ class WorkflowCleanupSettingsForm extends FormBase {
     // Get all of the states, indexed by sid.
     $orphans = $inactive = [];
 
-    /* @var $states WorkflowState[] */
-    /* @var $state WorkflowState */
+    /** @var \Drupal\workflow\Entity\WorkflowState[] $states */
+    /** @var \Drupal\workflow\Entity\WorkflowState $state */
     $states = WorkflowState::loadMultiple();
 
     foreach ($states as $state) {
@@ -108,34 +108,34 @@ class WorkflowCleanupSettingsForm extends FormBase {
           continue;
         }
 
-        /* @var $state WorkflowState */
+        /** @var \Drupal\workflow\Entity\WorkflowState $state */
         $state = $states[$sid];
         $state_name = $state->label();
 
         // Delete any transitions this state is involved in.
         $count = 0;
         foreach (WorkflowConfigTransition::loadMultiple() as $config_transition) {
-          /* @var $config_transition WorkflowConfigTransition */
+          /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $config_transition */
           if ($config_transition->getFromSid() == $sid || $config_transition->getToSid() == $sid) {
             $config_transition->delete();
             $count++;
           }
         }
         if ($count) {
-          $this->messenger()->addStatus(t('@count transitions for the "@state" state have been deleted.',
+          $this->messenger()->addStatus($this->t('@count transitions for the "@state" state have been deleted.',
             ['@state' => $state_name, '@count' => $count]));
         }
 
-        // @todo: Remove history records too.
+        // @todo Remove history records, too.
         $count = 0;
         // $count = db_delete('workflow_node_history')->condition('sid', $sid)->execute();
         if ($count) {
-          $this->messenger()->addStatus(t('@count history records for the "@state" state have been deleted.',
+          $this->messenger()->addStatus($this->t('@count history records for the "@state" state have been deleted.',
             ['@state' => $state_name, '@count' => $count]));
         }
 
         $state->delete();
-        $this->messenger()->addStatus(t('The "@state" state has been deleted.',
+        $this->messenger()->addStatus($this->t('The "@state" state has been deleted.',
           ['@state' => $state_name]));
       }
     }

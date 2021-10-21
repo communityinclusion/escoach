@@ -8,7 +8,7 @@ workflow.access.settings:
     _title: 'Access settings'
   requirements:
     _permission: 'administer workflow'
-    _module_dependencies: 'workflow_ui'
+    _module_dependencies: 'workflow'
 
 entity.workflow_type.access_form:
   path: '/admin/config/workflow/workflow/{workflow_type}/access'
@@ -18,4 +18,4 @@ entity.workflow_type.access_form:
     _form: '\Drupal\workflow_access\Form\WorkflowAccessRoleForm'
   requirements:
     _permission: 'administer workflow'
-    _module_dependencies: 'workflow_ui'
+    _module_dependencies: 'workflow'

@@ -15,16 +15,16 @@ class SurveyUsersService
         $this->entityTypeManager = $entity_type_manager;
     }
     public function load()
-    {   
+    {
 
         $storage = $this->entityTypeManager->getStorage('user');
         $query = $storage->getQuery();
         $userids = $query->execute();
         $users = $storage->loadMultiple($userids);
         $userarray = array();
-        
+
        foreach($userids as $user) {
-          
+
             $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'uid' => $user,
@@ -35,8 +35,8 @@ class SurveyUsersService
             $useremail = $userobj->getEmail();
             $userstatus = $userobj ->get('status')->value;
             $roles =$userobj->getRoles();
-            
-           
+
+
                 foreach($storage as $profile) {
                     if ($userstatus != 0 && in_array('survey_participant',$roles)) {
                         $firstname = $profile->get('field_survey_first_name')->value ? $profile->get('field_survey_first_name')->value : '';
@@ -49,8 +49,8 @@ class SurveyUsersService
                         $suspension_end = $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : '';
                         $activstatus = $profile->get('field_set_surveys_to_inactive')->value ? $profile->get('field_set_surveys_to_inactive')->value : '';
                         $provider = $profile->get('field_provider')->target_id ? $profile->get('field_provider')->entity->getName() : 'unknown provider';
-                        
-                        
+
+
                         if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider);
                     }
                 }
@@ -69,7 +69,7 @@ class SurveyUsersService
                 'is_default' => 1,
                 'field_cell_phone' => $userphone,
             ]);
-        
+
         foreach($storage as $profile) {
             if( preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $startdate && $enddate) {
 
@@ -84,14 +84,14 @@ class SurveyUsersService
                 $suspension_end =  $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : null;
                 $inactive = $profile->get('field_set_surveys_to_inactive')->value == '2' ? 2 : null;
                 return array($suspension,$suspension_end,$inactive);
-               
+
             }
         }
 
     }
     public function checkInactive($userphone,$lastname) {
         $cleanphone = preg_replace('/\D+/', '',$userphone);
-        
+
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
@@ -99,32 +99,57 @@ class SurveyUsersService
                 'is_default' => 1,
                 'field_cell_phone' => $userphone,
             ]);
-        
+
         foreach($storage as $profile) {
             $user = $profile->getOwnerId();
             $userobj = \Drupal\user\Entity\User::load($user);
             $userstatus = $userobj ->get('status')->value;
-            
+
             if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $cleanphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) &&  $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
-               
+
             return true;
             }
-            else 
+            else
+            return false;
+        }
+    }
+    public function checkCancelled($userphone) {
+        $cleanphone = preg_replace('/\D+/', '',$userphone);
+
+
+        $storage = \Drupal::entityTypeManager()->getStorage('profile')
+            ->loadByProperties([
+                'type' => 'survey_participants',
+                'is_default' => 1,
+                'field_cell_phone' => $userphone,
+            ]);
+
+        foreach($storage as $profile) {
+            $user = $profile->getOwnerId();
+            $userobj = \Drupal\user\Entity\User::load($user);
+            $userstatus = $userobj ->get('status')->value;
+
+            if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $cleanphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $profile->get('field_active_2_deactivated_3')->value == 3)) {
+
+            return true;
+            }
+            else
             return false;
         }
     }
 
-    public function setUserStatus($userphone,$setstatus) {
+
+    public function setUserStatus($userphone,$setstatus,$setcancel) {
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
                 'field_cell_phone' => $userphone,
             ]);
-        
+
         foreach($storage as $profile) {
 
-            
+
             if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $profile->get('field_set_surveys_to_inactive')->value != "$setstatus") {
                 $user = $profile->getOwnerId();
                 $userobj = \Drupal\user\Entity\User::load($user);
@@ -133,6 +158,8 @@ class SurveyUsersService
                 $lastname = $profile->get('field_survey_last_name')->value ? $profile->get('field_survey_last_name')->value : '';
                 $profile->set('field_set_surveys_to_inactive', array(
                     'value' => "$setstatus"));
+                $profile->set('field_active_2_deactivated_3', array(
+                    'value' => $setcancel));
                 $profile->save();
                 return array($useremail,$firstname,$lastname);
 
@@ -141,5 +168,5 @@ class SurveyUsersService
 
     }
 
-    
+
 }

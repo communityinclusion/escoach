@@ -3,6 +3,7 @@
 namespace Drupal\workflow\Entity;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
@@ -12,7 +13,7 @@ use Drupal\user\EntityOwnerInterface;
  * @see \Drupal\workflow\Entity\WorkflowTransition
  * @see \Drupal\workflow\Entity\WorkflowScheduledTransition
  */
-interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface, EntityInterface, EntityOwnerInterface {
+interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface, FieldableEntityInterface, EntityOwnerInterface {
 
   /**
    * Helper function for __construct. Used for all children of WorkflowTransition (aka WorkflowScheduledTransition)
@@ -61,7 +62,7 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    * @param int $limit
    *   Optional. Can be NULL, if you want to load all transitions.
    * @param string $sort
-   *   Optional sort order. {'ASC'|'DESC'}
+   *   Optional sort order {'ASC'|'DESC'}.
    * @param string $transition_type
    *   The type of the transition to be fetched.
    *
@@ -75,15 +76,16 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    *
    * A Scheduled Transition shall only be saved, unless the
    * 'schedule' property is set.
-   * @usage
-   *   $transition->schedule(FALSE);
-   *   $to_sid = $transition->execute(TRUE);
    *
    * @param bool $force
    *   If set to TRUE, workflow permissions will be ignored.
    *
-   * @return
+   * @return string
    *   New state ID. If execution failed, old state ID is returned,
+   *
+   * @usage
+   *   $transition->schedule(FALSE);
+   *   $to_sid = $transition->execute(TRUE);
    */
   public function execute($force = FALSE);
 
@@ -102,21 +104,22 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    *   and added to {workflow_transition_history} table.
    *   Then the entity wil be updated to reflect the new status.
    *
-   * @usage
-   *   $to_sid = $transition->->executeAndUpdateEntity($force);
-   *
-   * @see workflow_execute_transition()
-   *
    * @param bool $force
    *   If set to TRUE, workflow permissions will be ignored.
    *
    * @return string
    *   The resulting WorkflowState id.
+   *
+   * @usage
+   *   $to_sid = $transition->->executeAndUpdateEntity($force);
+   *
+   * @see workflow_execute_transition()
    */
   public function executeAndUpdateEntity($force = FALSE);
 
   /**
    * Invokes 'transition post'.
+   *
    * Adds the possibility to invoke the hook from elsewhere.
    *
    * @param bool $force
@@ -124,21 +127,22 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
   public function post_execute($force = FALSE);
 
   /**
-   * Set the Entity, that is added to the Transition.
-   * Also set all dependent fields, that will be saved in tables {workflow_transition_*}
+   * Sets the Entity, that is added to the Transition.
    *
-   * @param EntityInterface $entity
+   * Also sets all dependent fields, that will be saved in tables {workflow_transition_*}.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The Entity ID or the Entity object, to add to the Transition.
    *
    * @return object
    *   The Entity, that is added to the Transition.
    */
-  public function setTargetEntity($entity);
+  public function setTargetEntity(EntityInterface $entity);
 
   /**
    * Returns the entity to which the workflow is attached.
    *
-   * @return EntityInterface
+   * @return \Drupal\Core\Entity\EntityInterface
    *   The entity to which the workflow is attached.
    */
   public function getTargetEntity();
@@ -170,9 +174,10 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
   /**
    * Get the language code for which the Transition is valid.
    *
-   * @todo: OK?? Shouldn't we use entity's language() method for langcode?
+   * @return string
+   *   $langcode
    *
-   * @return string $langcode
+   * @todo OK?? Shouldn't we use entity's language() method for langcode?
    */
   public function getLangcode();
 
@@ -213,6 +218,7 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    *
    * @param $value
    *   The new timestamp.
+   *
    * @return WorkflowTransitionInterface
    */
   public function setTimestamp($value);
@@ -225,21 +231,29 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
   public function isScheduled();
 
   /**
+   * Returns if this is a revertable Transition on the History tab.
+   *
+   * @return bool
+   */
+  public function isRevertable();
+
+  /**
    * Sets the Transition to be scheduled or not.
    *
    * @param bool $schedule
+   *
    * @return WorkflowTransitionInterface
    */
   public function schedule($schedule = TRUE);
 
   /**
-   * Set the 'is_executed' property.
+   * Set the 'isExecuted' property.
    *
-   * @param bool $is_executed
+   * @param bool $isExecuted
    *
    * @return WorkflowTransitionInterface
    */
-  public function setExecuted($is_executed = TRUE);
+  public function setExecuted($isExecuted = TRUE);
 
   /**
    * Returns if this is an Executed Transition.
@@ -252,18 +266,17 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    * A transition may be forced skipping checks.
    *
    * @return bool
-   *  If the transition is forced. (Allow not-configured transitions).
+   *   If the transition is forced. (Allow not-configured transitions).
    */
   public function isForced();
 
   /**
-   * Set if a transition must be executed, even if transition is invalid
-   * or user not authorized.
+   * Set if a transition must be executed, even if transition is invalid or user not authorized.
    *
    * @param bool $force
    *
    * @return object
-   *   The transition itself
+   *   The transition itself.
    */
   public function force($force = TRUE);
 

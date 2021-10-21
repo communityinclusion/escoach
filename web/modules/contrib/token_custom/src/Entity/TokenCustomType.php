@@ -39,9 +39,10 @@ use Drupal\token_custom\TokenCustomTypeInterface;
  *   },
  *   links = {
  *     "add-form" = "/admin/structure/token-custom/type/add",
- *     "edit-form" = "/admin/structure/token-custom/manage/{token_custom}/edit",
- *     "delete-form" = "/admin/structure/token-custom/manage/{token_custom}/delete",
+ *     "edit-form" = "/admin/structure/token-custom/type/manage/{token_custom}/edit",
+ *     "delete-form" = "/admin/structure/token-custom/type/manage/{token_custom}/delete",
  *     "collection" = "/admin/structure/token-custom/type",
+ *     "canonical" = "/admin/structure/token-custom/type/manage/{token_custom}",
  *   }
  * )
  */

@@ -291,6 +291,9 @@ class SearchApiEntity extends SearchApiStandard {
    *   NULL if the entity should not be displayed. Otherwise, an associative
    *   array with at least "value" set, to either a string or a render array,
    *   and possibly also additional alter options.
+   *
+   * @throws \Drupal\Core\Entity\EntityMalformedException
+   *   Thrown if the entity is malformed and a URL needs to be generated.
    */
   protected function getItem(EntityInterface $entity) {
     $bundle = $entity->bundle();
@@ -316,7 +319,7 @@ class SearchApiEntity extends SearchApiStandard {
     }
 
     $view_mode = $this->options['display_methods'][$bundle]['view_mode'];
-    $build = $this->getEntityFieldManager()
+    $build = $this->getEntityTypeManager()
       ->getViewBuilder($entity->getEntityTypeId())
       ->view($entity, $view_mode);
     return [

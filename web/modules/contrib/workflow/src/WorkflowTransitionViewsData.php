@@ -6,6 +6,7 @@ use Drupal\views\EntityViewsData;
 
 /**
  * Provides the views data for the workflow entity type.
+ *
  * Partly taken from NodeViewsData.php.
  */
 class WorkflowTransitionViewsData extends EntityViewsData {
@@ -21,9 +22,8 @@ class WorkflowTransitionViewsData extends EntityViewsData {
     $base_table = $this->entityType->getBaseTable();
     $base_field = $this->entityType->getKey('id');
 
-    // @todo D8-port: Add data from D7 function workflow_views_views_data_alter()
+    // @todo D8: Add data from D7 function workflow_views_views_data_alter().
     // @see http://cgit.drupalcode.org/workflow/tree/workflow_views/workflow_views.views.inc
-
     $data[$base_table]['table']['group'] = $this->t('Workflow');
     $data[$base_table]['table']['provider'] = 'workflow';
 
@@ -35,8 +35,8 @@ class WorkflowTransitionViewsData extends EntityViewsData {
       ],
     ];
 
-    // @todo Reverse this relationship. See also taxonomy/src/NodeTermData.php
-    //$data[$base_table]['nid'] = [
+    // @todo Reverse this relationship. See also taxonomy/src/NodeTermData.php.
+    // $data[$base_table]['nid'] = [
     //  'title' => $this->t('Content with workflow'),
     //  'help' => $this->t('Relate all content with a workflow.'),
     //  'relationship' => [
@@ -46,8 +46,7 @@ class WorkflowTransitionViewsData extends EntityViewsData {
     //    'label' => $this->t('node'),
     //    'skip base' => 'node',
     //  ],
-    //];
-
+    // ];
     $data[$base_table]['from_sid']['filter']['id'] = 'workflow_state';
     $data[$base_table]['from_sid']['help'] = $this->t('The name of the previous state of the transition.');
 
@@ -60,7 +59,7 @@ class WorkflowTransitionViewsData extends EntityViewsData {
     $data[$base_table]['uid']['relationship']['help'] = $this->t('The user who triggered the transition.');
     $data[$base_table]['uid']['relationship']['label'] = $this->t('User');
 
-    // @todo Add similar support to any date field
+    // @todo Add similar support to any date field.
     // @see https://www.drupal.org/node/2337507
     $data[$base_table]['timestamp_fulldate'] = [
       'title' => $this->t('Created date'),

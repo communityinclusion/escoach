@@ -61,11 +61,10 @@ function workflow_access_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Implements hook_workflow_operations().
- *
- * Create action link for access form on EntityWorkflowUIController::overviewForm.
+ * @inheritdoc
  */
 function workflow_access_workflow_operations($op, EntityInterface $entity = NULL) {
+  // @todo Create action link for AccessRoleForm on WorkflowListBuilder.
   $operations = [];
   return $operations;
 }
@@ -77,13 +76,13 @@ function workflow_access_workflow_operations($op, EntityInterface $entity = NULL
  * In contrary to content_access module, that uses a 'content_access_roles_gids'
  * config setting.
  *
- * @todo: determine the best way for D8. See also content_access.module
+ * @todo Determine the best way for D8. @see content_access.module.
  * The problem is that node_access table uses Int, whereas the Role Id is string.
  */
 function workflow_access_user_role_insert(EntityInterface $entity) {
   // Attend user to Rebuild data, because the weight of a role
   // is the key for workflow_Access.
-  /** @var $entity \Drupal\user\RoleInterface */
+  /** @var \Drupal\user\RoleInterface $entity */
   node_access_needs_rebuild(TRUE);
 }
 
@@ -95,7 +94,7 @@ function workflow_access_user_role_insert(EntityInterface $entity) {
 function workflow_access_user_role_update(EntityInterface $entity) {
   // Attend user to Rebuild data, because the weight of a role
   // is the key for workflow_Access.
-  /** @var $entity \Drupal\user\RoleInterface */
+  /** @var \Drupal\user\RoleInterface $entity */
   if ($entity->getWeight() != $entity->original->getWeight()) {
     // Role's weight has changed.
     node_access_needs_rebuild(TRUE);
@@ -134,7 +133,7 @@ function workflow_access_get_role_gid($rid) {
   //
   // Return a weight, avoiding negative values by starting with 100.
   // For 'Author', no role exists.
-  /* @var $role Role */
+  /** @var \Drupal\user\RoleInterface $role */
   $role = Role::load($rid);
   $weight = $role ? 100 + $role->getWeight() : 100 - 20;
 
@@ -160,7 +159,7 @@ function workflow_access_node_access_records(NodeInterface $node) {
   foreach ($node->getTranslationLanguages() as $langcode => $language) {
     $translation = $node->getTranslation($langcode);
 
-    // @todo: how to handle not published entities?
+    // @todo How to handle not published entities?
     // if (!$translation->isPublished()) {
     //   return;
     // }
@@ -185,7 +184,7 @@ function workflow_access_node_access_records(NodeInterface $node) {
         // Create a dummy transition, just to set $workflow_transitions.
         $old_sid = $new_sid = $translation->{$field_name}->value;
         if ($old_sid) {
-          /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
+          /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
           $transition = WorkflowTransition::create([$old_sid, 'field_name' => $field_name]);
           $transition->setTargetEntity($translation);
           $transition->setValues($new_sid, $translation->getOwnerId(), \Drupal::time()->getRequestTime(), '');
@@ -197,7 +196,7 @@ function workflow_access_node_access_records(NodeInterface $node) {
 
     $count_workflow_fields = 0;
     foreach ($workflow_transitions as $field_name => $transition) {
-      // @todo: add support for +1 workflows per entity.
+      // @todo Add support for multiple workflows per entity.
       if (++$count_workflow_fields > 1) {
         continue;
       }

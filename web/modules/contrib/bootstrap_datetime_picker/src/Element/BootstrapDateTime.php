@@ -101,9 +101,9 @@ class BootstrapDateTime extends FormElement {
     $element['#attributes']['class'] = ['form-control'];
 
     // Prefix and Suffix.
-    $element['#prefix'] = "<div class='container'>
+    $element['#prefix'] = "<div class=" . $element['#wrapper_class'] . ">
     <div class='row'>
-        <div class='col-sm-6'>";
+        <div class=" . $element['#column_size_class'] . ">";
     $element['#suffix'] = "</div></div></div>";
 
     // Attach library.

@@ -26,6 +26,15 @@ tamper.convert_boolean:
       type: string
       label: 'Other text'
 
+tamper.copy:
+  mapping:
+    to_from:
+      type: string
+      label: 'To or from'
+    copy_source:
+      type: string
+      label: 'Source'
+
 tamper.url_decode:
   mapping:
     method:

@@ -14,7 +14,7 @@ use Drupal\tamper\TamperBase;
  *   id = "keyword_filter",
  *   label = @Translation("Keyword filter"),
  *   description = @Translation("Filter based on a list of words/phrases."),
- *   category = "Text",
+ *   category = "Filter",
  *   handle_multiples = TRUE
  * )
  */

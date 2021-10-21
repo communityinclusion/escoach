@@ -99,8 +99,16 @@ class TermsParseModeTest extends UnitTestCase {
           ],
         ],
       ],
+      'keywords with stand-alone dash' => [
+        'keys' => 'foo - bar',
+        'expected' => [
+          '#conjunction' => 'AND',
+          'foo',
+          'bar',
+        ],
+      ],
       'really complicated search' => [
-        'keys' => 'pos  -neg "quoted pos with -minus" -"quoted neg"',
+        'keys' => 'pos  -neg "quoted pos with -minus" - -"quoted neg"',
         'expected' => [
           '#conjunction' => 'AND',
           'pos',
@@ -115,6 +123,14 @@ class TermsParseModeTest extends UnitTestCase {
             '#conjunction' => 'AND',
             'quoted neg',
           ],
+        ],
+      ],
+      'multi-byte space' => [
+        'keys' => '神奈川県　連携',
+        'expected' => [
+          '#conjunction' => 'AND',
+          '神奈川県',
+          '連携',
         ],
       ],
     ];

@@ -6,6 +6,8 @@
  */
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
 /**
@@ -44,13 +46,13 @@ function _workflow_use_action_buttons($button_type = '') {
  * - Workflow Node: view, workflow tab;
  * (For forms with Workflow Node, the form_alter() is AFTER formElement(). )
  *
- * @todo: move this to WorkflowTransitionForm::_addActionButtons();
+ * @todo Move this to WorkflowTransitionForm::_addActionButtons();
  */
-function workflow_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function workflow_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // N.B. Keep code aligned: workflow_form_alter(), WorkflowTransitionForm::actions().
 
   // Use a fast, custom way to check if we need to do this.
-  // @todo: Make this work with multiple workflows per entity.
+  // @todo Make this work with multiple workflows per entity.
   if (!_workflow_use_action_buttons()) {
     return;
   }
@@ -66,7 +68,7 @@ function workflow_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_
   $workflow_element = _workflow_transition_form_get_first_workflow_element($form);
 
   // Quit if there is no Workflow on this page.
-  if (!$workflow_element ) {
+  if (!$workflow_element) {
     return;
   }
 
@@ -79,7 +81,7 @@ function workflow_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_
   // Find the default submit button and replace with our own action buttons.
   if (isset($form['actions']['submit'])) {
     $default_submit_action = $form['actions']['submit'];
-    // @todo D8-port: on Node-form, this is not sufficient.
+    // @todo D8: On Node-form, this is not sufficient.
     unset($form['actions']['submit']);
   }
   elseif (isset($form['actions']['save'])) {
@@ -110,10 +112,10 @@ function _workflow_transition_form_get_first_workflow_element(&$form) {
 
   // Find the first workflow.
   // (So this won't work with multiple workflows per entity.)
-  foreach (\Drupal\Core\Render\Element::children($form) as $key) {
+  foreach (Element::children($form) as $key) {
     if (isset($form[$key]['widget'][0]['#default_value'])) {
       $transition = $form[$key]['widget'][0]['#default_value'];
-      if (is_object($transition) && $transition instanceof WorkflowTransitionInterface ) {
+      if (is_object($transition) && $transition instanceof WorkflowTransitionInterface) {
         $workflow_element = $form[$key]['widget'][0];
         break;
       }
@@ -129,12 +131,13 @@ function _workflow_transition_form_get_first_workflow_element(&$form) {
  * @param array $workflow_element
  * @param array $default_submit_action
  *
- * @return array $actions
+ * @return array
+ *   $actions array
  */
 function _workflow_transition_form_get_action_buttons(array $form, array $workflow_element, array $default_submit_action) {
   $actions = [];
   $current_sid = $workflow_element['to_sid']['#default_value'];
-  /* @var $transition WorkflowTransitionInterface */
+  /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
   $transition = $workflow_element['workflow_transition']['#value'];
   $field_name = $transition->getFieldName();
 
@@ -145,7 +148,6 @@ function _workflow_transition_form_get_action_buttons(array $form, array $workfl
   $min_weight = $option_weight;
   foreach ($workflow_element['to_sid']['#options'] as $sid => $option_name) {
     // Make the workflow button act exactly like the original submit button.
-
     $same_state_button = ($sid == $current_sid);
     $workflow_submit_action = $default_submit_action;
     // Add target State ID and Field name, to set correct value in validate_buttons callback.
@@ -163,7 +165,7 @@ function _workflow_transition_form_get_action_buttons(array $form, array $workfl
       $workflow_submit_action['#dropbutton'] = 'save';
     }
     $workflow_submit_action['#attributes'] = ($same_state_button) ? ['class' => ['form-save-default-button']] : [];
-    $workflow_submit_action['#button_type'] = ($same_state_button) ? 'primary' : ''; // @todo: works for node form and workflow tab, not for workflow block.
+    $workflow_submit_action['#button_type'] = ($same_state_button) ? 'primary' : ''; // @todo Works for node form and workflow tab, not for workflow block.
     //$workflow_submit_action['#executes_submit_callback']  = TRUE;
     // Add class to workflow button.
     $workflow_submit_action['#attributes']['class'][] = Html::getClass('workflow_button_' . $option_name);
@@ -212,12 +214,14 @@ function _workflow_transition_form_get_action_buttons(array $form, array $workfl
 
 /**
  * Get the Workflow parameter from the button, pressed by the user.
+ *
  * @param \Drupal\Core\Form\FormStateInterface $form_state
- *  The form state.
+ *   The form state.
+ *
  * @return array
  *   A $field_name => $to_sid array.
  */
-function _workflow_transition_form_get_triggering_button(\Drupal\Core\Form\FormStateInterface $form_state) {
+function _workflow_transition_form_get_triggering_button(FormStateInterface $form_state) {
   $result = ['field_name' => '', 'to_sid' => ''];
 
   $triggering_element = $form_state->getTriggeringElement();
@@ -233,11 +237,12 @@ function _workflow_transition_form_get_triggering_button(\Drupal\Core\Form\FormS
  * Submit callback function for the Workflow Form / DefaultWidget.
  *
  * Validate form data for 'time' element.
+ *
  * @param $element
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  * @param $form
  */
-function _workflow_transition_form_element_validate_time($element, \Drupal\Core\Form\FormStateInterface &$form_state, $form) {
+function _workflow_transition_form_element_validate_time($element, FormStateInterface &$form_state, $form) {
   if (!strtotime($element['#value'])) {
     $form_state->setError($element, t('Please enter a valid value for time.'));
   }
@@ -254,7 +259,7 @@ function _workflow_transition_form_element_validate_time($element, \Drupal\Core\
  * buttons of the complete form. We try to correct this here, without adding
  * another hook_form_alter. We guess the first button is the Save button.
  */
-function _workflow_transition_form_validate_buttons($form, \Drupal\Core\Form\FormStateInterface &$form_state) {
+function _workflow_transition_form_validate_buttons($form, FormStateInterface &$form_state) {
   // Retrieve the data from the form.
   $transition = $form_state->getValue('workflow_transition');
   if ($transition) {

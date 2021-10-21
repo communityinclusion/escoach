@@ -20,19 +20,20 @@ use Twilio\Values;
 use Twilio\Version;
 
 /**
- * PLEASE NOTE that this class contains beta products that are subject to change. Use them with caution.
- *
  * @property string $accountSid
  * @property string $chatServiceSid
  * @property string $messagingServiceSid
  * @property string $sid
  * @property string $friendlyName
+ * @property string $uniqueName
  * @property string $attributes
  * @property string $state
  * @property \DateTime $dateCreated
  * @property \DateTime $dateUpdated
+ * @property array $timers
  * @property string $url
  * @property array $links
+ * @property array $bindings
  */
 class ConversationInstance extends InstanceResource {
     protected $_participants;
@@ -57,12 +58,15 @@ class ConversationInstance extends InstanceResource {
             'messagingServiceSid' => Values::array_get($payload, 'messaging_service_sid'),
             'sid' => Values::array_get($payload, 'sid'),
             'friendlyName' => Values::array_get($payload, 'friendly_name'),
+            'uniqueName' => Values::array_get($payload, 'unique_name'),
             'attributes' => Values::array_get($payload, 'attributes'),
             'state' => Values::array_get($payload, 'state'),
             'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
             'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'timers' => Values::array_get($payload, 'timers'),
             'url' => Values::array_get($payload, 'url'),
             'links' => Values::array_get($payload, 'links'),
+            'bindings' => Values::array_get($payload, 'bindings'),
         ];
 
         $this->solution = ['sid' => $sid ?: $this->properties['sid'], ];

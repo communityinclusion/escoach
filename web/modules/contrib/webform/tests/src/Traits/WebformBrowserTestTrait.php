@@ -231,6 +231,21 @@ trait WebformBrowserTestTrait {
     return $storage->load($id);
   }
 
+  /**
+   * Reload a test webform submission.
+   *
+   * @param string $id
+   *   Webform id.
+   *
+   * @return \Drupal\webform\WebformSubmissionInterface|null
+   *   A webform submission.
+   */
+  protected function reloadSubmission($id) {
+    $storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
+    $storage->resetCache([$id]);
+    return $storage->load($id);
+  }
+
   /****************************************************************************/
   // Submission.
   /****************************************************************************/
@@ -434,6 +449,30 @@ trait WebformBrowserTestTrait {
   protected function assertNoCssSelect($selector, $message = '') {
     $element = $this->cssSelect($selector);
     $this->assertEmpty($element, $message);
+  }
+
+  /**
+   * Asserts that the element with the given CSS selector is visible.
+   *
+   * @param string $css_selector
+   *   The CSS selector identifying the element to check.
+   * @param string $message
+   *   Optional message to show alongside the assertion.
+   */
+  protected function assertElementVisible($css_selector, $message = '') {
+    $this->assertTrue($this->getSession()->getDriver()->isVisible($this->cssSelectToXpath($css_selector)), $message);
+  }
+
+  /**
+   * Asserts that the element with the given CSS selector is not visible.
+   *
+   * @param string $css_selector
+   *   The CSS selector identifying the element to check.
+   * @param string $message
+   *   Optional message to show alongside the assertion.
+   */
+  protected function assertElementNotVisible($css_selector, $message = '') {
+    $this->assertFalse($this->getSession()->getDriver()->isVisible($this->cssSelectToXpath($css_selector)), $message);
   }
 
   /****************************************************************************/

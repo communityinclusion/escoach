@@ -3,8 +3,10 @@
 namespace Drupal\token_custom\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\token_custom\Entity\TokenCustomType;
@@ -38,28 +40,28 @@ class TokenCustomForm extends ContentEntityForm {
   /**
    * Constructs a TokenCustomForm object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityStorageInterface $token_custom_storage
    *   The custom token storage.
    * @param \Drupal\Core\Entity\EntityStorageInterface $token_custom_type_storage
    *   The custom token type storage.
    */
-  public function __construct(EntityManagerInterface $entity_manager, EntityStorageInterface $token_custom_storage, EntityStorageInterface $token_custom_type_storage) {
-    parent::__construct($entity_manager);
-    $this->tokenCustomStorage = $token_custom_storage;
-    $this->tokenCustomTypeStorage = $token_custom_type_storage;
+  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
+    $this->tokenCustomStorage = $entity_type_manager->getStorage('token_custom');
+    $this->tokenCustomTypeStorage = $entity_type_manager->getStorage('token_custom_type');
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $entity_manager = $container->get('entity.manager');
     return new static(
-      $entity_manager,
-      $entity_manager->getStorage('token_custom'),
-      $entity_manager->getStorage('token_custom_type')
+      $container->get('entity.repository'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -69,7 +71,7 @@ class TokenCustomForm extends ContentEntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $token = $this->entity;
 
-    $form = parent::form($form, $form_state, $token);
+    $form = parent::form($form, $form_state);
 
     if ($this->operation == 'edit') {
       $form['#title'] = $this->t('Edit custom token %label', [
@@ -129,22 +131,22 @@ class TokenCustomForm extends ContentEntityForm {
 
     if ($insert) {
       $logger->notice('@type: added %info.', $context);
-      drupal_set_message($this->t('@type %info has been created.', $t_args));
+      $this->messenger()->addStatus($this->t('@type %info has been created.', $t_args));
     }
     else {
       $logger->notice('@type: updated %info.', $context);
-      drupal_set_message($this->t('@type %info has been updated.', $t_args));
+      $this->messenger()->addStatus($this->t('@type %info has been updated.', $t_args));
     }
 
     if ($token->id()) {
       $form_state->setValue('id', $token->id());
       $form_state->set('id', $token->id());
-      $form_state->setRedirectUrl($token->urlInfo('collection'));
+      $form_state->setRedirectUrl($token->toUrl('collection'));
     }
     else {
       // In the unlikely case something went wrong on save, the token will be
       // rebuilt and token form redisplayed.
-      drupal_set_message($this->t('The token could not be saved.'), 'error');
+      $this->messenger()->addError($this->t('The token could not be saved.'));
       $form_state->setRebuild();
     }
   }

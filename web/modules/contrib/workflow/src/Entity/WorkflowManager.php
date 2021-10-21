@@ -4,6 +4,7 @@ namespace Drupal\workflow\Entity;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
@@ -12,13 +13,20 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 
 /**
  * Manages entity type plugin definitions.
  */
 class WorkflowManager implements WorkflowManagerInterface {
+
   use StringTranslationTrait;
+
+  /**
+   * The entity_field manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
 
   /**
    * The entity_type manager service.
@@ -51,25 +59,28 @@ class WorkflowManager implements WorkflowManagerInterface {
   /**
    * Construct the WorkflowManager object as a service.
    *
-   * @see workflow.services.yml
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity_type manager service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity_field manager service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity_type manager service.
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
+   *
+   * @see workflow.services.yml
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory, TranslationInterface $string_translation, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
+  public function __construct(ConfigFactoryInterface $config_factory, EntityFieldManagerInterface $entity_field_manager, EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
+    $this->entityFieldManager = $entity_field_manager;
     $this->entityTypeManager = $entity_type_manager;
-    $this->userConfig = $config_factory->get('user.settings');
     $this->stringTranslation = $string_translation;
-    $this->moduleHandler = $module_handler;
+    $this->userConfig = $config_factory->get('user.settings');
     $this->currentUser = $current_user;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -80,16 +91,15 @@ class WorkflowManager implements WorkflowManagerInterface {
 
     // If the time now is greater than the time to execute a transition, do it.
     foreach (WorkflowScheduledTransition::loadBetween($start, $end) as $scheduled_transition) {
-      $field_name = $scheduled_transition->getFieldName();
       $entity = $scheduled_transition->getTargetEntity();
-      $from_sid = $scheduled_transition->getFromSid();
-
       // Make sure transition is still valid: the entity must still be in
       // the state it was in, when the transition was scheduled.
       if (!$entity) {
         continue;
       }
 
+      $field_name = $scheduled_transition->getFieldName();
+      $from_sid = $scheduled_transition->getFromSid();
       $current_sid = workflow_node_current_state($entity, $field_name);
       if (!$current_sid || ($current_sid != $from_sid)) {
         // Entity is not in the same state it was when the transition
@@ -139,12 +149,12 @@ class WorkflowManager implements WorkflowManagerInterface {
 
     foreach (workflow_get_workflow_field_names($entity) as $field_name) {
       // Transition is created in widget or WorkflowTransitionForm.
-      /** @var $transition WorkflowTransitionInterface */
+      /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
       $transition = $entity->{$field_name}->__get('workflow_transition');
       if (!$transition) {
         // We come from creating/editing an entity via entity_form, with core widget or hidden Workflow widget.
-        // @todo D8: from an Edit form with hidden widget.
-        /** @noinspection PhpUndefinedFieldInspection */
+        // @todo D8: From an Edit form with hidden widget.
+        /* @noinspection PhpUndefinedFieldInspection */
         if ($entity->original) {
           // Editing a Node with hidden Widget. State change not possible, so bail out.
           // $entity->{$field_name}->value = $entity->original->{$field_name}->value;
@@ -152,13 +162,11 @@ class WorkflowManager implements WorkflowManagerInterface {
         }
 
         // Creating a Node with hidden Workflow Widget. Generate valid first transition.
-        // @todo D8: Test Creating a non-Node Entity with hidden Workflow widget.
         $comment = '';
         $old_sid = WorkflowManager::getPreviousStateId($entity, $field_name);
         $new_sid = $entity->{$field_name}->value;
-        $field_info = FieldStorageConfig::loadByName($entity->getEntityTypeId(), $field_name);
-        if ((!$new_sid) && $wid = $field_info->getSetting('workflow_type')) {
-          /** @var Workflow $workflow */
+        if ((!$new_sid) && $wid = $entity->{$field_name}->getSetting('workflow_type')) {
+          /** @var \Drupal\workflow\Entity\Workflow $workflow */
           $workflow = Workflow::load($wid);
           $new_sid = $workflow->getFirstSid($entity, $field_name, $user);
         }
@@ -229,7 +237,7 @@ class WorkflowManager implements WorkflowManagerInterface {
       return self::getCreationStateId($entity, $field_name);
     }
 
-    // @todo?: Read history with an explicit langcode.
+    // @todo Read history with an explicit langcode(?).
     $langcode = ''; // $entity->language()->getId();
     // @todo D8: #2373383 Add integration with older revisions via Revisioning module.
     $entity_type = $entity->getEntityTypeId();
@@ -267,7 +275,7 @@ class WorkflowManager implements WorkflowManagerInterface {
     $field_storage = $field_config->getFieldStorageDefinition();
     $wid = $field_storage->getSetting('workflow_type');
     if ($wid) {
-      /** @var Workflow $workflow */
+      /** @var \Drupal\workflow\Entity\Workflow $workflow */
       $workflow = Workflow::load($wid);
       if (!$workflow) {
         \Drupal::messenger()->addError(t('Workflow %wid cannot be loaded. Contact your system administrator.', ['%wid' => $wid]));
@@ -365,7 +373,7 @@ class WorkflowManager implements WorkflowManagerInterface {
       return [];
     }
 
-    $map = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('workflow');
+    $map = $this->entityFieldManager->getFieldMapByFieldType('workflow');
     return isset($map[$entity_type_id]) ? $map[$entity_type_id] : [];
   }
 
@@ -378,7 +386,7 @@ class WorkflowManager implements WorkflowManagerInterface {
     // Determine the fields added by Field UI.
     $entity_field_manager = \Drupal::service('entity_field.manager');
     // $extra_fields = $this->entityFieldManager->getExtraFields($entity_type_id, $bundle);
-    // $base_fields = $entity_field_manager->getBaseFieldDefinitions($entity_type_id, $bundle);
+    // $base_fields = $this->entityFieldManager->getBaseFieldDefinitions($entity_type_id, $bundle);
     $fields = $entity_field_manager->getFieldDefinitions($entity_type_id, $bundle);
     foreach ($fields as $key => $field) {
       // Remove BaseFieldDefinition, BaseFieldOverride.
@@ -425,20 +433,18 @@ class WorkflowManager implements WorkflowManagerInterface {
   public static function isOwner(AccountInterface $account, EntityInterface $entity = NULL) {
     $is_owner = FALSE;
 
-    // @todo: Keep below code aligned between WorkflowState, ~Transition, ~TransitionListController
-    // Determine if user is owner of the entity.
-    $uid = ($account) ? $account->id() : -1;
-    // Get the entity's ID and Author ID.
     $entity_id = ($entity) ? $entity->id() : '';
-    // Some entities (e.g., taxonomy_term) do not have a uid.
-    // $entity_uid = $entity->get('uid'); // isset($entity->uid) ? $entity->uid : 0;
-    $entity_uid = (method_exists($entity, 'getOwnerId')) ? $entity->getOwnerId() : -1;
-
     if (!$entity_id) {
       // This is a new entity. User is author. Add 'author' role to user.
       $is_owner = TRUE;
+      return $is_owner;
     }
-    elseif (($entity_uid > 0) && ($uid > 0) && ($entity_uid == $uid)) {
+
+    $uid = ($account) ? $account->id() : -1;
+    // Some entities (e.g., taxonomy_term) do not have a uid.
+    // $entity_uid = $entity->get('uid'); // isset($entity->uid) ? $entity->uid : 0;
+    $entity_uid = (method_exists($entity, 'getOwnerId')) ? $entity->getOwnerId() : -1;
+    if (($entity_uid > 0) && ($uid > 0) && ($entity_uid == $uid)) {
       // This is an existing entity. User is author.
       // D8: use "access own" permission. D7: Add 'author' role to user.
       // N.B.: If 'anonymous' is the author, don't allow access to History Tab,

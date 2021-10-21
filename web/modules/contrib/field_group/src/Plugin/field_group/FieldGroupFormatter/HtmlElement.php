@@ -57,7 +57,8 @@ class HtmlElement extends FieldGroupFormatterBase {
       if (!isset($element_attributes['class'])) {
         $element_attributes['class'] = [];
       }
-      // If user also entered class in the attributes textfield, force it to an array.
+      // If user also entered class in the attributes textfield, force it to an
+      // array.
       else {
         $element_attributes['class'] = [$element_attributes['class']];
       }
@@ -72,6 +73,9 @@ class HtmlElement extends FieldGroupFormatterBase {
     if ($this->getSetting('show_label')) {
       $element['#title_element'] = $this->getSetting('label_element');
       $element['#title'] = $this->getLabel();
+      // Prevent \Drupal\content_translation\ContentTranslationHandler::addTranslatabilityClue()
+      // from adding an incorrect suffix to the field group title.
+      $element['#multilingual'] = TRUE;
       $element['#title_attributes'] = new Attribute();
 
       if (!empty($this->getSetting('label_element_classes'))) {
@@ -244,6 +248,7 @@ class HtmlElement extends FieldGroupFormatterBase {
       'effect' => 'none',
       'speed' => 'fast',
       'attributes' => '',
+      'show_empty_fields' => FALSE,
     ] + parent::defaultSettings($context);
 
     if ($context == 'form') {

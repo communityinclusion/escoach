@@ -25,6 +25,7 @@ class EntityUsageLayoutBuilderTest extends KernelTestBase {
    */
   protected static $modules = [
     'entity_usage',
+    'entity_usage_test',
     'entity_test',
     'block_content',
     'block',
@@ -71,12 +72,27 @@ class EntityUsageLayoutBuilderTest extends KernelTestBase {
       'type' => $type->id(),
     ]);
     $block->save();
+    $test_entity = EntityTest::create();
+    $test_entity->save();
 
     $sectionData = [
       new Section('layout_onecol', [], [
         'first-uuid' => new SectionComponent('first-uuid', 'content', [
           'id' => 'inline_block:' . $type->id(),
           'block_revision_id' => $block->getRevisionId(),
+        ]),
+        // Ensure plugins that don't exist don't throw errors.
+        'second-uuid' => new SectionComponent('second-uuid', 'content', [
+          'id' => 'foo_block:plugin_not_found',
+        ]),
+        // Add a block that has a content dependency on the block.
+        'third-uuid' => new SectionComponent('third-uuid', 'content', [
+          'id' => 'entity_usage_test_dependencies',
+          'dependencies' => [
+            'content' => [
+              $test_entity->getConfigDependencyName(),
+            ],
+          ],
         ]),
       ]),
     ];
@@ -87,6 +103,22 @@ class EntityUsageLayoutBuilderTest extends KernelTestBase {
     /** @var \Drupal\entity_usage\EntityUsageInterface $entityUsage */
     $entityUsage = \Drupal::service('entity_usage.usage');
     $usage = $entityUsage->listSources($block);
+    $expected = [
+      $entity->getEntityTypeId() => [
+        $entity->id() => [
+          [
+            'source_langcode' => 'en',
+            'source_vid' => '0',
+            'method' => 'layout_builder',
+            'field_name' => 'layout_builder__layout',
+            'count' => '1',
+          ],
+        ],
+      ],
+    ];
+    $this->assertEquals($expected, $usage);
+
+    $usage = $entityUsage->listSources($test_entity);
     $expected = [
       $entity->getEntityTypeId() => [
         $entity->id() => [

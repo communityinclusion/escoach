@@ -386,12 +386,19 @@ class EmbeddedContentTest extends EntityUsageJavascriptTestBase {
     foreach ($usages['node'][$node5->id()] as $usage) {
       $this->assertEquals(1, $usage['count']);
       $this->assertEquals('html_link', $usage['method']);
-      $this->assertContains($usage['field_name'], ['field_eu_test_rich_text', 'field_eu_test_normal_text']);
+      $this->assertTrue(in_array($usage['field_name'], ['field_eu_test_rich_text', 'field_eu_test_normal_text']));
     }
 
     // Create node 7 referencing node 6 using an aliased URL.
     $alias_url = '/i-am-an-alias';
-    \Drupal::service('path.alias_storage')->save('/node/' . $node6->id(), $alias_url, $node6->language()->getId());
+    $alias = \Drupal::entityTypeManager()
+      ->getStorage('path_alias')
+      ->create([
+        'path' => '/node/' . $node6->id(),
+        'alias' => $alias_url,
+        'langcode' => $node6->language()->getId(),
+      ]);
+    $alias->save();
     $embedded_text = '<p>foo <a href="' . $alias_url . '">linked text</a> bar</p>';
     $node7 = Node::create([
       'type' => 'eu_test_ct',

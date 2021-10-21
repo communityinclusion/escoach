@@ -15,6 +15,8 @@ abstract class EntityUsageJavascriptTestBase extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'image',
+    'media',
     'node',
     'field_ui',
     'system',

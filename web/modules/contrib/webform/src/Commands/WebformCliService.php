@@ -6,7 +6,9 @@ use Drupal\Component\Utility\Variable;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Mail\MailFormatHelper;
+use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Serialization\Yaml;
+use Drupal\Core\Site\Settings;
 use Drupal\webform\Controller\WebformResultsExportController;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
@@ -16,6 +18,7 @@ use Drupal\webform\Utility\WebformObjectHelper;
 use Drupal\webform\Utility\WebformYaml;
 use Drupal\webform_submission_export_import\Form\WebformSubmissionExportImportUploadForm;
 use Drush\Commands\DrushCommands;
+use Drush\Drush;
 use Psr\Log\LogLevel;
 
 /**
@@ -196,16 +199,6 @@ class WebformCliService implements WebformCliServiceInterface {
       'aliases' => ['wfls'],
     ];
 
-    $items['webform-libraries-make'] = [
-      'description' => 'Generates libraries YAML to be included in a drush.make.yml files.',
-      'core' => ['8+'],
-      'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
-      'examples' => [
-        'webform-libraries-make' => 'Generates libraries YAML to be included in a drush.make.yml file.',
-      ],
-      'aliases' => ['wflm'],
-    ];
-
     $items['webform-libraries-composer'] = [
       'description' => "Generates the Webform module's composer.json with libraries as repositories.",
       'core' => ['8+'],
@@ -285,7 +278,7 @@ class WebformCliService implements WebformCliServiceInterface {
       'core' => ['8+'],
       'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
       'examples' => [
-        'webform-repair' => 'Generates HTML documentation used by the Webform module\'s documentation pages.',
+        'webform-docs' => 'Generates HTML documentation used by the Webform module\'s documentation pages.',
       ],
       'aliases' => ['wfd'],
     ];
@@ -457,7 +450,7 @@ class WebformCliService implements WebformCliServiceInterface {
    */
   public function drush_webform_purge_validate($webform_id = NULL) {
     // If webform id is set to 'all' or not included skip validation.
-    if ($this->drush_get_option('all') || $webform_id == NULL) {
+    if ($this->drush_get_option('all') || $webform_id === NULL) {
       return;
     }
 
@@ -483,14 +476,12 @@ class WebformCliService implements WebformCliServiceInterface {
     }
 
     // Set the webform.
-    $webform = ($webform_id == 'all') ? NULL : Webform::load($webform_id);
+    $webform = ($webform_id === 'all') ? NULL : Webform::load($webform_id);
 
     /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = \Drupal::service('entity_type.manager');
     /** @var \Drupal\webform\WebformSubmissionStorageInterface $submission_storage */
     $submission_storage = $entity_type_manager->getStorage('webform_submission');
-    /** @var \Drupal\webform\WebformRequestInterface $request_handler */
-    $request_handler = \Drupal::service('webform.request');
 
     // Make sure there are submissions that need to be deleted.
     if (!$submission_storage->getTotal($webform)) {
@@ -499,7 +490,7 @@ class WebformCliService implements WebformCliServiceInterface {
     }
 
     if (!$webform) {
-      $submission_total = \Drupal::entityQuery('webform_submission')->count()->execute();
+      $submission_total = \Drupal::entityQuery('webform_submission')->count()->accessCheck(FALSE)->execute();
       $form_total = \Drupal::entityQuery('webform')->count()->execute();
 
       $t_args = [
@@ -512,7 +503,7 @@ class WebformCliService implements WebformCliServiceInterface {
         return $this->drush_user_abort();
       }
 
-      $form = new WebformResultsClearForm($entity_type_manager, $request_handler);
+      $form = WebformResultsClearForm::create(\Drupal::getContainer());
       $form->batchSet();
       $this->drush_backend_batch_process();
     }
@@ -529,7 +520,7 @@ class WebformCliService implements WebformCliServiceInterface {
         return $this->drush_user_abort();
       }
 
-      $form = new WebformSubmissionsPurgeForm($entity_type_manager, $request_handler);
+      $form = WebformSubmissionsPurgeForm::create(\Drupal::getContainer());
       $form->batchSet($webform, $source_entity);
       $this->drush_backend_batch_process();
     }
@@ -547,7 +538,8 @@ class WebformCliService implements WebformCliServiceInterface {
 
     $target = $target ?: 'webform';
 
-    if (!isset($config_directories[$target])
+    if (empty(Settings::get('config_' . $target . '_directory', FALSE))
+      && !(isset($config_directories) && isset($config_directories[$target]))
       && !(\Drupal::moduleHandler()->moduleExists($target) && file_exists(drupal_get_path('module', $target) . '/config'))
       && !file_exists(realpath($target))) {
       $t_args = ['@target' => $target];
@@ -564,7 +556,15 @@ class WebformCliService implements WebformCliServiceInterface {
     $target = $target ?: 'webform';
     $prefix = $this->drush_get_option('prefix', 'webform');
 
-    if (isset($config_directories[$target])) {
+    // [Drupal 8.8+] The sync directory is defined in $settings
+    // and not $config_directories.
+    // @see https://www.drupal.org/node/3018145
+    $config_directory = Settings::get('config_' . $target . '_directory');
+    if ($config_directory) {
+      $file_directory_path = DRUPAL_ROOT . '/' . $config_directory;
+      $dependencies = $this->drush_get_option('dependencies');
+    }
+    elseif (isset($config_directories) && isset($config_directories[$target])) {
       $file_directory_path = DRUPAL_ROOT . '/' . $config_directories[$target];
       $dependencies = $this->drush_get_option('dependencies');
     }
@@ -619,7 +619,7 @@ class WebformCliService implements WebformCliServiceInterface {
 
       // Tidy and add new line to the end of the tidied file.
       $tidied_yaml = WebformYaml::encode($data) . PHP_EOL;
-      if ($tidied_yaml != $original_yaml) {
+      if ($tidied_yaml !== $original_yaml) {
         $this->drush_print($this->dt('Tidying @file…', ['@file' => $file->filename]));
         file_put_contents($file->uri, $tidied_yaml);
         $total++;
@@ -680,35 +680,6 @@ class WebformCliService implements WebformCliServiceInterface {
     $description = MailFormatHelper::htmlToText($description);
 
     $this->drush_print($description);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function drush_webform_libraries_make() {
-    /** @var \Drupal\webform\WebformLibrariesManagerInterface $libraries_manager */
-    $libraries_manager = \Drupal::service('webform.libraries_manager');
-    $libraries = $libraries_manager->getLibraries(TRUE);
-
-    $data = [
-      'core' => '8.x',
-      'api' => 2,
-      'libraries' => [],
-    ];
-    foreach ($libraries as $library_name => $library) {
-      $url = $library['download_url']->toString();
-      $data['libraries'][$library_name] = [
-        'directory_name' => $library_name,
-        'destination' => 'libraries',
-        'download' => [
-          'type' => 'get',
-          'url' => $url,
-        ],
-      ];
-    }
-
-    $data = Yaml::encode($data);
-    $this->drush_print($data);
   }
 
   /**
@@ -780,7 +751,7 @@ class WebformCliService implements WebformCliServiceInterface {
       $files = scandir($temp_location);
       // Remove directories (. ..)
       unset($files[0], $files[1]);
-      if ((count($files) == 1) && is_dir($temp_location . '/' . current($files))) {
+      if ((count($files) === 1) && is_dir($temp_location . '/' . current($files))) {
         $temp_location .= '/' . current($files);
       }
       $this->drush_move_dir($temp_location, $download_location);
@@ -876,19 +847,34 @@ class WebformCliService implements WebformCliServiceInterface {
 
     // Validate all webform elements.
     $this->drush_print($this->dt('Validating webform elements…'));
-    /** @var \Drupal\webform\WebformEntityElementsValidatorInterface $elements_validator */
-    $elements_validator = \Drupal::service('webform.elements_validator');
 
-    /** @var \Drupal\webform\WebformInterface[] $webforms */
-    $webforms = Webform::loadMultiple();
-    foreach ($webforms as $webform) {
-      if ($messages = $elements_validator->validate($webform)) {
-        $this->drush_print('  ' . $this->dt('@title (@id): Found element validation errors.', ['@title' => $webform->label(), '@id' => $webform->id()]));
-        foreach ($messages as $message) {
-          $this->drush_print('  - ' . strip_tags($message));
+    \Drupal::moduleHandler()->loadAll();
+
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+    $renderer = \Drupal::service('renderer');
+    $render_context = new RenderContext();
+    $renderer->executeInRenderContext($render_context, function () {
+      /** @var \Drupal\webform\WebformEntityElementsValidatorInterface $elements_validator */
+      $elements_validator = \Drupal::service('webform.elements_validator');
+
+      /** @var \Drupal\webform\WebformInterface[] $webforms */
+      $webforms = Webform::loadMultiple();
+      foreach ($webforms as $webform) {
+        // Ignored test files.
+        // @todo Determine why these webforms are throwing error via CLI.
+        if (in_array($webform->id(), ['test_element_managed_file_limit', 'test_composite_custom_file', 'test_element_comp_file_plugin'])) {
+          continue;
+        }
+
+        $messages = $elements_validator->validate($webform);
+        if ($messages) {
+          $this->drush_print('  ' . $this->dt('@title (@id): Found element validation errors.', ['@title' => $webform->label(), '@id' => $webform->id()]));
+          foreach ($messages as $message) {
+            $this->drush_print('  - ' . strip_tags($message));
+          }
         }
       }
-    }
+    });
 
     Cache::invalidateTags(['rendered']);
     // @todo Remove when that is fixed in https://www.drupal.org/node/2773591.
@@ -993,7 +979,7 @@ class WebformCliService implements WebformCliServiceInterface {
       $help_html = \Drupal::service('renderer')->renderPlain($help_section);
       $help_html = $this->_drush_webform_docs_tidy($help_html);
 
-      if ($help_name == 'videos') {
+      if ($help_name === 'videos') {
         // Download YouTube thumbnails so that they can be updated to
         // https://www.drupal.org/files/
         preg_match_all('#https://img.youtube.com/vi/([^/]+)/0.jpg#', $help_html, $matches);
@@ -1073,7 +1059,7 @@ class WebformCliService implements WebformCliServiceInterface {
       return $this->drush_user_abort();
     }
 
-    $drupal_root = $this->drush_get_context('DRUSH_DRUPAL_ROOT');
+    $drupal_root = Drush::bootstrapManager()->getRoot();
     if (file_exists($drupal_root . '/composer.json')) {
       $composer_json = $drupal_root . '/composer.json';
       $composer_directory = '';
@@ -1314,7 +1300,7 @@ function $command_hook() {
 // @codingStandardsIgnoreFile
 
 /**
- * This is file was generated using Drush. DO NOT EDIT. 
+ * This is file was generated using Drush. DO NOT EDIT.
  *
  * @see drush webform-generate-commands
  * @see \Drupal\webform\Commands\DrushCliServiceBase::generate_commands_drush8
@@ -1369,7 +1355,7 @@ $functions
    * @hook validate $command_name
    */
   public function $validate_method(CommandData \$commandData) {
-    \$arguments = \$commandData->arguments();
+    \$arguments = array_values(\$commandData->arguments());
     array_shift(\$arguments);
     call_user_func_array([\$this->cliService, '$validate_method'], \$arguments);
   }";
@@ -1452,7 +1438,7 @@ $command_annotations
 // @codingStandardsIgnoreFile
 
 /**
- * This is file was generated using Drush. DO NOT EDIT. 
+ * This is file was generated using Drush. DO NOT EDIT.
  *
  * @see drush webform-generate-commands
  * @see \Drupal\webform\Commands\DrushCliServiceBase::generate_commands_drush9
@@ -1512,7 +1498,7 @@ $methods
         return $this->drush_set_error($this->dt("'@title' (@entity_type:@entity_id) does not reference a webform.", $dt_args));
       }
 
-      if ($source_entity->webform->target_id != $webform_id) {
+      if ($source_entity->webform->target_id !== $webform_id) {
         return $this->drush_set_error($this->dt("'@title' (@entity_type:@entity_id) does not have a '@webform_id' webform associated with it.", $dt_args));
       }
     }

@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Routing\RouteMatchInterface;
+
 /**
  * @file
  * Cleans up Workflow cruft that may build up over time.
@@ -8,7 +10,7 @@
 /**
  * Implements hook_help().
  */
-function workflow_cleanup_help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match) {
+function workflow_cleanup_help($route_name, RouteMatchInterface $route_match) {
   $output = [];
 
   switch ($route_name) {
@@ -19,7 +21,7 @@ function workflow_cleanup_help($route_name, \Drupal\Core\Routing\RouteMatchInter
         transition history of your content will loose the description of a
         previously used state. If your Workflow must comply to some auditing
         standards, you should NOT use this function.');
-    break;
+      break;
   }
 
   return $output;
