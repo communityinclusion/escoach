@@ -413,7 +413,7 @@ class BaseQuery {
     $this->valueAliasMap = [
       'Selected' => [
         'title' => 'Selected Activities',
-        'color' => '#0000FF',
+        'color' => '#C70039',
       ],
       'Other' => [
         'title' => 'Other Activities',

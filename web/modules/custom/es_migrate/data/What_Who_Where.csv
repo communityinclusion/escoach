@@ -16,10 +16,10 @@ question_id,response_id,response_text,parent_response_id,vocabulary,alias,weight
 "482,482,482","11649,11650,11652","Either 1 or 2 or 4",,Where,2and3and5,7
 483,11658,Getting to know a job seeker,,What,JobSeeker,0,DarkBlue
 483,11659,"Finding, securing jobs",,What,Finding,1,Blue
-483,11660,Any supports AFTER hire,,What,After,3,Green
+483,11660,Any supports AFTER hire,,What,After,3,Black
 483,11661,Other supports BEFORE hire,,What,Before,2,SkyBlue
 483,11662,"Non-employment related e.g. day programs",,What,Day,5,Orange
-483,11663,"Paperwork, meetings, program business",,What,Staff,4,Gray
+483,11663,"Paperwork, meetings, program business",,What,Staff,4,Silver
 537,11836,Reviewing records,11658,What,,4
 537,11838,Observing a job seeker,11658,What,,2
 537,11839,Other,11658,What,,8
