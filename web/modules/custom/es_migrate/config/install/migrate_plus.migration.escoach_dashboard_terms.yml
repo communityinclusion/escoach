@@ -23,6 +23,8 @@ source:
     6:
       weight: weight
     7:
+      bar_chart_color: bar_chart_color
+    8:
       notes: notes
 process:
   name: response_text
@@ -51,5 +53,6 @@ process:
     delimiter: ,
   field_alias: alias
   weight: weight
+  field_bar_chart_color: bar_chart_color
 destination:
   plugin: entity:taxonomy_term
