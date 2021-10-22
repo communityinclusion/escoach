@@ -15,8 +15,22 @@
   margin-bottom: 0;
 }
 
+.escoach-submit-wrapper {
+  align-self: flex-end;
+}
+
+#edit-submit {
+  margin-bottom: 1rem;
+}
+
 .escoach-what-clear-wrapper {
   font-size: 0.5em;
+}
+
+.form-item-who label,
+.form-item-where label,
+.form-item-timeframe label {
+  font-size: 1.5em;
 }
 
 #results td,
