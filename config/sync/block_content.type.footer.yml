@@ -1,8 +1,0 @@
-uuid: dd667c8f-dad7-43e1-b992-faffb70256c5
-langcode: en
-status: true
-dependencies: {  }
-id: footer
-label: Footer
-revision: 0
-description: 'Footer image'
