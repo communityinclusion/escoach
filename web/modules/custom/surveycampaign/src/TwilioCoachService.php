@@ -297,8 +297,6 @@ class TwilioCoachService
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
                     $showme = print_r($contact, true);
-                    \Drupal::logger('surveycampaign')->notice("contact array" . $showme);
-                    //setting for secondary survey to send only once.
                     $checkcompletedonce = false;
 
                     if($onetime) {
@@ -822,7 +820,7 @@ class TwilioCoachService
       $dayspastinactive = $config->get('def_days_past_inactive');
 
       $query =  $database->select('surveycampaign_mailer','sm')
-      ->fields('sc', array(
+      ->fields('sm', array(
       'campaignid')
       )
       ->condition('sm.surveyid', $surveyid)
@@ -836,6 +834,8 @@ class TwilioCoachService
       $triggerdate = new DateTime("$lastsurveydate");
       $triggerdate->modify("+ $dayspastinactive days");
       $triggerdate = $triggerdate->format('Y-m-d');
+      \Drupal::logger('surveycampaign')->notice("Trigger date: " . $triggerdate);
+      \Drupal::logger('surveycampaign')->notice("Today date: " . $todaydate);
       $cancelled = false;
       $cancelled = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
       if($triggerdate == $todaydate && $cancelled) {
@@ -871,7 +871,7 @@ class TwilioCoachService
             $langcode = "en";
             $send = true;
                 $textno = 6;
-            
+
         }
         if($noreplylevel == 2 && $isprimary) {
 
