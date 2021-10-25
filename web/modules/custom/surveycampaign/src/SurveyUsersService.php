@@ -150,7 +150,7 @@ class SurveyUsersService
         foreach($storage as $profile) {
 
 
-            if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $profile->get('field_set_surveys_to_inactive')->value != "$setstatus") {
+            if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && ($profile->get('field_set_surveys_to_inactive')->value != "$setstatus" || $setstatus == null)) {
                 $user = $profile->getOwnerId();
                 $userobj = \Drupal\user\Entity\User::load($user);
                 $useremail = $userobj->getEmail();

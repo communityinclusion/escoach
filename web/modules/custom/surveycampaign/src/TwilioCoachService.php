@@ -540,7 +540,7 @@ class TwilioCoachService
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
                 $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
-                //echo $url;
+                \Drupal::logger('surveycampaign')->notice("URL: " . $url);
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -821,25 +821,32 @@ class TwilioCoachService
 
       $query =  $database->select('surveycampaign_mailer','sm')
       ->fields('sm', array(
-      'campaignid')
+      'senddate')
       )
       ->condition('sm.surveyid', $surveyid)
       ->condition('sm.mobilephone', $mobilephone)
       ->condition('sm.fullname', $fullname)
       ->orderBy('senddate','DESC')
-      ->range(1, $limitno);
+      ->range(0,1);
       $result = $query->execute()->fetchField();
       $lastsurveydate = substr($result, 0, 10);
       $todaydate = date("Y-m-d");
       $triggerdate = new DateTime("$lastsurveydate");
       $triggerdate->modify("+ $dayspastinactive days");
       $triggerdate = $triggerdate->format('Y-m-d');
+      \Drupal::logger('surveycampaign')->notice("Full name: " . $fullname);
+
+      \Drupal::logger('surveycampaign')->notice("Survey id: " . $surveyid);
+      \Drupal::logger('surveycampaign')->notice("Mobilephone: " . $mobilephone);
+
+      \Drupal::logger('surveycampaign')->notice("Lastsurvey date: " . $lastsurveydate);
+      \Drupal::logger('surveycampaign')->notice("Days past inactive: " . $dayspastinactive);
       \Drupal::logger('surveycampaign')->notice("Trigger date: " . $triggerdate);
       \Drupal::logger('surveycampaign')->notice("Today date: " . $todaydate);
       $cancelled = false;
       $cancelled = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
-      if($triggerdate == $todaydate && $cancelled) {
-        //send the reminder
+      if($triggerdate >= $todaydate && $cancelled) {
+        return true;
       }
       //$lastactivedate = "select  DATE_FORMAT(senddate, "%Y-%m-%d") truncatedate from surveycampaign_mailer where mobilephone = 6125015804 AND surveyid =  5420562 ORDER BY senddate DESC LIMIT 1";
 
@@ -870,7 +877,8 @@ class TwilioCoachService
 
             $langcode = "en";
             $send = true;
-                $textno = 6;
+            $textno = 6;
+            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,null,2);
 
         }
         if($noreplylevel == 2 && $isprimary) {
