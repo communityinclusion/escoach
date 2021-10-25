@@ -117,7 +117,6 @@ class TwilioCoachService
         $surveytype = $surveyid == $config->get('defaultid') ? 'default' : ($surveyid == $config->get('secondaryid') ? 'alt' : null) ;
         $defaultdisable = $config->get('defaultenable');
         $seconddisable = $config->get('secondenable');
-        //\Drupal::logger('surveycampaign alert')->notice('Surveyid: ' . $surveyid . ' Surveytype: ' . $surveytype);
         if(!$surveytype) return false;
         if(($surveytype == 'default' && $defaultdisable == '1') || ($surveytype == 'alt' && $seconddisable == '1')) return false;
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
@@ -414,7 +413,7 @@ class TwilioCoachService
        $todaydate = date("Y-m-d");
        $filterdate = urlencode("$todaydate 01:00:00");
        $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveyresponse?filter[field][0]=date_submitted&filter[operator][0]=>=&filter[value][0]={$filterdate}&filter[field][1]=[question(545)]&filter[operator][1]==&filter[value][1]={$email}&api_token={$api_key}&api_token_secret={$api_secret}";
-       //\Drupal::logger('surveycampaign')->notice("Response URL: " . $url);
+
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -540,7 +539,6 @@ class TwilioCoachService
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
                 $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
-                \Drupal::logger('surveycampaign')->notice("URL: " . $url);
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -566,7 +564,6 @@ class TwilioCoachService
 
                     if (!is_bool($output)) {
                         $todaylink = $output->invitelink;
-                    //    \Drupal::logger('surveycampaign')->notice("Today link: " . $todaylink);
                         $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
 
@@ -834,15 +831,6 @@ class TwilioCoachService
       $triggerdate = new DateTime("$lastsurveydate");
       $triggerdate->modify("+ $dayspastinactive days");
       $triggerdate = $triggerdate->format('Y-m-d');
-      \Drupal::logger('surveycampaign')->notice("Full name: " . $fullname);
-
-      \Drupal::logger('surveycampaign')->notice("Survey id: " . $surveyid);
-      \Drupal::logger('surveycampaign')->notice("Mobilephone: " . $mobilephone);
-
-      \Drupal::logger('surveycampaign')->notice("Lastsurvey date: " . $lastsurveydate);
-      \Drupal::logger('surveycampaign')->notice("Days past inactive: " . $dayspastinactive);
-      \Drupal::logger('surveycampaign')->notice("Trigger date: " . $triggerdate);
-      \Drupal::logger('surveycampaign')->notice("Today date: " . $todaydate);
       $cancelled = false;
       $cancelled = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
       if($triggerdate >= $todaydate && $cancelled) {
