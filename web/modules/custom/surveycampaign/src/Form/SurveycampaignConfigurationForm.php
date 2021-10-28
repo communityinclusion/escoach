@@ -864,7 +864,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       // Create a new item, a new data object, which is passed to the
       // QueueWorker's processItem() method.
       $item = new \stdClass();
-      $item->created = REQUEST_TIME;
+      $item->created = \Drupal::time()->getRequestTime();
       $item->sequence = $i;
       $queue->createItem($item);
     }

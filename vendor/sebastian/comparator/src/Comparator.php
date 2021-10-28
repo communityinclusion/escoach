@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of sebastian/comparator.
  *
@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace SebastianBergmann\Comparator;
 
 use SebastianBergmann\Exporter\Exporter;
@@ -31,7 +32,10 @@ abstract class Comparator
         $this->exporter = new Exporter;
     }
 
-    public function setFactory(Factory $factory)/*: void*/
+    /**
+     * @param Factory $factory
+     */
+    public function setFactory(Factory $factory)
     {
         $this->factory = $factory;
     }

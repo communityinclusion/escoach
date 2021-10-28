@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of sebastian/comparator.
  *
@@ -7,20 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace SebastianBergmann\Comparator;
 
-use function array_unshift;
+namespace SebastianBergmann\Comparator;
 
 /**
  * Factory for comparators which compare values for equality.
  */
 class Factory
 {
-    /**
-     * @var Factory
-     */
-    private static $instance;
-
     /**
      * @var Comparator[]
      */
@@ -32,12 +26,17 @@ class Factory
     private $defaultComparators = [];
 
     /**
+     * @var Factory
+     */
+    private static $instance;
+
+    /**
      * @return Factory
      */
     public static function getInstance()
     {
         if (self::$instance === null) {
-            self::$instance = new self; // @codeCoverageIgnore
+            self::$instance = new self;
         }
 
         return self::$instance;
@@ -72,8 +71,6 @@ class Factory
                 return $comparator;
             }
         }
-
-        throw new RuntimeException('No suitable Comparator implementation found');
     }
 
     /**
@@ -86,9 +83,9 @@ class Factory
      *
      * @param Comparator $comparator The comparator to be registered
      */
-    public function register(Comparator $comparator)/*: void*/
+    public function register(Comparator $comparator)
     {
-        array_unshift($this->customComparators, $comparator);
+        \array_unshift($this->customComparators, $comparator);
 
         $comparator->setFactory($this);
     }
@@ -100,7 +97,7 @@ class Factory
      *
      * @param Comparator $comparator The comparator to be unregistered
      */
-    public function unregister(Comparator $comparator)/*: void*/
+    public function unregister(Comparator $comparator)
     {
         foreach ($this->customComparators as $key => $_comparator) {
             if ($comparator === $_comparator) {
@@ -112,30 +109,30 @@ class Factory
     /**
      * Unregisters all non-default comparators.
      */
-    public function reset()/*: void*/
+    public function reset()
     {
         $this->customComparators = [];
     }
 
-    private function registerDefaultComparators(): void
+    private function registerDefaultComparators()
     {
+        $this->registerDefaultComparator(new TypeComparator);
+        $this->registerDefaultComparator(new ScalarComparator);
+        $this->registerDefaultComparator(new NumericComparator);
+        $this->registerDefaultComparator(new DoubleComparator);
+        $this->registerDefaultComparator(new ArrayComparator);
+        $this->registerDefaultComparator(new ResourceComparator);
+        $this->registerDefaultComparator(new ObjectComparator);
+        $this->registerDefaultComparator(new ExceptionComparator);
+        $this->registerDefaultComparator(new SplObjectStorageComparator);
+        $this->registerDefaultComparator(new DOMNodeComparator);
         $this->registerDefaultComparator(new MockObjectComparator);
         $this->registerDefaultComparator(new DateTimeComparator);
-        $this->registerDefaultComparator(new DOMNodeComparator);
-        $this->registerDefaultComparator(new SplObjectStorageComparator);
-        $this->registerDefaultComparator(new ExceptionComparator);
-        $this->registerDefaultComparator(new ObjectComparator);
-        $this->registerDefaultComparator(new ResourceComparator);
-        $this->registerDefaultComparator(new ArrayComparator);
-        $this->registerDefaultComparator(new DoubleComparator);
-        $this->registerDefaultComparator(new NumericComparator);
-        $this->registerDefaultComparator(new ScalarComparator);
-        $this->registerDefaultComparator(new TypeComparator);
     }
 
-    private function registerDefaultComparator(Comparator $comparator): void
+    private function registerDefaultComparator(Comparator $comparator)
     {
-        $this->defaultComparators[] = $comparator;
+        \array_unshift($this->defaultComparators, $comparator);
 
         $comparator->setFactory($this);
     }

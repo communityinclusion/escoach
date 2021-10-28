@@ -39,7 +39,6 @@
         "drupal/email_registration": "^1.1",
         "drupal/entity_browser": "^2.3",
         "drupal/entity_usage": "^2.0@alpha",
-        "drupal/fapi_validation": "^2.0@alpha",
         "drupal/field_display_label": "1.x-dev",
         "drupal/field_group": "3.x-dev",
         "drupal/field_hidden": "^2.0",
@@ -84,7 +83,7 @@
         "drupal/workflow": "^1.1",
         "drush/drush": "^10.3",
         "pear/archive_tar": "^1.4.14",
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "6.5",
         "symfony/http-kernel": "^3.4.44",
         "twilio/sdk": "^6.4"
     },

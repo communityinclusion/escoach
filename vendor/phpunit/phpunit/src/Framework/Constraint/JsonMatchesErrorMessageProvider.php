@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of PHPUnit.
  *
@@ -7,29 +7,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\Constraint;
 
-use const JSON_ERROR_CTRL_CHAR;
-use const JSON_ERROR_DEPTH;
-use const JSON_ERROR_NONE;
-use const JSON_ERROR_STATE_MISMATCH;
-use const JSON_ERROR_SYNTAX;
-use const JSON_ERROR_UTF8;
-use function strtolower;
-
 /**
- * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ * Provides human readable messages for each JSON error.
  */
-final class JsonMatchesErrorMessageProvider
+class JsonMatchesErrorMessageProvider
 {
     /**
      * Translates JSON error to a human readable string.
+     *
+     * @param string $error
+     * @param string $prefix
+     *
+     * @return string
      */
-    public static function determineJsonError(string $error, string $prefix = ''): ?string
+    public static function determineJsonError($error, $prefix = '')
     {
         switch ($error) {
             case JSON_ERROR_NONE:
-                return null;
+                return;
             case JSON_ERROR_DEPTH:
                 return $prefix . 'Maximum stack depth exceeded';
             case JSON_ERROR_STATE_MISMATCH:
@@ -40,7 +38,6 @@ final class JsonMatchesErrorMessageProvider
                 return $prefix . 'Syntax error, malformed JSON';
             case JSON_ERROR_UTF8:
                 return $prefix . 'Malformed UTF-8 characters, possibly incorrectly encoded';
-
             default:
                 return $prefix . 'Unknown error';
         }
@@ -48,10 +45,14 @@ final class JsonMatchesErrorMessageProvider
 
     /**
      * Translates a given type to a human readable message prefix.
+     *
+     * @param string $type
+     *
+     * @return string
      */
-    public static function translateTypeToPrefix(string $type): string
+    public static function translateTypeToPrefix($type)
     {
-        switch (strtolower($type)) {
+        switch (\strtolower($type)) {
             case 'expected':
                 $prefix = 'Expected value JSON decode error - ';
 
@@ -60,7 +61,6 @@ final class JsonMatchesErrorMessageProvider
                 $prefix = 'Actual value JSON decode error - ';
 
                 break;
-
             default:
                 $prefix = '';
 
