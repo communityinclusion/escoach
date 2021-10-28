@@ -378,8 +378,8 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         ),
         'PHPStan\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpstan/phpstan-deprecation-rules/src',
-            1 => __DIR__ . '/..' . '/mglaman/phpstan-drupal/src',
+            0 => __DIR__ . '/..' . '/mglaman/phpstan-drupal/src',
+            1 => __DIR__ . '/..' . '/phpstan/phpstan-deprecation-rules/src',
         ),
         'PHPMailer\\PHPMailer\\' => 
         array (

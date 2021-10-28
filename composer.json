@@ -23,7 +23,6 @@
         "drupal/adminimal_theme": "^1.4",
         "drupal/auto_entitylabel": "^3.0",
         "drupal/bootstrap_barrio": "^4.29",
-        "drupal/bootstrap_datetime_picker": "^1.2",
         "drupal/bootstrap_library": "^1.11",
         "drupal/captcha": "^1.0@beta",
         "drupal/coder": "^8.3.2",

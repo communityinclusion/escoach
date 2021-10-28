@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '92469312b832cd41956f7fd9fe4d08d6a9c14270',
+        'reference' => '094675883e27ef5714dc0e59f46bbd478b3230ff',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -347,15 +347,6 @@
             'install_path' => __DIR__ . '/../../web/themes/contrib/bootstrap_barrio',
             'aliases' => array(),
             'reference' => '8.x-4.33',
-            'dev_requirement' => false,
-        ),
-        'drupal/bootstrap_datetime_picker' => array(
-            'pretty_version' => '1.5.0',
-            'version' => '1.5.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/bootstrap_datetime_picker',
-            'aliases' => array(),
-            'reference' => '8.x-1.5',
             'dev_requirement' => false,
         ),
         'drupal/bootstrap_library' => array(
@@ -1303,7 +1294,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '92469312b832cd41956f7fd9fe4d08d6a9c14270',
+            'reference' => '094675883e27ef5714dc0e59f46bbd478b3230ff',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(

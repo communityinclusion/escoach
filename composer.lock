@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "239bc02e6660e59f7c9835ecaa055cc4",
+    "content-hash": "734763edbdea5f3a3740831582191d86",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2133,61 +2133,6 @@
             "homepage": "https://www.drupal.org/project/bootstrap_barrio",
             "support": {
                 "source": "https://git.drupalcode.org/project/bootstrap_barrio"
-            }
-        },
-        {
-            "name": "drupal/bootstrap_datetime_picker",
-            "version": "1.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/bootstrap_datetime_picker.git",
-                "reference": "8.x-1.5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/bootstrap_datetime_picker-8.x-1.5.zip",
-                "reference": "8.x-1.5",
-                "shasum": "ee3a0f5bfc914d7858e343e571970a5eba35a1c6"
-            },
-            "require": {
-                "drupal/core": "~8.0"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.5",
-                    "datestamp": "1614841569",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "B-Prod",
-                    "homepage": "https://www.drupal.org/user/407852"
-                },
-                {
-                    "name": "Prashant.c",
-                    "homepage": "https://www.drupal.org/user/1936756"
-                },
-                {
-                    "name": "deepakkumar14",
-                    "homepage": "https://www.drupal.org/user/2186826"
-                },
-                {
-                    "name": "vakulrai",
-                    "homepage": "https://www.drupal.org/user/3524052"
-                }
-            ],
-            "homepage": "https://www.drupal.org/project/bootstrap_datetime_picker",
-            "support": {
-                "source": "https://git.drupalcode.org/project/bootstrap_datetime_picker"
             }
         },
         {
