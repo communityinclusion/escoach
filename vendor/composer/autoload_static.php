@@ -45,7 +45,6 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         '9e4824c5afbdc1482b6025ce3d4dfde8' => __DIR__ . '/..' . '/league/csv/src/functions_include.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
-        'a16312f9300fed4a097923eacb0ba814' => __DIR__ . '/..' . '/igorw/get-in/src/get_in.php',
         '2d0bd6b7e257b7230c706e6559d6a87b' => __DIR__ . '/..' . '/mglaman/phpstan-drupal/drupal-phpunit-hack.php',
     );
 
@@ -101,6 +100,7 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         'R' => 
         array (
             'Robo\\' => 5,
+            'ReCaptcha\\' => 10,
         ),
         'P' => 
         array (
@@ -137,7 +137,6 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         ),
         'I' => 
         array (
-            'Ivory\\HttpAdapter\\' => 18,
             'Interop\\Container\\' => 18,
         ),
         'H' => 
@@ -351,6 +350,10 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         array (
             0 => __DIR__ . '/..' . '/consolidation/robo/src',
         ),
+        'ReCaptcha\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha',
+        ),
         'Psy\\' => 
         array (
             0 => __DIR__ . '/..' . '/psy/psysh/src',
@@ -436,10 +439,6 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         'Laminas\\Diactoros\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-diactoros/src',
-        ),
-        'Ivory\\HttpAdapter\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/egeloen/http-adapter/src',
         ),
         'Interop\\Container\\' => 
         array (
@@ -630,13 +629,6 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
             'Stack' => 
             array (
                 0 => __DIR__ . '/..' . '/stack/builder/src',
-            ),
-        ),
-        'G' => 
-        array (
-            'Geocoder' => 
-            array (
-                0 => __DIR__ . '/..' . '/willdurand/geocoder/src',
             ),
         ),
         'E' => 

@@ -42,6 +42,11 @@ class ReCaptchaBasicTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp() {
     parent::setUp();
     module_load_include('inc', 'captcha');
@@ -171,25 +176,25 @@ class ReCaptchaBasicTest extends BrowserTestBase {
     $this->config('recaptcha.settings')->set('widget.size', '')->save();
     $this->drupalGet('user/login');
     $element = $this->xpath('//div[@class=:class and @data-size=:size]', [':class' => 'g-recaptcha', ':size' => 'small']);
-    $this->assertFalse(!empty($element), 'Tag contains no data-size attribute.');
+    $this->assertEmpty($element, 'Tag contains no data-size attribute.');
 
     // Check that data-size attribute exists.
     $this->config('recaptcha.settings')->set('widget.size', 'small')->save();
     $this->drupalGet('user/login');
     $element = $this->xpath('//div[@class=:class and @data-size=:size]', [':class' => 'g-recaptcha', ':size' => 'small']);
-    $this->assertTrue(!empty($element), 'Tag contains data-size attribute and value.');
+    $this->assertNotEmpty($element, 'Tag contains data-size attribute and value.');
 
     // Check that data-tabindex attribute does not exists.
     $this->config('recaptcha.settings')->set('widget.tabindex', 0)->save();
     $this->drupalGet('user/login');
     $element = $this->xpath('//div[@class=:class and @data-tabindex=:index]', [':class' => 'g-recaptcha', ':index' => 0]);
-    $this->assertFalse(!empty($element), 'Tag contains no data-tabindex attribute.');
+    $this->assertEmpty($element, 'Tag contains no data-tabindex attribute.');
 
     // Check that data-tabindex attribute exists.
     $this->config('recaptcha.settings')->set('widget.tabindex', 5)->save();
     $this->drupalGet('user/login');
     $element = $this->xpath('//div[@class=:class and @data-tabindex=:index]', [':class' => 'g-recaptcha', ':index' => 5]);
-    $this->assertTrue(!empty($element), 'Tag contains data-tabindex attribute and value.');
+    $this->assertNotEmpty($element, 'Tag contains data-tabindex attribute and value.');
 
     // Try to log in, which should fail.
     $edit['name'] = $this->normalUser->getAccountName();
