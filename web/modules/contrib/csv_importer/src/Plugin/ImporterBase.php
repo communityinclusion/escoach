@@ -122,10 +122,18 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
   /**
    * {@inheritdoc}
    */
-  public function add($content, array &$context) {
-    if (!$content) {
+  public function add($contents, array &$context) {
+    if (!$contents) {
       return NULL;
     }
+
+    if (!isset($context['sandbox']['progress'])) {
+      $context['sandbox']['progress'] = 0;
+      $context['sandbox']['max'] = count($contents);
+    }
+
+    $context['sandbox']['progress']++;
+    $context['message'] = t('Import entity %index out of %max', ['%index' => $context['sandbox']['progress'], '%max' => $context['sandbox']['max']]);
 
     $entity_type = $this->configuration['entity_type'];
     $entity_type_bundle = $this->configuration['entity_type_bundle'];
@@ -133,6 +141,8 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
 
     $added = 0;
     $updated = 0;
+
+    $content = $contents[$context['sandbox']['progress']];
 
     if ($entity_definition->hasKey('bundle') && $entity_type_bundle) {
       $content[$entity_definition->getKey('bundle')] = $this->configuration['entity_type_bundle'];
@@ -170,6 +180,10 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
     }
     catch (\Exception $e) {
     }
+
+    if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+      $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
+    }
   }
 
   /**
@@ -190,16 +204,13 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
    */
   public function process() {
     if ($data = $this->data()) {
-      foreach ($data['content'] as $content) {
-        $process['operations'][] = [
-          [$this, 'add'],
-          [$content],
-        ];
-      }
+      $process['operations'][] = [
+        [$this, 'add'],
+        [$data['content']],
+      ];
     }
 
     $process['finished'] = [$this, 'finished'];
-
     batch_set($process);
   }
 

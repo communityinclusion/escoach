@@ -41,6 +41,7 @@ class FormatterHelper implements TrustedCallbackInterface {
    *   Entity being rendered.
    *
    * @return array
+   *   The update entity view.
    */
   public static function entityViewPrender(array $element) {
     field_group_build_entity_groups($element, 'view');
@@ -58,6 +59,7 @@ class FormatterHelper implements TrustedCallbackInterface {
    *   The complete form structure.
    *
    * @return array
+   *   The updated form.
    */
   public static function formProcess(array &$element, FormStateInterface $form_state = NULL, array &$form = []) {
     if (empty($element['#field_group_form_process'])) {
@@ -78,7 +80,8 @@ class FormatterHelper implements TrustedCallbackInterface {
         $group_references[$group_name] = &$element[$group_name];
         $element[$group_name]['#group'] = implode('][', $group_parents);
 
-        // Use array parents to set the group name. This will cover multilevel forms (eg paragraphs).
+        // Use array parents to set the group name.
+        // This will cover multilevel forms (eg paragraphs).
         $parents = $element['#array_parents'];
         $parents[] = $group_name;
         $element[$group_name]['#parents'] = $parents;
@@ -122,6 +125,7 @@ class FormatterHelper implements TrustedCallbackInterface {
    *   Form that is being rendered.
    *
    * @return array
+   *   The updated group.
    */
   public static function formGroupPreRender(array $element) {
     // Open any closed field groups that contain elements with errors.
@@ -168,13 +172,11 @@ class FormatterHelper implements TrustedCallbackInterface {
     return FALSE;
   }
 
-
   /**
    * {@inheritdoc}
    */
   public static function trustedCallbacks() {
     return ['entityViewPrender', 'formProcess', 'formGroupPreRender'];
   }
-
 
 }

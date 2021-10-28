@@ -2,8 +2,6 @@
 
 namespace Drupal\Tests\field_group\Functional;
 
-use Drupal;
-
 /**
  * Provides common functionality for the FieldGroup test classes.
  */
