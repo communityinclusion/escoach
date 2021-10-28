@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
     'Webmozart\\PathUtil\\' => array($vendorDir . '/webmozart/path-util/src'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
     'VariableAnalysis\\' => array($vendorDir . '/sirbrillig/phpcs-variable-analysis/VariableAnalysis'),
@@ -49,6 +50,7 @@ return array(
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-factory/src', $vendorDir . '/psr/http-message/src'),
     'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
+    'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src/Prophecy'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'PHPStan\\' => array($vendorDir . '/mglaman/phpstan-drupal/src', $vendorDir . '/phpstan/phpstan-deprecation-rules/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
@@ -91,11 +93,13 @@ return array(
     'Drupal\\' => array($vendorDir . '/drupal/coder/coder_sniffer/Drupal'),
     'DrupalPractice\\' => array($vendorDir . '/drupal/coder/coder_sniffer/DrupalPractice'),
     'DrupalCodeGenerator\\' => array($vendorDir . '/chi-teck/drupal-code-generator/src'),
+    'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib/Doctrine/Common/Lexer'),
     'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib/Doctrine/Common/Inflector'),
     'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib/Doctrine/Common/Cache'),
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib/Doctrine/Common/Annotations'),
     'Doctrine\\Common\\' => array($vendorDir . '/doctrine/common/lib/Doctrine/Common'),
+    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'Consolidation\\SiteProcess\\' => array($vendorDir . '/consolidation/site-process/src'),
     'Consolidation\\SiteAlias\\' => array($vendorDir . '/consolidation/site-alias/src'),
     'Consolidation\\OutputFormatters\\' => array($vendorDir . '/consolidation/output-formatters/src'),

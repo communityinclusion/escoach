@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\simple_mail\Plugin\QueueWorker\SimpleMailSendQueuedMail.
- */
 
 namespace Drupal\simple_mail\Plugin\QueueWorker;
 

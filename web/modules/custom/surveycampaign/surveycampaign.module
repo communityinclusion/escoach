@@ -108,11 +108,11 @@ function surveycampaignCheckRegCode($formcode) {
   for ($i = 0; $i < $countcodes; $i++) {
     $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
     $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
-    $term = taxonomy_term_load($thisname);
+    $term = \Drupal\taxonomy\Entity\Term::load($thisname);
 
     if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
 
-      $term = taxonomy_term_load($thisname);
+      $term = \Drupal\taxonomy\Entity\Term::load($thisname);
       $termarray = array($term->getName());
       return $termarray;
     }
@@ -291,7 +291,7 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
     //$entity->save();
     $uid = $entity->id();
 
-      drupal_set_message(t('Your user account has been created.  You will receive an email with a link for one-time login. Check your spam or junk mail if you don\'t see it soon.'), 'status');
+      Drupal\Core\Messenger\MessengerInterface::addMessage(t('Your user account has been created.  You will receive an email with a link for one-time login. Check your spam or junk mail if you don\'t see it soon.'), 'status');
 
 
     //$profilechange = surveycampaign_profile_update($uid);
@@ -321,9 +321,9 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
       for ($i = 0; $i < $countcodes; $i++) {
         $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
         $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : '';
-        $term = taxonomy_term_load($thisname);
+        $term = \Drupal\taxonomy\Entity\Term::load($thisname);
         if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
-          $term = taxonomy_term_load($thisname);
+          $term = \Drupal\taxonomy\Entity\Term::load($thisname);
           $profile->set('field_provider',array(
           'value' => $term));
           $profile->save();

@@ -2,7 +2,8 @@ name: ES-Coach Bootstrap 4 Subtheme
 type: theme
 description: 'Basic structure for a Bootstrap Barrio SubTheme.'
 # version: VERSION
-# core: 8.x
+core: 8.x
+core_version_requirement: ^8 || ^9
 base theme: bootstrap_barrio
 
 libraries:
@@ -32,9 +33,5 @@ regions:
   footer_third: 'Footer third'
   footer_fourth: 'Footer fourth'
   footer_fifth: 'Footer fifth'
-
-# Information added by Drupal.org packaging script on 2019-02-13
-version: '8.x-4.21'
-core: '8.x'
 project: 'bootstrap_barrio'
 datestamp: 1550057991

@@ -1,7 +1,0 @@
-es_userform.library:
-  version: 1.x
-  css:
-    base:
-      css/es-userform-base.css: {}
-  js:
-    js/es-userform.js: {}

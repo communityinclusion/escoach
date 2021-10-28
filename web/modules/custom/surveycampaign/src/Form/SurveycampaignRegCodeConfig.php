@@ -97,7 +97,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
 
   }
   public function buildForm(array $form, FormStateInterface $form_state) {
-    
+
     $i = 0;
     $name_field = $form_state->get('num_codes');
     $config = $this->configFactory->get('surveycampaign.settings');
@@ -107,19 +107,19 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
 
     $defaultid = $config->get('defaultid');
     $secondaryid = $config->get('secondaryid');
-    
-    
+
+
     $form['#attached']['library'][] = 'admincss/csslib';
     $form['configuration'] = array(
       '#type' => 'vertical_tabs',
     );
-    
+
     $form['configuration']['default_settings'] = array(
       '#type' => 'details',
       '#title' => t('Default survey settings'),
       '#group' => 'configuration',
     );
-    
+
     $form['configuration']['default_settings']['shell'] = array(
       '#type' => 'fieldset',
       '#title' => t(''),
@@ -132,19 +132,19 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
         '#prefix' => "<div id='names-fieldset-wrapper'>",
         '#suffix' => '</div>',
       ];
-  
+
       if (empty($name_field) || $countcodes < 1) {
         $name_field = $countcodes <= 1 ? $form_state->set('num_codes', 1) : $form_state->set('num_codes', $countcodes);
 
       }
 
-  
+
       for ($i = 0; $i < $form_state->get('num_codes'); $i++) {
         $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : '';
         $thisname = !empty($provnames) && $provnames[$i] ? $provnames[$i][0]['target_id'] : null;
-        $term = taxonomy_term_load($thisname);
+        $term = \Drupal\taxonomy\Entity\Term::load($thisname);
         $j = $i + 1;
-        
+
 
         /* $form['configuration']['default_settings']['shell']['provider_fieldset'][$i]['provider_name'] = [
           '#type' => 'textfield',
@@ -177,9 +177,9 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
             '#maxlength' => 64,
             '#size' => 64,
             '#default_value' => $thiscode,
-            
+
           ];
-        
+
       }
         $form['configuration']['default_settings']['shell']['provider_fieldset']['actions'] = [
           '#type' => 'actions',
@@ -204,14 +204,14 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
             ],
           ];
         }
-      
 
 
 
-    
- 
 
-   
+
+
+
+
 
     $form_state->setCached(FALSE);
     return parent::buildForm($form, $form_state);
@@ -306,7 +306,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    
+
     $namearray = array();
     $holarray = array();
     foreach ($form_state->getValue(array('shell','provider_fieldset')) as $key => $value) {
@@ -314,7 +314,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
       if(is_numeric($key)) $holarray[]= $form_state->getValue(array('shell','provider_fieldset',$key, 'provider_code'));
     }
     $config = $this->configFactory->get('surveycampaign.settings');
-    
+
     $this->configFactory->getEditable('surveycampaign.settings')
       ->set('def_provider_name',$namearray)
       ->set('def_provider_code',$holarray)
@@ -322,18 +322,18 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
       //Future: this is how you remove a single value in an array
       //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_provider_code.1')->save();
       //$this->configFactory()->getEditable('surveycampaign.settings')->clear('def_provider_name.1')->save();
-     
-    
-    
-    
-    
+
+
+
+
+
 
     //set up conditions for update time or create new survey
 
-    
-    
 
-    parent::submitForm($form, $form_state); 
+
+
+    parent::submitForm($form, $form_state);
   }
 
   /**

@@ -22,3 +22,4 @@ class AdmincssController extends ControllerBase {
   protected function getModuleName() {
     return 'admincss';
   }
+}
