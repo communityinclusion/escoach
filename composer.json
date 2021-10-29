@@ -47,6 +47,7 @@
         "drupal/google_analytics": "^3.0",
         "drupal/google_tag": "^1.4",
         "drupal/imce": "^2.3",
+        "drupal/jquery_ui": "1.x-dev@dev",
         "drupal/leaflet": "^1.25",
         "drupal/mailgun": "^1.0@beta",
         "drupal/memcache": "^2.0",
@@ -80,7 +81,6 @@
         "drupal/viewfield": "^3.0@alpha",
         "drupal/views_bulk_operations": "^3.13",
         "drupal/views_data_export": "^1.0@beta",
-        "drupal/webprofiler":
         "drupal/workflow": "^1.1",
         "drush/drush": "^10.3",
         "pear/archive_tar": "^1.4.10",
