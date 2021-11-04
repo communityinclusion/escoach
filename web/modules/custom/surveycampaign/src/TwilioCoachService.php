@@ -520,8 +520,10 @@ class TwilioCoachService
         $contactarray = \Drupal::service('surveycampaign.survey_users')->load();
         foreach($contactarray as $contact) {
             $email = urlencode($contact[0]);
-            $firstname = urlencode($contact[1]);
-            $lastname = urlencode($contact[2]);
+            $firstnameencoded = urlencode($contact[1]);
+            $lastnameencoded = urlencode($contact[2]);
+            $firstname = $contact[1];
+            $lastname = $contact[2];
             $fullname = $firstname . " " . $lastname;
             $urlphone = urlencode( preg_replace('/\D+/', '',$contact[3]));
             $mobilephone = $contact[3];
@@ -538,7 +540,7 @@ class TwilioCoachService
             {
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
-                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstname}&last_name={$lastname}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
+                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
