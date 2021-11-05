@@ -222,7 +222,7 @@ class QueryBuilder {
       '#data' => ($trends) ? $this->processResultsTrends($query, $params['debug']) : $this->processResultsSummary($query, $params['debug']),
     ];
 
-    $chart = ($trends) ? $this->buildTrendsChart($return['#data']) : $this->buildChart($return, $trends);
+    $chart = ($trends) ? $this->buildTrendsChart($return['#data']) : $this->buildChart($return);
 
     $return['#attached'] = [
       'drupalSettings' => [
@@ -264,11 +264,15 @@ class QueryBuilder {
   }
 
   private function abbreviateMonth($month) {
+    if ($this->timeframe != 'monthly') {
+      return $month;
+    }
+
     $parts = explode(' ', $month);
     return substr($parts[0], 0, 3) . ' ' . $parts[1];
   }
 
-  private function buildChart(array $return, bool $trends) {
+  private function buildChart(array $return) {
     $chart = [];
 
     $default_colors = [
