@@ -73,8 +73,19 @@
     attach: function (context, settings) {
 
       $(document).once('school-name').on('ajaxSuccess', function (evt, data) {
-        google.charts.load('current', {packages: ['corechart', 'bar']});
-        google.charts.setOnLoadCallback(drawBasic);
+        var chartType = 'bar';
+        if (drupalSettings.survey_dashboard &&
+          drupalSettings.survey_dashboard.chart_type) {
+          chartType = drupalSettings.survey_dashboard.chart_type;
+        }
+        google.charts.load('current', {packages: ['corechart', chartType]});
+        if (chartType == 'bar') {
+          google.charts.setOnLoadCallback(drawBasic);
+        }
+        else {
+          google.charts.setOnLoadCallback(drawLineChart);
+        }
+
         for( var i in data.responseJSON) {
           var setting = data.responseJSON[i];
           if (setting.settings.survey_dashboard.chart) {
@@ -85,8 +96,18 @@
       });
 
       $('#google-charts').once('chart').each(function () {
-        google.charts.load('current', {packages: ['corechart', 'bar']});
-        google.charts.setOnLoadCallback(drawBasic);
+        var chartType = 'bar';
+        if (drupalSettings.survey_dashboard && drupalSettings.survey_dashboard.chart_type) {
+          chartType = drupalSettings.survey_dashboard.chart_type;
+        }
+        google.charts.load('current', {packages: ['corechart', chartType]});
+        if (chartType == 'bar') {
+          google.charts.setOnLoadCallback(drawBasic);
+        }
+        else {
+          google.charts.setOnLoadCallback(drawLineChart);
+        }
+
       });
 
       function drawBasic() {
@@ -127,6 +148,45 @@
 
         var chart = new google.visualization.BarChart(document.getElementById('google-charts'));
 
+        chart.draw(data, options);
+      }
+
+      function drawLineChart() {
+        if (!drupalSettings.survey_dashboard) {
+          console.log('Dashboard settings not available');
+          return;
+        }
+        if (!google.visualization) {
+          console.log('Google Visualization object not available');
+          return;
+        }
+
+        var data = google.visualization.arrayToDataTable(drupalSettings.survey_dashboard.chart);
+
+        var options = {
+          width: '100%',
+          height: 300,
+          lineWidth: 3,
+          pointSize: 7,
+          legend: {position: 'top'},
+          hAxis: {
+            title: ''
+          },
+          vAxis: {
+            title: '% Time'
+          },
+          series: {
+            0: { pointShape: { type: 'square' } },
+            1: { pointShape: { type: 'circle' } },
+            2: { pointShape: { type: 'triangle' } },
+          }
+        };
+
+        if (drupalSettings.survey_dashboard.colors) {
+          options.colors = drupalSettings.survey_dashboard.colors;
+        }
+
+        var chart = new google.visualization.LineChart(document.getElementById('google-charts'));
         chart.draw(data, options);
       }
     }
