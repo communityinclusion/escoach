@@ -222,12 +222,14 @@ class QueryBuilder {
       '#data' => ($trends) ? $this->processResultsTrends($query, $params['debug']) : $this->processResultsSummary($query, $params['debug']),
     ];
 
-    $chart = $this->buildChart($return, $trends);
+    $chart = ($trends) ? $this->buildTrendsChart($return['#data']) : $this->buildChart($return, $trends);
+
     $return['#attached'] = [
       'drupalSettings' => [
         'survey_dashboard' => [
           'chart' => $chart['chart'],
           'colors' => $chart['colors'],
+          'chart_type' =>  ($trends) ? 'line' : 'bar',
         ],
       ],
     ];
@@ -235,8 +237,38 @@ class QueryBuilder {
     return $return;
   }
 
+  private function buildTrendsChart(array $data) {
+    $chart = [];
+
+    $default_colors = [
+      '#000000',
+      '#808080',
+      '#C0C0C0',
+    ];
+
+    $chart[] = ['Time Period', 'All', 'My Team', ' Me'];
+
+    foreach ($data['aliasMap'] as $alias => $def) {
+      $row = [];
+      $row[] = $this->abbreviateMonth($def['title']);
+      foreach (['all', 'provider', 'me'] as $scope) {
+        $row[] = (int)(300 * $data['results'][$scope][$alias]['Selected']['total']);
+      }
+      $chart[] = $row;
+    }
+
+    return [
+      'chart' => $chart,
+      'colors' => $default_colors,
+    ];
+  }
+
+  private function abbreviateMonth($month) {
+    $parts = explode(' ', $month);
+    return substr($parts[0], 0, 3) . ' ' . $parts[1];
+  }
+
   private function buildChart(array $return, bool $trends) {
-    print '';
     $chart = [];
 
     $default_colors = [
@@ -499,7 +531,7 @@ class QueryBuilder {
     $dataCell = $alias . ucfirst($scope);
 
     if (! isset($results[$totalCell]) || $results[$totalCell] == 0) {
-      return '0:00';
+      return '0';
     }
 
     $totalValue = $results[$totalCell];
@@ -510,6 +542,10 @@ class QueryBuilder {
         $totalSelectedLessObserver = $results['SelectedAll'] - $results['SelectedObserver']; // B - E
       }
       $totalValue -= $results['TotalObserver']; // A - E
+    }
+
+    if ($totalValue == 0) {
+      return 0;
     }
 
     $dayTotal = $results[$dataCell] / $totalValue * 8 / 24;
@@ -573,7 +609,7 @@ class QueryBuilder {
       $time_period = $record[$unit];
       $alias_map[$time_period] = $return['aliasMap'][$time_period];
       foreach (['all', 'me', 'provider'] as $scope) {
-        $dayTotal = $this->calculateHrs($result, 'Selected', $scope, 'day', 'Trends');
+        $dayTotal = $this->calculateHrs($record, 'Selected', $scope, 'day', 'Trends');
         $return['results'][$scope][$time_period]['Selected']['day'] = $this->formatDuration($dayTotal);
         $return['results'][$scope][$time_period]['Selected']['week'] = $this->formatDuration($dayTotal * 5);
         $return['results'][$scope][$time_period]['Selected']['total'] = $dayTotal;
