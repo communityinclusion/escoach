@@ -230,7 +230,7 @@ class TwilioCoachService
         $config =  \Drupal::config('surveycampaign.settings');
         $isprimary = $surveyid == $config->get('defaultid') ? true :false;
         $onetime = false;
-        $onetime = !$isprimary && $config->get('alt_repeat') == '0' ? true : false;
+        $onetime = !$isprimary && $config->get('alt_repeat') === '0' ? true : false;
         //read mailer table
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
@@ -298,7 +298,7 @@ class TwilioCoachService
                     $showme = print_r($contact, true);
                     $checkcompletedonce = false;
 
-                    if($onetime) {
+                    if($onetime && !$isprimary) {
                         $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
                     }
                     if($checkcompletedonce) return;
