@@ -557,7 +557,7 @@ class TwilioCoachService
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
                 $replytoken = $didnotreply ? 'True' : 'False';
                 $inactivetoken = $inactive ? 'True' : 'False';
-                \Drupal::logger('surveycampaign alert')->notice('Did not reply: ' . $replytoken . '    Inactive: ' . $inactivetoken);
+                \Drupal::logger('surveycampaign alert')->notice('Did not reply: ' . $replytoken . '    Inactive: ' . $inactive);
 
                 $todaylink = null;
                 if($didnotreply >= $cutoff && !$inactive) {
@@ -783,6 +783,8 @@ class TwilioCoachService
           else { return false; }
     }
     protected function checkNonReplies($surveyid,$mobilephone,$fullname,$campaignarray) {
+          \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $mobilephone . '   Name: ' .$fullname);
+
           $database = \Drupal::database();
           $query =  $database->select('surveycampaign_mailer','sm')
           ->condition('sm.surveyid', $surveyid)
@@ -792,6 +794,8 @@ class TwilioCoachService
           ->condition('sm.Complete', '0')
           ->countQuery();
           $result = $query->execute()->fetchField();
+          $printarray = print_r($campaignarray, true);
+          \Drupal::logger('surveycampaign alert')->notice('Result:  ' . $result . '   Campaignarray: ' . $printarray);
           return $result;
 
     }
