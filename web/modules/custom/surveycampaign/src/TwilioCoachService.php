@@ -230,7 +230,7 @@ class TwilioCoachService
         $config =  \Drupal::config('surveycampaign.settings');
         $isprimary = $surveyid == $config->get('defaultid') ? true :false;
         $onetime = false;
-        $onetime = !$isprimary && $config->get('alt_repeat') === '0' ? true : false;
+        $onetime = !$isprimary && $config->get('alt_repeat') == '0' ? true : false;
         //read mailer table
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
@@ -555,9 +555,6 @@ class TwilioCoachService
                 if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
-                $replytoken = $didnotreply ? 'True' : 'False';
-                $inactivetoken = $inactive ? 'True' : 'False';
-                \Drupal::logger('surveycampaign alert')->notice('Did not reply: ' . $replytoken . '    Inactive: ' . $inactive);
 
                 $todaylink = null;
                 if($didnotreply >= $cutoff && !$inactive) {
@@ -783,8 +780,6 @@ class TwilioCoachService
           else { return false; }
     }
     protected function checkNonReplies($surveyid,$mobilephone,$fullname,$campaignarray) {
-          \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $mobilephone . '   Name: ' .$fullname);
-
           $database = \Drupal::database();
           $query =  $database->select('surveycampaign_mailer','sm')
           ->condition('sm.surveyid', $surveyid)
@@ -794,8 +789,6 @@ class TwilioCoachService
           ->condition('sm.Complete', '0')
           ->countQuery();
           $result = $query->execute()->fetchField();
-          $printarray = print_r($campaignarray, true);
-          \Drupal::logger('surveycampaign alert')->notice('Result:  ' . $result . '   Campaignarray: ' . $printarray);
           return $result;
 
     }
@@ -804,7 +797,7 @@ class TwilioCoachService
         $limitno = intval($limitno);
         $query =  $database->select('surveycampaign_campaigns','sc')
         ->fields('sc', array(
-        'senddate'
+        'campaignid'
           )
         )
         ->condition('sc.surveyid', $surveyid)
