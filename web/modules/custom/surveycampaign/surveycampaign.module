@@ -18,6 +18,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use \Drupal\Core\Ajax\InsertCommand;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Implements hook_help().
@@ -291,7 +292,7 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
     //$entity->save();
     $uid = $entity->id();
 
-      Drupal\Core\Messenger\MessengerInterface::addMessage(t('Your user account has been created.  You will receive an email with a link for one-time login. Check your spam or junk mail if you don\'t see it soon.'), 'status');
+      \Drupal::messenger()->addMessage(t('Your user account has been created.  You will receive an email with a link for one-time login. Check your spam or junk mail if you don\'t see it soon.'), 'status');
 
 
     //$profilechange = surveycampaign_profile_update($uid);
