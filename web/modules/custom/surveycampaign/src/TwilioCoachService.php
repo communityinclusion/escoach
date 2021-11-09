@@ -555,6 +555,9 @@ class TwilioCoachService
                 if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
+                $replytoken = $didnotreply ? 'True' : 'False';
+                $inactivetoken = $inactive ? 'True' : 'False';
+                \Drupal::logger('surveycampaign alert')->notice('Did not reply: ' . $replytoken . '    Inactive: ' . $inactivetoken);
 
                 $todaylink = null;
                 if($didnotreply >= $cutoff && !$inactive) {
