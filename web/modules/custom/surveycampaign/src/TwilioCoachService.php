@@ -520,10 +520,10 @@ class TwilioCoachService
         $contactarray = \Drupal::service('surveycampaign.survey_users')->load();
         foreach($contactarray as $contact) {
             $email = urlencode($contact[0]);
-            $firstnameencoded = urlencode($contact[1]);
-            $lastnameencoded = urlencode($contact[2]);
-            $firstname = $contact[1];
-            $lastname = $contact[2];
+            $firstnameencoded = urlencode(trim($contact[1]));
+            $lastnameencoded = urlencode(trim($contact[2]));
+            $firstname = trim($contact[1]);
+            $lastname = trim($contact[2]);
             $fullname = $firstname . " " . $lastname;
             $urlphone = urlencode( preg_replace('/\D+/', '',$contact[3]));
             $mobilephone = $contact[3];
