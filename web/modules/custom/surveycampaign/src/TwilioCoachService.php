@@ -247,7 +247,6 @@ class TwilioCoachService
         foreach ($result as $row) {
             //turn an object into an array by json encoding then decoding it
             $row = json_decode(json_encode($row), true);
-            //print_r($row);
             $timezone =$row['timezone'];
             $senddate = new DateTime($row['senddate']);
             $formatdate =  new DateTime($row['senddate']);
@@ -359,7 +358,7 @@ class TwilioCoachService
                     {
 
                         $suspenddates = $this->getResponseInfo($surveyid,$contactid,$contact['email_address'],$api_key,$api_secret);
-                        //echo "Suspendarray: "; print_r($suspenddates);
+
                         // check if user suspended survey.  If so get dates and enter in user profile
                         //delete this individual in this survey/campaign from surveycampaign_mailer
 
@@ -373,7 +372,7 @@ class TwilioCoachService
                         if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
                             if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
                                 //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
-                                //echo "Suspenddates: "; print_r($suspenddates);
+
                                 $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
                                 $startdate = $startdate->format('Y-m-d');
                             }
@@ -552,10 +551,11 @@ class TwilioCoachService
                 $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
                 $cancelled = false;
                 if($inactive && $isprimary)$cancelled = $this->checkSuspendedReminder($mobilephone,$fullname,$surveyid);
+
                 if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
-
+                $inactivetext = $inactive ? 'Yes' : 'No, active';
                 $todaylink = null;
                 if($didnotreply >= $cutoff && !$inactive) {
 
@@ -811,6 +811,7 @@ class TwilioCoachService
                 $campaignarray[]= $value;
             }
         }
+        $printarray = print_r($campaignarray, true);
         return $campaignarray;
     }
     protected function checkSuspendedReminder($mobilephone,$fullname,$surveyid) {
@@ -868,7 +869,7 @@ class TwilioCoachService
             $langcode = "en";
             $send = true;
             $textno = 6;
-            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,null,2);
+            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,"2",2);
 
         }
         if($noreplylevel == 2 && $isprimary) {
@@ -881,8 +882,10 @@ class TwilioCoachService
             $langcode = "en";
             $checkinactive = false;
             $checkinactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$lastname);
+
             if(!$checkinactive) {
-                $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,2,3);
+
+                $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,"2",3);
                 $send = true;
                 $textno = 5;
             }
