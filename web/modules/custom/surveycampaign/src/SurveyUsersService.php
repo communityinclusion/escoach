@@ -105,7 +105,7 @@ class SurveyUsersService
             $userstatus = $userobj ->get('status')->value;
 
             if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $cleanphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) &&  $lastname == $profile->get('field_survey_last_name')->value && $profile->get('field_set_surveys_to_inactive')->value == '2')) {
-              
+
             return true;
             }
             else {
@@ -150,7 +150,10 @@ class SurveyUsersService
         foreach($storage as $profile) {
 
 
-            if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && ($profile->get('field_set_surveys_to_inactive')->value != "$setstatus" || $setstatus == null)) {
+          if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)
+          // not sure what this line is doing any more. Prevents user status change if already set to inactive
+          //&& ($profile->get('field_set_surveys_to_inactive')->value != "$setstatus" || $setstatus == null)
+          ) {
                 $user = $profile->getOwnerId();
                 $userobj = \Drupal\user\Entity\User::load($user);
                 $useremail = $userobj->getEmail();
