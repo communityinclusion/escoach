@@ -527,7 +527,8 @@ class TwilioCoachService
             $urlphone = urlencode( preg_replace('/\D+/', '',$contact[3]));
             $mobilephone = $contact[3];
             $timezone = urlencode($contact[4]);
-            $provider = $contact[8] ? urlencode($contact[8]) : 'no provider';
+            $provider = $contact[8] ? urlencode($contact[8]) : urlencode('no provider');
+            $regcode = $contact[9] ? urlencode($contact[9]) : 1000;
             $sendtime = urlencode($seconddate);
             $checkcompletedonce = false;
             $delayineffect = false;
@@ -539,7 +540,7 @@ class TwilioCoachService
             {
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
-                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&api_token={$api_key}&api_token_secret={$api_secret}";
+                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&api_token={$api_key}&api_token_secret={$api_secret}";
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -551,12 +552,12 @@ class TwilioCoachService
                 $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
                 $cancelled = false;
                 if($inactive && $isprimary)$cancelled = $this->checkSuspendedReminder($mobilephone,$fullname,$surveyid);
-
+                $todaylink = null;
                 if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
                 $inactivetext = $inactive ? 'Yes' : 'No, active';
-                $todaylink = null;
+
                 if($didnotreply >= $cutoff && !$inactive) {
 
                     $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink,$isprimary);
@@ -861,7 +862,7 @@ class TwilioCoachService
         $comebacktextconfig = $config->get('comeback_text_body.value');
         if($noreplylevel == 3 && $isprimary) {
 
-             $comebacktextbody = str_replace("@name", "$firstname $lastname", $comebacktextconfig);
+            $comebacktextbody = str_replace("@name", "$firstname $lastname", $comebacktextconfig);
             $dayno = $inactiveno;
             $params['title'] = t('Come back to the daily survey');
             $params['message'] = t("$comebacktextbody");
