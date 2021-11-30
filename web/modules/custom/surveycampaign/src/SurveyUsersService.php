@@ -49,9 +49,10 @@ class SurveyUsersService
                         $suspension_end = $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : '';
                         $activstatus = $profile->get('field_set_surveys_to_inactive')->value ? $profile->get('field_set_surveys_to_inactive')->value : '';
                         $provider = $profile->get('field_provider')->target_id ? $profile->get('field_provider')->entity->getName() : 'unknown provider';
+                        $regcode = $profile->get('field_registration_code')->target_id ? $profile->get('field_registration_code')->entity->getName() : '1000';
 
 
-                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider);
+                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode);
                     }
                 }
        }
@@ -150,10 +151,10 @@ class SurveyUsersService
         foreach($storage as $profile) {
 
 
-            if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)
-            // not sure what this line is doing any more. Prevents user status change if already set to inactive
-            //&& ($profile->get('field_set_surveys_to_inactive')->value != "$setstatus" || $setstatus == null)
-            ) {
+          if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)
+          // not sure what this line is doing any more. Prevents user status change if already set to inactive
+          //&& ($profile->get('field_set_surveys_to_inactive')->value != "$setstatus" || $setstatus == null)
+          ) {
                 $user = $profile->getOwnerId();
                 $userobj = \Drupal\user\Entity\User::load($user);
                 $useremail = $userobj->getEmail();

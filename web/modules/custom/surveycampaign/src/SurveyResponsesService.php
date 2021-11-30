@@ -13,7 +13,7 @@ class SurveyResponsesService
         $this->entityTypeManager = $entity_type_manager;
     }
     public function load($surveyid)
-    {   
+    {
         $database = \Drupal::database();
         $gethighestquery = $database->select('surveycampaign_results', 'sr')
                      ->fields('sr', array(
@@ -31,11 +31,11 @@ class SurveyResponsesService
         $page = 1;
         $perpage = 50;
         $totalpages = 0;
-        
+
         $lastdate = urlencode($gethighest);
         $responseurl = "https://api.alchemer.com/v5/survey/{$surveyid}/surveyresponse?resultsperpage={$perpage}&page={$page}&filter[field][0]=date_submitted&filter[operator][0]=>=&filter[value][0]={$lastdate}&api_token={$api_key}&api_token_secret={$api_secret}";
-        
-        
+
+
         $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $responseurl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -49,17 +49,17 @@ class SurveyResponsesService
             for ($i = 1; $i <= $totalpages; $i++) {
                 $page = $i;
                 $responseurl = "https://api.alchemer.com/v5/survey/{$surveyid}/surveyresponse?resultsperpage={$perpage}&page={$page}&filter[field][0]=date_submitted&filter[operator][0]=>=&filter[value][0]={$lastdate}&api_token={$api_key}&api_token_secret={$api_secret}";
-                
+
                 $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL, $responseurl);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     $output = curl_exec($ch);
                 // decode
                 $output= json_decode($output,true);
-               
-    
-        
-                foreach($output['data'] as $response) { 
+
+
+
+                foreach($output['data'] as $response) {
                     $contactid = $response['contact_id'];
                     $id = $response['id'];
                     $checkexisting = $database->select('surveycampaign_results', 'sr')
@@ -72,16 +72,17 @@ class SurveyResponsesService
 
                     if($checkexisting < 1){
                        // \Drupal::logger('surveycampaign alert')->notice('Survey id: ' . $surveyid);
-                
+
                         $id = $response['id'] ? $response['id'] : null;
-                        $contactid = $response['contact_id'] ? $response['contact_id'] :1; 
-                        $date_submitted = $response['date_submitted'] ? substr($response['date_submitted'],0,10) : null; 
+                        $contactid = $response['contact_id'] ? $response['contact_id'] :1;
+                        $date_submitted = $response['date_submitted'] ? substr($response['date_submitted'],0,10) : null;
                         $country = $response['country'] ? $response['country'] : '';
                         $state = $response['region'] ? $response['region'] : '';
                         $city = $response['city'] ? $response['city'] :'';
                         $postal = $response['postal'] ? $response['postal'] :'';
                         $latitude = $response['latitude'] ? $response['latitude'] : 0;
                         $provider = $surveyid == '5420562' ? ($response['survey_data'][595]['answer'] ? $response['survey_data'][595]['answer'] : 'no provider') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : 'no provider') ;
+                        $regcode = $surveyid == '5420562' ? ($response['survey_data'][598]['answer'] ? $response['survey_data'][598]['answer'] : '1000') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : 'no provider') ;
                         $longitude = $response['longitude'] ? $response['longitude'] : 0;
                         $name = $surveyid == '5420562' ? ($response['survey_data'][544]['answer'] ? $response['survey_data'][544]['answer']  : 'no name') : ($response['survey_data'][19]['answer'] ? $response['survey_data'][19]['answer']  : 'no name');
                         $email = $surveyid == '5420562' ? ($response['survey_data'][520]['answer'] ? $response['survey_data'][520]['answer'] : '') : ($response['survey_data'][10]['answer'] ? $response['survey_data'][10]['answer'] : '');
@@ -102,25 +103,25 @@ class SurveyResponsesService
                             $answer541 = $response['survey_data'][541]['answer_id'] ? $response['survey_data'][541]['answer_id'] : NULL;
                             $answer542 = $response['survey_data'][542]['answer_id'] ? $response['survey_data'][542]['answer_id'] : NULL;
                         }
-                        $status = $response['status'] ? $response['status'] : null; 
+                        $status = $response['status'] ? $response['status'] : null;
                         //$survey_data = json_encode($response['survey_data']);
                         $query = $database->insert('surveycampaign_results')
                         ->fields([
-                            'surveyid', 'id','contact_id','date_submitted','country','region','city','postal','name','email','latitude','longitude','status','survey_data','provider','answer482','answer481','answer525','answer526','answer590','answer591','answer592','answer483','answer537','answer538','answer539','answer540','answer541','answer542'
+                            'surveyid', 'id','contact_id','date_submitted','country','region','city','postal','name','email','latitude','longitude','status','survey_data','provider','answer482','answer481','answer525','answer526','answer590','answer591','answer592','answer483','answer537','answer538','answer539','answer540','answer541','answer542','regcode'
                         ])
-                        ->values(array($surveyid,$id,$contactid,$date_submitted,$country,$state,$city,$postal,$name,$email,$latitude,$longitude,$status,$survey_data,$provider,$answer482,$answer481,$answer525,$answer526,$answer590,$answer591,$answer592,$answer483,$answer537,$answer538,$answer539,$answer540,$answer541,$answer542
+                        ->values(array($surveyid,$id,$contactid,$date_submitted,$country,$state,$city,$postal,$name,$email,$latitude,$longitude,$status,$survey_data,$provider,$answer482,$answer481,$answer525,$answer526,$answer590,$answer591,$answer592,$answer483,$answer537,$answer538,$answer539,$answer540,$answer541,$answer542,$regcode
                         ));
 
                         $resultout = $query->execute();
                     }
-   
+
                 }
             }
         } else {
             return false;
         }
     }
-   
 
-    
+
+
 }
