@@ -837,7 +837,7 @@ class TwilioCoachService
       $triggerdate = $triggerdate->format('Y-m-d');
       $cancelled = false;
       $cancelled = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
-      if($triggerdate >= $todaydate && $cancelled) {
+      if($todaydate >= $triggerdate && $cancelled) {
         return true;
       }
       //$lastactivedate = "select  DATE_FORMAT(senddate, "%Y-%m-%d") truncatedate from surveycampaign_mailer where mobilephone = 6125015804 AND surveyid =  5420562 ORDER BY senddate DESC LIMIT 1";
