@@ -558,6 +558,9 @@ class QueryBuilder {
         $dayTotal = ($totalSelectedLessObserver) / ($totalSelectedLessObserver + ($totalNotSelected - $totalObserverNotSelected)) * 8 / 24;
       }
       else {
+        if ($alias == "Other") {
+          $results[$alias . 'Observer'] = 0;
+        }
         $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
       }
 
