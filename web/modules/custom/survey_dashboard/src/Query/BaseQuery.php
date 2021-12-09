@@ -171,7 +171,8 @@ class BaseQuery {
         break;
 
       case 'Observer':
-        $and = "AND provider = 'Observer'";
+        //$and = "AND provider = 'Observer'";
+        $and = "AND (regcode <= 10000 OR regcode IS NULL)";
         break;
 
       default:
@@ -247,7 +248,8 @@ class BaseQuery {
       $args[':provider'] = $this->provider;
     }
     elseif ($scope == 'Observer') {
-      $and = "provider = 'Observer'";
+      //$and = "provider = 'Observer'";
+      $and = "(regcode <= 10000 OR regcode IS NULL)";
     }
     else {
       return;
@@ -441,7 +443,8 @@ class BaseQuery {
       $args[':provider'] = $this->provider;
     }
     elseif ($scope == 'Observer') {
-      $and = " AND provider = 'Observer'";
+      //$and = " AND provider = 'Observer'";
+      $and = " AND regcode <= 10000 OR regcode IS NULL";
     }
 
     $ids = $this->flattenIds($what);
@@ -478,7 +481,8 @@ class BaseQuery {
       $args[':provider'] = $this->provider;
     }
     elseif ($scope == 'Observer') {
-      $and = "provider = 'Observer'";
+      //$and = "provider = 'Observer'";
+      $and = "(regcode <= 10000 OR regcode IS NULL)";
     }
     else {
       return;
@@ -514,7 +518,8 @@ class BaseQuery {
         break;
 
       case 'Observer':
-        $and = "AND provider = 'Observer'";
+        //$and = "AND provider = 'Observer'";
+        $and = "AND (regcode <= 10000  OR regcode IS NULL)";
         break;
 
       default:
