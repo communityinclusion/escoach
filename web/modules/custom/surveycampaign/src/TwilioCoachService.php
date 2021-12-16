@@ -219,7 +219,6 @@ class TwilioCoachService
       ->condition('sm.mobilephone', "$mobilephone") ->countQuery()
       ->execute();
       $results = $query->fetchField();
-      //\Drupal::logger('surveycampaign')->notice("Count completed: " . $results . " Delay period: " . $delayperiod);
       $delayineffect = $results > $delayperiod ? false: true;
       return $delayineffect;
 
