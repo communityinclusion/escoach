@@ -230,7 +230,7 @@ class TwilioCoachService
         $config =  \Drupal::config('surveycampaign.settings');
         $isprimary = $surveyid == $config->get('defaultid') ? true :false;
         $onetime = false;
-        $onetime = !$isprimary && $config->get('alt_repeat') == '0' ? true : false;
+        $onetime = !$isprimary && $config->get('alt_repeat') === '0' ? true : false;
         //read mailer table
         include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
@@ -243,11 +243,18 @@ class TwilioCoachService
         ->condition('sm.surveyid', $surveyid)
         ->condition('sm.campaignid', $campaignid)
         ->condition('senddate', $database->escapeLike($todaydate) . '%', 'LIKE');
+
         $result = $query->execute();
+        $result = $result->fetchAllAssoc('mobilephone');
+        //$querystring = print_r($query->__toString(), true);
+        //$queryargs = print_r($query->arguments(), true);
+
+
         foreach ($result as $row) {
+
             //turn an object into an array by json encoding then decoding it
             $row = json_decode(json_encode($row), true);
-            $timezone =$row['timezone'];
+            $timezone = $row['timezone'];
             $senddate = new DateTime($row['senddate']);
             $formatdate =  new DateTime($row['senddate']);
             $senddate2 = new DateTime($row['senddate']);
@@ -291,120 +298,121 @@ class TwilioCoachService
 
 
             $remindnum = $isprimary ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
-            print_r($output);
+            //print_r($output);
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
-                    $showme = print_r($contact, true);
+
                     $checkcompletedonce = false;
 
                     if($onetime && !$isprimary) {
                         $checkcompletedonce = $this->checkCompletedOnce($surveyid,$row['mobilephone']);
                     }
-                    if($checkcompletedonce) return;
+                    if(!$checkcompletedonce) {
 
-                    $sendit = false;
-                    if ($contact['id'] == $contactid && $contact["subscriber_status"] != "Complete") {
-                        if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime,$isprimary);
-                        //set "text1" = 1
-                        if($sendit) {
-                                $database = \Drupal::database();
-                                $result = $database->update('surveycampaign_mailer')
-                                ->fields([
-                                'text1' => 1,
-                                ])
-                                ->condition('surveyid', $surveyid)
-                                ->condition('campaignid',$campaignid)
-                                ->condition('contactid',$contactid)
-                                ->execute();
-                        }
+                      $sendit = false;
+                      if ($contact['id'] == $contactid && $contact["subscriber_status"] != "Complete") {
+                          if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime,$isprimary);
+                          //set "text1" = 1
+                          if($sendit) {
+                                  $database = \Drupal::database();
+                                  $result = $database->update('surveycampaign_mailer')
+                                  ->fields([
+                                  'text1' => 1,
+                                  ])
+                                  ->condition('surveyid', $surveyid)
+                                  ->condition('campaignid',$campaignid)
+                                  ->condition('contactid',$contactid)
+                                  ->execute();
+                          }
 
-                        }
-                        elseif($row['text1'] == '1'  && $row['text2'] === '0' && ($senddate2 <= new DateTime() && $remindnum > 0)
-                        //&& (new DateTime() <= $senddate3) late check for send text
-                        ) {
-                            $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],2,$formattedstarttime,$formattedendtime,$isprimary);
-                            //set "text2" = 1
-                            if($sendit) {
-                                $database = \Drupal::database();
-                                $result = $database->update('surveycampaign_mailer')
-                                ->fields([
-                                'text2' => 1,
-                                ])
-                                ->condition('surveyid', $surveyid)
-                                ->condition('campaignid',$campaignid)
-                                ->condition('contactid',$contactid)
-                                ->execute();
-                            }
+                          }
+                          elseif($row['text1'] == '1'  && $row['text2'] === '0' && ($senddate2 <= new DateTime() && $remindnum > 0)
+                          //&& (new DateTime() <= $senddate3) late check for send text
+                          ) {
+                              $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],2,$formattedstarttime,$formattedendtime,$isprimary);
+                              //set "text2" = 1
+                              if($sendit) {
+                                  $database = \Drupal::database();
+                                  $result = $database->update('surveycampaign_mailer')
+                                  ->fields([
+                                  'text2' => 1,
+                                  ])
+                                  ->condition('surveyid', $surveyid)
+                                  ->condition('campaignid',$campaignid)
+                                  ->condition('contactid',$contactid)
+                                  ->execute();
+                              }
 
-                        }
+                          }
 
-                        elseif($row['text1'] == '1'  && $row['text2'] == '1' && $row['text3'] === '0' && $senddate3 <= new DateTime() && $remindnum > 1) {
-                            $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],3,$formattedstarttime,$formattedendtime,$isprimary);
-                            //set "text3" = 1
-                            if($sendit) {
-                                $database = \Drupal::database();
-                                $result = $database->update('surveycampaign_mailer')
-                                ->fields([
-                                'text3' => 1,
-                                ])
-                                ->condition('surveyid', $surveyid)
-                                ->condition('campaignid',$campaignid)
-                                ->condition('contactid',$contactid)
-                                ->execute();
-                            }
+                          elseif($row['text1'] == '1'  && $row['text2'] == '1' && $row['text3'] === '0' && $senddate3 <= new DateTime() && $remindnum > 1) {
+                              $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],3,$formattedstarttime,$formattedendtime,$isprimary);
+                              //set "text3" = 1
+                              if($sendit) {
+                                  $database = \Drupal::database();
+                                  $result = $database->update('surveycampaign_mailer')
+                                  ->fields([
+                                  'text3' => 1,
+                                  ])
+                                  ->condition('surveyid', $surveyid)
+                                  ->condition('campaignid',$campaignid)
+                                  ->condition('contactid',$contactid)
+                                  ->execute();
+                              }
 
-                        }
-                    } elseif ($contact['id'] == $contactid && $contact["subscriber_status"] == "Complete")
-                    {
+                          }
+                      }
+                      elseif ($contact['id'] == $contactid && $contact["subscriber_status"] == "Complete" )
+                      {
 
-                        $suspenddates = $this->getResponseInfo($surveyid,$contactid,$contact['email_address'],$api_key,$api_secret);
+                          $suspenddates = $this->getResponseInfo($surveyid,$contactid,$contact['email_address'],$api_key,$api_secret);
+                          // check if user suspended survey.  If so get dates and enter in user profile
+                          //delete this individual in this survey/campaign from surveycampaign_mailer
 
-                        // check if user suspended survey.  If so get dates and enter in user profile
-                        //delete this individual in this survey/campaign from surveycampaign_mailer
+                          // Suspension choices on secondary survey seem to be interfering with setting them from primary survey
+                          //$startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
+                          $startid = $config->get('def_survey_suspend_start_id');
+                          //$endid = $isprimary ? $config->get('def_survey_suspend_end_id') : $config->get('alt_survey_suspend_end_id');
+                          $endid =  $config->get('def_survey_suspend_end_id');
+                          $startdate = null;
+                          $enddate = null;
+                          if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
+                              if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
+                                  //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
 
-                        // Suspension choices on secondary survey seem to be interfering with setting them from primary survey
-                        //$startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
-                        $startid = $config->get('def_survey_suspend_start_id');
-                        //$endid = $isprimary ? $config->get('def_survey_suspend_end_id') : $config->get('alt_survey_suspend_end_id');
-                        $endid =  $config->get('def_survey_suspend_end_id');
-                        $startdate = null;
-                        $enddate = null;
-                        if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
-                            if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
-                                //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
+                                  $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
+                                  $startdate = $startdate->format('Y-m-d');
+                              }
+                              if($suspenddates['data'][0]['survey_data'][$endid]['answer']) {
+                                  //echo "<br />Suspension last day:" . $suspenddates['data'][0]['survey_data'][$endid]['answer'];
+                                  $enddate = new DateTime($suspenddates['data'][0]['survey_data'][$endid]['answer']);
+                                  $enddate->modify("- 1 day");
+                                  $enddate = $enddate->format('Y-m-d');
+                              }
 
-                                $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
-                                $startdate = $startdate->format('Y-m-d');
-                            }
-                            if($suspenddates['data'][0]['survey_data'][$endid]['answer']) {
-                                //echo "<br />Suspension last day:" . $suspenddates['data'][0]['survey_data'][$endid]['answer'];
-                                $enddate = new DateTime($suspenddates['data'][0]['survey_data'][$endid]['answer']);
-                                $enddate->modify("- 1 day");
-                                $enddate = $enddate->format('Y-m-d');
-                            }
 
-                            //\Drupal::logger('surveycampaign')->notice("start and end: " . $startdate . " / " . $enddate);
-
-                            if ( $mobilephone && $startdate) $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
-                        }
-                        if($suspenddates['data'][0]) {
-                            $database = \Drupal::database();
-                            $result = $database->update('surveycampaign_mailer')
-                                ->fields([
-                                'Complete' => '1'
-                                ])
-                                ->condition('surveyid', $surveyid)
-                                    ->condition('campaignid',$campaignid)
-                                    ->condition('contactid',$contactid)
-                                    ->execute();
-                        }
-                    }
-
+                              if ( $mobilephone && $startdate) $setdates = \Drupal::service('surveycampaign.survey_users')->handleSuspendDates($mobilephone,$startdate,$enddate);
+                          }
+                          if($suspenddates['data'][0]) {
+                              $database = \Drupal::database();
+                              $result = $database->update('surveycampaign_mailer')
+                                  ->fields([
+                                  'Complete' => '1'
+                                  ])
+                                  ->condition('surveyid', $surveyid)
+                                      ->condition('campaignid',$campaignid)
+                                      ->condition('contactid',$contactid)
+                                      ->execute();
+                          }
+                      }
+                  }
                 }
             }
 
-         }
+       }
    }
+
+
 
    function getResponseInfo($surveyid,$contactid,$email,$api_key,$api_secret) {
        //contact_id was deprecated as of SG v. 5.  Stopped working.
@@ -723,13 +731,14 @@ class TwilioCoachService
 
     function getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid = null) {
         $url ="https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/$campaignid/surveycontact" . ($contactid ? "/{$contactid}" : ""). "?api_token={$api_key}&api_token_secret={$api_secret}";
+        \Drupal::logger('surveycampaign')->notice("GetlistInfo URL: " . $url);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
         //The standard return from the API is JSON, decode to php.
         $output= json_decode($output,true);
-        print_r($output);
+        //print_r($output);
         return $output;
 
 
@@ -737,7 +746,7 @@ class TwilioCoachService
 
         foreach($output as $response)
             { if (!is_bool($response) && is_array($response)) {
-                    foreach ($response as $user) { print_r($user); echo "<br /><br />";
+                    foreach ($response as $user) {
                         $name = $user->first_name . " " . $user->last_name;
 
                         }
