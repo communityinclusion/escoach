@@ -297,7 +297,7 @@ class TwilioCoachService
 
 
             $remindnum = $isprimary ? intval($config->get('def_reminder_num')) : intval($config->get('secondary_reminder_num'));
-            //print_r($output);
+
             foreach ($output as $contact) { //this is going to be slow.  Have to find a better way to run through this array
                 if (!is_bool($contact)) {
 
@@ -563,7 +563,7 @@ class TwilioCoachService
                 if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
-                $inactivetext = $inactive ? 'Yes' : 'No, active';
+                //\Drupal::logger('surveycampaign')->notice("Name: " . $lastname . "Did not reply: " . $didnotreply . " Warning: " . $warning);
 
                 if($didnotreply >= $cutoff && !$inactive) {
 
@@ -730,7 +730,7 @@ class TwilioCoachService
 
     function getListInfo($campaignid,$surveyid,$api_key,$api_secret,$contactid = null) {
         $url ="https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/$campaignid/surveycontact" . ($contactid ? "/{$contactid}" : ""). "?api_token={$api_key}&api_token_secret={$api_secret}";
-        \Drupal::logger('surveycampaign')->notice("GetlistInfo URL: " . $url);
+        //\Drupal::logger('surveycampaign')->notice("GetlistInfo URL: " . $url);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
