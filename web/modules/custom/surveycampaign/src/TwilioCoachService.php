@@ -573,6 +573,7 @@ class TwilioCoachService
                 {
 
                     if (!is_bool($output)) {
+                        \Drupal::logger('surveycampaign')->notice("First warning sent to mailer");
                         $todaylink = $output->invitelink;
                         $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
@@ -916,6 +917,7 @@ class TwilioCoachService
 
         if($send) {
             if(($warningmode == '2' || $warningmode == '3') && $isprimary) {
+                \Drupal::logger('surveycampaign alert')->notice('Going to mail manager');
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
             if(($warningmode == '1' || $warningmode == '3') && $isprimary) {
