@@ -378,14 +378,13 @@ class TwilioCoachService
                           $enddate = null;
                           if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
                             $suspendoutput = print_r($suspenddates['data'][0]['survey_data'][$startid], true);
-                            \Drupal::logger('surveycampaign')->notice("Suspendoutput: " . $suspendoutput);
-                              if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
+                              if(array_key_exists($suspenddates['data'][0]['survey_data'][$startid]['answer'])) {
                                   //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
 
                                   $startdate = new DateTime($suspenddates['data'][0]['survey_data'][$startid]['answer']);
                                   $startdate = $startdate->format('Y-m-d');
                               }
-                              if($suspenddates['data'][0]['survey_data'][$endid]['answer']) {
+                              if(array_key_exists($suspenddates['data'][0]['survey_data'][$endid]['answer'])) {
                                   //echo "<br />Suspension last day:" . $suspenddates['data'][0]['survey_data'][$endid]['answer'];
                                   $enddate = new DateTime($suspenddates['data'][0]['survey_data'][$endid]['answer']);
                                   $enddate->modify("- 1 day");
