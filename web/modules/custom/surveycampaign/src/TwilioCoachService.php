@@ -377,7 +377,7 @@ class TwilioCoachService
                           $startdate = null;
                           $enddate = null;
                           if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
-                            $suspendoutput = print_r($suspenddates['data'][0]['survey_data'], true);
+                            $suspendoutput = print_r($suspenddates['data'][0]['survey_data'][$startid], true);
                             \Drupal::logger('surveycampaign')->notice("Suspendoutput: " . $suspendoutput);
                               if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
                                   //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
