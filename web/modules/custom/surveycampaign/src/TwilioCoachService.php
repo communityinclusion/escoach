@@ -368,6 +368,7 @@ class TwilioCoachService
                           // check if user suspended survey.  If so get dates and enter in user profile
                           //delete this individual in this survey/campaign from surveycampaign_mailer
 
+
                           // Suspension choices on secondary survey seem to be interfering with setting them from primary survey
                           //$startid = $isprimary ? $config->get('def_survey_suspend_start_id') : $config->get('alt_survey_suspend_start_id');
                           $startid = $config->get('def_survey_suspend_start_id');
@@ -376,6 +377,8 @@ class TwilioCoachService
                           $startdate = null;
                           $enddate = null;
                           if ($suspenddates['data'][0] && $suspenddates['data'][0]['survey_data'][$startid]) {
+                            $suspendoutput = print_r($suspenddates['data'][0], true);
+                            \Drupal::logger('surveycampaign')->notice("Suspendoutput: " . $suspendoutput);
                               if($suspenddates['data'][0]['survey_data'][$startid]['answer']) {
                                   //echo "Suspension start:" . $suspenddates['data'][0]['survey_data'][$startid]['answer'];
 
