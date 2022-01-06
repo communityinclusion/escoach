@@ -571,7 +571,7 @@ class TwilioCoachService
 
                     $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink,$isprimary);
                     }
-                elseif ($didnotreply == $warning && $warningcount == $warning && !$inactive)
+                elseif ($didnotreply >= $warning && $warningcount >= $warning && !$inactive)
                 {
 
                     if (!is_bool($output)) {
