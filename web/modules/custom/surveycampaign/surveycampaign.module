@@ -223,7 +223,7 @@ function surveycampaign_cron()
   $checkTime = date('H:i');
   $checkTime = date('H:i', strtotime($checkTime));
   $runTasksBegin = date('H:i', strtotime('07:00'));
-  $runTasksEnd = date('H:i', strtotime('20:00'));
+  $runTasksEnd = date('H:i', strtotime('15:00'));
   if (($checkTime >= $runTasksBegin) && ($checkTime <= $runTasksEnd)){
       $send = $surveyid ? \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0) : null;
       $send2 = $surveyid2 ? \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0) : null;
