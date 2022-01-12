@@ -42,6 +42,7 @@
         "drupal/field_display_label": "1.x-dev",
         "drupal/field_group": "3.x-dev",
         "drupal/field_hidden": "^2.0",
+        "drupal/form_options_attributes": "^1.2",
         "drupal/geofield": "^1.1",
         "drupal/geofield_map": "^2.57",
         "drupal/google_analytics": "^3.0",

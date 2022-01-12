@@ -46,6 +46,10 @@
         }
       });
 
+      $('input.what-parent').once('select-children').change(function () {
+        $('input.what-parent-' + $(this).val()).prop('checked', $(this).prop('checked'));
+      });
+
     },
     validateSelection: function (element) {
       if ($(element).attr('name') == 'who' || $(element).attr('name') == 'where') {
