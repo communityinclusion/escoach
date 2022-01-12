@@ -4,6 +4,7 @@ namespace Drupal\survey_dashboard\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -39,6 +40,7 @@ class DashboardForm extends FormBase {
       '#options' => $this->getTerms('what'),
       '#weight' => '0',
       '#default_value' => $form_state->get('what') ?? [],
+      '#options_attributes' => $this->getWhatOptionAttributes(),
     ];
     $form['who'] = [
       '#type' => 'select',
@@ -138,6 +140,20 @@ class DashboardForm extends FormBase {
 
   public function submitCallback(&$form, $form_state) {
     return $form['results'];
+  }
+
+  private function getWhatOptionAttributes() {
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('what');
+    $attributes = [];
+    foreach ($terms as $term) {
+      if ($term->parents[0] == 0) {
+        $attributes[$term->tid] = [ 'class' => ['what-parent'] ];
+      }
+      else {
+        $attributes[$term->tid] = [ 'class' => ['what-parent-' . $term->parents[0]] ];
+      }
+    }
+    return $attributes;
   }
 
   private function getTerms($vid, $empty_value = NULL, $emty_option = NULL) {
