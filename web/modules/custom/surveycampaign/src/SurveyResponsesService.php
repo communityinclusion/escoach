@@ -82,7 +82,7 @@ class SurveyResponsesService
                         $postal = $response['postal'] ? $response['postal'] :'';
                         $latitude = $response['latitude'] ? $response['latitude'] : 0;
                         $provider = $surveyid == '5420562' ? ($response['survey_data'][595]['answer'] ? $response['survey_data'][595]['answer'] : 'no provider') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : 'no provider') ;
-                        $regcode = $surveyid == '5420562' ? ($response['survey_data'][598]['answer'] ? $response['survey_data'][598]['answer'] : '1000') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : 'no provider') ;
+                        $regcode = $surveyid == '5420562' ? ($response['survey_data'][598]['answer'] ? $response['survey_data'][598]['answer'] : '1000') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : '1000') ;
                         $longitude = $response['longitude'] ? $response['longitude'] : 0;
                         $name = $surveyid == '5420562' ? ($response['survey_data'][544]['answer'] ? $response['survey_data'][544]['answer']  : 'no name') : ($response['survey_data'][19]['answer'] ? $response['survey_data'][19]['answer']  : 'no name');
                         $email = $surveyid == '5420562' ? ($response['survey_data'][520]['answer'] ? $response['survey_data'][520]['answer'] : '') : ($response['survey_data'][10]['answer'] ? $response['survey_data'][10]['answer'] : '');
