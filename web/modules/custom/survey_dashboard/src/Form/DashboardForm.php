@@ -113,7 +113,10 @@ class DashboardForm extends FormBase {
       '#value' => 0,
     ];
 
-    $form['submit'] = [
+    $form['actions'] = [
+      '#type' => 'container',
+    ];
+    $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Submit'),
       '#weight' => 6,
@@ -128,12 +131,25 @@ class DashboardForm extends FormBase {
       ],
     ];
 
+    $form['actions']['reset'] = [
+      '#type' => 'button',
+      '#value' => $this->t('Clear All'),
+      '#weight' => 7,
+      '#attributes' => [
+        'onClick' => 'this.form.reset(); return true;',
+      ],
+    ];
+
     $form['#attached']['library'][] = 'survey_dashboard/dashboard';
     $form['#theme'] = ['dashboard-form'];
 
     // Don't cache the form
     $form['#cache']['max-age'] = 0;
     return $form;
+  }
+
+  public function resetForm($form, FormStateInterface $formState) {
+    $formState->setRebuild(FALSE);
   }
 
   public function submitCallback(&$form, $form_state) {
