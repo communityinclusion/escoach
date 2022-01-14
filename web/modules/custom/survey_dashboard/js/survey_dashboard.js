@@ -50,6 +50,11 @@
         $('input.what-parent-' + $(this).val()).prop('checked', $(this).prop('checked'));
       });
 
+      $('input.what-child').once('clear-parent').change(function () {
+        if (!$(this).prop('checked')) {
+          $('input#edit-what-' + $(this).data('parent-id')).prop('checked', false);
+        }
+      });
     },
     validateSelection: function (element) {
       if ($(element).attr('name') == 'who' || $(element).attr('name') == 'where') {
@@ -141,8 +146,29 @@
           chartArea:{left:100,top:100,width:'100%',height:'100%'},
           hAxis: {
             minValue: 0,
+            title: 'Percentage of time',
+            titleTextStyle: {
+              color: 'black',
+              fontSize: 14,
+              bold: false
+            },
             format: 'percent',
-            ticks: [ 0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1]
+            ticks: [
+              {v:0, f:''},
+              {v:.1, f:''},
+              {v:.2, f:'20'},
+              {v:.3, f:''},
+              {v:.4, f:'40'},
+              {v:.5, f:''},
+              {v:.6, f:'60'},
+              {v:.7, f:''},
+              {v:.8, f:'80'},
+              {v:.9, f:''},
+              {v:1, f:'100'}
+            ]
+          },
+          hAxes: {
+            0: { title: 'Percentage of time'}
           }
         };
 

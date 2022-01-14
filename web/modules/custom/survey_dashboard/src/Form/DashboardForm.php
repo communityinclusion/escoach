@@ -164,7 +164,10 @@ class DashboardForm extends FormBase {
         $attributes[$term->tid] = [ 'class' => ['what-parent'] ];
       }
       else {
-        $attributes[$term->tid] = [ 'class' => ['what-parent-' . $term->parents[0]] ];
+        $attributes[$term->tid] = [
+          'class' => ['what-child', 'what-parent-' . $term->parents[0]],
+          'data-parent-id' => $term->parents[0],
+        ];
       }
     }
     return $attributes;
