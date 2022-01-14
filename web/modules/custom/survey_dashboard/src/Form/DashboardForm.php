@@ -74,6 +74,9 @@ class DashboardForm extends FormBase {
     ];
 
     $input = $form_state->getUserInput();
+    if (isset($input['op']) && $input['op'] == 'Clear All') {
+      $input = [];
+    }
 
     $params = [
       'timeframe' => $input['timeframe'] ?? '',
@@ -132,12 +135,9 @@ class DashboardForm extends FormBase {
     ];
 
     $form['actions']['reset'] = [
-      '#type' => 'button',
+      '#type' => 'submit',
       '#value' => $this->t('Clear All'),
       '#weight' => 7,
-      '#attributes' => [
-        'onClick' => 'this.form.reset(); return false;',
-      ],
     ];
 
     $form['#attached']['library'][] = 'survey_dashboard/dashboard';

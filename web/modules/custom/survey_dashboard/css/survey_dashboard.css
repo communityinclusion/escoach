@@ -23,6 +23,10 @@
   margin-bottom: 1rem;
 }
 
+#edit-reset {
+  background-color: gray;
+  border-color: gray;
+}
 .escoach-what-clear-wrapper {
   font-size: 0.5em;
 }
