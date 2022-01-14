@@ -319,7 +319,7 @@ class QueryBuilder {
       $row[] = $label;
       foreach ($return['#data']['aliasMap'] as $alias => $def) {
         if (substr($def['title'], 0, 6) != 'Either') {
-          $row[] = 3 * $return['#data']['results'][$scope][$alias]['total'];
+          $row[] = 3 * $return['#data']['results'][$scope][$alias]['total'] * 100;
         }
       }
       $row[] = '';
