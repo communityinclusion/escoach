@@ -136,7 +136,7 @@ class DashboardForm extends FormBase {
       '#value' => $this->t('Clear All'),
       '#weight' => 7,
       '#attributes' => [
-        'onClick' => 'this.form.reset(); return true;',
+        'onClick' => 'this.form.reset(); return false;',
       ],
     ];
 
