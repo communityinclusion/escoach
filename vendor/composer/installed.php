@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'dd71deda10f42fd6a2e65826795ec20482bc2a8b',
+        'reference' => 'ff2cf33137c87fa0381250cb32fe125ebe291605',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -894,6 +894,15 @@
                 0 => '9.2.9',
             ),
         ),
+        'drupal/form_options_attributes' => array(
+            'pretty_version' => '1.2.0',
+            'version' => '1.2.0.0',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/form_options_attributes',
+            'aliases' => array(),
+            'reference' => '8.x-1.2',
+            'dev_requirement' => false,
+        ),
         'drupal/forum' => array(
             'dev_requirement' => false,
             'replaced' => array(
@@ -1309,7 +1318,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'dd71deda10f42fd6a2e65826795ec20482bc2a8b',
+            'reference' => 'ff2cf33137c87fa0381250cb32fe125ebe291605',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
