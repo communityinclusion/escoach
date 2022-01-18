@@ -319,7 +319,7 @@ class QueryBuilder {
       $row[] = $label;
       foreach ($return['#data']['aliasMap'] as $alias => $def) {
         if (substr($def['title'], 0, 6) != 'Either') {
-          $row[] = 3 * $return['#data']['results'][$scope][$alias]['total'];
+          $row[] = 3 * $return['#data']['results'][$scope][$alias]['total'] * 100;
         }
       }
       $row[] = '';
@@ -436,20 +436,36 @@ class QueryBuilder {
     }
 
     if ($this->timeframe == 'quarterly') {
-      return [
+      $date = new \Datetime();
+      $month = $date->format('n');
+      $current_qtr = ceil($month/3);
+      $year = $date->format('Y');
+      $lastYear = $year - 1;
+
+      $ret = [
         1 => [
-          'title' => 'Q1',
+          'title' => 'Jan-Mar ',
           ],
         2 => [
-          'title' => 'Q2',
+          'title' => 'Apr-Jun ',
         ],
         3 => [
-          'title' => 'Q3',
+          'title' => 'Jul-Sep ',
         ],
         4 => [
-          'title' => 'Q4',
+          'title' => 'Oct-Dec ',
         ],
       ];
+
+      for ($i = 1; $i <= 4; $i++) {
+        if ($i >= $current_qtr) {
+          $ret[$i]['title'] .= $lastYear;
+        }
+        else {
+          $ret[$i]['title'] .= $year;
+        }
+      }
+      return  $ret;
     }
 
     return [];

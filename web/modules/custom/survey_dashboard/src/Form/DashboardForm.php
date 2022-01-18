@@ -4,7 +4,6 @@ namespace Drupal\survey_dashboard\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -39,6 +38,7 @@ class DashboardForm extends FormBase {
       '#options' => $this->getTerms('what'),
       '#weight' => '0',
       '#default_value' => $form_state->get('what') ?? [],
+      '#options_attributes' => $this->getWhatOptionAttributes(),
     ];
     $form['who'] = [
       '#type' => 'select',
@@ -74,6 +74,9 @@ class DashboardForm extends FormBase {
     ];
 
     $input = $form_state->getUserInput();
+    if (isset($input['op']) && $input['op'] == 'Clear All') {
+      $input = [];
+    }
 
     $params = [
       'timeframe' => $input['timeframe'] ?? '',
@@ -113,7 +116,10 @@ class DashboardForm extends FormBase {
       '#value' => 0,
     ];
 
-    $form['submit'] = [
+    $form['actions'] = [
+      '#type' => 'container',
+    ];
+    $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Submit'),
       '#weight' => 6,
@@ -128,6 +134,12 @@ class DashboardForm extends FormBase {
       ],
     ];
 
+    $form['actions']['reset'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Clear All'),
+      '#weight' => 7,
+    ];
+
     $form['#attached']['library'][] = 'survey_dashboard/dashboard';
     $form['#theme'] = ['dashboard-form'];
 
@@ -136,8 +148,29 @@ class DashboardForm extends FormBase {
     return $form;
   }
 
+  public function resetForm($form, FormStateInterface $formState) {
+    $formState->setRebuild(FALSE);
+  }
+
   public function submitCallback(&$form, $form_state) {
     return $form['results'];
+  }
+
+  private function getWhatOptionAttributes() {
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('what');
+    $attributes = [];
+    foreach ($terms as $term) {
+      if ($term->parents[0] == 0) {
+        $attributes[$term->tid] = [ 'class' => ['what-parent'] ];
+      }
+      else {
+        $attributes[$term->tid] = [
+          'class' => ['what-child', 'what-parent-' . $term->parents[0]],
+          'data-parent-id' => $term->parents[0],
+        ];
+      }
+    }
+    return $attributes;
   }
 
   private function getTerms($vid, $empty_value = NULL, $emty_option = NULL) {
