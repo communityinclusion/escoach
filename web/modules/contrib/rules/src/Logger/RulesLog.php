@@ -72,7 +72,7 @@ class RulesLog implements LoggerInterface {
 
     // Dispatch logger_entry event.
     $event = new SystemLoggerEvent($logger_entry, ['logger_entry' => $logger_entry]);
-    $this->dispatcher->dispatch(SystemLoggerEvent::EVENT_NAME, $event);
+    $this->dispatcher->dispatch($event, SystemLoggerEvent::EVENT_NAME);
   }
 
 }
