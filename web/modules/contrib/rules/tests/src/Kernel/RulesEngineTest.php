@@ -171,7 +171,7 @@ class RulesEngineTest extends RulesKernelTestBase {
    */
   public function testSwappedCoreServices() {
     $condition_manager = $this->container->get('plugin.manager.condition');
-    $this->assertTrue($condition_manager instanceof ConditionManager);
+    $this->assertInstanceOf(ConditionManager::class, $condition_manager);
   }
 
 }

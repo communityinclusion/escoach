@@ -72,7 +72,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $this->assertEquals(2, iterator_count($all_violations));
 
     $uuid_violations = $all_violations->getFor($second_action->getUuid());
-    $this->assertEquals(1, count($uuid_violations));
+    $this->assertCount(1, $uuid_violations);
     $violation = $uuid_violations[0];
     // The Exception message part of the output should be HTML-escaped.
     $this->assertEquals(
