@@ -66,7 +66,7 @@ class DashboardForm extends FormBase {
       '#title' => $this->t('Time Frame'),
       '#options' => [
         'up-to-date' => $this->t('Up-to-date'),
-        'quarterly' => $this->t('Quarterly Trends'),
+//        'quarterly' => $this->t('Quarterly Trends'),
         'monthly' => $this->t('Monthly Trends')
       ],
       '#default_value' => $form_state->get('time_frame') ?? 'up-to-date',
