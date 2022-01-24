@@ -110,12 +110,6 @@ class DashboardForm extends FormBase {
       ]
     ];
 
-    $form['debug'] = [
-      '#type' => 'checkbox',
-      '#title' => 'debug',
-      '#value' => 0,
-    ];
-
     $form['actions'] = [
       '#type' => 'container',
     ];
