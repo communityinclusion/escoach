@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'ff2cf33137c87fa0381250cb32fe125ebe291605',
+        'reference' => 'a62e983383d900f124649f888fda03d59f713e86',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -260,12 +260,12 @@
             'dev_requirement' => false,
         ),
         'drupal/admin_toolbar' => array(
-            'pretty_version' => '3.0.3',
-            'version' => '3.0.3.0',
+            'pretty_version' => '3.1.0',
+            'version' => '3.1.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/admin_toolbar',
             'aliases' => array(),
-            'reference' => '3.0.3',
+            'reference' => '3.1.0',
             'dev_requirement' => false,
         ),
         'drupal/adminimal_admin_toolbar' => array(
@@ -1309,11 +1309,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-<<<<<<< HEAD
-            'reference' => 'ff2cf33137c87fa0381250cb32fe125ebe291605',
-=======
-            'reference' => 'df42bfeca098668f430b9d8b849674937642e94f',
->>>>>>> devel
+            'reference' => 'a62e983383d900f124649f888fda03d59f713e86',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
@@ -2115,8 +2111,8 @@
         'psr/container-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '^1.0',
+                0 => '^1.0',
+                1 => '1.0',
             ),
         ),
         'psr/event-dispatcher-implementation' => array(
