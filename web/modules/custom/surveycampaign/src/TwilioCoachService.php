@@ -612,7 +612,7 @@ class TwilioCoachService
                     $checkalready = false;
                     $checkalready =  $this->conditionCheck('surveycampaign_mailer',$surveyid,$senddate,$mobilephone);
 
-                    if(!$checkalready && !$cancelsurvey && $didnotreply < $cutoff) {
+                    if(!$checkalready && !$cancelsurvey && $didnotreply < $cutoff && ($invitelink && $invitelink != '')) {
                         $database = \Drupal::database();
                         $result = $database->insert('surveycampaign_mailer')
                         ->fields([
