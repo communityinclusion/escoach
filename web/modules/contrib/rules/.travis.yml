@@ -20,19 +20,21 @@ jobs:
       env:
         - DRUPAL_CORE=9.1.x
         # --- Remaining self deprecation notices (0)
-        # --- Remaining direct deprecation notices (676)
+        # --- Remaining direct deprecation notices (50)
         #  50 Support for keys without a placeholder prefix
-        # 626 EventDispatcherInterface::dispatch() with a string event name
-        - DEPRECATIONS=676
+        - DEPRECATIONS=50
     - php: 7.4
       env:
         - DRUPAL_CORE=9.2.x
         # --- Remaining self deprecation notices (0)
-        # --- Remaining direct deprecation notices (1322)
+        # --- Remaining direct deprecation notices (696)
+        # 134 core/jquery.ui asset library is deprecated in drupal:9.2.0
+        # 128 core/jquery.ui.widget
+        # 128 core/jquery.ui.position
+        # 128 core/jquery.ui.menu
+        # 128 core/jquery.ui.autocomplete
         #  50 Support for keys without a placeholder prefix
-        # 626 EventDispatcherInterface::dispatch() with a string event name
-        # 646 core/jquery.ui... asset library is deprecated
-        - DEPRECATIONS=1322
+        - DEPRECATIONS=696
 
 services:
   - mysql

@@ -7,7 +7,7 @@ use Drupal\Core\Logger\LogMessageParserInterface;
 use Drupal\Core\Logger\RfcLoggerTrait;
 use Drupal\rules\Event\SystemLoggerEvent;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Logger that dispatches a SystemLoggerEvent when a logger entry is made.
@@ -17,9 +17,9 @@ class RulesLog implements LoggerInterface {
   use DependencySerializationTrait;
 
   /**
-   * The dispatcher.
+   * The event_dispatcher service.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface
    */
   protected $dispatcher;
 
@@ -33,8 +33,8 @@ class RulesLog implements LoggerInterface {
   /**
    * Constructs a new instance.
    *
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
-   *   An EventDispatcherInterface instance.
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $dispatcher
+   *   The event_dispatcher service.
    * @param \Drupal\Core\Logger\LogMessageParserInterface $parser
    *   The parser to use when extracting message variables.
    */

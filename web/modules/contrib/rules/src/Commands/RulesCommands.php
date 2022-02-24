@@ -156,7 +156,7 @@ class RulesCommands extends DrushCommands {
     if ($this->configStorage->exists('rules.reaction.' . $rule)) {
       $config = $this->configFactory->getEditable('rules.reaction.' . $rule);
     }
-    // The @interact-disabled-rules hook returns full-qualified names.
+    // The @interact-disabled-rules hook returns fully-qualified names.
     elseif ($this->configStorage->exists($rule)) {
       $config = $this->configFactory->getEditable($rule);
     }
@@ -196,7 +196,7 @@ class RulesCommands extends DrushCommands {
     if ($this->configStorage->exists('rules.reaction.' . $rule)) {
       $config = $this->configFactory->getEditable('rules.reaction.' . $rule);
     }
-    // The @interact-enabled-rules hook returns full-qualified names.
+    // The @interact-enabled-rules hook returns fully-qualified names.
     elseif ($this->configStorage->exists($rule)) {
       $config = $this->configFactory->getEditable($rule);
     }
@@ -239,7 +239,7 @@ class RulesCommands extends DrushCommands {
     elseif ($this->configStorage->exists('rules.component.' . $rule)) {
       $config = $this->configFactory->getEditable('rules.component.' . $rule);
     }
-    // The @interact-rule-names hook returns full-qualified names.
+    // The @interact-rule-names hook returns fully-qualified names.
     elseif ($this->configStorage->exists($rule)) {
       $config = $this->configFactory->getEditable($rule);
     }
@@ -281,7 +281,7 @@ class RulesCommands extends DrushCommands {
     if (empty($config)) {
       $config = $this->configStorage->read('rules.component.' . $rule);
       if (empty($config)) {
-        // The @interact-rule-names hook returns full-qualified names.
+        // The @interact-rule-names hook returns fully-qualified names.
         $config = $this->configStorage->read($rule);
         if (empty($config)) {
           throw new \Exception(dt('Could not find a Reaction Rule or a Rules Component named @name', ['@name' => $rule]));
@@ -318,7 +318,7 @@ class RulesCommands extends DrushCommands {
     if (empty($config)) {
       $config = $this->configStorage->read('rules.component.' . $rule);
       if (empty($config)) {
-        // The @interact-rule-names hook returns full-qualified names.
+        // The @interact-rule-names hook returns fully-qualified names.
         $config = $this->configStorage->read($rule);
         if (empty($config)) {
           throw new \Exception(dt('Could not find a Reaction Rule or a Rules Component named @name', ['@name' => $rule]));
@@ -381,6 +381,9 @@ class RulesCommands extends DrushCommands {
    * Helper function to format command output.
    */
   protected function formatOutput($plugin_manager_service, $title, $categories = TRUE, $short = FALSE) {
+    // Dependency injection deliberately not used because we don't know
+    // a priori what service will be needed. So ignore the phpcs message.
+    // @phpcs:ignore DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
     $definitions = \Drupal::service($plugin_manager_service)->getDefinitions();
     $plugins = [];
     foreach ($definitions as $plugin) {

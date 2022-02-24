@@ -108,7 +108,7 @@ class RulesEngineTest extends RulesKernelTestBase {
     $component = RulesComponent::create($rule);
 
     $violations = $component->checkIntegrity();
-    $this->assertEquals(0, iterator_count($violations));
+    $this->assertCount(0, $violations);
 
     $component->execute();
     // Test that the action logged something.

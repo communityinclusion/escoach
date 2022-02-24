@@ -283,6 +283,11 @@ class ReactionRuleConfig extends ConfigEntityBase implements RulesUiComponentPro
     if (($id = array_search($event_name, $indexed_event_names)) !== FALSE) {
       unset($this->events[$id]);
     }
+    // Use array_values() to re-index $this->events to ensure that this data
+    // structure always has numerical keys that are ordered sequentially,
+    // starting with 0. Removing an event might have left a gap in this
+    // sequence, which would affect how the configuration was stored.
+    $this->events = array_values($this->events);
     return $this;
   }
 

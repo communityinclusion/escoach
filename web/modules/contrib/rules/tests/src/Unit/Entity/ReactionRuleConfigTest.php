@@ -156,6 +156,9 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
    */
   public function testRemoveEventWithKeyedIndex() {
     // Create a rule with a few events that are numerically indexed.
+    // This situation should not ever happen - the configuration entity
+    // expects that events are numerically indexed and that the indices
+    // are sequential, starting with 0.
     $rule = $this->createRule([
       'events' => [
         2 => ['event_name' => 'foo'],
@@ -163,8 +166,11 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
       ],
     ]);
     $this->assertSame($rule, $rule->removeEvent('foo'));
+
+    // Removing an event should re-index the events so they are sequential
+    // and start with 0.
     $expected = [
-      3 => ['event_name' => 'bar', 'configuration' => ['qux' => 'baz']],
+      0 => ['event_name' => 'bar', 'configuration' => ['qux' => 'baz']],
     ];
     $this->assertSame($expected, $rule->getEvents());
   }

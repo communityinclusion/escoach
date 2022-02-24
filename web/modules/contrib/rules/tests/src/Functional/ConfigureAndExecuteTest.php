@@ -514,26 +514,23 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
    * Tests the implementation of assignment restriction in context form.
    */
   public function testAssignmentRestriction() {
-    $expression_manager = $this->container->get('plugin.manager.rules_expression');
-    $storage = $this->container->get('entity_type.manager')->getStorage('rules_reaction_rule');
-
     // Create a rule.
-    $rule = $expression_manager->createRule();
+    $rule = $this->expressionManager->createRule();
 
     // Add a condition which is restricted to selector for 'data', restricted to
     // input for 'operation' but unrestricted on 'value'.
-    $condition1 = $expression_manager->createCondition('rules_data_comparison');
+    $condition1 = $this->expressionManager->createCondition('rules_data_comparison');
     $rule->addExpressionObject($condition1);
 
     // Add an action which is unrestricted on 'message' and 'type' but is
     // restricted to input for 'repeat'.
-    $action1 = $expression_manager->createAction('rules_system_message');
+    $action1 = $this->expressionManager->createAction('rules_system_message');
     $rule->addExpressionObject($action1);
 
     // As the ContextFormTrait is action/condition agnostic it is not necessary
     // to check an action restricted by selector because the condition covers
     // this. Save the rule to config. No event needed.
-    $config_entity = $storage->create([
+    $config_entity = $this->storage->create([
       'id' => 'test_rule',
       'expression' => $rule->getConfiguration(),
     ]);
@@ -582,9 +579,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     $assert = $this->assertSession();
 
     // Create a rule.
-    $expressionManager = $this->container->get('plugin.manager.rules_expression');
-    $storage = $this->container->get('entity_type.manager')->getStorage('rules_reaction_rule');
-    $rule = $expressionManager->createRule();
+    $rule = $this->expressionManager->createRule();
     // Add a condition to check if the user has the 'test-editor' role.
     $rule->addCondition('rules_user_has_role',
       ContextConfig::create()
@@ -600,7 +595,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     );
     // Set the even to User Login and save the configuration.
     $expr_id = 'test_upcast';
-    $config_entity = $storage->create([
+    $config_entity = $this->storage->create([
       'id' => $expr_id,
       'expression' => $rule->getConfiguration(),
       'events' => [['event_name' => 'rules_user_login']],
@@ -639,9 +634,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     $this->drupalLogin($this->account);
 
     // Create a rule.
-    $expressionManager = $this->container->get('plugin.manager.rules_expression');
-    $storage = $this->container->get('entity_type.manager')->getStorage('rules_reaction_rule');
-    $rule = $expressionManager->createRule();
+    $rule = $this->expressionManager->createRule();
     // Add an action to add 'Editor' role to the current user. The role value
     // here is just the machine name as text, and will be upcast to the full
     // role object when the rule is triggered.
@@ -652,7 +645,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     );
     // Save the configuration.
     $expr_id = 'test_upcast';
-    $config_entity = $storage->create([
+    $config_entity = $this->storage->create([
       'id' => $expr_id,
       'expression' => $rule->getConfiguration(),
       'events' => [['event_name' => 'rules_entity_insert:node']],

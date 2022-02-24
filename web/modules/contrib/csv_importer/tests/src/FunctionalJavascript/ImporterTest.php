@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\csv_importer\FunctionalJavascript;
 
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
@@ -12,12 +12,17 @@ use Drupal\taxonomy\Entity\Term;
  *
  * @group csv_importer
  */
-class ImporterTest extends JavascriptTestBase {
+class ImporterTest extends WebDriverTestBase {
 
   /**
    * {@inheritdoc}
    */
   protected static $modules = ['csv_importer', 'csv_importer_test'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'bartik';
 
   /**
    * {@inheritdoc}
@@ -29,6 +34,7 @@ class ImporterTest extends JavascriptTestBase {
       'administer site configuration',
       'administer users',
       'access user profiles',
+      'access csv importer',
     ]);
 
     $this->drupalLogin($account);
@@ -61,7 +67,6 @@ class ImporterTest extends JavascriptTestBase {
     $this->processForm('node', 'csv_importer_test_content');
 
     $this->drupalGet('/csv-importer-node-1');
-    $assert->statusCodeEquals(200);
 
     $assert->elementTextContains('css', '.field--name-title', 'CSV importer node 1');
     $this->assertFields();
@@ -76,7 +81,6 @@ class ImporterTest extends JavascriptTestBase {
     $this->processForm('taxonomy_term', 'csv_importer_taxonomy');
 
     $this->drupalGet('/csv-importer-term-1');
-    $assert->statusCodeEquals(200);
 
     $assert->elementTextContains('css', '.field--name-name', 'CSV importer term 1');
     $this->assertFields();
@@ -91,7 +95,6 @@ class ImporterTest extends JavascriptTestBase {
     $this->processForm('user');
 
     $this->drupalGet('/user/7');
-    $assert->statusCodeEquals(200);
 
     $assert->elementTextContains('css', '.page-title', 'CSV importer user 1');
     $this->assertFields();
@@ -109,7 +112,6 @@ class ImporterTest extends JavascriptTestBase {
   protected function processForm(string $entity_type, string $entity_type_bundle = NULL) {
     $assert = $this->assertSession();
     $this->drupalGet('admin/config/development/csv-importer');
-    $assert->statusCodeEquals(200);
 
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('entity_type', $entity_type);
