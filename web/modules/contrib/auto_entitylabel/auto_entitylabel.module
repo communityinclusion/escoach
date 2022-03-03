@@ -45,12 +45,13 @@ function auto_entitylabel_entity_type_alter(array &$entity_types) {
 /**
  * Implements hook_form_alter().
  */
+ // Hack PF patch from https://www.drupal.org/files/issues/2022-02-09/3261586-5-entity-form-interface.patch
 function auto_entitylabel_form_alter(&$form, FormStateInterface $form_state) {
   if (isset($form['#entity_builders'])) {
     /** @var \Drupal\Core\Entity\EntityFormInterface $formObject */
     $formObject = $form_state->getFormObject();
-    $entity = $formObject->getEntity();
-    if ($entity instanceof ContentEntityInterface) {
+    if ($formObject instanceof EntityFormInterface) {
+  
       auto_entitylabel_prepare_entityform($form, $entity);
     }
   }
