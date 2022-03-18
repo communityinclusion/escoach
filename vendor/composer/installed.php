@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'ec1e5460e0bc79f276f8d7eb5470f0966ef7b7e2',
+        'reference' => 'a5a6c543896aaf6cfdf9ebd0a4fca10055c806fe',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -1318,7 +1318,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'ec1e5460e0bc79f276f8d7eb5470f0966ef7b7e2',
+            'reference' => 'a5a6c543896aaf6cfdf9ebd0a4fca10055c806fe',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
@@ -1587,12 +1587,12 @@
             ),
         ),
         'drupal/views_bulk_operations' => array(
-            'pretty_version' => '3.13.0',
-            'version' => '3.13.0.0',
+            'pretty_version' => '4.1.0',
+            'version' => '4.1.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/views_bulk_operations',
             'aliases' => array(),
-            'reference' => '8.x-3.13',
+            'reference' => '4.1.0',
             'dev_requirement' => false,
         ),
         'drupal/views_data_export' => array(

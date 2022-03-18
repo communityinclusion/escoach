@@ -91,7 +91,9 @@ class ViewsBulkOperationsViewData implements ViewsBulkOperationsViewDataInterfac
 
     // Get view entity types and results fetcher callable.
     $event = new ViewsBulkOperationsEvent($this->getViewProvider(), $this->getData(), $view);
-    $this->eventDispatcher->dispatch(ViewsBulkOperationsEvent::NAME, $event);
+
+    $this->eventDispatcher->dispatch($event, ViewsBulkOperationsEvent::NAME);
+
     $this->entityTypeIds = $event->getEntityTypeIds();
     $this->entityGetter = $event->getEntityGetter();
   }
@@ -220,7 +222,7 @@ class ViewsBulkOperationsViewData implements ViewsBulkOperationsViewDataInterfac
       $total_results = $view->total_rows;
     }
 
-    if (!empty($pager_options) && !empty($pager_options['id'])) {
+    if (!empty($pager_options) && isset($pager_options['id'])) {
       $this->pagerManager->createPager($pager_options['total_items'], $pager_options['items_per_page'], $pager_options['id']);
     }
 

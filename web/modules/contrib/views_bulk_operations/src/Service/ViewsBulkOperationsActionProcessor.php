@@ -8,6 +8,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\views_bulk_operations\ViewsBulkOperationsBatch;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionInterface;
 
 /**
  * Defines VBO action processor.
@@ -118,7 +119,7 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
   /**
    * {@inheritdoc}
    */
-  public function initialize(array $view_data, $view = NULL) {
+  public function initialize(array $view_data, $view = NULL): void {
 
     // It may happen that the service was already initialized
     // in this request (e.g. multiple Batch API operation calls).
@@ -159,7 +160,7 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
    * @param mixed $view
    *   The current view object or NULL.
    */
-  protected function setView($view = NULL) {
+  protected function setView($view = NULL): void {
     if (!is_null($view)) {
       $this->view = $view;
     }
@@ -210,15 +211,15 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
       $this->view->setExposedInput(['_views_bulk_operations_override' => TRUE]);
     }
 
+    $base_field = $this->view->storage->get('base_field');
+
     // In some cases we may encounter nondeterministic behaviour in
     // db queries with sorts allowing different order of results.
     // To fix this we're removing all sorts and setting one sorting
     // rule by the view base id field.
-    $sorts = $this->view->getHandlers('sort');
-    foreach ($sorts as $id => $sort) {
+    foreach (array_keys($this->view->getHandlers('sort')) as $id) {
       $this->view->setHandler($this->bulkFormData['display_id'], 'sort', $id, NULL);
     }
-    $base_field = $this->view->storage->get('base_field');
     $this->view->setHandler($this->bulkFormData['display_id'], 'sort', $base_field, [
       'id' => $base_field,
       'table' => $this->view->storage->get('base_table'),
@@ -226,7 +227,7 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
       'order' => 'ASC',
       'relationship' => 'none',
       'group_type' => 'group',
-      'exposed' => 'FALSE',
+      'exposed' => FALSE,
       'plugin_id' => 'standard',
     ]);
 
@@ -245,7 +246,6 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
     $this->moduleHandler->invokeAll('views_pre_execute', [$this->view]);
     $this->view->query->execute($this->view);
 
-    $base_field = $this->view->storage->get('base_field');
     foreach ($this->view->result as $row) {
       $entity = $this->viewDataService->getEntity($row);
 
@@ -473,10 +473,21 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
    * {@inheritdoc}
    */
   public function executeProcessing(array &$data, $view = NULL) {
-    if ($data['exclude_mode'] && empty($data['exclude_list'])) {
+    if (empty($data['prepopulated']) && $data['exclude_mode'] && empty($data['exclude_list'])) {
       $data['exclude_list'] = $data['list'];
       $data['list'] = [];
     }
+
+    // Get action finished callable.
+    $definition = $this->actionManager->getDefinition($data['action_id']);
+    if (in_array(ViewsBulkOperationsActionInterface::class, class_implements($definition['class']), TRUE)) {
+      $data['finished_callback'] = [$definition['class']];
+    }
+    else {
+      $data['finished_callback'] = [ViewsBulkOperationsBatch::class];
+    }
+    $data['finished_callback'][] = 'finished';
+
     if ($data['batch']) {
       $batch = ViewsBulkOperationsBatch::getBatch($data);
       batch_set($batch);
@@ -495,7 +506,7 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
       foreach ($batch_results as $result) {
         $results['operations'][] = (string) $result;
       }
-      ViewsBulkOperationsBatch::finished(TRUE, $results, []);
+      $data['finished_callback'](TRUE, $results, []);
     }
   }
 

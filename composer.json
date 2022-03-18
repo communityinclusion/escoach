@@ -79,7 +79,7 @@
         "drupal/token_custom": "^1.0@alpha",
         "drupal/token_filter": "^1.1",
         "drupal/viewfield": "^3.0@alpha",
-        "drupal/views_bulk_operations": "^3.13",
+        "drupal/views_bulk_operations": "^4.1",
         "drupal/views_data_export": "^1.0@beta",
         "drupal/workflow": "^1.1",
         "drush/drush": "^10.3",
