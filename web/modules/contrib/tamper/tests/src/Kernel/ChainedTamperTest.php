@@ -18,7 +18,7 @@ class ChainedTamperTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['tamper'];
+  protected static $modules = ['tamper'];
 
   /**
    * Tests the outcome of chaining multiple tamper plugins together.

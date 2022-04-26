@@ -41,7 +41,7 @@ class ImporterForm extends FormBase {
   /**
    * The parser service.
    *
-   * @var \Drupal\csv_importer\Parser\ParserInterface
+   * @var \Drupal\csv_importer\ParserInterface
    */
   protected $parser;
 
@@ -68,7 +68,7 @@ class ImporterForm extends FormBase {
    *   The entity field manager service.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_bundle_info
    *   The entity bundle info service.
-   * @param \Drupal\csv_importer\Parser\ParserInterface $parser
+   * @param \Drupal\csv_importer\ParserInterface $parser
    *   The parser service.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer service.

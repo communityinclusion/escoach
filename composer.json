@@ -28,7 +28,7 @@
         "drupal/coder": "^8.3.2",
         "drupal/computed_field": "^3.0@alpha",
         "drupal/conditional_fields": "^4.0@alpha",
-        "drupal/core": "^9.3.9",
+        "drupal/core": "^9.3.12",
         "drupal/core-composer-scaffold": "^8.9.1",
         "drupal/core-project-message": "^8.8",
         "drupal/core-recommended": "^9.1",

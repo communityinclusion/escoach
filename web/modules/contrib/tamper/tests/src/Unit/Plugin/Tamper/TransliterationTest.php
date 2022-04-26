@@ -30,7 +30,7 @@ class TransliterationTest extends TamperPluginTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     $this->transliteration = new PhpTransliteration();
     parent::setUp();
   }
