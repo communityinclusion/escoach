@@ -263,6 +263,7 @@ class TwilioCoachService
             $formattedstarttime = $formattedstart->format('g:i a');
             $contactid = $row['contactid'];
             $mobilephone = $row['mobilephone'];
+            \Drupal::logger('surveycampaign')->notice("Name: " . $row['fullname'] . " mobile phone: " . $row['mobilephone']);
             switch($timezone) {
                 case 'ET':
                     $senddate = $senddate;
