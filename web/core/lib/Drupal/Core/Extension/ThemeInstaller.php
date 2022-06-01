@@ -156,6 +156,10 @@ class ThemeInstaller implements ThemeInstallerInterface {
         // machine names keys that are not in $installed_modules keys.
         $unmet_module_dependencies = array_diff_key($module_dependencies, $installed_modules);
 
+        if ($theme_data[$theme]->info[ExtensionLifecycle::LIFECYCLE_IDENTIFIER] === ExtensionLifecycle::DEPRECATED) {
+          @trigger_error("The theme '$theme' is deprecated. See " . $theme_data[$theme]->info['lifecycle_link'], E_USER_DEPRECATED);
+        }
+
         // Prevent themes with unmet module dependencies from being installed.
         if (!empty($unmet_module_dependencies)) {
           $unmet_module_dependencies_list = implode(', ', array_keys($unmet_module_dependencies));
@@ -232,7 +236,6 @@ class ThemeInstaller implements ThemeInstallerInterface {
       }
 
       $themes_installed[] = $key;
-
       // Record the fact that it was installed.
       $this->logger->info('%theme theme installed.', ['%theme' => $key]);
     }
@@ -285,7 +288,6 @@ class ThemeInstaller implements ThemeInstallerInterface {
 
       // Remove all configuration belonging to the theme.
       $this->configManager->uninstall('theme', $key);
-
     }
     // Don't check schema when uninstalling a theme since we are only clearing
     // keys.
