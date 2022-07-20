@@ -49,8 +49,15 @@ class SurveyUsersService
                         $suspension_end = $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : '';
                         $activstatus = $profile->get('field_set_surveys_to_inactive')->value ? $profile->get('field_set_surveys_to_inactive')->value : '';
                         $provider = $profile->get('field_provider')->target_id ? $profile->get('field_provider')->entity->getName() : 'unknown provider';
-                        $regcode = $profile->get('field_registration_code')->value ? $profile->get('field_registration_code')->value : '1000';
-
+                        $uservalueregcode = $profile->get('field_registration_code')->value ? $profile->get('field_registration_code')->value : '1000';
+                        $providervalueregcode = $this->checkProviderRegCode($provider);
+                        $regcode = $uservalueregcode;
+                        if($uservalueregcode != $providervalueregcode) {
+                          $profile->set('field_registration_code', array(
+                              'value' => "$providervalueregcode"));
+                          $profile->save();
+                          $regcode = $providervalueregcode;
+                        }
 
                         if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode);
                     }
@@ -59,6 +66,29 @@ class SurveyUsersService
        //print_r($userarray);
         return $userarray;
     }
+
+    private function checkProviderRegCode($providername) {
+      // use code Dt54UiP0n
+      $configuser = \Drupal::config('surveycampaign.settings');
+      $provcodes = $configuser->get('def_provider_code');
+      $provnames = $configuser->get('def_provider_name');
+      $countnames = is_array($provnames) ? count($provnames) : 0;
+        \Drupal::logger('surveycampaign alert')->notice(" Provname: " . $providername);
+
+
+      for ($i = 0; $i < $countnames; $i++) {
+        $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : null;
+        $thisname = !empty($provnames) &&  $provnames[$i][0]['target_id'] ? \Drupal\taxonomy\Entity\Term::load($provnames[$i][0]['target_id'])->get('name')->value : null;
+
+        if($thisname && $thisname == $providername) {
+
+          $providercode = $thiscode;
+          return $providercode;
+        }
+      }
+      return FALSE;
+    }
+
     public function handleSuspendDates($userphone,$startdate = null,$enddate = null) {
         $today = new DateTime();
         $today = $today->format('Y-m-d');
