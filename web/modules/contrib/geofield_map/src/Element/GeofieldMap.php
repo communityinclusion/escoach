@@ -147,7 +147,7 @@ class GeofieldMap extends GeofieldLatLon {
         '#name' => 'geofield-html5-geocode-button',
         '#attributes' => ['mapid' => $mapid],
       ];
-      $element['#attributes']['class'] = ['auto-geocode'];
+      $element['#attributes']['class'] = ['geofieldmap-widget-auto-geocode'];
     }
 
     // Define Lat and Lon sub-elements.
@@ -235,6 +235,7 @@ class GeofieldMap extends GeofieldLatLon {
       'click_to_find_marker' => $element['#click_to_find_marker'] ? TRUE : FALSE,
       'click_to_place_marker_id' => $element['#click_to_place_marker'] ? $element['map']['actions']['click_to_place_marker']['#attributes']['id'] : NULL,
       'click_to_place_marker' => $element['#click_to_place_marker'] ? TRUE : FALSE,
+      'geolocation' => $element['#geolocation'],
       // Geofield Map Google Maps and Geocoder Settings.
       'gmap_api_localization' => $google_maps_service->getGmapApiLocalization($geofield_map_settings->get('gmap_api_localization')),
       'gmap_api_key' => $element['#gmap_api_key'] && strlen($element['#gmap_api_key']) > 0 ? $element['#gmap_api_key'] : NULL,

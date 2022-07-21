@@ -146,7 +146,7 @@ class GeofieldProximityArgument extends Formula implements ContainerFactoryPlugi
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
-    $form['description']['#markup'] .= $this->t('<br/><u>Proximity format should be in the following format: <strong>"40.73,-73.93<=5[unit]"</strong></u>, where the operator might be also: ><br>and [unit] should be one of the following key value:</u>@units_decodes.<br><u>Note:</u> Use dot (.) as decimal separator, and not comma (,), otherwise results won\'t be accurate.</strong>', [
+    $form['description']['#markup'] .= $this->t('<br><u>Proximity format should be in the following format: <strong>"40.73,-73.93<=5[unit]"</strong></u>, where the operator might be also: ><br>and [unit] should be one of the following key value: @units_decodes.<br><u>Note:</u> Use dot (.) as decimal separator, and not comma (,), otherwise results won\'t be accurate.', [
       '@units_decodes' => Markup::create($this->unitsListMarkup()),
     ]);
   }

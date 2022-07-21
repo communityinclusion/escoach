@@ -25,7 +25,7 @@ formatter.accordion:
   dependencies:
     - core/jquery
     - core/jquery.once
-    - core/jquery.ui.accordion
+    - jquery_ui_accordion/accordion
 
 formatter.html_element:
   js:

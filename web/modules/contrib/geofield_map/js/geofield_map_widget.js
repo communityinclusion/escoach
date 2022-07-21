@@ -87,7 +87,7 @@
       let self = this;
       // Wait until the window load event to try to use the maps library.
       $(document).ready(function (e) {
-        _.each(self.googleCallbacks, function (callback) {
+        self.googleCallbacks.forEach(function (callback) {
           callback.callback();
         });
         self.googleCallbacks = [];

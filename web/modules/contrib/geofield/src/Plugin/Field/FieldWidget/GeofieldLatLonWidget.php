@@ -54,7 +54,7 @@ class GeofieldLatLonWidget extends GeofieldBaseWidget {
    */
   public function settingsSummary() {
     return [
-      $this->t('HTML5 Geolocation button is @state', ['@state' => $this->getSetting('html5_geolocation') ? $this->t('enabled') : $this->t('disabled')]),
+      $this->t('Use HTML5 Geolocation of user: @state', ['@state' => $this->getSetting('html5_geolocation') ? $this->t('enabled') : $this->t('disabled')]),
     ];
   }
 

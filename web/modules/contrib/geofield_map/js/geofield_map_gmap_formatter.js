@@ -55,7 +55,7 @@
           });
         }
 
-        $(context).find('.geofield-google-map').once('geofield-processed').each(function (index, element) {
+        once('geofield-processed', 'html .geofield-google-map').forEach(function (element) {
           const mapId = $(element).attr('id');
           if (drupalSettings['geofield_google_map'][mapId]) {
             const map_settings = drupalSettings['geofield_google_map'][mapId]['map_settings'];
@@ -112,7 +112,7 @@
       let self = this;
       // Wait until the window load event to try to use the maps library.
       $(document).ready(function (e) {
-        _.each(self.googleCallbacks, function (callback) {
+        self.googleCallbacks.forEach(function (callback) {
           callback.callback();
         });
         self.googleCallbacks = [];
@@ -417,9 +417,12 @@
         self.map_data[mapid].center_force = !!map_settings.map_center.center_force;
 
         // Parse the Geojson data into Google Maps Locations.
-        let features = data.features && data.features.length > 0 ? Drupal.googleGeoJson(data) : null;
+        let features = [];
+        for (let i in data.features) {
+          features[i] = Drupal.googleGeoJson(data.features[i]);
+        }
 
-        if (features && features.length > 0 && (!features.type || features.type !== 'Error')) {
+        if (features.length > 0) {
 
           /**
            * Implement  OverlappingMarkerSpiderfier if its control set true.

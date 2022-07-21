@@ -225,7 +225,7 @@ function field_group_form_entity_view_display_edit_form_alter(&$form, FormStateI
 function field_group_field_info_max_weight($entity_type, $bundle, $context, $context_mode) {
   // Prevent recursion.
   // @see https://www.drupal.org/project/drupal/issues/2966137
-  static $recursion_tracker = [];
+  $recursion_tracker = &drupal_static(__FUNCTION__, []);
 
   // Track the entity display.
   $key = $entity_type . ':' . $bundle . ':' . $context . ':' . $context_mode;

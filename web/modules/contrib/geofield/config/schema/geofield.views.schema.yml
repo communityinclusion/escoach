@@ -66,12 +66,17 @@ views.filter_value.geofield_proximity_filter:
   type: views.field.numeric
   label: 'Geofield Proximity Filter'
   mapping:
-    min:
-      type: integer
-    max:
-      type: integer
-    value:
-      type: integer
+    operator:
+      type: string
+    units:
+      type: string
+    source:
+      type: string
+    source_configuration:
+      type: mapping
+      mapping:
+        exposed_summary:
+          type: boolean
 
 views.sort.geofield_proximity_sort:
   type: views_sort

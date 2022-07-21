@@ -292,8 +292,9 @@ class GeofieldMapWidget extends GeofieldLatLonWidget implements ContainerFactory
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
 
-    $default_settings = self::defaultSettings();
     $elements = [];
+
+    $default_settings = self::defaultSettings();
     $gmap_settings_page_link = Url::fromRoute('geofield_map.settings', [], [
       'query' => [
         'destination' => Url::fromRoute('<current>')
@@ -518,6 +519,23 @@ class GeofieldMapWidget extends GeofieldLatLonWidget implements ContainerFactory
       '#default_value' => $this->getSetting('click_to_place_marker'),
     ];
 
+    $html5_geolocation_description = $this->t("Uses the @html5_geolocation_link to enable the following features:<br>
+      - An initial automatic set of the Geofield value to the user location, for the first Widget Geofield Map (also in case of multivalue field) if the Geofield Value and/or a Default value is not set (Position Lat: 0, Lon: 0 is interpreted as NULL)<br>
+      - A 'Find my location' button that once clicked will manually set the Geofield value to the user location", [
+        '@html5_geolocation_link' => $this->link->generate($this->t('HTML Geolocation API'), Url::fromUri('https://www.w3schools.com/html/html5_geolocation.asp', [
+          'absolute' => TRUE,
+          'attributes' => ['target' => 'blank'],
+        ])),
+      ]
+    );
+
+    $elements['html5_geolocation'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use HTML5 Geolocation to set Default Values'),
+      '#default_value' => $this->getSetting('html5_geolocation'),
+      '#description' => $html5_geolocation_description,
+    ];
+
     $elements['hide_coordinates'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Hide Lat/Lon Coordinates Input'),
@@ -595,7 +613,7 @@ class GeofieldMapWidget extends GeofieldLatLonWidget implements ContainerFactory
       ],
     ];
 
-    return $elements + parent::settingsForm($form, $form_state);
+    return $elements;
   }
 
   /**

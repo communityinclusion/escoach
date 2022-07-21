@@ -54,7 +54,7 @@ class GeofieldWidgetTest extends FieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->fieldStorage = FieldStorageConfig::create([
