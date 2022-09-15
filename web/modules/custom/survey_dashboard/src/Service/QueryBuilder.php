@@ -358,6 +358,23 @@ class QueryBuilder {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
+   private function getProviderName() {
+     $profiles = $this->entityTypeManager->getStorage('profile')
+       ->loadByProperties([
+         'uid' => $this->currentUser->id(),
+         'type' => 'survey_participants',
+         'is_default' => 1,
+       ]);
+
+     if ($profiles) {
+       $profile = current($profiles);
+     }
+     if (isset($profile)) {
+       if (isset($profile->field_provider->entity)) {
+         return $this->provider = $profile->field_provider->entity->getName();
+       }
+     }
+   }
   private function getProvider() {
     $profiles = $this->entityTypeManager->getStorage('profile')
       ->loadByProperties([
@@ -374,6 +391,7 @@ class QueryBuilder {
         $this->provider = $profile->field_provider->entity->getName();
       }
     }
+
   }
 
   /**
@@ -485,7 +503,8 @@ class QueryBuilder {
     }
 
     $return = [
-      'title' => $this->title,
+      //'title' => $this->title,
+      'title' => "'My Team' = " . $this->getProviderName(),
       'uid' => \Drupal::currentUser()->id(),
       'aliasMap' => $query->getAliasMap(),
       'results' => [
@@ -508,6 +527,7 @@ class QueryBuilder {
     ];
 
     if ($debug) {
+      //$showquery = dpq($query->toString(), $return = TRUE, $name = NULL);
       $return['results']['debug'] = [
         'query' => $query->toString(),
         'args' => $query->getArguments(),

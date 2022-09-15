@@ -2,7 +2,7 @@
 {#{% if data.uid > 0 %}#}
   {% set colspan = ' colspan=3' %}
 {#{% endif %}#}
-<h3>{{ data.title }}</h3>
+<h5>{{ data.title }}</h5>
 <div id="google-charts"></div>
 <table id="what-table" class="escoach-dashboard-table">
   <thead>
@@ -68,6 +68,3 @@
   </tr>
   </tbody>
 </table>
-
-{#  <div>SQL: {{ data.results.debug.query }}</div>#}
-{#  <div>ARGS: {{ data.results.debug.args }}</div>#}

@@ -1,0 +1,11 @@
+name: 'Admin can login anyuser'
+type: module
+description: 'Administrator role user can login any user from admin'
+core: 8.x
+package: 'user'
+core_version_requirement: ^8 || ^9
+
+# Information added by Drupal.org packaging script on 2020-04-15
+version: '8.x-1.2'
+project: 'admin_can_login_anyuser'
+datestamp: 1586933347

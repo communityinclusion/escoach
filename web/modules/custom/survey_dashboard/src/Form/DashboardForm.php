@@ -84,7 +84,7 @@ class DashboardForm extends FormBase {
       'who' => $input['who'] ?? NULL,
       'what' => $input['what'] ?? NULL,
       'where' => $input['where'] ?? NULL,
-      'debug' => $input['debug'] ?? NULL,
+      'debug' => TRUE,
     ];
 
     $results = $this->surveyDashboardQueryBuilder->process($params);
