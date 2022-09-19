@@ -200,7 +200,9 @@
           pointSize: 7,
           legend: {position: 'top'},
           hAxis: {
-            title: ''
+            title: '',
+            slantedText:true,
+            slantedTextAngle:45
           },
           vAxis: {
             title: '% Time'

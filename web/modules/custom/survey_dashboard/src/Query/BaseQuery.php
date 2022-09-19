@@ -288,6 +288,7 @@ class BaseQuery {
         $to_date->format('Y-m-d 23:59:59'),
       ],
       'BETWEEN');
+    $this->query->range(0,12);
     $this->query->groupBy('MONTH(date_submitted)');
     $this->query->orderBy('date_submitted');
   }
