@@ -1,0 +1,17 @@
+admin_can_login_anyuser.confirm_login_switch_form:
+  path: '/admin_can_login_anyuser/{user}/confirm_login_switch'
+  defaults:
+    _form: '\Drupal\admin_can_login_anyuser\Form\ConfirmLoginSwitchForm'
+    _title: 'Confirm Login Switch'
+  requirements:
+    _permission: 'admin switch login'
+    user: ^\d+$
+  options:
+    _admin_route: TRUE
+admin_can_login_anyuser.back_admin_login:
+  path: '/admin/{user}/login'
+  defaults:
+    _controller: '\Drupal\admin_can_login_anyuser\Controller\AdminBackLoginLinkController::backAdminLogin'
+    _title: 'Confirm Login Switch'
+  requirements:
+    _permission: 'admin login back'

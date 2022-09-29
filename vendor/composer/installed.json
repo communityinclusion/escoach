@@ -2245,6 +2245,57 @@
             "install-path": "../../web/modules/contrib/address"
         },
         {
+            "name": "drupal/admin_can_login_anyuser",
+            "version": "1.2.0",
+            "version_normalized": "1.2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/admin_can_login_anyuser.git",
+                "reference": "8.x-1.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/admin_can_login_anyuser-8.x-1.2.zip",
+                "reference": "8.x-1.2",
+                "shasum": "bbb427611276a2bb6da3f995a728eebcae28d8a1"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.2",
+                    "datestamp": "1586933346",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "installation-source": "dist",
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "gangwarsurya",
+                    "homepage": "https://www.drupal.org/user/3496265"
+                },
+                {
+                    "name": "rahulchauhan_ec3",
+                    "homepage": "https://www.drupal.org/user/2706389"
+                }
+            ],
+            "description": "Administrator role user can login any user from admin",
+            "homepage": "https://www.drupal.org/project/admin_can_login_anyuser",
+            "support": {
+                "source": "https://git.drupalcode.org/project/admin_can_login_anyuser"
+            },
+            "install-path": "../../web/modules/contrib/admin_can_login_anyuser"
+        },
+        {
             "name": "drupal/admin_toolbar",
             "version": "3.1.1",
             "version_normalized": "3.1.1.0",

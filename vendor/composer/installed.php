@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '782fb3ef687db02a04c4593114fc33b1bb8d612c',
+        'reference' => '870532f6dbde8971de5376d5e0cefc889439ee3f',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -269,6 +269,15 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/address',
             'aliases' => array(),
             'reference' => '8.x-1.11',
+            'dev_requirement' => false,
+        ),
+        'drupal/admin_can_login_anyuser' => array(
+            'pretty_version' => '1.2.0',
+            'version' => '1.2.0.0',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/admin_can_login_anyuser',
+            'aliases' => array(),
+            'reference' => '8.x-1.2',
             'dev_requirement' => false,
         ),
         'drupal/admin_toolbar' => array(
@@ -943,7 +952,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '782fb3ef687db02a04c4593114fc33b1bb8d612c',
+            'reference' => '870532f6dbde8971de5376d5e0cefc889439ee3f',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(

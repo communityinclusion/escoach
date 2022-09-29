@@ -1,0 +1,9 @@
+admin switch login:
+  title: 'admin switch login'
+  description: 'admin can login anyuser from admin'
+  restrict access: true
+  
+admin login back:
+  title: 'admin login back'
+  description: 'Back to admin account login'
+  restrict access: true
