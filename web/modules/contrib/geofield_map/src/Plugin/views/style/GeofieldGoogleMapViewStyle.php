@@ -871,7 +871,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
 
     // If the Geofield field is not null, and there are results or a not null
     // empty behaviour has been set, render the results.
-    if (!empty($geofield_names) && (!empty($this->view->result) || !$this->options['map_empty']['empty_behaviour'])) {
+    if (!empty($geofield_names) && (!empty($this->view->result) || $this->options['map_empty']['empty_behaviour'] == '1')) {
       $this->renderFields($this->view->result);
 
       // Iterate on each geofields set as source of Geofield Map View geodata.

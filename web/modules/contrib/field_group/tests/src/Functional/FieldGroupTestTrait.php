@@ -30,7 +30,7 @@ trait FieldGroupTestTrait {
       $data['format_settings'] = [];
     }
 
-    $data['format_settings'] += Drupal::service('plugin.manager.field_group.formatters')->getDefaultSettings($data['format_type'], $context);
+    $data['format_settings'] += \Drupal::service('plugin.manager.field_group.formatters')->getDefaultSettings($data['format_type'], $context);
 
     $group_name_without_prefix = isset($data['group_name']) && is_string($data['group_name'])
       ? preg_replace('/^group_/', '', $data['group_name'])

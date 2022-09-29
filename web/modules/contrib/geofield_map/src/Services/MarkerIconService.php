@@ -4,17 +4,21 @@ namespace Drupal\geofield_map\Services;
 
 use Drupal;
 use Drupal\Component\Utility\Bytes;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Extension\ExtensionPathResolver;
+use Drupal\Core\File\Exception\InvalidStreamWrapperException;
 use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
+use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\file\FileInterface;
 use Drupal\file\Entity\File;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Yaml\Yaml;
 use Drupal\Core\Url;
 use Drupal\Core\Config\Config;
@@ -24,7 +28,6 @@ use Symfony\Component\Yaml\Exception\ParseException;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Utility\LinkGeneratorInterface;
 use Drupal\Core\Render\ElementInfoManagerInterface;
-use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\File\Exception\NotRegularDirectoryException;
 
@@ -40,28 +43,28 @@ class MarkerIconService {
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected ConfigFactoryInterface $config;
+  protected $config;
 
   /**
    * The translation manager.
    *
    * @var \Drupal\Core\StringTranslation\TranslationInterface
    */
-  protected TranslationInterface $translationManager;
+  protected $translationManager;
 
   /**
    * The Entity type manager service.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected EntityTypeManagerInterface $entityManager;
+  protected $entityManager;
 
   /**
    * The module handler to invoke the alter hook.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  protected ModuleHandlerInterface $moduleHandler;
+  protected $moduleHandler;
 
   /**
    * The geofield map settings.
@@ -75,35 +78,35 @@ class MarkerIconService {
    *
    * @var array
    */
-  protected array $fileUploadValidators;
+  protected $fileUploadValidators;
 
   /**
    * The Default Icon Element.
    *
    * @var array
    */
-  protected array $defaultIconElement;
+  protected $defaultIconElement;
 
   /**
    * The Link Generator Service.
    *
    * @var \Drupal\Core\Utility\LinkGeneratorInterface
    */
-  protected LinkGeneratorInterface $link;
+  protected $link;
 
   /**
    * A element info manager.
    *
    * @var \Drupal\Core\Render\ElementInfoManagerInterface
    */
-  protected ElementInfoManagerInterface $elementInfo;
+  protected $elementInfo;
 
   /**
    * The List of Markers Files.
    *
    * @var array
    */
-  protected array $markersFilesList = [];
+  protected $markersFilesList = [];
 
   /**
    * The string containing the allowed file/image extensions.
@@ -117,28 +120,35 @@ class MarkerIconService {
    *
    * @var \Drupal\Core\File\FileSystemInterface
    */
-  protected FileSystemInterface $fileSystem;
+  protected $fileSystem;
 
   /**
-   * The file URL generator.
+   * The stream wrapper manager.
    *
-   * @var \Drupal\Core\File\FileUrlGeneratorInterface
+   * @var \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface
    */
-  protected FileUrlGeneratorInterface $fileUrlGenerator;
+  protected $streamWrapperManager;
+
+  /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
 
   /**
    * The extension path resolver.
    *
    * @var \Drupal\Core\Extension\ExtensionPathResolver
    */
-  protected ExtensionPathResolver $extensionPathResolver;
+  protected $extensionPathResolver;
 
   /**
    * The logger factory.
    *
    * @var \Drupal\Core\Logger\LoggerChannelInterface
    */
-  protected LoggerChannelInterface $logger;
+  protected $logger;
 
   /**
    * Set Geofield Map Default Icon Style.
@@ -214,6 +224,94 @@ class MarkerIconService {
   }
 
   /**
+   * Creates an absolute web-accessible URL string.
+   *
+   * @todo switch to this same method of the @file_url_generator Drupal Core
+   *   (since 9.3+) service once we fork on a branch not supporting 8.x anymore.
+   *
+   * @param string $uri
+   *   The URI to a file for which we need an external URL, or the path to a
+   *   shipped file.
+   * @param bool $relative
+   *   Whether to return a relative or absolute URL.
+   *
+   * @return string
+   *   An absolute string containing a URL that may be used to access the
+   *   file.
+   *
+   * @throws \Drupal\Core\File\Exception\InvalidStreamWrapperException
+   *   If a stream wrapper could not be found to generate an external URL.
+   */
+  protected function doGenerateString(string $uri, bool $relative): string {
+    // Allow the URI to be altered, e.g. to serve a file from a CDN or static
+    // file server.
+    $this->moduleHandler->alter('file_url', $uri);
+
+    $scheme = StreamWrapperManager::getScheme($uri);
+
+    if (!$scheme) {
+      $baseUrl = $relative ? base_path() : $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost() . base_path();
+      return $this->generatePath($baseUrl, $uri);
+    }
+    elseif ($scheme == 'http' || $scheme == 'https' || $scheme == 'data') {
+      // Check for HTTP and data URI-encoded URLs so that we don't have to
+      // implement getExternalUrl() for the HTTP and data schemes.
+      return $relative ? $this->transformRelative($uri) : $uri;
+    }
+    elseif ($wrapper = $this->streamWrapperManager->getViaUri($uri)) {
+      // Attempt to return an external URL using the appropriate wrapper.
+      $externalUrl = $wrapper->getExternalUrl();
+      return $relative ? $this->transformRelative($externalUrl) : $externalUrl;
+    }
+    throw new InvalidStreamWrapperException();
+  }
+
+  /**
+   * Generate a URL path.
+   *
+   * @todo switch to this same method of the @file_url_generator Drupal Core
+   *   (since 9.3+) service once we fork on a branch not supporting 8.x anymore.
+   *
+   * @param string $base_url
+   *   The base URL.
+   * @param string $uri
+   *   The URI.
+   *
+   * @return string
+   *   The URL path.
+   */
+  protected function generatePath(string $base_url, string $uri): string {
+    // Allow for:
+    // - root-relative URIs (e.g. /foo.jpg in http://example.com/foo.jpg)
+    // - protocol-relative URIs (e.g. //bar.jpg, which is expanded to
+    //   http://example.com/bar.jpg by the browser when viewing a page over
+    //   HTTP and to https://example.com/bar.jpg when viewing an HTTPS page)
+    // Both types of relative URIs are characterized by a leading slash, hence
+    // we can use a single check.
+    if (mb_substr($uri, 0, 1) == '/') {
+      return $uri;
+    }
+    else {
+      // If this is not a properly formatted stream, then it is a shipped
+      // file. Therefore, return the urlencoded URI with the base URL
+      // prepended.
+      $options = UrlHelper::parse($uri);
+      $path = $base_url . UrlHelper::encodePath($options['path']);
+      // Append the query.
+      if ($options['query']) {
+        $path .= '?' . UrlHelper::buildQuery($options['query']);
+      }
+
+      // Append fragment.
+      if ($options['fragment']) {
+        $path .= '#' . $options['fragment'];
+      }
+
+      return $path;
+    }
+  }
+
+  /**
    * Constructor of the Icon Managed File Service.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -230,8 +328,10 @@ class MarkerIconService {
    *   The Link Generator service.
    * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
    *   The element info manager.
-   * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
-   *   The file URL generator.
+   * @param \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $stream_wrapper_manager
+   *   The stream wrapper manager.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The stream wrapper manager.
    * @param \Drupal\Core\Extension\ExtensionPathResolver $extension_path_resolver
    *   The extension path resolver.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
@@ -245,7 +345,8 @@ class MarkerIconService {
     ModuleHandlerInterface $module_handler,
     LinkGeneratorInterface $link_generator,
     ElementInfoManagerInterface $element_info,
-    FileUrlGeneratorInterface $file_url_generator,
+    StreamWrapperManagerInterface $stream_wrapper_manager,
+    RequestStack $request_stack,
     ExtensionPathResolver $extension_path_resolver,
     LoggerChannelFactoryInterface $logger_factory
   ) {
@@ -257,7 +358,8 @@ class MarkerIconService {
     $this->elementInfo = $element_info;
     $this->geofieldMapSettings = $config_factory->get('geofield_map.settings');
     $this->fileSystem = $file_system;
-    $this->fileUrlGenerator = $file_url_generator;
+    $this->streamWrapperManager = $stream_wrapper_manager;
+    $this->requestStack = $request_stack;
     $this->extensionPathResolver = $extension_path_resolver;
     $this->logger = $logger_factory->get('geofield_map');
     $this->fileUploadValidators = [
@@ -591,7 +693,7 @@ class MarkerIconService {
   public function getLegendIconFromFileUri(string $file_uri, $icon_width = NULL): array {
     return [
       '#theme' => 'image',
-      '#uri' => $this->fileUrlGenerator->generateAbsoluteString($file_uri),
+      '#uri' => $this->generateAbsoluteString($file_uri),
       '#attributes' => [
         'width' => $icon_width,
       ],
@@ -599,7 +701,28 @@ class MarkerIconService {
   }
 
   /**
+   * Creates an absolute web-accessible URL string.
+   *
+   * @param string $uri
+   *   The URI to a file for which we need an external URL, or the path to a
+   *   shipped file.
+   *
+   * @return string
+   *   An absolute string containing a URL that may be used to access the
+   *   file.
+   *
+   * @throws \Drupal\Core\File\Exception\InvalidStreamWrapperException
+   *   If a stream wrapper could not be found to generate an external URL.
+   */
+  public function generateAbsoluteString(string $uri): string {
+    return $this->doGenerateString($uri, FALSE);
+  }
+
+  /**
    * Generate Uri from fid, and image style.
+   *
+   * @todo switch to this same method of the @file_url_generator Drupal Core
+   *   (since 9.3+) service once we fork on a branch not supporting 8.x anymore.
    *
    * @param int|null $fid
    *   The file identifier.
@@ -618,6 +741,58 @@ class MarkerIconService {
       $this->logger->warning($e->getMessage());
     }
     return '';
+  }
+
+  /**
+   * Transforms an absolute URL of a local file to a relative URL.
+   *
+   * @todo switch to this same method of the @file_url_generator Drupal Core
+   *   (since 9.3+) service once we fork on a branch not supporting 8.x anymore.
+   *
+   * May be useful to prevent problems on multisite set-ups and prevent mixed
+   * content errors when using HTTPS + HTTP.
+   *
+   * @param string $file_url
+   *   A file URL of a local file as generated by
+   *   \Drupal\Core\File\FileUrlGenerator::generate().
+   * @param bool $root_relative
+   *   (optional) TRUE if the URL should be relative to the root path or FALSE
+   *   if relative to the Drupal base path.
+   *
+   * @return string
+   *   If the file URL indeed pointed to a local file and was indeed absolute,
+   *   then the transformed, relative URL to the local file. Otherwise: the
+   *   original value of $file_url.
+   */
+  public function transformRelative(string $file_url, bool $root_relative = TRUE): string {
+    // Unfortunately, we pretty much have to duplicate Symfony's
+    // Request::getHttpHost() method because Request::getPort() may return NULL
+    // instead of a port number.
+    $request = $this->requestStack->getCurrentRequest();
+    $host = $request->getHost();
+    $scheme = $request->getScheme();
+    $port = $request->getPort() ?: 80;
+
+    // Files may be accessible on a different port than the web request.
+    $file_url_port = parse_url($file_url, PHP_URL_PORT) ?? $port;
+    if ($file_url_port != $port) {
+      return $file_url;
+    }
+
+    if (('http' == $scheme && $port == 80) || ('https' == $scheme && $port == 443)) {
+      $http_host = $host;
+    }
+    else {
+      $http_host = $host . ':' . $port;
+    }
+
+    // If this should not be a root-relative path but relative to the drupal
+    // base path, add it to the host to be removed from the URL as well.
+    if (!$root_relative) {
+      $http_host .= $request->getBasePath();
+    }
+
+    return preg_replace('|^https?://' . preg_quote($http_host, '|') . '|', '', $file_url);
   }
 
   /**
@@ -650,7 +825,7 @@ class MarkerIconService {
           $url = ImageStyle::load($image_style)->buildUrl($uri);
         }
         else {
-          $url = $this->fileUrlGenerator->generateAbsoluteString($uri);
+          $url = $this->generateAbsoluteString($uri);
         }
         return $url;
       }
@@ -672,7 +847,7 @@ class MarkerIconService {
    */
   public function getFileSelectedUrl(string $file_uri = NULL): string {
     if (isset($file_uri)) {
-      return $this->fileUrlGenerator->generateAbsoluteString($file_uri);
+      return $this->generateAbsoluteString($file_uri);
     }
     return '';
   }

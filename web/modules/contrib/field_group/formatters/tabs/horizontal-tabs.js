@@ -29,7 +29,7 @@
         return;
       }
 
-      $(context).find('[data-horizontal-tabs]').once('horizontal-tabs').each(function () {
+      $(once('horizontal-tabs', '[data-horizontal-tabs]', context)).each(function () {
         var horizontal_tabs_clearfix = this;
         $(this).find('> [data-horizontal-tabs-panes]').each(function () {
           var $this = $(this).addClass('horizontal-tabs-panes');

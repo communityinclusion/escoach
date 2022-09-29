@@ -7,7 +7,7 @@ package : Testing
 dependencies:
   - form_options_attributes
 
-# Information added by Drupal.org packaging script on 2020-06-01
-version: '8.x-1.2'
+# Information added by Drupal.org packaging script on 2022-09-25
+version: '8.x-1.4'
 project: 'form_options_attributes'
-datestamp: 1591035325
+datestamp: 1664118839

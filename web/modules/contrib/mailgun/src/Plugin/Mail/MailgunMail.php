@@ -175,6 +175,12 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
    * @see https://documentation.mailgun.com/en/latest/api-sending.html#sending
    */
   protected function buildMessage(array $message) {
+    // Add default values to make sure those array keys exist.
+    $message += [
+      'body' => [],
+      'params' => [],
+    ];
+
     // Build the Mailgun message array.
     $mailgun_message = [
       'from' => $message['headers']['From'],
@@ -208,6 +214,13 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
     // Add Reply-To as header according to Mailgun API.
     if (!empty($message['reply-to'])) {
       $mailgun_message['h:Reply-To'] = $message['reply-to'];
+    }
+
+    // Include custom MIME headers (for example, 'X-My-Header').
+    foreach ($message['headers'] as $key => $value) {
+      if (stripos($key, 'X-') === 0) {
+        $mailgun_message['h:' . $key] = $value;
+      }
     }
 
     // For a full list of allowed parameters,

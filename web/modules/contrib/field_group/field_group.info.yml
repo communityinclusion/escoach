@@ -2,6 +2,9 @@ name: 'Field Group'
 type: module
 description: 'Provides the ability to group your fields on both form and display.'
 package : Fields
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^9.2 || ^10
 dependencies:
   - drupal:field
+test_dependencies:
+  - classy:classy
+  - stable:stable

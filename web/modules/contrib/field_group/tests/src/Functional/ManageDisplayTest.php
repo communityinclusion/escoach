@@ -16,7 +16,7 @@ class ManageDisplayTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['node', 'field_ui', 'field_group'];
+  protected static $modules = ['node', 'field_ui', 'field_group'];
 
   /**
    * Content type id.
@@ -33,7 +33,7 @@ class ManageDisplayTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create test user.

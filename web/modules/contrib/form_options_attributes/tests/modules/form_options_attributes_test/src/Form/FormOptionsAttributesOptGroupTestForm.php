@@ -2,13 +2,15 @@
 
 namespace Drupal\form_options_attributes_test\Form;
 
-class FormOptionsAttributesOptGroupTestForm extends \Drupal\Core\Form\FormBase {
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+class FormOptionsAttributesOptGroupTestForm extends FormBase {
 
   public function getFormId() {
     return 'form_options_attributes_module_optgroup_test_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form['states'] = [
       '#type' => 'select',
       '#title' => $this->t('States and Provinces'),
@@ -53,7 +55,7 @@ class FormOptionsAttributesOptGroupTestForm extends \Drupal\Core\Form\FormBase {
     return $form;
   }
 
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
 
   }
 

@@ -62,11 +62,13 @@ class GeofieldDefaultWidget extends GeofieldBaseWidget {
     ];
 
     if ($this->getSetting('geometry_validation')) {
-      $element['#description'] = $this->t('Geometry Validation enabled (valid WKT or Geojson format & values required)');
+      // Append notice to the field description in the widget:
+      $element['#description'] = $element['#description'] . '<br />' . $this->t('Geometry Validation enabled (valid WKT or Geojson format & values required)');
       $element['#element_validate'] = [[get_class($this), 'validateGeofieldGeometryText']];
     }
     else {
-      $element['#description'] = $this->t('Geometry Validation disabled (invalid WKT or Geojson format & values will be set as NULL)');
+      // Append notice to the field description in the widget:
+      $element['#description'] = $element['#description'] . '<br />' . $this->t('Geometry Validation disabled (invalid WKT or Geojson format & values will be set as NULL)');
     }
 
     return ['value' => $element];

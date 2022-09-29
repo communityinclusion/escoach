@@ -2,13 +2,15 @@
 
 namespace Drupal\form_options_attributes_test\Form;
 
-class FormOptionsAttributesTestForm extends \Drupal\Core\Form\FormBase {
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+class FormOptionsAttributesTestForm extends FormBase {
   
   public function getFormId() {
     return 'form_options_attributes_module_test_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $states = [
       'AL' => $this->t('Alabama'),
       'AK' => $this->t('Alaska'),
@@ -27,6 +29,24 @@ class FormOptionsAttributesTestForm extends \Drupal\Core\Form\FormBase {
       'WI' => ['class' => ['midwest'], 'data-bbq-meat' => 'cheese'],
       'WY' => ['class' => ['flyover'], 'data-bbq-meat' => 'bison'],
     ];
+    $states_wrapper_attributes = [
+      'AL' => ['class' => ['southeast-wrapper'], 'data-bbq-meat' => 'pork'],
+      'AK' => ['class' => ['non-contiguous-wrapper'], 'data-bbq-meat' => 'salmon'],
+      'AZ' => ['class' => ['southwest-wrapper'], 'data-bbq-meat' => 'rattlesnake'],
+      'AR' => ['class' => ['south-wrapper'], 'data-bbq-meat' => 'beef'],
+      // ...
+      'WI' => ['class' => ['midwest-wrapper'], 'data-bbq-meat' => 'cheese'],
+      'WY' => ['class' => ['flyover-wrapper'], 'data-bbq-meat' => 'bison'],
+    ];
+    $states_label_attributes = [
+      'AL' => ['class' => ['southeast-label'], 'data-bbq-meat' => 'pork'],
+      'AK' => ['class' => ['non-contiguous-label'], 'data-bbq-meat' => 'salmon'],
+      'AZ' => ['class' => ['southwest-label'], 'data-bbq-meat' => 'rattlesnake'],
+      'AR' => ['class' => ['south-label'], 'data-bbq-meat' => 'beef'],
+      // ...
+      'WI' => ['class' => ['midwest-label'], 'data-bbq-meat' => 'cheese'],
+      'WY' => ['class' => ['flyover-label'], 'data-bbq-meat' => 'bison'],
+    ];
     $form['states'] = [
       '#type' => 'select',
       '#title' => $this->t('States'),
@@ -40,6 +60,8 @@ class FormOptionsAttributesTestForm extends \Drupal\Core\Form\FormBase {
       '#title' => $this->t('States'),
       '#options' => $states,
       '#options_attributes' => $states_attributes,
+      '#options_wrapper_attributes' => $states_wrapper_attributes,
+      '#options_label_attributes' => $states_label_attributes,
       '#attributes' => ['class' => ['states-bbq-selector-radios']],
     ];
 
@@ -48,12 +70,14 @@ class FormOptionsAttributesTestForm extends \Drupal\Core\Form\FormBase {
       '#title' => $this->t('States'),
       '#options' => $states,
       '#options_attributes' => $states_attributes,
+      '#options_wrapper_attributes' => $states_wrapper_attributes,
+      '#options_label_attributes' => $states_label_attributes,
       '#attributes' => ['class' => ['states-bbq-selector-checkboxes']],
     ];
     return $form;
   }
 
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     
   }
 

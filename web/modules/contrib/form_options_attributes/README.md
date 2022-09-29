@@ -19,6 +19,10 @@ key to the form element definition. The #options_attributes value should be
 an array with keys that match the keys in the #options value array. The values
 in the #options_attributes array are formatted like the main #attributes array.
 
+### Label and wrapper attributes
+
+Individual attributes for each option's label and wrapper can be set using the '#options_wrapper_attributes' and '#options_label_attributes' keys in the same vein as the '#options_attributes' key. This is only supported for 'radios' and 'checkboxes' elements.
+
 ## Examples
 
 ```

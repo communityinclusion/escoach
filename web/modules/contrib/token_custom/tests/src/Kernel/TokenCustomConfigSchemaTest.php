@@ -18,14 +18,14 @@ class TokenCustomConfigSchemaTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'token_custom',
   ];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->typedConfig = \Drupal::service('config.typed');
@@ -46,7 +46,7 @@ class TokenCustomConfigSchemaTest extends KernelTestBase {
     ]);
     $token_custom_type->save();
     $config = $this->config("token_custom.type.$id");
-    $this->assertEqual($config->get('machineName'), $id);
+    $this->assertEquals($config->get('machineName'), $id);
     $this->assertConfigSchema($this->typedConfig, $config->getName(), $config->get());
   }
 

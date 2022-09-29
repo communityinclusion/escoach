@@ -2,6 +2,6 @@ name: 'Field Group Migrate'
 type: module
 description: 'Provides the ability to migrate field groups from D6/D7 to D8.'
 package: Migration
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^9.2 || ^10
 dependencies:
   - field_group:field_group

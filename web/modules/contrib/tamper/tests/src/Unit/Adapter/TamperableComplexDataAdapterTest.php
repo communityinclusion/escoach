@@ -15,7 +15,7 @@ class TamperableComplexDataAdapterTest extends UnitTestCase {
   /**
    * Complex data object.
    *
-   * @var \Drupal\Core\TypedData\ComplexDataInterface|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\Core\TypedData\ComplexDataInterface|\PHPUnit\Framework\MockObject\MockObject
    */
   protected $complexData;
 

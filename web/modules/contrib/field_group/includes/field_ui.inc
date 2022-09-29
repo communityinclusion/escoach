@@ -604,12 +604,7 @@ function field_group_format_settings_summary($group_name, $group) {
     'group' => $group,
   ]);
 
-  if ($plugin) {
-    $summary = $plugin->settingsSummary();
-  }
-  else {
-    $summary = '';
-  }
+ $summary = !empty($plugin) ? $plugin->settingsSummary() : [];
 
   return [
     '#markup' => '<div class="field-plugin-summary">' . implode('<br />', $summary) . '</div>',

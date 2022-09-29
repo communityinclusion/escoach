@@ -18,14 +18,14 @@ use Drupal\Tests\BrowserTestBase;
  */
 class FormOptionsAttributesTest extends BrowserTestBase {
 
-  public static $modules = ['options', 'form_options_attributes', 'form_options_attributes_test'];
+  protected static $modules = ['options', 'form_options_attributes', 'form_options_attributes_test'];
 
   /**
    * {@inheritdoc}
    */
   protected $defaultTheme = 'stark';
 
-  protected function setUp() {
+  protected function setUp():void {
     parent::setUp();
 
     // Create test user.
@@ -55,7 +55,12 @@ class FormOptionsAttributesTest extends BrowserTestBase {
    */
   public function testRadios() {
     $this->drupalGet('form-options-attributes-test');
+    // #options_attributes test.
     $this->assertSession()->elementAttributeContains('css', 'input.southeast.form-radio', 'data-bbq-meat', 'pork');
+    // #options_wrapper_attributes test.
+    $this->assertSession()->elementAttributeContains('css', 'div.southeast-wrapper input.southeast.form-radio', 'data-bbq-meat', 'pork');
+    // #options_label_attributes test.
+    $this->assertSession()->elementAttributeContains('css', 'label.southeast-label', 'data-bbq-meat', 'pork');
   }
 
   /**
@@ -63,7 +68,13 @@ class FormOptionsAttributesTest extends BrowserTestBase {
    */
   public function testCheckboxes() {
     $this->drupalGet('form-options-attributes-test');
+    // #options_attributes test.
     $this->assertSession()->elementAttributeContains('css', 'input.southeast.form-checkbox', 'data-bbq-meat', 'pork');
+    // #options_wrapper_attributes test.
+    $this->assertSession()->elementAttributeContains('css', 'div.southeast-wrapper input.southeast.form-checkbox', 'data-bbq-meat', 'pork');
+    // #options_label_attributes test.
+    $this->assertSession()->elementAttributeContains('css', 'label.southeast-label', 'data-bbq-meat', 'pork');
+
   }
 
 }

@@ -76,7 +76,14 @@ class FormatterHelper implements TrustedCallbackInterface {
         }
 
         $group_parents = $element['#array_parents'];
-        $group_parents[] = empty($group->parent_name) ? $group->region : $group->parent_name;
+        if (empty($group->parent_name)) {
+          if (isset($group->region)) {
+            $group_parents[] = $group->region;
+          }
+        }
+        else {
+          $group_parents[] = $group->parent_name;
+        }
         $group_references[$group_name] = &$element[$group_name];
         $element[$group_name]['#group'] = implode('][', $group_parents);
 
@@ -99,12 +106,21 @@ class FormatterHelper implements TrustedCallbackInterface {
 
         // Let modules define their wrapping element.
         // Note that the group element has no properties, only elements.
-        foreach (Drupal::moduleHandler()->getImplementations('field_group_form_process') as $module) {
-          // The intention here is to have the opportunity to alter the
-          // elements, as defined in hook_field_group_formatter_info.
-          // Note, implement $element by reference!
-          $function = $module . '_field_group_form_process';
-          $function($field_group_element, $group, $element);
+        // The intention here is to have the opportunity to alter the
+        // elements, as defined in hook_field_group_formatter_info.
+        // Note, implement $element by reference!
+        if (method_exists(Drupal::moduleHandler(), 'invokeAllWith')) {
+          // On Drupal >= 9.4 use the new method.
+          Drupal::moduleHandler()->invokeAllWith('field_group_form_process', function (callable $hook) use (&$field_group_element, &$group, &$element) {
+            $hook($field_group_element, $group, $element);
+          });
+        }
+        else {
+          // @phpstan-ignore-next-line
+          foreach (Drupal::moduleHandler()->getImplementations('field_group_form_process') as $module) {
+            $function = $module . '_field_group_form_process';
+            $function($field_group_element, $group, $element);
+          }
         }
 
         // Allow others to alter the pre_render.

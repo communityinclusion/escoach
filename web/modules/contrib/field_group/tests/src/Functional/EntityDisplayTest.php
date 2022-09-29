@@ -18,7 +18,7 @@ class EntityDisplayTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'node',
     'field_test',
     'field_ui',
@@ -48,7 +48,7 @@ class EntityDisplayTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Create test user.

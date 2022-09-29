@@ -44,7 +44,7 @@ function form_options_attributes_element_info_alter(array &$info) {
 function form_options_attributes_preprocess_form_options_attributes__select__options_attributes(&$variables) {
   $element = $variables['element'];
   Element::setAttributes($element, ['id', 'name', 'size']);
-  RenderElement::setAttributes($element, ['form-select']);
+  RenderElement::setAttributes($element, $variables['attributes']['class']);
 
   $variables['attributes'] = $element['#attributes'];
   $variables['options'] = form_select_options($element);
@@ -68,18 +68,35 @@ function form_options_attributes_preprocess_form_options_attributes__select__opt
 }
 
 /**
- * Processes a checkboxes or radios form element to add options_attributes
+ * Processes a checkboxes or radios form element to add options_attributes.
+ *
+ * Adds options_wrapper_attributes and options_label_attributes
+ * along with the regular attributes.
+ *
  * @param array $element
+ *   Radios or checkboxes Form element.
+ *
  * @return array
+ *   Element with the new custom attributes.
  */
-function form_options_attributes_form_process_option_attributes($element) {
+function form_options_attributes_form_process_option_attributes(array $element) {
+  // Maps custom attribute keys to real render API attribute keys.
+  $attributesTypesMap = [
+    '#options_attributes'         => '#attributes',
+    '#options_wrapper_attributes' => '#wrapper_attributes',
+    '#options_label_attributes'   => '#label_attributes',
+  ];
   foreach (Element::children($element) as $key) {
-    if (!empty($element['#options_attributes'][$key]) && is_array($element['#options_attributes'][$key])) {
-      if (!empty($element[$key]['#attributes'][$key]) && is_array($element[$key]['#attributes'][$key])) {
-        $element[$key]['#attributes'] = array_merge($element[$key]['#attributes'], $element['#options_attributes'][$key]);
-      }
-      else {
-        $element[$key]['#attributes'] = $element['#options_attributes'][$key];
+    // For each attribute type merge the custom attributes
+    // with the parent's real attributes.
+    foreach ($attributesTypesMap as $attributesType => $realAttributesType) {
+      if (!empty($element[$attributesType][$key]) && is_array($element[$attributesType][$key])) {
+        if (!empty($element[$key][$realAttributesType][$key]) && is_array($element[$key][$realAttributesType][$key])) {
+          $element[$key][$realAttributesType] = array_merge($element[$key][$realAttributesType], $element[$attributesType][$key]);
+        }
+        else {
+          $element[$key][$realAttributesType] = $element[$attributesType][$key];
+        }
       }
     }
   }
