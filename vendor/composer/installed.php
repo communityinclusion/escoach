@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '870532f6dbde8971de5376d5e0cefc889439ee3f',
+        'reference' => 'fef4e74b137ed8152ef1527cebe9cba6e03acc16',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -281,12 +281,12 @@
             'dev_requirement' => false,
         ),
         'drupal/admin_toolbar' => array(
-            'pretty_version' => '3.1.1',
-            'version' => '3.1.1.0',
+            'pretty_version' => '3.2.1',
+            'version' => '3.2.1.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/admin_toolbar',
             'aliases' => array(),
-            'reference' => '3.1.1',
+            'reference' => '3.2.1',
             'dev_requirement' => false,
         ),
         'drupal/adminimal_admin_toolbar' => array(
@@ -952,7 +952,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '870532f6dbde8971de5376d5e0cefc889439ee3f',
+            'reference' => 'fef4e74b137ed8152ef1527cebe9cba6e03acc16',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
