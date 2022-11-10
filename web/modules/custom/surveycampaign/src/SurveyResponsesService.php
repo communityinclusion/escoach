@@ -1,5 +1,17 @@
 <?php
 namespace Drupal\surveycampaign;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\UserSession;
+use Drupal\user\Entity\User;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\HtmlCommand;
+use \Drupal\Core\Ajax\InsertCommand;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use \DateTime;
@@ -7,11 +19,11 @@ use Twilio\Rest\Client;
 use Drupal\node\Entity\Node;
 class SurveyResponsesService
 {
-    protected $entityTypeManager;
-    public function __construct(EntityTypeManagerInterface $entity_type_manager)
-    {
-        $this->entityTypeManager = $entity_type_manager;
-    }
+  /* The entity type manager.
+  *
+  * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
+  */
+ protected $entityTypeManager;
     public function load($surveyid)
     {
         $database = \Drupal::database();
@@ -82,7 +94,8 @@ class SurveyResponsesService
                         $postal = $response['postal'] ? $response['postal'] :'';
                         $latitude = $response['latitude'] ? $response['latitude'] : 0;
                         $provider = $surveyid == '5420562' ? ($response['survey_data'][595]['answer'] ? $response['survey_data'][595]['answer'] : 'no provider') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : 'no provider') ;
-                        $regcode = $surveyid == '5420562' ? ($response['survey_data'][598]['answer'] ? $response['survey_data'][598]['answer'] : '1000') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : '1000') ;
+                      //  $regcode = $surveyid == '5420562' ? ($response['survey_data'][598]['answer'] ? $response['survey_data'][598]['answer'] : '1000') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : '1000') ;
+                        $regcode = $this->lookupRegCode($provider);
                         $longitude = $response['longitude'] ? $response['longitude'] : 0;
                         $name = $surveyid == '5420562' ? ($response['survey_data'][544]['answer'] ? $response['survey_data'][544]['answer']  : 'no name') : ($response['survey_data'][19]['answer'] ? $response['survey_data'][19]['answer']  : 'no name');
                         $email = $surveyid == '5420562' ? ($response['survey_data'][520]['answer'] ? $response['survey_data'][520]['answer'] : '') : ($response['survey_data'][10]['answer'] ? $response['survey_data'][10]['answer'] : '');
@@ -121,6 +134,40 @@ class SurveyResponsesService
             return false;
         }
     }
+    protected function lookupRegCode($provider) {
+      $providerid = $this->getTidByName($provider,'providers');
+        \Drupal::logger('surveycampaign')->notice('provider id from name: ' . $providerid);
+      $arrayposition = null;
+      $configuser = \Drupal::config('surveycampaign.settings');
+      $provcodes = $configuser->get('def_provider_code');
+      $provnames = $configuser->get('def_provider_name');
+      $countcodes = is_array($provcodes) ? count($provcodes) : 0;
+      for ($i = 0; $i <= $countcodes; $i++) {
+        if($provnames[$i][0]['target_id'] == $providerid) { $arrayposition = $i;
+        break; }
+      }
+
+
+      if($arrayposition) return $provcodes[$arrayposition];
+
+    }
+
+    protected function getTidByName($name = NULL, $vid = NULL) {
+    $properties = [];
+    if (!empty($name)) {
+      $properties['name'] = $name;
+    }
+    if (!empty($vid)) {
+      $properties['vid'] = $vid;
+    }
+    $terms = $this->getEntityTypeManager()->getStorage('taxonomy_term')->loadByProperties($properties);
+    $term = reset($terms);
+
+    return !empty($term) ? $term->id() : 0;
+  }
+  public function getEntityTypeManager() {
+    return $this->entityTypeManager ?: \Drupal::entityTypeManager();
+  }
 
 
 

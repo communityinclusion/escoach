@@ -48,7 +48,7 @@ class SurveyUsersService
                         $suspension = $profile->get('field_partic_suspension_dates')->value ? $profile->get('field_partic_suspension_dates')->value : '';
                         $suspension_end = $profile->get('field_partic_suspension_dates')->end_value ? $profile->get('field_partic_suspension_dates')->end_value : '';
                         $activstatus = $profile->get('field_set_surveys_to_inactive')->value ? $profile->get('field_set_surveys_to_inactive')->value : '';
-                        $provider = $profile->get('field_provider')->target_id ? $profile->get('field_provider')->entity->getName() : 'unknown provider';
+                        $provider = $profile->get('field_provider')->target_id && $profile->get('field_provider')->entity ? $profile->get('field_provider')->entity->getName() : 'unknown provider';
                         $uservalueregcode = $profile->get('field_registration_code')->value ? $profile->get('field_registration_code')->value : '1000';
                         $providervalueregcode = $this->checkProviderRegCode($provider);
                         $regcode = $uservalueregcode;
