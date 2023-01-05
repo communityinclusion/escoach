@@ -6,6 +6,7 @@ use \DateTime;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\user\Entity\User;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\node\Entity\Node;
 
 class SurveyUsersService
 {
@@ -58,8 +59,9 @@ class SurveyUsersService
                           $profile->save();
                           $regcode = $providervalueregcode;
                         }
+                        $your_state = $profile->get('field_your_state')->value && $profile->get('field_your_state')->value ? $profile->get('field_your_state')->value : null;
 
-                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode);
+                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode,$your_state);
                     }
                 }
        }

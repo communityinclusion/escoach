@@ -539,6 +539,7 @@ class TwilioCoachService
             $timezone = urlencode($contact[4]);
             $provider = $contact[8] ? urlencode($contact[8]) : urlencode('no provider');
             $regcode = $contact[9] ? urlencode($contact[9]) : 1000;
+            $your_state = $contact[10] ? urlencode($contact[10]) : urlencode('no state');
             $sendtime = urlencode($seconddate);
             $checkcompletedonce = false;
             $delayineffect = false;
@@ -550,7 +551,7 @@ class TwilioCoachService
             {
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
-                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&api_token={$api_key}&api_token_secret={$api_secret}";
+                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&customfield4={$your_state}&api_token={$api_key}&api_token_secret={$api_secret}";
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
