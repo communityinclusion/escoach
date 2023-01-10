@@ -61,7 +61,7 @@ class SurveyUsersService
                         }
                         $your_state = $profile->get('field_your_state')->value && $profile->get('field_your_state')->value ? $profile->get('field_your_state')->value : null;
 
-                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode,$your_state);
+                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode,$your_state,$jobtype);
                     }
                 }
        }
