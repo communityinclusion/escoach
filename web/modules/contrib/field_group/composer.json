@@ -7,10 +7,6 @@
     "require": {
         "drupal/core": "^9.2 || ^10"
     },
-    "require-dev": {
-        "drupal/classy": "^1.0",
-        "drupal/stable": "^2.0"
-    },
     "support": {
         "issues": "https://www.drupal.org/project/issues/field_group",
         "source": "https://git.drupalcode.org/project/field_group"

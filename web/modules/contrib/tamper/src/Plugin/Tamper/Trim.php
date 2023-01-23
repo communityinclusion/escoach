@@ -59,8 +59,10 @@ class Trim extends TamperBase {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
-    $this->setConfiguration([self::SETTING_CHARACTER => $form_state->getValue(self::SETTING_CHARACTER)]);
-    $this->setConfiguration([self::SETTING_SIDE => $form_state->getValue(self::SETTING_SIDE)]);
+    $this->setConfiguration([
+      self::SETTING_CHARACTER => $form_state->getValue(self::SETTING_CHARACTER),
+      self::SETTING_SIDE => $form_state->getValue(self::SETTING_SIDE),
+    ]);
   }
 
   /**

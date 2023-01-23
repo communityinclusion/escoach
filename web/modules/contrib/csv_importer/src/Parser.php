@@ -5,7 +5,7 @@ namespace Drupal\csv_importer;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
- * Parser manager.
+ * Get data from CSV files.
  */
 class Parser implements ParserInterface {
 
@@ -30,7 +30,7 @@ class Parser implements ParserInterface {
    * {@inheritdoc}
    */
   public function getCsvById(int $id, string $delimiter) {
-    /* @var \Drupal\file\Entity\File $entity */
+    /**  @var \Drupal\file\Entity\File $entity */
     $entity = $this->getCsvEntity($id);
     $return = [];
 

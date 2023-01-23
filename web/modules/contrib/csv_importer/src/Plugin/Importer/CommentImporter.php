@@ -5,7 +5,7 @@ namespace Drupal\csv_importer\Plugin\Importer;
 use Drupal\csv_importer\Plugin\ImporterBase;
 
 /**
- * Class CommentImporter.
+ * Class to import comments.
  *
  * @Importer(
  *   id = "comment_importer",

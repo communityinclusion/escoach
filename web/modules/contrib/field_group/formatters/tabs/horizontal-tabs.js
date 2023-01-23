@@ -42,10 +42,6 @@
             return;
           }
 
-          // If collapse.js did not do his work yet, call it directly.
-          if (!$($details[0]).hasClass('.collapse-processed')) {
-            Drupal.behaviors.collapse.attach(context);
-          }
           // Find the tab column.
           var tab_list = $(horizontal_tabs_clearfix).find('> [data-horizontal-tabs-list]');
           tab_list.removeClass('visually-hidden')

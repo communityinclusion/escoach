@@ -5,7 +5,7 @@ namespace Drupal\csv_importer\Plugin\Importer;
 use Drupal\csv_importer\Plugin\ImporterBase;
 
 /**
- * Class NodeImporter.
+ * Class to import nodes.
  *
  * @Importer(
  *   id = "node_importer",

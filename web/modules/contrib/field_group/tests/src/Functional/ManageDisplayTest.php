@@ -132,11 +132,6 @@ class ManageDisplayTest extends BrowserTestBase {
     $loaded_group = field_group_load_field_group($group->group_name, 'node', $this->type, 'form', 'default');
     $this->assertNull($loaded_group, 'Group not found after deleting');
 
-    $data = [
-      'format_type' => 'fieldset',
-      'label' => 'testing',
-    ];
-
     $group = $this->createGroup('node', $this->type, 'view', 'default', $data);
 
     $this->drupalGet('admin/structure/types/manage/' . $this->type . '/display/' . $group->group_name . '/delete');

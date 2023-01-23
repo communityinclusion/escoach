@@ -22,12 +22,12 @@ class ImporterTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'bartik';
+  protected $defaultTheme = 'claro';
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $account = $this->drupalCreateUser([
@@ -121,7 +121,7 @@ class ImporterTest extends WebDriverTestBase {
       $page->selectFieldOption('entity_type_bundle', $entity_type_bundle);
     }
 
-    $page->attachFileToField('files[csv]', drupal_get_path('module', 'csv_importer_test') . "/content/csv_example_{$entity_type}_test.csv");
+    $page->attachFileToField('files[csv]', \Drupal::service('extension.list.module')->getPath('csv_importer_test') . "/content/csv_example_{$entity_type}_test.csv");
     $assert->assertWaitOnAjaxRequest();
 
     $page->pressButton('Import');

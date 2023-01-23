@@ -51,13 +51,6 @@ class SearchApiQuery extends QueryPluginBase {
   protected $limit;
 
   /**
-   * Offset of first displayed result.
-   *
-   * @var int
-   */
-  protected $offset;
-
-  /**
    * The index this view accesses.
    *
    * @var \Drupal\search_api\IndexInterface
@@ -122,6 +115,22 @@ class SearchApiQuery extends QueryPluginBase {
    * @var \Drupal\Core\Messenger\MessengerInterface|null
    */
   protected $messenger;
+
+  /**
+   * Constructs a new class instance.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->offset = 0;
+  }
 
   /**
    * {@inheritdoc}
@@ -514,12 +523,13 @@ class SearchApiQuery extends QueryPluginBase {
       foreach ($this->where as $group_id => $group) {
         if (!empty($group['conditions']) || !empty($group['condition_groups'])) {
           $group += ['type' => 'AND'];
-          // For filters without a group, we want to always add them directly to
-          // the query.
-          $conditions = ($group_id === '') ? $this->query : $this->query->createConditionGroup($group['type']);
+          // Filters in the default group (used by arguments) should always be
+          // added directly to the query.
+          $default_group = $group_id == 0;
+          $conditions = $default_group ? $this->query : $this->query->createConditionGroup($group['type']);
           if (!empty($group['conditions'])) {
             foreach ($group['conditions'] as $condition) {
-              list($field, $value, $operator) = $condition;
+              [$field, $value, $operator] = $condition;
               $conditions->addCondition($field, $value, $operator);
             }
           }
@@ -528,8 +538,8 @@ class SearchApiQuery extends QueryPluginBase {
               $conditions->addConditionGroup($nested_conditions);
             }
           }
-          // If no group was given, the filters were already set on the query.
-          if ($group_id !== '') {
+          // For the default group, the filters were already set on the query.
+          if (!$default_group) {
             $base->addConditionGroup($conditions);
           }
         }
@@ -1005,14 +1015,17 @@ class SearchApiQuery extends QueryPluginBase {
    *
    * @param \Drupal\search_api\Query\ConditionGroupInterface $condition_group
    *   A condition group that should be added.
-   * @param string|null $group
+   * @param int $group
    *   (optional) The Views query filter group to add this filter to.
    *
    * @return $this
    *
    * @see \Drupal\search_api\Query\QueryInterface::addConditionGroup()
    */
-  public function addConditionGroup(ConditionGroupInterface $condition_group, $group = NULL) {
+  public function addConditionGroup(ConditionGroupInterface $condition_group, $group = 0) {
+    if (!is_int($group) && !(is_string($group) && ctype_digit($group))) {
+      trigger_error('Passing a non-integer as the second parameter of \Drupal\search_api\Plugin\views\query\SearchApiQuery::addConditionGroup() is deprecated in search_api:8.x-1.24 and is removed from search_api:2.0.0. If passing NULL or an empty string, pass 0 instead (or omit the parameter entirely). See https://www.drupal.org/node/3029582', E_USER_DEPRECATED);
+    }
     if (!$this->shouldAbort()) {
       // Ensure all variants of 0 are actually 0. Thus '', 0 and NULL are all
       // the default group.
@@ -1054,14 +1067,17 @@ class SearchApiQuery extends QueryPluginBase {
    *   respectively.
    *   If $value is NULL, $operator also can only be "=" or "<>", meaning the
    *   field must have no or some value, respectively.
-   * @param string|null $group
+   * @param int $group
    *   (optional) The Views query filter group to add this filter to.
    *
    * @return $this
    *
    * @see \Drupal\search_api\Query\QueryInterface::addCondition()
    */
-  public function addCondition($field, $value, $operator = '=', $group = NULL) {
+  public function addCondition($field, $value, $operator = '=', $group = 0) {
+    if (!is_int($group) && !(is_string($group) && ctype_digit($group))) {
+      trigger_error('Passing a non-integer as the fourth parameter of \Drupal\search_api\Plugin\views\query\SearchApiQuery::addCondition() is deprecated in search_api:8.x-1.24 and is removed from search_api:2.0.0. If passing NULL or an empty string, pass 0 instead (or omit the parameter entirely). See https://www.drupal.org/node/3029582', E_USER_DEPRECATED);
+    }
     if (!$this->shouldAbort()) {
       // Ensure all variants of 0 are actually 0. Thus '', 0 and NULL are all
       // the default group.
@@ -1109,8 +1125,8 @@ class SearchApiQuery extends QueryPluginBase {
    * @return $this
    *
    * @see \Drupal\views\Plugin\views\query\Sql::addWhere()
-   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::filter()
-   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::condition()
+   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::addConditionGroup()
+   * @see \Drupal\search_api\Plugin\views\query\SearchApiQuery::addCondition()
    */
   public function addWhere($group, $field, $value = NULL, $operator = NULL) {
     if ($this->shouldAbort()) {
@@ -1131,7 +1147,7 @@ class SearchApiQuery extends QueryPluginBase {
         $this->where[$group]['condition_groups'][] = $field;
       }
       elseif (!$this->shouldAbort()) {
-        // We only need to abort  if that wasn't done by transformDbCondition()
+        // We only need to abort if that wasn't done by transformDbCondition()
         // already.
         $this->abort('Unexpected condition passed to addWhere().');
       }
@@ -1168,7 +1184,7 @@ class SearchApiQuery extends QueryPluginBase {
    *   The group type – "AND" or "OR".
    */
   public function getGroupType($group) {
-    return !empty($this->where[$group]) ? $this->where[$group] : 'AND';
+    return $this->where[$group]['type'] ?? 'AND';
   }
 
   /**

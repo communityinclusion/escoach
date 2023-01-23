@@ -93,11 +93,13 @@ class FormatterHelper implements TrustedCallbackInterface {
         $parents[] = $group_name;
         $element[$group_name]['#parents'] = $parents;
         $group_children_parent_group = implode('][', $parents);
-        foreach ($group->children as $child) {
-          if (!empty($element[$child]['#field_group_ignore'])) {
-            continue;
+        if (isset($group->children)) {
+          foreach ($group->children as $child) {
+            if (!empty($element[$child]['#field_group_ignore'])) {
+              continue;
+            }
+            $element[$child]['#group'] = $group_children_parent_group;
           }
-          $element[$child]['#group'] = $group_children_parent_group;
         }
       }
 
@@ -150,7 +152,7 @@ class FormatterHelper implements TrustedCallbackInterface {
         $closed = isset($element[$fieldgroup->group_name]['#open']) && !$element[$fieldgroup->group_name]['#open'];
         if ($closed) {
           foreach ($fieldgroup->children as $child) {
-            if (static::groupElementsContainErrors($element[$child])) {
+            if (isset($element[$child]) && static::groupElementsContainErrors($element[$child])) {
               $element[$fieldgroup->group_name]['#open'] = TRUE;
               break;
             }

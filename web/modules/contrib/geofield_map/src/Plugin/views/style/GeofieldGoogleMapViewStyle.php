@@ -338,7 +338,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
 
       // Eventually try to set entity type & info from base table suffix
       // (i.e. Search API views).
-      if (!isset($this->entityType)) {
+      if (!isset($this->entityType) && $this->moduleHandler->moduleExists('search_api')) {
         $index_id = substr($base_table, 17);
         $index = Index::load($index_id);
         foreach ($index->getDatasources() as $datasource) {

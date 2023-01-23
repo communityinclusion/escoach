@@ -5,7 +5,7 @@ namespace Drupal\csv_importer\Plugin\Importer;
 use Drupal\csv_importer\Plugin\ImporterBase;
 
 /**
- * Class UserImporter.
+ * Class to import users.
  *
  * @Importer(
  *   id = "user_importer",

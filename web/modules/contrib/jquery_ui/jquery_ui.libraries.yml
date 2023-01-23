@@ -1,20 +1,14 @@
+# These are the publicly available libraries that other modules can depend on.
+
 core:
   js: {}
-  dependencies:
-    - core/jquery
-    - core/jquery.ui
 
 widget:
   js: {}
-  dependencies:
-    - core/jquery.ui.widget
 
 mouse:
   js: {}
-  dependencies:
-    - core/jquery.ui.mouse
 
 position:
   js: {}
-  dependencies:
-    - core/jquery.ui.position
+

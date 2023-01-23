@@ -23,7 +23,7 @@
  */
 function workflow_debug($class_name, $function_name, $line_nr = '', $value1 = '', $value2 = '') {
   $debug_switch = FALSE;
-  $debug_switch = TRUE;
+  // $debug_switch = TRUE;
 
   if (!$debug_switch) {
     return;

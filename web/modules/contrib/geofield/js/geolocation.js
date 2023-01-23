@@ -71,7 +71,7 @@
       }
 
       // React on the geofield widget html5 geocode button click.
-      once('geofield_geolocation', 'input[name="geofield-html5-geocode-button"]').forEach(function (e) {
+      once('geofield_geolocation', '[name="geofield-html5-geocode-button"]').forEach(function (e) {
         $(e).click(function(e) {
           e.preventDefault();
           fields = $(this).parents('.auto-geocode').parent();

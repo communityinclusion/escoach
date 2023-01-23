@@ -54,7 +54,7 @@ class Copy extends TamperBase {
       '#title' => $this->t('Source'),
       '#options' => $sources,
       '#default_value' => $this->getSetting(self::SETTING_SOURCE),
-      '#description' => $this->t('List of sources accessible for copying'),
+      '#description' => $this->t('List of sources accessible for copying.'),
     ];
 
     return $form;
