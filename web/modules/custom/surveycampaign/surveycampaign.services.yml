@@ -17,4 +17,3 @@ services:
   surveycampaign.survey_responses:
       class: \Drupal\surveycampaign\SurveyResponsesService
       arguments: ["@entity_type.manager"]
-
