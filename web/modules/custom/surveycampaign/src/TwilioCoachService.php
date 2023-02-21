@@ -706,7 +706,7 @@ class TwilioCoachService
         ->condition('ta.surveyid', $survid)
         ->condition('senddate', $database->escapeLike($senddate) . '%', 'LIKE')
         ->execute()->fetchField();
-        $number_of_rows = count($result);
+        $number_of_rows = is_countable($result) ? count($result) : 0;
 
         return $number_of_rows > 0 ? $result : ($like== 0 ? $result : false);
 
