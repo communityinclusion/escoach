@@ -46,6 +46,10 @@ function surveycampaign_theme() {
     ],
   ];
 }
+function surveycampaign_preprocess_page(&$variables) {
+   $variables['#attached']['library'][] = 'surveycampaign/surveycampaign.library';
+}
+
 function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
   if($form['#id'] == 'surveymessages-configuration-form' ) {

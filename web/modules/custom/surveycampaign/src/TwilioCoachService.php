@@ -696,7 +696,7 @@ class TwilioCoachService
         )
         ->condition('ta.surveyid', $survid)
         ->condition('senddate', $senddate)
-        ->execute()->fetchField()
+        ->countQuery()->execute()->fetchField()
         :
         $database->select($table, 'ta')
         ->fields('ta', array(
@@ -705,8 +705,9 @@ class TwilioCoachService
         )
         ->condition('ta.surveyid', $survid)
         ->condition('senddate', $database->escapeLike($senddate) . '%', 'LIKE')
-        ->execute()->fetchField();
-        $number_of_rows = is_countable($result) ? count($result) : 0;
+        ->countQuery()->execute()->fetchField();
+        $number_of_rows = $result;
+
 
         return $number_of_rows > 0 ? $result : ($like== 0 ? $result : false);
 

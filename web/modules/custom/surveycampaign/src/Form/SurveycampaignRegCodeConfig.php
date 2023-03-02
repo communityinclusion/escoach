@@ -167,7 +167,8 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
             'target_bundles' => ['providers'],
             ],
             '#weight' => '0',
-            '#prefix' => "<div class='inner-fieldset'><legend><span class='fieldset-legend'>Provider {$j}</span></legend>",
+            '#prefix' => "<div class='inner-fieldset' style=\"margin-bottom: 25px;\"><legend><h3 class='fieldset-legend'>Provider {$j}</h3></legend>",
+            '#suffix' => '</div>',
         ];
 
 
@@ -177,6 +178,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
             '#maxlength' => 64,
             '#size' => 64,
             '#default_value' => $thiscode,
+            '#suffix' => '<hr />',
 
           ];
 
