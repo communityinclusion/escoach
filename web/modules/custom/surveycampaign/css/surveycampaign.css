@@ -3,3 +3,4 @@
 .customHeading.hideOption { display: none;}
 fieldset.scrollChoice { height: 180px; width: 600px; border: 1px solid grey;overflow: scroll;}
 form#surveycampaign .inner-fieldset { margin-top: 28px; }
+form#surveycampaign hr { border: 1px solid #434343; }
