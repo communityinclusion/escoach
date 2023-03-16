@@ -22,3 +22,32 @@ trait Bongo {
 trait Bango {
 
 }
+
+/**
+ * Some example.
+ */
+final readonly class Example {
+
+}
+
+/**
+ * My class comment.
+ */
+#[\Attribute]
+class AllGood {
+
+}
+
+#[\Attribute]
+class NotGood {
+
+}
+
+/**
+ * There should be no empty line after this.
+ */
+
+#[\Attribute]
+class WrongSpacing {
+
+}
