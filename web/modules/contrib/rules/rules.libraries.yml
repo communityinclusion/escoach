@@ -15,7 +15,7 @@ rules_ui.listing:
   dependencies:
     - core/drupal
     - core/jquery
-    - core/jquery.once
+    - core/once
     - rules/rules_ui.styles
 
 rules_ui.styles:
