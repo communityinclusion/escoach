@@ -289,7 +289,7 @@ class BaseQuery {
       ],
       'BETWEEN');
     $this->query->range(0,12);
-    $this->query->groupBy('MONTH(date_submitted)');
+    $this->query->groupBy('month');
     $this->query->orderBy('date_submitted');
   }
 
@@ -299,7 +299,7 @@ class BaseQuery {
   public function addQuarterlyParams() {
     $this->query->addExpression('QUARTER(date_submitted)', 'quarter');
     $this->query->condition('date_submitted', 'DATE_SUB(NOW(), INTERVAL 1  YEAR)', '>=');
-    $this->query->groupBy('QUARTER(date_submitted)');
+    $this->query->groupBy('quarter');
   }
 
   /**
