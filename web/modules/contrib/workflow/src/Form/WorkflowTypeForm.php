@@ -238,11 +238,13 @@ class WorkflowTypeForm extends EntityForm {
     $args = [
       '%label' => $entity->label(),
       '%action' => $action,
-      'link' => $entity->toLink($this->t('Edit'))->toString(),
     ];
     $this->messenger()->addStatus($this->t(
       'Workflow %label has been %action. Please maintain the permissions,
        states and transitions.', $args));
+    $args += [
+      'link' => $entity->toLink($this->t('Edit'))->toString(),
+    ];
     $this->logger('workflow')->notice('Workflow %label has been %action.', $args);
 
     if ($status == SAVED_NEW) {

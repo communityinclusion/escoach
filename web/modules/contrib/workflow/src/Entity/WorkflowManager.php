@@ -145,6 +145,10 @@ class WorkflowManager implements WorkflowManagerInterface {
       return;
     }
 
+    if (!$entity instanceof FieldableEntityInterface) {
+      return;
+    }
+
     $user = workflow_current_user();
 
     foreach (workflow_get_workflow_field_names($entity) as $field_name) {
@@ -367,14 +371,19 @@ class WorkflowManager implements WorkflowManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getFields($entity_type_id) {
-    $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
-    if (!$entity_type->entityClassImplements(FieldableEntityInterface::class)) {
-      return [];
+  public function getFieldMap($entity_type_id = '') {
+    if ($entity_type_id) {
+      $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+      if (!$entity_type->entityClassImplements(FieldableEntityInterface::class)) {
+        return [];
+      }
     }
 
     $map = $this->entityFieldManager->getFieldMapByFieldType('workflow');
-    return isset($map[$entity_type_id]) ? $map[$entity_type_id] : [];
+    if ($entity_type_id) {
+      return $map[$entity_type_id] ?? [];
+    }
+    return $map;
   }
 
   /**

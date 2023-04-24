@@ -10,7 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\UserInterface;
 use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
-module_load_include('php', 'workflow', 'workflow.api');
+\Drupal::moduleHandler()->loadInclude('workflow', 'php', 'workflow.api');
 
 /* Hooks defined by workflow module. */
 

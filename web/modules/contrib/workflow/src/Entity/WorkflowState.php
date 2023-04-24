@@ -268,9 +268,10 @@ class WorkflowState extends ConfigEntityBase {
         $result = [];
         // CommentForm's are not re-parented upon Deactivate WorkflowState.
         if ($entity_type_id != 'comment') {
-          $query = \Drupal::entityQuery($entity_type_id);
-          $query->condition($field_name, $current_sid, '=');
-          $result = $query->execute();
+          $result = \Drupal::entityQuery($entity_type_id)
+            ->condition($field_name, $current_sid, '=')
+            ->accessCheck(FALSE)
+            ->execute();
         }
 
         foreach ($result as $entity_id) {
@@ -453,6 +454,7 @@ class WorkflowState extends ConfigEntityBase {
    * @param string $field_name
    * @param \Drupal\Core\Session\AccountInterface|null $account
    * @param bool $force
+   * @param bool $use_cache
    *
    * @return array
    *   An array of sid=>label pairs.
@@ -460,7 +462,7 @@ class WorkflowState extends ConfigEntityBase {
    *   If $this->id() is 0 or FALSE, then labels of ALL states of the State's
    *   Workflow are returned.
    */
-  public function getOptions($entity, $field_name, AccountInterface $account = NULL, $force = FALSE) {
+  public function getOptions($entity, $field_name, AccountInterface $account = NULL, $force = FALSE, $use_cache = TRUE) {
     $options = [];
 
     // Define an Entity-specific cache per page load.
@@ -472,7 +474,7 @@ class WorkflowState extends ConfigEntityBase {
 
     // Get options from page cache, using a non-empty index (just to be sure).
     $entity_index = (!$entity) ? 'x' : $entity_id;
-    if (isset($cache[$entity_type_id][$entity_index][$force][$current_sid])) {
+    if ($use_cache && isset($cache[$entity_type_id][$entity_index][$force][$current_sid])) {
       $options = $cache[$entity_type_id][$entity_index][$force][$current_sid];
       return $options;
     }
@@ -528,9 +530,9 @@ class WorkflowState extends ConfigEntityBase {
     foreach (_workflow_info_fields() as $field_info) {
       $field_name = $field_info->getName();
       $query = \Drupal::entityQuery($field_info->getTargetEntityTypeId());
-      // @see #2285983 for using SQLite on D7.
       $count += $query
         ->condition($field_name, $sid, '=')
+        ->accessCheck(FALSE)
         ->count()
         ->execute();
     }

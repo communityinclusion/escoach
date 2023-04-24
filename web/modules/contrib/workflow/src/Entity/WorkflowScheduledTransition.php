@@ -181,6 +181,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
     $query = \Drupal::entityQuery($transition_type)
       ->sort('timestamp', 'ASC')
+      ->accessCheck(FALSE)
       ->addTag($transition_type);
     if ($start) {
       $query->condition('timestamp', $start, '>');

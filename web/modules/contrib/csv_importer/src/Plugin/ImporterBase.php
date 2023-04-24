@@ -6,6 +6,8 @@ use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\FileRepositoryInterface;
 use Drupal\Component\Utility\Unicode;
@@ -38,11 +40,25 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
   protected $config;
 
   /**
-   * The file repository.
+   * The file repository service.
    *
    * @var \Drupal\file\FileRepositoryInterface
    */
   protected $fileRepository;
+
+  /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * The logger factory service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $loggerFactory;
 
   /**
    * Constructs ImporterBase object.
@@ -59,12 +75,18 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
    *   The config service.
    * @param \Drupal\file\FileRepositoryInterface $file_repository
    *   The file repository service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler service.
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   The logger factory service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config, FileRepositoryInterface $file_repository) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config, FileRepositoryInterface $file_repository, ModuleHandlerInterface $module_handler, LoggerChannelFactoryInterface $logger_factory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->config = $config;
     $this->fileRepository = $file_repository;
+    $this->moduleHandler = $module_handler;
+    $this->loggerFactory = $logger_factory;
   }
 
   /**
@@ -78,6 +100,8 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
       $container->get('entity_type.manager'),
       $container->get('config.factory'),
       $container->get('file.repository'),
+      $container->get('module_handler'),
+      $container->get('logger.factory'),
     );
   }
 
@@ -145,7 +169,7 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
     }
 
     $context['sandbox']['progress']++;
-    $context['message'] = t('Import entity %index out of %max', [
+    $context['message'] = $this->t('Import entity %index out of %max', [
       '%index' => $context['sandbox']['progress'],
       '%max' => $context['sandbox']['max'],
     ]);
@@ -153,9 +177,6 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
     $entity_type = $this->configuration['entity_type'];
     $entity_type_bundle = $this->configuration['entity_type_bundle'];
     $entity_definition = $this->entityTypeManager->getDefinition($entity_type);
-
-    $added = 0;
-    $updated = 0;
 
     $content = $contents[$context['sandbox']['progress']];
 
@@ -172,6 +193,8 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
 
     /** @var \Drupal\Core\Entity\Sql\SqlContentEntityStorage $entity_storage  */
     $entity_storage = $this->entityTypeManager->getStorage($this->configuration['entity_type']);
+
+    $this->moduleHandler->invokeAll('csv_importer_pre_save', [&$content]);
 
     try {
       if (isset($content[$entity_definition->getKeys()['id']]) && $entity = $entity_storage->load($content[$entity_definition->getKeys()['id']])) {
@@ -194,6 +217,7 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
       }
     }
     catch (\Exception $e) {
+      $this->loggerFactory->get('csv_importer')->error($e->getMessage());
     }
 
     if ($context['sandbox']['progress'] != $context['sandbox']['max']) {

@@ -53,11 +53,11 @@ function workflow_views_data_alter(array &$data) {
       continue;
     }
 
-    $fields = \Drupal::service('workflow.manager')->getFields($entity_type_id);
-    if ($fields) {
+    $field_map = \Drupal::service('workflow.manager')->getFieldMap($entity_type_id);
+    if ($field_map) {
       $base_table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
       $args = ['@entity_type' => $entity_type_id];
-      foreach ($fields as $field_name => $field) {
+      foreach ($field_map as $field_name => $field) {
         $data[$base_table][$field_name . '_tid'] = [
           'title' => t('Workflow transitions on @entity_type using field: @field_name', $args + ['@field_name' => $field_name]),
           'help' => t('Relate all transitions ongit status @entity_type. This will create 1 duplicate record for every transition. Usually if you need this it is better to create a Transition view.', $args),
