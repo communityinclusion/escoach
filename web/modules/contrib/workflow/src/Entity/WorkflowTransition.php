@@ -285,6 +285,7 @@ class WorkflowTransition extends ContentEntityBase implements WorkflowTransition
     /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
     $query = \Drupal::entityQuery($transition_type)
       ->condition('entity_type', $entity_type)
+      ->accessCheck(FALSE)
       ->sort('timestamp', $sort)
       ->addTag($transition_type);
     if (!empty($entity_ids)) {
@@ -1124,6 +1125,7 @@ class WorkflowTransition extends ContentEntityBase implements WorkflowTransition
     $output[] = 'Comment = ' . $user_name . ' says: ' . $transition->getComment();
     $output[] = 'Forced  = ' . ($transition->isForced() ? 'yes' : 'no') . '; ' . 'Scheduled = ' . ($transition->isScheduled() ? 'yes' : 'no');
     if (function_exists('dpm')) {// In Workflow->dpm().
+      /** @phpstan-ignore-next-line */
       dpm($output, $t_string);   // In Workflow->dpm().
     }                            // In Workflow->dpm().
   }

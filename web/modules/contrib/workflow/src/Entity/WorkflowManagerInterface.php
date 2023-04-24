@@ -82,6 +82,7 @@ interface WorkflowManagerInterface {
 
   /**
    * Utility function to return an array of workflow fields.
+   * Call \Drupal::service('workflow.manager')->getFieldMap($entity_type_id);
    *
    * @param string $entity_type_id
    *   The content entity type to which the workflow fields are attached.
@@ -93,10 +94,11 @@ interface WorkflowManagerInterface {
    *   - bundles: The bundles in which the field appears, as array with entity
    *     types as keys and the array of bundle names as values.
    *
-   * @see \Drupal\Core\Entity\EntityManagerInterface::getFieldMap()
    * @see \Drupal\comment\CommentManagerInterface::getFields()
+   * @see \Drupal\Core\Entity\EntityFieldManager::getFieldMapByFieldType
+   * @see \Drupal\Core\Entity\EntityManagerInterface::getFieldMap()
    */
-  public function getFields($entity_type_id);
+  public function getFieldMap($entity_type_id = '');
 
   /**
    * Gets the TransitionWidget in a form (for e.g., Workflow History Tab)

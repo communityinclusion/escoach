@@ -166,7 +166,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
     $row['from_state']['data'] = html_entity_decode($from_label); // 'class' => array('previous-state-name'))
     $row['to_state']['data'] = html_entity_decode($to_label); // 'class' => array('state-name'))
     $row['user_name']['data'] = $owner->toLink($owner->getDisplayName())->toString(); // 'class' => array('user-name')
-    $row['comment']['data'] = html_entity_decode($transition->getComment()); // 'class' => array('log-comment')
+    $row['comment']['data'] = html_entity_decode($transition->getComment() ?? ''); // 'class' => array('log-comment')
     $row += parent::buildRow($transition);
     return $row;
   }

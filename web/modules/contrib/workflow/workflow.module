@@ -38,6 +38,7 @@ use Drupal\workflow\Entity\WorkflowTransitionInterface;
 \Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.field');
 \Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.form');
 \Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.rules');
+\Drupal::moduleHandler()->loadInclude('workflow', 'inc', 'workflow.migrate');
 
 /**********************************************************************
  * Info hooks.
@@ -572,12 +573,13 @@ function workflow_get_workflows_by_type($entity_bundle, $entity_type) {
 /**
  * Finds the Workflow fields on a given Entity type.
  *
- * @return mixed
+ * @param string $entity_type_id
+ *  The entity type, if needed.
  *
- * @see EntityFieldManager::getFieldMapByFieldType
+ * @return mixed
  */
-function workflow_get_workflow_fields_by_entity_type() {
-  return \Drupal::service('entity_field.manager')->getFieldMapByFieldType('workflow');
+function workflow_get_workflow_fields_by_entity_type($entity_type_id = '') {
+  return \Drupal::service('workflow.manager')->getFieldMap($entity_type_id);
 }
 
 /**
@@ -585,7 +587,7 @@ function workflow_get_workflow_fields_by_entity_type() {
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   Object to work with. May be empty, e.g., on menu build.
- * @param string $entity_type
+ * @param string $entity_type_id
  *   Entity type of object. Optional, but required if $entity provided.
  * @param string $entity_bundle
  *   Bundle of entity. Optional.
@@ -595,21 +597,24 @@ function workflow_get_workflow_fields_by_entity_type() {
  * @return Drupal\field\Entity\FieldStorageConfig[]
  *   An array of FieldStorageConfig objects.
  */
-function _workflow_info_fields($entity = NULL, $entity_type = '', $entity_bundle = '', $field_name = '') {
+function _workflow_info_fields($entity = NULL, $entity_type_id = '', $entity_bundle = '', $field_name = '') {
   $field_info = [];
 
   // Figure out the $entity's bundle and id.
   if ($entity) {
-    $entity_type = $entity->getEntityTypeId();
+    $entity_type_id = $entity->getEntityTypeId();
     $entity_bundle = $entity->bundle();
   }
-  else {
-    // Entity type and bundle should be specified.
+  // @todo: Add checks for not-specified Entity type and bundle name.
+
+  $field_map = \Drupal::service('workflow.manager')->getFieldMap($entity_type_id);
+  // Return structure is not consistent.
+  if ($entity_type_id) {
+    $field_map = [$entity_type_id => $field_map];
   }
 
-  $field_list = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('workflow');
-  foreach ($field_list as $e_type => $data) {
-    if (!$entity_type || ($entity_type == $e_type)) {
+  foreach ($field_map as $e_type => $data) {
+    if (!$entity_type_id || ($entity_type_id == $e_type)) {
       foreach ($data as $f_name => $value) {
         if (!$entity_bundle || isset($value['bundles'][$entity_bundle])) {
           if (!$field_name || ($field_name == $f_name)) {
