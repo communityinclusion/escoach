@@ -136,7 +136,7 @@ class SurveyResponsesService
     }
     protected function lookupRegCode($provider) {
       $providerid = $this->getTidByName($provider,'providers');
-        \Drupal::logger('surveycampaign')->notice('provider id from name: ' . $providerid);
+        //\Drupal::logger('surveycampaign')->notice('provider id from name: ' . $providerid);
       $arrayposition = null;
       $configuser = \Drupal::config('surveycampaign.settings');
       $provcodes = $configuser->get('def_provider_code');
