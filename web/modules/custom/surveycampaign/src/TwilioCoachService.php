@@ -310,7 +310,7 @@ class TwilioCoachService
                     if(!$checkcompletedonce) {
 
                       $sendit = false;
-                      if ($contact['id'] == $contactid && $contact["subscriber_status"] != "Complete") {
+                      if ($contact['id'] == $contactid && ($contact["subscriber_status"] == "Unsent") || $contact["subscriber_status"] == "Sent" || $contact["subscriber_status"] == "Partial" || $contact["subscriber_status"] == "Unsubscribed") {
                           if($row['text1'] === '0' && ($senddate <= new DateTime()) ) { $sendit = $this->twilioCall($row['mobilephone'],$row['fullname'],$row['invitelink'],1,$formattedstarttime,$formattedendtime,$isprimary);
                           //set "text1" = 1
                           if($sendit) {
