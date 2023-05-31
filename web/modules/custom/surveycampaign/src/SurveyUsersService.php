@@ -173,7 +173,7 @@ class SurveyUsersService
 
 
     public function setUserStatus($userphone,$setstatus,$setcancel) {
-      \Drupal::logger('surveycampaign alert')->notice('Incoming vars: ' . $userphone .  ' ' . $setstatus . ' ' . $setcancel );
+
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
@@ -182,6 +182,8 @@ class SurveyUsersService
             ]);
 
         foreach($storage as $profile) {
+              \Drupal::logger('surveycampaign alert')->notice('incoming phone: ' . preg_replace('/\D+/', '',$userphone) );
+                \Drupal::logger('surveycampaign alert')->notice('user phone: ' . preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value );
 
 
           if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)
@@ -194,7 +196,7 @@ class SurveyUsersService
                 $firstname = $profile->get('field_survey_first_name')->value ? $profile->get('field_survey_first_name')->value : '';
                 $lastname = $profile->get('field_survey_last_name')->value ? $profile->get('field_survey_last_name')->value : '';
 
-                  \Drupal::logger('surveycampaign alert')->notice('Outgoing vars: ' . $useremail .  ' ' . $firstname . ' ' . $lastname );
+
                 $profile->set('field_set_surveys_to_inactive', array(
                     'value' => "$setstatus"));
                 $profile->set('field_active_2_deactivated_3', array(
