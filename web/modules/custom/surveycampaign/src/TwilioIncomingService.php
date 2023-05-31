@@ -25,6 +25,7 @@ class TwilioIncomingService
 
         if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext)) == 'STOP' || strtoupper($bodytext) == 'STOPALL' || strtoupper($bodytext) == 'UNSUBSCRIBE' || strtoupper($bodytext) == 'CANCEL' || strtoupper($bodytext) == 'END' || strtoupper($bodytext) == 'QUIT' )) {
             $userphone = substr($_REQUEST['From'],2);
+            \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $userphone);
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2',3);
             $email = $setinactive[0];
             $firstname = $setinactive[1];
@@ -35,6 +36,7 @@ class TwilioIncomingService
         }
         elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
             $userphone = substr($_REQUEST['From'],2);
+            \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $userphone);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
             $email = $setactive[0];
             $firstname = $setactive[1];
