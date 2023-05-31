@@ -41,6 +41,7 @@ class TwilioIncomingService
 
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop');
         }
+        
         elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
             $rawphone = substr($_REQUEST['From'],2);
             $database = \Drupal::database();
