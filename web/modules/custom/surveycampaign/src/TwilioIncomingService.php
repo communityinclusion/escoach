@@ -27,7 +27,7 @@ class TwilioIncomingService
             $result = $database->select('surveycampaign_mailer','sm')
               ->fields('sm',array('mobilephone'))
               ->distinct()
-              ->where('REGEXP_REPLACE(`mobilephone`,\'[^0-9]+\',"" = :mobilephone)',array(':mobilephone' => $rawphone,))
+              ->where('REGEXP_REPLACE(`mobilephone`,\'[^0-9]+\',"") = :mobilephone)',array(':mobilephone' => $rawphone,))
               ->execute();
 
 
@@ -50,7 +50,7 @@ class TwilioIncomingService
             $result = $database->select('surveycampaign_mailer','sm')
               ->fields('sm',array('mobilephone'))
               ->distinct()
-              ->where('REGEXP_REPLACE(`mobilephone`,\'[^0-9]+\',"" = :mobilephone)',array(':mobilephone' => $rawphone,))
+              ->where('REGEXP_REPLACE(`mobilephone`,\'[^0-9]+\',"") = :mobilephone)',array(':mobilephone' => $rawphone,))
               ->execute();
 
 
