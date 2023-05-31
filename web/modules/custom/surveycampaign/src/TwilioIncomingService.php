@@ -27,7 +27,7 @@ class TwilioIncomingService
             $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = $rawphone");
             $userphone = "";
             foreach ($result as $record) {
-              $userphone = $result->fetchField(0);
+              $userphone = $record->fetchField(0);
             }
             \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone);
 
@@ -48,7 +48,7 @@ class TwilioIncomingService
             $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = $rawphone");
             $userphone = "";
             foreach ($result as $record) {
-              $userphone = $result->fetchField(0);
+              $userphone = $record->fetchField(0);
             }
             \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
