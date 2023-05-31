@@ -24,7 +24,7 @@ class TwilioIncomingService
         if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext)) == 'STOP' || strtoupper($bodytext) == 'STOPALL' || strtoupper($bodytext) == 'UNSUBSCRIBE' || strtoupper($bodytext) == 'CANCEL' || strtoupper($bodytext) == 'END' || strtoupper($bodytext) == 'QUIT' )) {
             $rawphone = substr($_REQUEST['From'],2);
             $database = \Drupal::database();
-            $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = :rawphone",[':rawphone' => $rawphone,]));
+            $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = :rawphone",[':rawphone' => $rawphone,]);
             $userphone = "";
             foreach ($result as $record) {
               $userphone = $result->fetchField(0);
@@ -41,11 +41,11 @@ class TwilioIncomingService
 
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop');
         }
-        
+
         elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
             $rawphone = substr($_REQUEST['From'],2);
             $database = \Drupal::database();
-            $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = :rawphone",[':rawphone' => $rawphone,]));
+            $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = :rawphone",[':rawphone' => $rawphone,]);
             $userphone = "";
             foreach ($result as $record) {
               $userphone = $result->fetchField(0);
