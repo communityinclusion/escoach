@@ -180,9 +180,10 @@ class SurveyUsersService
                 'type' => 'survey_participants',
                 'field_cell_phone' => $userphone,
             ]);
+            \Drupal::logger('surveycampaign alert')->notice('incoming phone: ' . preg_replace('/\D+/', '',$userphone) );
 
         foreach($storage as $profile) {
-              \Drupal::logger('surveycampaign alert')->notice('incoming phone: ' . preg_replace('/\D+/', '',$userphone) );
+
                 \Drupal::logger('surveycampaign alert')->notice('user phone: ' . preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) );
 
 
