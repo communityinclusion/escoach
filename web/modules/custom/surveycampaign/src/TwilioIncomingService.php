@@ -24,7 +24,13 @@ class TwilioIncomingService
         if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext)) == 'STOP' || strtoupper($bodytext) == 'STOPALL' || strtoupper($bodytext) == 'UNSUBSCRIBE' || strtoupper($bodytext) == 'CANCEL' || strtoupper($bodytext) == 'END' || strtoupper($bodytext) == 'QUIT' )) {
             $rawphone = substr($_REQUEST['From'],2);
             $database = \Drupal::database();
-            $result =  $database->query("SELECT DISTINCT mobilephone from surveycampaign_mailer where REGEXP_REPLACE(mobilephone,'[^0-9]+',\"\") = '$rawphone'");
+            $result = $database->select('surveycampaign_mailer','sm')
+              ->fields('sm',array('mobilephone'))
+              ->distinct()
+              ->where('REGEXP_REPLACE(`mobilephone`,\'[^0-9]+\',"" = :mobilephone)',array(':mobilephone' => $rawphone,))
+              ->execute();
+
+
             $userphone = $result->fetchField(0);
             \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone);
 
@@ -41,7 +47,13 @@ class TwilioIncomingService
         elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
             $rawphone = substr($_REQUEST['From'],2);
             $database = \Drupal::database();
-            $result =  $database->query("SELECT DISTINCT mobilephone from surveycampaign_mailer where REGEXP_REPLACE(mobilephone,'[^0-9]+',\"\") = '$rawphone'");
+            $result = $database->select('surveycampaign_mailer','sm')
+              ->fields('sm',array('mobilephone'))
+              ->distinct()
+              ->where('REGEXP_REPLACE(`mobilephone`,\'[^0-9]+\',"" = :mobilephone)',array(':mobilephone' => $rawphone,))
+              ->execute();
+
+
             $userphone = $result->fetchField(0);
             \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
