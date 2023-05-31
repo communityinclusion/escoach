@@ -178,7 +178,6 @@ class SurveyUsersService
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
-                'field_cell_phone' => $userphone,
             ]);
 
         foreach($storage as $profile) {
