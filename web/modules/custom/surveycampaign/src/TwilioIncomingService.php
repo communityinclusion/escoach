@@ -19,6 +19,8 @@ class TwilioIncomingService
          //if($_REQUEST) $var = print_r($_REQUEST, true);
          //STOP, STOPALL, UNSUBSCRIBE, CANCEL, END, or QUIT
          //START, YES and UNSTOP
+         $request = print_r($_REQUEST, true);
+         \Drupal::logger('surveycampaign alert')->notice('Request: ' . $request);
          if($_REQUEST['Body']) {$bodytext = str_replace(' ', '',$_REQUEST['Body']);}
 
         if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext)) == 'STOP' || strtoupper($bodytext) == 'STOPALL' || strtoupper($bodytext) == 'UNSUBSCRIBE' || strtoupper($bodytext) == 'CANCEL' || strtoupper($bodytext) == 'END' || strtoupper($bodytext) == 'QUIT' )) {
