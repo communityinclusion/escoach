@@ -19,16 +19,18 @@ class TwilioIncomingService
          //if($_REQUEST) $var = print_r($_REQUEST, true);
          //STOP, STOPALL, UNSUBSCRIBE, CANCEL, END, or QUIT
          //START, YES and UNSTOP
-         $request = print_r($_REQUEST, true);
-         \Drupal::logger('surveycampaign alert')->notice('Request: ' . $request);
          if($_REQUEST['Body']) {$bodytext = str_replace(' ', '',$_REQUEST['Body']);}
 
         if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext)) == 'STOP' || strtoupper($bodytext) == 'STOPALL' || strtoupper($bodytext) == 'UNSUBSCRIBE' || strtoupper($bodytext) == 'CANCEL' || strtoupper($bodytext) == 'END' || strtoupper($bodytext) == 'QUIT' )) {
-            $userphone = substr($_REQUEST['From'],2);
-            \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $userphone);
+            $rawphone = substr($_REQUEST['From'],2);
+            $database = \Drupal::database();
+            $result =  $database->query("select mobilephone from surveycampaign_mailer where REGEXP_REPLACE(mobilephone,'[^0-9]+',"") = '$rawphone'");
+            $userphone = $result->fetchField(0);
+            \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone);
+
+            $completedonce = !empty($results) ? true: false;
+            return $completedonce;
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2',3);
-            $inactivevars = print_r($setinactive, true);
-            \Drupal::logger('surveycampaign alert')->notice('User vars: ' . $inactivevars);
             $email = $setinactive[0];
             $firstname = $setinactive[1];
             $lastname = $setinactive[2];
@@ -37,12 +39,12 @@ class TwilioIncomingService
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop');
         }
         elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
-            $userphone = substr($_REQUEST['From'],2);
-            \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $userphone);
+            $rawphone = substr($_REQUEST['From'],2);
+            $database = \Drupal::database();
+            $result =  $database->query("select mobilephone from surveycampaign_mailer where REGEXP_REPLACE(mobilephone,'[^0-9]+',"") = '$rawphone'");
+            $userphone = $result->fetchField(0);
+            \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
-
-            $inactivevars = print_r($setactive, true);
-            \Drupal::logger('surveycampaign alert')->notice('User vars: ' . $inactivevars);
             $email = $setactive[0];
             $firstname = $setactive[1];
             $lastname = $setactive[2];
