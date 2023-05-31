@@ -178,9 +178,12 @@ class SurveyUsersService
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
+              //  'field_cell_phone' => $userphone,
             ]);
 
         foreach($storage as $profile) {
+          \Drupal::logger('surveycampaign alert')->notice('incoming phone: ' . $userphone);
+        \Drupal::logger('surveycampaign alert')->notice('found phone: ' .  preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value));
 
 
           if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)
