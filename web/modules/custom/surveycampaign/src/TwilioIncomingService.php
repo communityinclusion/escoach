@@ -27,6 +27,8 @@ class TwilioIncomingService
             $userphone = substr($_REQUEST['From'],2);
             \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $userphone);
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2',3);
+            $inactivevars = print_r($setinactive, true);
+            \Drupal::logger('surveycampaign alert')->notice('User vars: ' . $inactivevars);
             $email = $setinactive[0];
             $firstname = $setinactive[1];
             $lastname = $setinactive[2];
@@ -38,6 +40,9 @@ class TwilioIncomingService
             $userphone = substr($_REQUEST['From'],2);
             \Drupal::logger('surveycampaign alert')->notice('Phone: ' . $userphone);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
+
+            $inactivevars = print_r($setactive, true);
+            \Drupal::logger('surveycampaign alert')->notice('User vars: ' . $inactivevars);
             $email = $setactive[0];
             $firstname = $setactive[1];
             $lastname = $setactive[2];
