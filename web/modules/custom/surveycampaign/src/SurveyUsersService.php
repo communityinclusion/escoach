@@ -173,7 +173,7 @@ class SurveyUsersService
 
 
     public function setUserStatus($userphone,$setstatus,$setcancel) {
-
+       \Drupal::logger('surveycampaign alert')->notice('incoming phone uncleaned: ' . $userphone );
 
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
