@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '1e44373757b50c86aadb8a2b156e9c38b96f736d',
+        'reference' => '154d7a760f222ee84aeec3df26eafe474b56bfdb',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -281,12 +281,12 @@
             'dev_requirement' => false,
         ),
         'drupal/admin_toolbar' => array(
-            'pretty_version' => '3.3.0',
-            'version' => '3.3.0.0',
+            'pretty_version' => '3.4.1',
+            'version' => '3.4.1.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/admin_toolbar',
             'aliases' => array(),
-            'reference' => '3.3.0',
+            'reference' => '3.4.1',
             'dev_requirement' => false,
         ),
         'drupal/adminimal_admin_toolbar' => array(
@@ -952,7 +952,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '1e44373757b50c86aadb8a2b156e9c38b96f736d',
+            'reference' => '154d7a760f222ee84aeec3df26eafe474b56bfdb',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
@@ -1391,8 +1391,8 @@
         'php-http/async-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/client-common' => array(
@@ -1407,8 +1407,8 @@
         'php-http/client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -1595,8 +1595,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
