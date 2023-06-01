@@ -32,7 +32,7 @@ class TwilioIncomingService
               $userphone = $record->fetchField(0);
             }
             \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone); */
-            \Drupal::logger('surveycampaign')->notice("user phone: " . $userphone);
+            \Drupal::logger('surveycampaign')->notice("user phone: " . $userphone . " body text: " . $bodytext);
             $completedonce = !empty($results) ? true: false;
             return $completedonce;
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2',3);
@@ -56,7 +56,7 @@ class TwilioIncomingService
             foreach ($result as $record) {
               $userphone = $record->fetchField(0);
             } */
-            \Drupal::logger('surveycampaign')->notice("user phone: " . $userphone);
+            \Drupal::logger('surveycampaign')->notice("user phone: " . $userphone . " body text: " . $bodytext);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
             $email = $setactive[0];
             $firstname = $setactive[1];

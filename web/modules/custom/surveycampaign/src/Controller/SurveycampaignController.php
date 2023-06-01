@@ -9,6 +9,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller routines for page example routes.
@@ -22,7 +23,7 @@ class SurveycampaignController extends ControllerBase {
   protected function getModuleName() {
     return 'surveycampaign';
   }
-  
+
   /**
    * Constructs a simple page.
    *
@@ -44,7 +45,7 @@ class SurveycampaignController extends ControllerBase {
      //,
     //];
   }
-  
+
   public function surveyusers() {
    // $name = $request->request->get('name');
     \Drupal::service('surveycampaign.survey_users')->load();
@@ -66,9 +67,9 @@ class SurveycampaignController extends ControllerBase {
     }
     $config = \Drupal::config('surveycampaign.settings');
     $surveyid = $type == 1 ? $config->get('defaultid') : $config->get('secondaryid');
-  
 
-  
+
+
     \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,$type,$day);
   }
   public function sendtext($surveyid, $campaignid) {
@@ -81,6 +82,9 @@ class SurveycampaignController extends ControllerBase {
   }
   public function handleincoming() {
       $response = \Drupal::service('surveycampaign.twilio_incoming')->sendResponseMail();
+      $response->setContent('Message received');
+      $response->setMaxAge(10);
+      return $response;
   }
 
   /**
