@@ -82,8 +82,6 @@ class SurveycampaignController extends ControllerBase {
   }
   public function handleincoming() {
       $response = \Drupal::service('surveycampaign.twilio_incoming')->sendResponseMail();
-      $response->setContent('Message received');
-      $response->setMaxAge(10);
       return $response;
   }
 
