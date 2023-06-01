@@ -200,6 +200,7 @@ class SurveyUsersService
                 $profile->set('field_active_2_deactivated_3', array(
                     'value' => $setcancel));
                 $profile->save();
+                \Drupal::logger('surveycampaign')->notice("Vars: " . $useremail . "  " . $firstname . " " . $lastname);
                 return array($useremail,$firstname,$lastname);
 
             }
