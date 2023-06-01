@@ -23,14 +23,6 @@ class TwilioIncomingService
 
         if($_REQUEST && (strtoupper(str_replace(' ', '',$bodytext)) == 'STOP' || strtoupper($bodytext) == 'STOPALL' || strtoupper($bodytext) == 'UNSUBSCRIBE' || strtoupper($bodytext) == 'CANCEL' || strtoupper($bodytext) == 'END' || strtoupper($bodytext) == 'QUIT' )) {
             $userphone = substr($_REQUEST['From'],2);
-            /* $database = \Drupal::database();
-            $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = $rawphone");
-            $userphone = "";
-            foreach ($result as $record) {
-              $userphone = $record->fetchField(0);
-            }
-            \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone); */
-            \Drupal::logger('surveycampaign')->notice("user phone: " . $userphone . " body text: " . $bodytext);
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2',3);
             $email = $setinactive[0];
             $firstname = $setinactive[1];
@@ -43,13 +35,6 @@ class TwilioIncomingService
 
         elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
             $userphone = substr($_REQUEST['From'],2);
-            /* $database = \Drupal::database();
-            $result =  $database->query("SELECT DISTINCT mobilephone from {surveycampaign_mailer} where REGEXP_REPLACE(`mobilephone`,'[^0-9]','')  = $rawphone");
-            $userphone = "";
-            foreach ($result as $record) {
-              $userphone = $record->fetchField(0);
-            } */
-            \Drupal::logger('surveycampaign')->notice("user phone: " . $userphone . " body text: " . $bodytext);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
             $email = $setactive[0];
             $firstname = $setactive[1];
