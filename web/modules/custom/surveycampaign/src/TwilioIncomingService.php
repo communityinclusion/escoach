@@ -16,7 +16,6 @@ class TwilioIncomingService
         $this->entityTypeManager = $entity_type_manager;
     }
     public function sendResponseMail() {
-        require $_SERVER['SERVER_ADDR'] == '162.243.15.189' || $_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
          //if($_REQUEST) $var = print_r($_REQUEST, true);
          //STOP, STOPALL, UNSUBSCRIBE, CANCEL, END, or QUIT
          //START, YES and UNSTOP
@@ -32,8 +31,6 @@ class TwilioIncomingService
             }
             \Drupal::logger('surveycampaign')->notice("Rawphone: " . $rawphone . " real user phone: " . $userphone); */
             \Drupal::logger('surveycampaign')->notice("user phone: " . $userphone . " body text: " . $bodytext);
-            $completedonce = !empty($results) ? true: false;
-            return $completedonce;
             $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'2',3);
             $email = $setinactive[0];
             $firstname = $setinactive[1];
@@ -41,14 +38,6 @@ class TwilioIncomingService
 
 
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop');
-            header("content-type: text/xml");
-
-          $response = new MessagingResponse();
-          $response->message(
-          "Message received."
-          );
-
-          echo $response;
 
         }
 
@@ -66,12 +55,6 @@ class TwilioIncomingService
             $firstname = $setactive[1];
             $lastname = $setactive[2];
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'start');
-            $response = new MessagingResponse();
-            $response->message(
-            "Message received."
-            );
-
-            echo $response;
 
 
         }
