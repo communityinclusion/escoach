@@ -8,6 +8,8 @@ use \DateTime;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\mailgun\MailgunHandlerInterface;
 use Twilio\Twiml\MessagingResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 class TwilioIncomingService
 {
     protected $entityTypeManager;
