@@ -82,7 +82,7 @@ class SurveycampaignController extends ControllerBase {
   }
   public function handleincoming() {
       $response = \Drupal::service('surveycampaign.twilio_incoming')->sendResponseMail();
-      return $response;
+    
   }
 
   /**
