@@ -927,7 +927,7 @@ class TwilioCoachService
             $sendTime = date('H:i', strtotime('12:00'));
             if(($warningmode == '2' || $warningmode == '3') && $isprimary) {
                 \Drupal::logger('surveycampaign alert')->notice('Going to mail manager');
-                $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
+              //  $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
           //  if(($warningmode == '1' || $warningmode == '3') && $isprimary && $nowTime >= $sendTime ) {
             //    $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,$isprimary);
