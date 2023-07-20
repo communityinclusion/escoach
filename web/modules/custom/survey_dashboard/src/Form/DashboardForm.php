@@ -103,7 +103,7 @@ class DashboardForm extends FormBase {
       ],
       'widget' => [
         '#type' => 'markup',
-        '#markup' => render($results) ,
+        '#markup' => \Drupal::service('renderer')->render($results) ,
       ],
       '#attached' => [
         'drupalSettings' => $settings,

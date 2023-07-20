@@ -126,7 +126,7 @@ class TwilioCoachService
         $entity = \Drupal::entityTypeManager()->getStorage('node');
         $query = $entity->getQuery();
 
-        $ids = $query->condition('status', 1)
+        $ids = $query->accessCheck(FALSE)->condition('status', 1)
         ->condition('type', 'library_item')
         ->execute();
 
