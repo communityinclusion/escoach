@@ -25,6 +25,7 @@ class LoadTest extends BrowserTestBase {
    * @var \Drupal\user\UserInterface
    */
   protected $user;
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}

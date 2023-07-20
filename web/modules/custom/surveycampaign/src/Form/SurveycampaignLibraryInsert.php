@@ -23,7 +23,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
      * @var \Drupal\Core\Logger\LoggerChannelInterface
      */
     protected $logger;
-  
+
     /**
      * SurveycampaignConfigurationForm constructor.
      *
@@ -36,7 +36,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       parent::__construct($config_factory);
       $this->logger = $logger;
     }
-  
+
     /**
      * {@inheritdoc}
      */
@@ -46,22 +46,22 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         $container->get('surveycampaign.logger.channel.surveycampaign')
       );
     }
-  
-  
+
+
     /**
      * {@inheritdoc}
      */
     protected function getEditableConfigNames() {
       return ['surveycampaign.library_settings'];
     }
-  
+
     /**
      * {@inheritdoc}
      */
     public function getFormId() {
       return 'surveymessages_configuration_form';
     }
-  
+
     /**
      * {@inheritdoc}
      */
@@ -75,7 +75,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       $config = $this->config('surveycampaign.library_settings');
       $mainconfig = $this->config('surveycampaign.settings');
       $defaultid = $config->get('defaultid') || $config->get('defaultid') != "" ? $config->get('defaultid') : $mainconfig->get('defaultid');
-      $nids = \Drupal::entityQuery('node')->condition('type','library_item')->execute();
+      $nids = \Drupal::entityQuery('node')->accessCheck(FALSE)->condition('type','library_item')->execute();
       $nodes =  \Drupal\node\Entity\Node::loadMultiple($nids);
       $types = \Drupal::entityTypeManager()
         ->getStorage('node')
@@ -88,13 +88,13 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         ->orderBy('senddate', 'DESC');;
         $result = $query->execute();
         $result2 = $query->execute();
-       
-        
+
+
         $row = $result2->fetchAll();
         $countlibitems = count($row);
       $formarray = array();
       while($record = $result->fetchAssoc()) {
-       
+
         $formarray[]= $record;
       }
 
@@ -102,9 +102,9 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       foreach($nodes as $node) {
         $library_id = $node->get('field_library_id')->value ? '#' . $node->get('field_library_id')->value . ': ' : '';
 
-        
+
        $libraryitems[$node->id()] = $library_id . ' ' . $node->label();
-      } 
+      }
       $form['libsg_def_survey'] = array(
           '#type' => 'textfield',
           '#title' => $this->t('Default survey id'),
@@ -113,7 +113,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
            '#size' => 10,
           '#maxlength' => 128,
           '#required' => TRUE,
-          
+
         );
       $form['sg_clos_ques_id'] = array(
         '#type' => 'textfield',
@@ -123,7 +123,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
           '#size' => 5,
         '#maxlength' => 128,
         '#required' => TRUE,
-        
+
       );
       $form['sg_clos_page_id'] = array(
         '#type' => 'textfield',
@@ -133,7 +133,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
           '#size' => 5,
         '#maxlength' => 128,
         '#required' => TRUE,
-        
+
       );
       $form['shell'] = array(
         '#type' => 'fieldset',
@@ -147,7 +147,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#prefix' => "<div id='names-fieldset-wrapper'>",
         '#suffix' => '</div>',
       ];
-  
+
       if (empty($name_field) || $countlibitems < 1) {
         $name_field = $countlibitems <= 1 ? $form_state->set('num_libs', 1) : $form_state->set('num_libs', $countlibitems);
 
@@ -159,9 +159,9 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         $thiscustom = $formarray[$i]['pagetitle'] ? $formarray[$i]['pagetitle'] : null;
         $thisrow = $formarray[$i]['ID'] ? $formarray[$i]['ID'] : null;
         $j = $i + 1;
-        
-        
-        
+
+
+
         $form['shell']['libchoice_fieldset'][$i]['library_choices'] = array(
           '#type' => 'radios',
           '#title' => 'Library items (scroll for more)',
@@ -171,7 +171,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
           '#attributes' => array('class' => array('scrollChoice')),
           '#prefix' => "<div class='inner-fieldset'><legend><span class='fieldset-legend'>Library Choice {$j}</span></legend>",
         );
-        
+
           $form['shell']['libchoice_fieldset'][$i]['library_date'] = array(
             '#type' => 'date',
             '#title' => $this->t('Default survey: set a date to insert library item.'),
@@ -201,7 +201,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
           if($countlibitems >= 1) {
             $form['shell']['libchoice_fieldset'][$i]['library_choices']['#required'] = TRUE; $form['shell']['libchoice_fieldset'][$i]['library_date']['#required'] = TRUE; $form['shell']['libchoice_fieldset'][$i]['pageheadingchoice']['#required'] = TRUE;
           }
-        
+
       }
         $form['shell']['libchoice_fieldset']['actions'] = [
           '#type' => 'actions',
@@ -229,9 +229,9 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         }
 
 
-        
-      
-  
+
+
+
       $form['finalpageheading'] = array(
         '#type' => 'textfield',
         '#title' => $this->t('Default final screen heading'),
@@ -240,7 +240,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#default_value' => $config->get('finalpageheading'),
       );
 
-       
+
 
       $form['defaultlibrarytext'] = array(
         '#type' => 'text_format',
@@ -248,10 +248,10 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         '#description' => $this->t('Default final screen body text if no library item chosen.'),
         '#required' => TRUE,
         '#default_value' => $config->get('defaultlibrarytext.value'),
-        
-        
+
+
         '#format' => $config->get('first_text_body.format'),
-      
+
       );
       $form_state->setCached(FALSE);
       return parent::buildForm($form, $form_state);
@@ -294,12 +294,12 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
     $form_state->setRebuild();
   }
 
-  
+
     /**
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
-     
+
       $idarray = array();
       $surveyid = $form_state->getValue('libsg_def_survey');
       foreach ($form_state->getValue(array('shell','libchoice_fieldset')) as $key1 => $value1) {
@@ -310,10 +310,10 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
 
       foreach ($form_state->getValue(array('shell','libchoice_fieldset')) as $key => $value) {
         if(is_numeric($key)) $nid = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'library_choices'));
-        
+
         if(is_numeric($key)) $date = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'library_date'));
         if(is_numeric($key)) $titlechoice = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'pageheadingchoice'));
-        if(is_numeric($key) && $form_state->getValue(array('shell','libchoice_fieldset',$key, 'pageheadingchoice')) == '4') {$pagetitle = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'custompageheading'));} 
+        if(is_numeric($key) && $form_state->getValue(array('shell','libchoice_fieldset',$key, 'pageheadingchoice')) == '4') {$pagetitle = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'custompageheading'));}
         else { $pagetitle = ""; }
         if(is_numeric($key)) $rowid = $form_state->getValue(array('shell','libchoice_fieldset',$key, 'row_ID')) ? $form_state->getValue(array('shell','libchoice_fieldset',$key, 'row_ID')) : null;
         if(is_numeric($key) && $nid) $this->manageLibraryItem($nid,$surveyid,$date,$titlechoice,$pagetitle,$rowid);
@@ -330,13 +330,13 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         //->set('library_choice_headings', $headingarray)
         //->set('library_choice_custom_headings', $customheadingsarray)
         ->save();
-  
+
       parent::submitForm($form, $form_state);
-  
+
       // $this->logger->info('The default final page heading is @message.', ['@message' => $form_state->getValue('finalpageheading')]);
     }
     function manageLibraryItem($nid,$surveyid,$date,$titlechoice,$pagetitle,$rowid) {
-      
+
       $database = \Drupal::database();
       $result = null;
       // select query to see if row in library insert table exists
@@ -348,7 +348,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
         ->execute()
         ->fetchField();
       }
-       
+
       if ($result && $result > 0) {
         //if entry already exists update
         $database->update('surveycampaign_library_insert')
@@ -363,7 +363,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       } else {
         $insertdatebase = new DateTime("$date");
         $insertdate = $insertdatebase->format('Y-m-d H:i:s');
-    
+
         //insert
         $database->insert('surveycampaign_library_insert')
             ->fields([
@@ -374,10 +374,10 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
                 'titlechoice' => $titlechoice,
             ]) ->execute();
       }
-      
 
-      
-      
+
+
+
     }
     function itemCleaning($idarray) {
       $database = \Drupal::database();
@@ -385,7 +385,7 @@ class SurveycampaignLibraryInsert extends ConfigFormBase {
       ->condition('ID', $idarray, 'NOT IN')
       ->execute();
     }
-    
-    
-  
+
+
+
   }

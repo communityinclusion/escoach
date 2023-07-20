@@ -30,7 +30,9 @@ class TwilioIncomingService
 
 
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'stop');
+
         }
+
         elseif($_REQUEST && (strtoupper($bodytext) == 'START' || strtoupper($bodytext) == 'YES' || strtoupper($bodytext) == 'UNSTOP' )) {
             $userphone = substr($_REQUEST['From'],2);
             $setactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($userphone,'1',2);
@@ -38,6 +40,8 @@ class TwilioIncomingService
             $firstname = $setactive[1];
             $lastname = $setactive[2];
             $sendemail = \Drupal::service('surveycampaign.twilio_coach')->twilioRespond($email,$firstname,$lastname,'start');
+
+
         }
       else return;
     }

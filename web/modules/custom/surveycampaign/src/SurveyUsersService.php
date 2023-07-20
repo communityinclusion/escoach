@@ -174,13 +174,15 @@ class SurveyUsersService
 
     public function setUserStatus($userphone,$setstatus,$setcancel) {
 
+
         $storage = \Drupal::entityTypeManager()->getStorage('profile')
             ->loadByProperties([
                 'type' => 'survey_participants',
-                'field_cell_phone' => $userphone,
+              //  'field_cell_phone' => $userphone,
             ]);
 
         foreach($storage as $profile) {
+
 
 
           if(preg_replace('/\D+/', '',$userphone) == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)
@@ -197,6 +199,7 @@ class SurveyUsersService
                 $profile->set('field_active_2_deactivated_3', array(
                     'value' => $setcancel));
                 $profile->save();
+                \Drupal::logger('surveycampaign')->notice("Vars: " . $useremail . "  " . $firstname . " " . $lastname);
                 return array($useremail,$firstname,$lastname);
 
             }

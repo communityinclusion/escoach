@@ -126,7 +126,7 @@ class TwilioCoachService
         $entity = \Drupal::entityTypeManager()->getStorage('node');
         $query = $entity->getQuery();
 
-        $ids = $query->condition('status', 1)
+        $ids = $query->accessCheck(FALSE)->condition('status', 1)
         ->condition('type', 'library_item')
         ->execute();
 
@@ -263,7 +263,7 @@ class TwilioCoachService
             $formattedstarttime = $formattedstart->format('g:i a');
             $contactid = $row['contactid'];
             $mobilephone = $row['mobilephone'];
-            \Drupal::logger('surveycampaign')->notice("Name: " . $row['fullname'] . " mobile phone: " . $row['mobilephone']);
+            //\Drupal::logger('surveycampaign')->notice("Name: " . $row['fullname'] . " mobile phone: " . $row['mobilephone']);
             switch($timezone) {
                 case 'ET':
                     $senddate = $senddate;
@@ -923,14 +923,17 @@ class TwilioCoachService
         $langcode = "en";
 
         if($send) {
+            $currentTime = date("H:i");
+            $nowTime = date('H:i', strtotime($currentTime));
+            $sendTime = date('H:i', strtotime('12:00'));
             if(($warningmode == '2' || $warningmode == '3') && $isprimary) {
                 \Drupal::logger('surveycampaign alert')->notice('Going to mail manager');
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
-            if(($warningmode == '1' || $warningmode == '3') && $isprimary) {
-                $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,$isprimary);
+            //if(($warningmode == '1' || $warningmode == '3') && $isprimary && $nowTime <= $sendTime ) {
+            //   $this->twilioCall($mobilephone,"$firstname $lastname",$invitelink,$textno,$dayno,$warningdays,$isprimary);
 
-            }
+          //  }
         }
     }
     public function twilioRespond($email,$firstname,$lastname,$responseaction) {
@@ -946,7 +949,7 @@ class TwilioCoachService
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
                 $params['title'] = t('Daily survey restarted');
-                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey resume. If you want to stop getting the daily survey sign in to your account on http://escoach.communityinclusion.org/user and set your status to inactive; or send a text message with just the word \"STOP\". If you did not send such a message contact escoach. ");
+                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey resume. If you want to stop getting the daily survey sign in to your account on http://escoach.communityinclusion.org/user and set your status to inactive; or send a text message with just the word \"STOP\". For help contact ES Coach at info@escoach.org. ");
 
                 $langcode = "en";
 
@@ -960,7 +963,7 @@ class TwilioCoachService
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
                 $params['title'] = t('Daily survey paused');
-                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey stop sending to you. If you want to resume getting the daily survey send a text message with just the word \"START\". If you did not send such a message contact escoach. ");
+                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey stop sending to you. If you want to resume getting the daily survey send a text message with just the word \"START\". If you did not send such a message contact ES Coach at info@escoach.org. ");
 
                 $langcode = "en";
 

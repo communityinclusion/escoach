@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '1e44373757b50c86aadb8a2b156e9c38b96f736d',
+        'reference' => '129ef162390649534da27227490c9f5e4c6f444e',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -145,6 +145,12 @@
             'reference' => 'ee3bf69001694b2117cc2f96c2ef70d8d45f1234',
             'dev_requirement' => false,
         ),
+        'container-interop/container-interop' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '^1.2.0',
+            ),
+        ),
         'dealerdirect/phpcodesniffer-composer-installer' => array(
             'pretty_version' => 'v1.0.0',
             'version' => '1.0.0.0',
@@ -281,12 +287,12 @@
             'dev_requirement' => false,
         ),
         'drupal/admin_toolbar' => array(
-            'pretty_version' => '3.3.0',
-            'version' => '3.3.0.0',
+            'pretty_version' => '3.4.1',
+            'version' => '3.4.1.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/admin_toolbar',
             'aliases' => array(),
-            'reference' => '3.3.0',
+            'reference' => '3.4.1',
             'dev_requirement' => false,
         ),
         'drupal/adminimal_admin_toolbar' => array(
@@ -952,9 +958,13 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
+<<<<<<< HEAD
             'reference' => 'f1743bfeb4b43289cee6b5829aab4a8a636fc87c',
 =======
             'reference' => '1e44373757b50c86aadb8a2b156e9c38b96f736d',
+>>>>>>> rack
+=======
+            'reference' => '129ef162390649534da27227490c9f5e4c6f444e',
 >>>>>>> rack
             'dev_requirement' => false,
         ),
@@ -1086,6 +1096,15 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/typed_data',
             'aliases' => array(),
             'reference' => '8.x-1.0-beta2',
+            'dev_requirement' => false,
+        ),
+        'drupal/upgrade_status' => array(
+            'pretty_version' => '4.0.0',
+            'version' => '4.0.0.0',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/upgrade_status',
+            'aliases' => array(),
+            'reference' => '4.0.0',
             'dev_requirement' => false,
         ),
         'drupal/viewfield' => array(
@@ -1250,6 +1269,15 @@
             'reference' => '1ccb024ea615606ed1d676ba0fa3f22a398f3ac0',
             'dev_requirement' => false,
         ),
+        'laminas/laminas-servicemanager' => array(
+            'pretty_version' => '3.20.0',
+            'version' => '3.20.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../laminas/laminas-servicemanager',
+            'aliases' => array(),
+            'reference' => 'bc2c2cbe2dd90db8b9d16b0618f542692b76ab59',
+            'dev_requirement' => false,
+        ),
         'laminas/laminas-stdlib' => array(
             'pretty_version' => '3.11.0',
             'version' => '3.11.0.0',
@@ -1257,6 +1285,15 @@
             'install_path' => __DIR__ . '/../laminas/laminas-stdlib',
             'aliases' => array(),
             'reference' => 'aad7d2b11ba0069ba0d9b40f6dde3c2fa664b57f',
+            'dev_requirement' => false,
+        ),
+        'laminas/laminas-text' => array(
+            'pretty_version' => '2.10.0',
+            'version' => '2.10.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../laminas/laminas-text',
+            'aliases' => array(),
+            'reference' => '40f7acdb284d41553d32db811e704d6e15e415b4',
             'dev_requirement' => false,
         ),
         'league/container' => array(
@@ -1295,6 +1332,15 @@
             'reference' => '897eb517a343a2281f11bc5556d6548db7d93947',
             'dev_requirement' => false,
         ),
+        'mathieuviossat/arraytotexttable' => array(
+            'pretty_version' => 'v1.0.9',
+            'version' => '1.0.9.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../mathieuviossat/arraytotexttable',
+            'aliases' => array(),
+            'reference' => '518ec338fe62e92c064a9d3d3bc8c64fb6e77d1c',
+            'dev_requirement' => false,
+        ),
         'mehrpadin/superfish' => array(
             'pretty_version' => '2.1',
             'version' => '2.1.0.0',
@@ -1302,6 +1348,15 @@
             'install_path' => __DIR__ . '/../../web/libraries/superfish',
             'aliases' => array(),
             'reference' => '80a0a484b727e9fbe6b0ee609f80e10e5e158683',
+            'dev_requirement' => false,
+        ),
+        'mglaman/phpstan-drupal' => array(
+            'pretty_version' => '1.1.36',
+            'version' => '1.1.36.0',
+            'type' => 'phpstan-extension',
+            'install_path' => __DIR__ . '/../mglaman/phpstan-drupal',
+            'aliases' => array(),
+            'reference' => '345f7babd0cfd1ef73bb856673a1cee5a0dbd6e5',
             'dev_requirement' => false,
         ),
         'myclabs/deep-copy' => array(
@@ -1394,8 +1449,8 @@
         'php-http/async-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/client-common' => array(
@@ -1410,8 +1465,8 @@
         'php-http/client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -1499,6 +1554,24 @@
             'install_path' => __DIR__ . '/../phpstan/phpdoc-parser',
             'aliases' => array(),
             'reference' => '90490bd8fd8530a272043c4950c180b6d0cf5f81',
+            'dev_requirement' => false,
+        ),
+        'phpstan/phpstan' => array(
+            'pretty_version' => '1.10.26',
+            'version' => '1.10.26.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpstan/phpstan',
+            'aliases' => array(),
+            'reference' => '5d660cbb7e1b89253a47147ae44044f49832351f',
+            'dev_requirement' => false,
+        ),
+        'phpstan/phpstan-deprecation-rules' => array(
+            'pretty_version' => '1.1.3',
+            'version' => '1.1.3.0',
+            'type' => 'phpstan-extension',
+            'install_path' => __DIR__ . '/../phpstan/phpstan-deprecation-rules',
+            'aliases' => array(),
+            'reference' => 'a22b36b955a2e9a3d39fe533b6c1bb5359f9c319',
             'dev_requirement' => false,
         ),
         'phpunit/php-code-coverage' => array(
@@ -1598,8 +1671,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
