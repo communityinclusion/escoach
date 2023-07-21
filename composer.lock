@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b17ec60cc57d3df2a8cf6ea186417b8d",
+    "content-hash": "b7961ba4f134ff9e2b3df9a1016c95ae",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4357,31 +4357,33 @@
         },
         {
             "name": "drupal/mailgun",
-            "version": "1.1.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/mailgun.git",
-                "reference": "8.x-1.1"
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/mailgun-8.x-1.1.zip",
-                "reference": "8.x-1.1",
-                "shasum": "1d4037e350a1795032802362f3be15529a076022"
+                "url": "https://ftp.drupal.org/files/projects/mailgun-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "091710be90cb39fe6ecef5b8ffa6ba0f96e11e2c"
             },
             "require": {
-                "drupal/core": "^8.8 || ^9",
+                "drupal/core": "^9.3 || ^10",
                 "drupal/mailsystem": "*",
                 "html2text/html2text": "^4.0.1",
                 "mailgun/mailgun-php": "~3.0",
-                "nyholm/psr7": "~1.2",
-                "php-http/guzzle6-adapter": "~2.0"
+                "nyholm/psr7": "~1.2"
+            },
+            "suggest": {
+                "php-http/guzzle6-adapter": "Required for working with Guzzle 6 e.g. Drupal 9.3.x or earlier"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.1",
-                    "datestamp": "1659268988",
+                    "version": "2.0.0",
+                    "datestamp": "1689181420",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -9092,73 +9094,6 @@
                 "source": "https://github.com/php-http/discovery/tree/1.15.3"
             },
             "time": "2023-03-31T14:40:37+00:00"
-        },
-        {
-            "name": "php-http/guzzle6-adapter",
-            "version": "v2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-http/guzzle6-adapter.git",
-                "reference": "9d1a45eb1c59f12574552e81fb295e9e53430a56"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-http/guzzle6-adapter/zipball/9d1a45eb1c59f12574552e81fb295e9e53430a56",
-                "reference": "9d1a45eb1c59f12574552e81fb295e9e53430a56",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^6.0",
-                "php": "^7.1 || ^8.0",
-                "php-http/httplug": "^2.0",
-                "psr/http-client": "^1.0"
-            },
-            "provide": {
-                "php-http/async-client-implementation": "1.0",
-                "php-http/client-implementation": "1.0",
-                "psr/http-client-implementation": "1.0"
-            },
-            "require-dev": {
-                "ext-curl": "*",
-                "php-http/client-integration-tests": "^2.0 || ^3.0",
-                "phpunit/phpunit": "^7.4 || ^8.4"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Http\\Adapter\\Guzzle6\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David de Boer",
-                    "email": "david@ddeboer.nl"
-                },
-                {
-                    "name": "Márk Sági-Kazár",
-                    "email": "mark.sagikazar@gmail.com"
-                }
-            ],
-            "description": "Guzzle 6 HTTP Adapter",
-            "homepage": "http://httplug.io",
-            "keywords": [
-                "Guzzle",
-                "http"
-            ],
-            "support": {
-                "issues": "https://github.com/php-http/guzzle6-adapter/issues",
-                "source": "https://github.com/php-http/guzzle6-adapter/tree/v2.0.2"
-            },
-            "time": "2021-03-02T10:52:33+00:00"
         },
         {
             "name": "php-http/httplug",
@@ -14775,7 +14710,6 @@
         "drupal/field_display_label": 20,
         "drupal/field_group": 20,
         "drupal/jquery_ui": 20,
-        "drupal/mailgun": 10,
         "drupal/node_export": 15,
         "drupal/page_manager": 10,
         "drupal/recaptcha": 20,

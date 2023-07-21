@@ -154,7 +154,6 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
             'Http\\Discovery\\' => 15,
             'Http\\Client\\Common\\' => 19,
             'Http\\Client\\' => 12,
-            'Http\\Adapter\\Guzzle6\\' => 21,
             'Html2Text\\' => 10,
         ),
         'G' => 
@@ -505,10 +504,6 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         'Http\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-http/httplug/src',
-        ),
-        'Http\\Adapter\\Guzzle6\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/guzzle6-adapter/src',
         ),
         'Html2Text\\' => 
         array (

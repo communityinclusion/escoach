@@ -46,7 +46,7 @@
         "drupal/google_tag": "^1.4",
         "drupal/imce": "^2.3",
         "drupal/jquery_ui": "1.x-dev@dev",
-        "drupal/mailgun": "^1.0@beta",
+        "drupal/mailgun": "^2.0",
         "drupal/memcache": "^2.0",
         "drupal/menu_block": "^1.5",
         "drupal/menu_breadcrumb": "^1.8",
