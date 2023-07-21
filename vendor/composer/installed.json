@@ -2381,111 +2381,6 @@
             "install-path": "../../web/modules/contrib/admin_toolbar"
         },
         {
-            "name": "drupal/adminimal_admin_toolbar",
-            "version": "1.11.0",
-            "version_normalized": "1.11.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/adminimal_admin_toolbar.git",
-                "reference": "8.x-1.11"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/adminimal_admin_toolbar-8.x-1.11.zip",
-                "reference": "8.x-1.11",
-                "shasum": "913dd21e07dd60aa20807a2e0650e11b4c15cc17"
-            },
-            "require": {
-                "drupal/admin_toolbar": "*",
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.11",
-                    "datestamp": "1588102631",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "Ted Slesinski",
-                    "homepage": "https://www.drupal.org/u/energee"
-                }
-            ],
-            "description": "Adminimal styling brought to admin toolbar.",
-            "homepage": "https://www.drupal.org/project/adminimal_admin_toolbar",
-            "support": {
-                "source": "http://cgit.drupalcode.org/adminimal_admin_toolbar",
-                "issues": "https://www.drupal.org/project/issues/adminimal_admin_toolbar"
-            },
-            "install-path": "../../web/modules/contrib/adminimal_admin_toolbar"
-        },
-        {
-            "name": "drupal/adminimal_theme",
-            "version": "1.6.0",
-            "version_normalized": "1.6.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/adminimal_theme.git",
-                "reference": "8.x-1.6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/adminimal_theme-8.x-1.6.zip",
-                "reference": "8.x-1.6",
-                "shasum": "89132d0853388afe8dfd11fb83c69a48d8c13413"
-            },
-            "require": {
-                "drupal/core": "^8.8 || ^9"
-            },
-            "type": "drupal-theme",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1602006937",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "ANDiTKO",
-                    "homepage": "https://www.drupal.org/user/1428124"
-                },
-                {
-                    "name": "andrey.troeglazov",
-                    "homepage": "https://www.drupal.org/user/3145389"
-                },
-                {
-                    "name": "realityloop",
-                    "homepage": "https://www.drupal.org/user/139189"
-                }
-            ],
-            "description": "Drupal administration theme with modern minimalist design.",
-            "homepage": "https://www.drupal.org/project/adminimal_theme",
-            "support": {
-                "source": "https://git.drupalcode.org/project/adminimal_theme",
-                "issues": "https://www.drupal.org/project/issues/adminimal_theme"
-            },
-            "install-path": "../../web/themes/contrib/adminimal_theme"
-        },
-        {
             "name": "drupal/auto_entitylabel",
             "version": "3.0.0",
             "version_normalized": "3.0.0.0",
@@ -2620,28 +2515,28 @@
         },
         {
             "name": "drupal/bootstrap_library",
-            "version": "1.15.0",
-            "version_normalized": "1.15.0.0",
+            "version": "2.0.2",
+            "version_normalized": "2.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/bootstrap_library.git",
-                "reference": "8.x-1.15"
+                "reference": "2.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/bootstrap_library-8.x-1.15.zip",
-                "reference": "8.x-1.15",
-                "shasum": "5a29582377f1e0c62fddc50d848eb5cd98ee7596"
+                "url": "https://ftp.drupal.org/files/projects/bootstrap_library-2.0.2.zip",
+                "reference": "2.0.2",
+                "shasum": "c8843362cf457e6e7a797a629a28adb01b2217d5"
             },
             "require": {
-                "drupal/core": "^8 || ^9",
-                "twbs/bootstrap": "^4.4.1"
+                "drupal/core": "^9 || ^10",
+                "twbs/bootstrap": "*"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.15",
-                    "datestamp": "1633309259",
+                    "version": "2.0.2",
+                    "datestamp": "1674079185",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2669,27 +2564,27 @@
         },
         {
             "name": "drupal/captcha",
-            "version": "1.10.0",
-            "version_normalized": "1.10.0.0",
+            "version": "2.0.3",
+            "version_normalized": "2.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/captcha.git",
-                "reference": "8.x-1.10"
+                "reference": "2.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/captcha-8.x-1.10.zip",
-                "reference": "8.x-1.10",
-                "shasum": "17fb9e34d03409809e3afd03bbeb8cbb489e7d0a"
+                "url": "https://ftp.drupal.org/files/projects/captcha-2.0.3.zip",
+                "reference": "2.0.3",
+                "shasum": "35c1be362c378bd09e219195d09f8e2e189665ed"
             },
             "require": {
-                "drupal/core": "^8.9 || ^9"
+                "drupal/core": ">=9.4 <11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.10",
-                    "datestamp": "1680254570",
+                    "version": "2.0.3",
+                    "datestamp": "1689779295",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2732,10 +2627,6 @@
                 {
                     "name": "RobLoach",
                     "homepage": "https://www.drupal.org/user/61114"
-                },
-                {
-                    "name": "soxofaan",
-                    "homepage": "https://www.drupal.org/user/41478"
                 },
                 {
                     "name": "thomas.frobieter",
@@ -2807,81 +2698,6 @@
                 "source": "https://www.drupal.org/project/coder"
             },
             "install-path": "../drupal/coder"
-        },
-        {
-            "name": "drupal/computed_field",
-            "version": "3.0.0-alpha2",
-            "version_normalized": "3.0.0.0-alpha2",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/computed_field.git",
-                "reference": "3.0.0-alpha2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/computed_field-3.0.0-alpha2.zip",
-                "reference": "3.0.0-alpha2",
-                "shasum": "74bdb563672a502c832d992a7a93be668f3ef1af"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "3.0.0-alpha2",
-                    "datestamp": "1604371297",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Agileware",
-                    "homepage": "https://www.drupal.org/user/89106"
-                },
-                {
-                    "name": "Moonshine",
-                    "homepage": "https://www.drupal.org/user/133705"
-                },
-                {
-                    "name": "Pedro Lozano",
-                    "homepage": "https://www.drupal.org/user/123766"
-                },
-                {
-                    "name": "colan",
-                    "homepage": "https://www.drupal.org/user/58704"
-                },
-                {
-                    "name": "dealancer",
-                    "homepage": "https://www.drupal.org/user/243418"
-                },
-                {
-                    "name": "markus_petrux",
-                    "homepage": "https://www.drupal.org/user/39593"
-                },
-                {
-                    "name": "nickcaballero",
-                    "homepage": "https://www.drupal.org/user/588336"
-                },
-                {
-                    "name": "ram4nd",
-                    "homepage": "https://www.drupal.org/user/601534"
-                }
-            ],
-            "description": "Defines a field type that allows values to be \"computed\" via PHP code.",
-            "homepage": "https://www.drupal.org/project/computed_field",
-            "support": {
-                "source": "https://git.drupalcode.org/project/computed_field"
-            },
-            "install-path": "../../web/modules/contrib/computed_field"
         },
         {
             "name": "drupal/conditional_fields",
@@ -3743,75 +3559,6 @@
                 "issues": "https://www.drupal.org/project/issues/ctools"
             },
             "install-path": "../../web/modules/contrib/ctools"
-        },
-        {
-            "name": "drupal/datetime_extras",
-            "version": "1.0.0-alpha2",
-            "version_normalized": "1.0.0.0-alpha2",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/datetime_extras.git",
-                "reference": "8.x-1.0-alpha2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/datetime_extras-8.x-1.0-alpha2.zip",
-                "reference": "8.x-1.0-alpha2",
-                "shasum": "716ec0c3500dfddd824b6abaff951a3c3669b185"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "require-dev": {
-                "drupal/duration_field": "^2.0"
-            },
-            "suggest": {
-                "drupal/duration_field": "Required to use the 'daterange_duration' field widget"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.0-alpha2",
-                    "datestamp": "1587423674",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "dww",
-                    "homepage": "https://www.drupal.org/user/46549"
-                },
-                {
-                    "name": "heddn",
-                    "homepage": "https://www.drupal.org/user/1463982"
-                },
-                {
-                    "name": "jhedstrom",
-                    "homepage": "https://www.drupal.org/user/208732"
-                },
-                {
-                    "name": "mpdonadio",
-                    "homepage": "https://www.drupal.org/user/325244"
-                },
-                {
-                    "name": "vijaycs85",
-                    "homepage": "https://www.drupal.org/user/93488"
-                }
-            ],
-            "description": "Extends core Datetime and Datetime Range functionality.",
-            "homepage": "https://www.drupal.org/project/datetime_extras",
-            "support": {
-                "source": "https://git.drupalcode.org/project/datetime_extras"
-            },
-            "install-path": "../../web/modules/contrib/datetime_extras"
         },
         {
             "name": "drupal/devel",
@@ -4966,81 +4713,6 @@
                 "source": "https://git.drupalcode.org/project/jquery_ui_droppable"
             },
             "install-path": "../../web/modules/contrib/jquery_ui_droppable"
-        },
-        {
-            "name": "drupal/leaflet",
-            "version": "1.46.0",
-            "version_normalized": "1.46.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/leaflet.git",
-                "reference": "8.x-1.46"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/leaflet-8.x-1.46.zip",
-                "reference": "8.x-1.46",
-                "shasum": "82da6a309b29c5e7cdcd54f4602379450982c317"
-            },
-            "require": {
-                "drupal/core": "^8.8 || ^9",
-                "drupal/geofield": "^1.0"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.46",
-                    "datestamp": "1605466674",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "Italo Mairo",
-                    "homepage": "https://www.drupal.org/u/itamair",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Peter Vanhee (pvhee)",
-                    "homepage": "https://www.drupal.org/u/pvhee",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Rik de Boer (RdeBoer)",
-                    "homepage": "https://www.drupal.org/u/rdeboer",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Gabriel Carleton-Barnes (gcb)",
-                    "homepage": "https://www.drupal.org/u/gcb",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Lev Tsypin (levelos)",
-                    "homepage": "https://www.drupal.org/u/levelos",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Sean Larkin (seanberto)",
-                    "homepage": "https://www.drupal.org/u/seanberto",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "Integration with the Leaflet map scripting library.",
-            "homepage": "https://www.drupal.org/project/leaflet",
-            "support": {
-                "source": "https://git.drupalcode.org/project/leaflet",
-                "issues": "https://www.drupal.org/project/issues/leaflet"
-            },
-            "install-path": "../../web/modules/contrib/leaflet"
         },
         {
             "name": "drupal/mailgun",

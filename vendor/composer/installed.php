@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '129ef162390649534da27227490c9f5e4c6f444e',
+        'reference' => 'c81373c1ce5dfaa45210329085930b5fca9baf38',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -295,24 +295,6 @@
             'reference' => '3.4.1',
             'dev_requirement' => false,
         ),
-        'drupal/adminimal_admin_toolbar' => array(
-            'pretty_version' => '1.11.0',
-            'version' => '1.11.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/adminimal_admin_toolbar',
-            'aliases' => array(),
-            'reference' => '8.x-1.11',
-            'dev_requirement' => false,
-        ),
-        'drupal/adminimal_theme' => array(
-            'pretty_version' => '1.6.0',
-            'version' => '1.6.0.0',
-            'type' => 'drupal-theme',
-            'install_path' => __DIR__ . '/../../web/themes/contrib/adminimal_theme',
-            'aliases' => array(),
-            'reference' => '8.x-1.6',
-            'dev_requirement' => false,
-        ),
         'drupal/auto_entitylabel' => array(
             'pretty_version' => '3.0.0',
             'version' => '3.0.0.0',
@@ -334,21 +316,21 @@
             'dev_requirement' => false,
         ),
         'drupal/bootstrap_library' => array(
-            'pretty_version' => '1.15.0',
-            'version' => '1.15.0.0',
+            'pretty_version' => '2.0.2',
+            'version' => '2.0.2.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/bootstrap_library',
             'aliases' => array(),
-            'reference' => '8.x-1.15',
+            'reference' => '2.0.2',
             'dev_requirement' => false,
         ),
         'drupal/captcha' => array(
-            'pretty_version' => '1.10.0',
-            'version' => '1.10.0.0',
+            'pretty_version' => '2.0.3',
+            'version' => '2.0.3.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/captcha',
             'aliases' => array(),
-            'reference' => '8.x-1.10',
+            'reference' => '2.0.3',
             'dev_requirement' => false,
         ),
         'drupal/coder' => array(
@@ -358,15 +340,6 @@
             'install_path' => __DIR__ . '/../drupal/coder',
             'aliases' => array(),
             'reference' => 'd5911f812b69ca3bda5524899bdd06b3b4e687ff',
-            'dev_requirement' => false,
-        ),
-        'drupal/computed_field' => array(
-            'pretty_version' => '3.0.0-alpha2',
-            'version' => '3.0.0.0-alpha2',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/computed_field',
-            'aliases' => array(),
-            'reference' => '3.0.0-alpha2',
             'dev_requirement' => false,
         ),
         'drupal/conditional_fields' => array(
@@ -620,15 +593,6 @@
             'reference' => '8.x-3.13',
             'dev_requirement' => false,
         ),
-        'drupal/datetime_extras' => array(
-            'pretty_version' => '1.0.0-alpha2',
-            'version' => '1.0.0.0-alpha2',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/datetime_extras',
-            'aliases' => array(),
-            'reference' => '8.x-1.0-alpha2',
-            'dev_requirement' => false,
-        ),
         'drupal/devel' => array(
             'pretty_version' => '4.2.1',
             'version' => '4.2.1.0',
@@ -797,15 +761,6 @@
             'reference' => '8.x-1.5',
             'dev_requirement' => false,
         ),
-        'drupal/leaflet' => array(
-            'pretty_version' => '1.46.0',
-            'version' => '1.46.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/leaflet',
-            'aliases' => array(),
-            'reference' => '8.x-1.46',
-            'dev_requirement' => false,
-        ),
         'drupal/mailgun' => array(
             'pretty_version' => '1.1.0',
             'version' => '1.1.0.0',
@@ -958,14 +913,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-<<<<<<< HEAD
-            'reference' => 'f1743bfeb4b43289cee6b5829aab4a8a636fc87c',
-=======
-            'reference' => '1e44373757b50c86aadb8a2b156e9c38b96f736d',
->>>>>>> rack
-=======
-            'reference' => '129ef162390649534da27227490c9f5e4c6f444e',
->>>>>>> rack
+            'reference' => 'c81373c1ce5dfaa45210329085930b5fca9baf38',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
