@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '1fe4b1b20feba73c694810d4b7922449c5c1f7ca',
+        'reference' => '6eda8597a15202e60e12783e3f483640b5596491',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -724,12 +724,12 @@
             'dev_requirement' => false,
         ),
         'drupal/imce' => array(
-            'pretty_version' => '2.5.0',
-            'version' => '2.5.0.0',
+            'pretty_version' => '3.0.8',
+            'version' => '3.0.8.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/imce',
             'aliases' => array(),
-            'reference' => '8.x-2.5',
+            'reference' => '3.0.8',
             'dev_requirement' => false,
         ),
         'drupal/jquery_ui' => array(
@@ -913,7 +913,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '1fe4b1b20feba73c694810d4b7922449c5c1f7ca',
+            'reference' => '6eda8597a15202e60e12783e3f483640b5596491',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
