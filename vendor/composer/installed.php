@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'cb6ce235d25cf860ec03db131a4d38876c8d8c13',
+        'reference' => '399b79647303984ef1531db2f42d16223aa3976a',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -594,12 +594,12 @@
             'dev_requirement' => false,
         ),
         'drupal/devel' => array(
-            'pretty_version' => '4.2.1',
-            'version' => '4.2.1.0',
+            'pretty_version' => '5.1.2',
+            'version' => '5.1.2.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/devel',
             'aliases' => array(),
-            'reference' => '4.2.1',
+            'reference' => '5.1.2',
             'dev_requirement' => false,
         ),
         'drupal/email_registration' => array(
@@ -904,7 +904,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'cb6ce235d25cf860ec03db131a4d38876c8d8c13',
+            'reference' => '399b79647303984ef1531db2f42d16223aa3976a',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
