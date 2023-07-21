@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'b63a34a557c429aa95682fc2d7a98d5005625ccc',
+        'reference' => 'd9fb9e3d9062a4d9dc76bb7e02681bf81e9c2cbd',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -913,7 +913,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'b63a34a557c429aa95682fc2d7a98d5005625ccc',
+            'reference' => 'd9fb9e3d9062a4d9dc76bb7e02681bf81e9c2cbd',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
@@ -1398,6 +1398,7 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/client-common' => array(
@@ -1413,6 +1414,7 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -1422,6 +1424,15 @@
             'install_path' => __DIR__ . '/../php-http/discovery',
             'aliases' => array(),
             'reference' => '3ccd28dd9fb34b52db946abea1b538568e34eae8',
+            'dev_requirement' => false,
+        ),
+        'php-http/guzzle6-adapter' => array(
+            'pretty_version' => 'v2.0.2',
+            'version' => '2.0.2.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-http/guzzle6-adapter',
+            'aliases' => array(),
+            'reference' => '9d1a45eb1c59f12574552e81fb295e9e53430a56',
             'dev_requirement' => false,
         ),
         'php-http/httplug' => array(
@@ -1609,6 +1620,7 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
