@@ -80,6 +80,7 @@
         "drupal/workflow": "^1.1",
         "drush/drush": "^10.3",
         "pear/archive_tar": "^1.4.10",
+        "php-http/guzzle6-adapter": "^2.0",
         "phpunit/phpunit": "^8",
         "symfony/process": "^4.4.20",
         "twilio/sdk": "^6.4"
@@ -94,7 +95,14 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "drupal/core-composer-scaffold": true,
+            "drupal/core-project-message": true
+        }
     },
     "extra": {
         "drupal-scaffold": {
