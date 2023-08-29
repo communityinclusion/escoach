@@ -949,7 +949,15 @@ class TwilioCoachService
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
                 $params['title'] = t('Daily survey restarted');
-                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey resume. If you want to stop getting the daily survey sign in to your account on http://escoach.communityinclusion.org/user and set your status to inactive; or send a text message with just the word \"STOP\". For help contact ES Coach at info@escoach.org. ");
+                $params['message'] = t("Dear $firstname $lastname, \n\rES-Coach resumed because you typed \"START\" on your phone. ES-Coach is most effective when all team members participate. Thank you for being a team player. Questions? Visit www.es-coach.org or email info@es-coach.org\n\r
+                Best regards,
+
+                \n\rThe ES-Coach Team
+                \n\rinfo@es-coach.org 
+                \n\rwww.es-coach.org 
+                \n\rInstitute for Community Inclusion 
+                \n\rUniversity of Massachusetts Boston 
+                617-287-4306");
 
                 $langcode = "en";
 
@@ -963,7 +971,15 @@ class TwilioCoachService
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
                 $params['title'] = t('Daily survey paused');
-                $params['message'] = t("Dear $firstname $lastname, You sent a text message requesting that the ES Coach Daily Survey stop sending to you. If you want to resume getting the daily survey send a text message with just the word \"START\". If you did not send such a message contact ES Coach at info@escoach.org. ");
+                $params['message'] = t("Dear $firstname $lastname, ES-Coach paused because you typed \"STOP\" in response to an ES-Coach text. ES-Coach is most effective when all team members participate. When ready, type START on your phone to resume participation. Thank you for being a team player. Questions? Visit www.es-coach.org or email info@es-coach.org\n\r
+                Best regards,\n\r
+
+                The ES-Coach Team
+                \n\rinfo@es-coach.org 
+                \n\rwww.es-coach.org 
+                \n\rInstitute for Community Inclusion 
+                \n\rUniversity of Massachusetts Boston 
+                \n\r617-287-4306");
 
                 $langcode = "en";
 
