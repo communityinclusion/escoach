@@ -94,6 +94,8 @@ class SurveyResponsesService
                         $postal = $response['postal'] ? $response['postal'] :'';
                         $latitude = $response['latitude'] ? $response['latitude'] : 0;
                         $provider = $surveyid == '5420562' ? ($response['survey_data'][595]['answer'] ? $response['survey_data'][595]['answer'] : 'no provider') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : 'no provider') ;
+                        $profilestate = $surveyid == '5420562' ? ($response['survey_data'][601]['answer'] ? $response['survey_data'][601]['answer'] : 'no state') : 'no state';
+
                       //  $regcode = $surveyid == '5420562' ? ($response['survey_data'][598]['answer'] ? $response['survey_data'][598]['answer'] : '1000') : ($response['survey_data'][18]['answer'] ? $response['survey_data'][18]['answer'] : '1000') ;
                         $regcode = $this->lookupRegCode($provider);
                         $longitude = $response['longitude'] ? $response['longitude'] : 0;
@@ -120,9 +122,9 @@ class SurveyResponsesService
                         //$survey_data = json_encode($response['survey_data']);
                         $query = $database->insert('surveycampaign_results')
                         ->fields([
-                            'surveyid', 'id','contact_id','date_submitted','country','region','city','postal','name','email','latitude','longitude','status','survey_data','provider','answer482','answer481','answer525','answer526','answer590','answer591','answer592','answer483','answer537','answer538','answer539','answer540','answer541','answer542','regcode'
+                            'surveyid', 'id','contact_id','date_submitted','country','region','city','state','postal','name','email','latitude','longitude','status','survey_data','provider','answer482','answer481','answer525','answer526','answer590','answer591','answer592','answer483','answer537','answer538','answer539','answer540','answer541','answer542','regcode'
                         ])
-                        ->values(array($surveyid,$id,$contactid,$date_submitted,$country,$state,$city,$postal,$name,$email,$latitude,$longitude,$status,$survey_data,$provider,$answer482,$answer481,$answer525,$answer526,$answer590,$answer591,$answer592,$answer483,$answer537,$answer538,$answer539,$answer540,$answer541,$answer542,$regcode
+                        ->values(array($surveyid,$id,$contactid,$date_submitted,$country,$state,$city,$profilestate,$postal,$name,$email,$latitude,$longitude,$status,$survey_data,$provider,$answer482,$answer481,$answer525,$answer526,$answer590,$answer591,$answer592,$answer483,$answer537,$answer538,$answer539,$answer540,$answer541,$answer542,$regcode
                         ));
 
                         $resultout = $query->execute();
