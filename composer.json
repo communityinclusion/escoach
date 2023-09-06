@@ -82,6 +82,7 @@
         "pear/archive_tar": "^1.4.10",
         "php-http/guzzle6-adapter": "^2.0",
         "phpunit/phpunit": "^8",
+        "symfony/phpunit-bridge": "^6.3",
         "symfony/process": "^4.4.20",
         "twilio/sdk": "^6.4"
     },

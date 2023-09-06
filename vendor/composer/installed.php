@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '96023034116b231d28d83129859f338c1005bf5a',
+        'reference' => '39a9b3c9f99acda59f70927063007147b141dad9',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -904,7 +904,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '96023034116b231d28d83129859f338c1005bf5a',
+            'reference' => '39a9b3c9f99acda59f70927063007147b141dad9',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
@@ -1980,6 +1980,15 @@
             'install_path' => __DIR__ . '/../symfony/options-resolver',
             'aliases' => array(),
             'reference' => 'aa0e85b53bbb2b4951960efd61d295907eacd629',
+            'dev_requirement' => false,
+        ),
+        'symfony/phpunit-bridge' => array(
+            'pretty_version' => 'v6.3.2',
+            'version' => '6.3.2.0',
+            'type' => 'symfony-bridge',
+            'install_path' => __DIR__ . '/../symfony/phpunit-bridge',
+            'aliases' => array(),
+            'reference' => 'e020e1efbd1b42cb670fcd7d19a25abbddba035d',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-ctype' => array(
