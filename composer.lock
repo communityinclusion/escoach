@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f1f07cee3140e5862cb7c0914baf7474",
+    "content-hash": "f3007ed771bbedbc1b8001d172859760",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4815,77 +4815,6 @@
             }
         },
         {
-            "name": "drupal/node_export",
-            "version": "1.0.0-alpha1",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/node_export.git",
-                "reference": "8.x-1.0-alpha1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/node_export-8.x-1.0-alpha1.zip",
-                "reference": "8.x-1.0-alpha1",
-                "shasum": "c50801696d54461d3b14ed782dbf030a6b6ebd2e"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9",
-                "ext-json": "*",
-                "php": ">7.0"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.0-alpha1",
-                    "datestamp": "1604598439",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
-                    }
-                },
-                "drush": {
-                    "services": {
-                        "drush.services.yml": "^9"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "James Andres",
-                    "homepage": "https://www.drupal.org/user/33827"
-                },
-                {
-                    "name": "cgmonroe",
-                    "homepage": "https://www.drupal.org/user/563114"
-                },
-                {
-                    "name": "chia",
-                    "homepage": "https://www.drupal.org/user/398572"
-                },
-                {
-                    "name": "danielb",
-                    "homepage": "https://www.drupal.org/user/134005"
-                },
-                {
-                    "name": "gaurav.kapoor",
-                    "homepage": "https://www.drupal.org/user/3495331"
-                }
-            ],
-            "description": "Allows users to export content and then import into another Drupal installation.",
-            "homepage": "https://www.drupal.org/project/node_export",
-            "keywords": [
-                "Drupal"
-            ],
-            "support": {
-                "source": "http://cgit.drupalcode.org/node_export",
-                "issues": "https://www.drupal.org/project/issues/node_export"
-            }
-        },
-        {
             "name": "drupal/nodeaccess",
             "version": "1.1.0",
             "source": {
@@ -6127,27 +6056,27 @@
         },
         {
             "name": "drupal/token_filter",
-            "version": "1.4.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/token_filter.git",
-                "reference": "8.x-1.4"
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/token_filter-8.x-1.4.zip",
-                "reference": "8.x-1.4",
-                "shasum": "d0d4ddc098c8e8002a0aefb066cb6cd7481a4658"
+                "url": "https://ftp.drupal.org/files/projects/token_filter-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "73a4dc759ed78d634d4414ec81febc3428ebd2a5"
             },
             "require": {
-                "drupal/core": "^8 || ^9",
+                "drupal/core": "^9.4 || ^10",
                 "drupal/token": "*"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.4",
-                    "datestamp": "1649114304",
+                    "version": "2.0.0",
+                    "datestamp": "1675762777",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -14791,7 +14720,6 @@
         "drupal/field_display_label": 20,
         "drupal/field_group": 20,
         "drupal/jquery_ui": 20,
-        "drupal/node_export": 15,
         "drupal/page_manager": 10,
         "drupal/recaptcha": 20,
         "drupal/rules": 20,
