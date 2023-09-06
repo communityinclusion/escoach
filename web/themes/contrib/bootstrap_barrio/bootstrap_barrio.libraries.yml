@@ -17,7 +17,7 @@ global-styling:
       css/components/image-button.css: {}
       css/components/item-list.css: {}
       css/components/list-group.css: {}
-      css/components/media.css: {}      
+      css/components/media.css: {}
       css/components/page.css: {}
       css/components/search-form.css: {}
       css/components/shortcut.css: {}
@@ -41,7 +41,7 @@ global-styling:
       css/print.css: { media: print }
   dependencies:
     - core/jquery
-    - core/jquery.once
+    - core/once
     - core/drupal
 
 affix:
@@ -362,18 +362,14 @@ bootstrap:
   css:
     component:
       /libraries/bootstrap/dist/css/bootstrap.min.css: {}
-  dependencies:
-    - core/popperjs
 bootstrap_cdn:
   js:
-    //cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js: {}
     //stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js: {}
   css:
     component:
       //stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css: {}
 boostrap_js:
   js:
-    //cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js: {}
     //stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js: {}
 
 # Bootswatch
