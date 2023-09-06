@@ -1,23 +1,19 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: wayne
- * Date: 2/6/17
- * Time: 10:53 AM
- */
-
-namespace Drupal\form_options_attributes_test\Tests;
+namespace Drupal\Tests\form_options_attributes\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests the #options_attributes functionality of select, checkboxes, and radios.
  *
- * @group Form Options Attributes
+ * @group form_options_attributes
  */
 class FormOptionsAttributesTest extends BrowserTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = ['options', 'form_options_attributes', 'form_options_attributes_test'];
 
   /**
@@ -25,7 +21,10 @@ class FormOptionsAttributesTest extends BrowserTestBase {
    */
   protected $defaultTheme = 'stark';
 
-  protected function setUp():void {
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     // Create test user.

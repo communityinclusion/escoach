@@ -16,3 +16,16 @@ function registration_role_update_8007(&$sandbox) {
     user_role_grant_permissions($roleId,['administer registration roles']);
   }
 }
+
+/**
+ * Remove the no selected roles from the configuration.
+ */
+function registration_role_update_8008(&$sandbox) {
+  $config = \Drupal::configFactory()->getEditable('registration_role.setting');
+  $role_to_select = $config->get('role_to_select');
+  // Remove all the unselect roles from the configuration, so the configuration
+  // and the schema match.
+  // more info https://www.drupal.org/node/3155688
+  $config->set('role_to_select', array_filter($role_to_select));
+  $config->save();
+}

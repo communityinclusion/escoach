@@ -76,7 +76,7 @@ class RegistrationRoleSettings extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $saved_role = $form_state->getValue('role_to_select');
+    $saved_role = array_filter($form_state->getValue('role_to_select'));
     $this->config('registration_role.setting')
       ->set('role_to_select', $saved_role)
       ->save();
