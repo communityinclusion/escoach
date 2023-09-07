@@ -32,12 +32,12 @@ function registration_role_user_presave(UserInterface $user) {
 
   // Get the current user id.
   $current_user_id = \Drupal::currentUser()->id();
-  if ($current_user_id == 0) {
+  if ($current_user_id == 0 && PHP_SAPI !== 'cli') {
     // If the current user id is 0, then this user is self registrating, so ask
     // the module to assign roles, if applicable.
     $assign_roles = TRUE;
   }
-  elseif ($current_user_id != 0 && $case == 'admin') {
+  elseif (($current_user_id != 0 || PHP_SAPI === 'cli') && $case == 'admin') {
     // If the current user id is not 0, then another user (admin, or anyone with
     // the right permission) is creating this user, so the module will be asked
     // to assign roles only if the setting is set to 'admin'.
@@ -48,9 +48,7 @@ function registration_role_user_presave(UserInterface $user) {
     $config = \Drupal::config('registration_role.setting');
 
     foreach ($config->get('role_to_select') as $key => $value) {
-      if ($value) {
-        $user->addRole($key);
-      }
+      $user->addRole($key);
     }
   }
 }
