@@ -55,7 +55,10 @@ class BaseQuery {
     $this->email = $email;
     $this->provider = $provider;
 
-    $this->initDimension();
+    if (defined(static::VID)) {
+      $this->initDimension();
+    }
+
     $database = \Drupal::database();
     $this->query = $database->select(self::BASE_TABLE, self::BASE_TABLE);
 
