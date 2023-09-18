@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\hello_world\Access;
+namespace Drupal\surveycampaign\Access;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
