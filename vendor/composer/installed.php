@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'bbb6baaa6391da703c2a316b89e137dcfaf3a97d',
+        'reference' => '9cde65950c515ca0ca40e1cf3781caa53b9af0d1',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -302,6 +302,15 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/auto_entitylabel',
             'aliases' => array(),
             'reference' => '8.x-3.0',
+            'dev_requirement' => false,
+        ),
+        'drupal/bootstrap5' => array(
+            'pretty_version' => '3.0.10',
+            'version' => '3.0.10.0',
+            'type' => 'drupal-theme',
+            'install_path' => __DIR__ . '/../../web/themes/contrib/bootstrap5',
+            'aliases' => array(),
+            'reference' => '3.0.10',
             'dev_requirement' => false,
         ),
         'drupal/bootstrap_barrio' => array(
@@ -877,7 +886,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'bbb6baaa6391da703c2a316b89e137dcfaf3a97d',
+            'reference' => '9cde65950c515ca0ca40e1cf3781caa53b9af0d1',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(

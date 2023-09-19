@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ * B5 subtheme for ES Coach theme file.
+ */
+ use Drupal\block\Entity\Block;
+use Drupal\bootstrap5\SettingsManager;
+use Drupal\bootstrap5\SubthemeManager;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\views\ViewExecutable;
+
+ function b5subtheme_form_system_theme_settings_alter(&$form, FormStateInterface $form_state, $form_id = NULL) {
+   $form['components']['navbar']['bootstrap_barrio_navbar_top_background']['#options'] = array(
+       'bg-primary' => t('Primary'),
+       'bg-secondary' => t('Secondary'),
+       'bg-light' => t('Light'),
+       'bg-dark' => t('Dark'),
+       'bg-white' => t('White'),
+       'bg-transparent' => t('Transparent'),
+   );
+   $form['components']['navbar']['bootstrap_barrio_navbar_background']['#options'] = array(
+       'bg-primary' => t('Primary'),
+       'bg-secondary' => t('Secondary'),
+       'bg-light' => t('Light'),
+       'bg-dark' => t('Dark'),
+       'bg-white' => t('White'),
+       'bg-transparent' => t('Transparent'),
+   );
+ }
+ function b5subtheme_preprocess_node(array &$variables) {
+   $node = $variables['node'];
+   $example_class = '';
+   if (
+     $node->hasField('field_academics_other_specify')
+     && !$node->field_academics_other_specify->isEmpty()
+   ) {
+     $variables['field_academics_other_specify'] = strtolower($node->field_academics_other_specify->value);
+   }
+   $variables['field_academics_other_specify'] = $example_class;
+ }
+ function b5subtheme_preprocess(&$vars, $hook)
+ {
+   $vars['uid'] = \Drupal::currentUser()->id();
+ }

@@ -1,0 +1,85 @@
+// Sub theme styling.
+@import 'variables_drupal';
+
+// Bootstrap overriden variables.
+// @see https://getbootstrap.com/docs/5.2/customize/sass/#variable-defaults.
+@import 'variables_bootstrap';
+
+// Include bootstrap.
+@import '../../../../themes/contrib/bootstrap5/scss/style';
+#block-mainnavigation-2 ul#superfish-main {width: 72em; }
+#block-mainnavigation-2 ul#superfish-main > li { width: 14em; }
+#block-mainnavigation-2 ul#superfish-main > li,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul li {
+    background-color: #fff;
+   }
+   #block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent{ height: 4em; }
+  div.field__label.leftTable {float: left;display: block; width: 75%; border: 1px #ccc solid; height: 69px;padding-top: 18px; border-width: 1px 1px 0 1px; }
+   div.field__item.rightTable {float: left; display: block; width: 24%; border: 1px #ccc solid; border-width: 1px 1px 0 0;}
+   h3.field__label {font-size: 120%;}
+   .floatLeft {float:left;
+       width: min-content;
+     }
+    .page-user-register #edit-survey-participants-profiles-0-entity-field-partic-suspension-dates-0, .page-user-register #edit-survey-participants-profiles-0-entity-field-set-surveys-to-inactive-wrapper {display: none;}
+    .flexImage { width: 90%; max-width: 500px; margin: 0 0 0 5%; display: block; height: 100%;}
+    .site-footer__top .region.region-footer-first {width: 95%;}
+    .mainLogo {width: 50%;max-width: 550px;}
+    .sizeSlogan { font-size: 115%;color: #0077af;font-weight: bold;}
+    form input.is-invalid {color: red;}
+    #edit-survey-participants-profiles-0-entity-field-other-provider-wrapper {display: none;}
+    #edit-survey-participants-profiles-0-entity-field-other-provider-wrapper.showOther {display:block;}
+    #edit-field-other-provider-wrapper {display: none;}
+    #edit-field-other-provider-wrapper.showOther { display: block; }
+    select#edit-tid--2 option[value="12"] {display: none;}
+   #views-exposed-form-es-coach-library-page-1 #edit-submit-es-coach-library {margin-right: 15px;margin-bottom: 9px;}
+   #views-exposed-form-es-coach-library-page-1 #edit-actions, #views-exposed-form-es-coach-library-page-1 fieldset {width: 100%;}
+   #views-exposed-form-es-coach-library-page-1 #edit-actions input {width: 45%; float: left;}
+   #edit-submit-es-coach-user-library--2 {margin-bottom: 5px;}
+   #user-form #edit-survey-participants-profiles-wrapper {display: none;}
+   .page-view-survey-participants main, .view-survey-participants table.table {max-width: 930px; padding-right:0;}
+
+
+.myriadpro-number {
+ font-family: myriad-pro, sans-serif !important;
+ font-weight: 1000 !important;
+ font-style: normal !important;
+ color: #62943f !important;
+ font-size: 8em !important;
+ text-align: center !important;
+ margin: 0 0 !important;
+ line-height: .8 !important;
+
+}
+
+
+.myriadpro-text {
+ font-family: myriad-pro, sans-serif !important;
+ font-weight: 900 !important;
+ font-style: normal !important;
+ color: #62943f !important;
+ font-size: 2.5em !important;
+ text-align: center !important;
+ margin: 0 0 10px 0 !important;
+ line-height: .9 !important;
+
+}
+#navbar-main {
+
+   background-color: #fff;
+
+}
+
+.site-footer,footer.mt-auto.bg-light {
+
+   background: #e1e1e1 !important;
+
+}
+@media (min-width: 992px) {
+  .region.region-nav-branding {width: 100%;}
+
+
+
+  nav .navbar-brand img {height: 104px;}
+  }
+  #navbarSupportedContent ul.sf-menu a {padding: .3em .5em}
+  #superfish-user-menu li a {color:#737373; font-weight: bold; text-decoration: none;}
+  #superfish-user-menu li a:hover {text-decoration: underline;}

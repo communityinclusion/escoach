@@ -21,6 +21,7 @@
         "drupal/admin_can_login_anyuser": "^1.2",
         "drupal/admin_toolbar": "^3.4",
         "drupal/auto_entitylabel": "^3.0",
+        "drupal/bootstrap5": "^3.0",
         "drupal/bootstrap_barrio": "^5.5",
         "drupal/bootstrap_library": "^2.0",
         "drupal/captcha": "^2.0",
