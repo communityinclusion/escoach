@@ -7,10 +7,9 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\user\RoleInterface;
+use Drupal\user\Entity\Role;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\node\NodeTypeInterface;
-use Drupal\Core\Access\AccessResult;
 use Drupal\node\NodeInterface;
 
 /**
@@ -26,95 +25,64 @@ function nodeaccess_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_node_access_records().
  */
-function nodeaccess_node_access_records($node) {
-  $settings = \Drupal::configFactory()->get('nodeaccess.settings');
-  $ntype = $node->getType();
-  // Need to find out if node has own grants or whether to use defaults.
-  $default = $settings->get($ntype);
-  $roles_gids = $settings->get('role_map');
-  $nid = $node->id();
+function nodeaccess_node_access_records(NodeInterface $node) {
   $grants = [];
+  $settings = \Drupal::configFactory()->get('nodeaccess.settings');
+  $bundles_roles_grants = $settings->get('bundles_roles_grants');
+  $bundle_roles_grants = $bundles_roles_grants[$node->bundle()] ?? [];
 
-  // Setup default keys that are required by node_access_write_grants().
-  $grant_defaults = [
-    'gid' => 0,
-    'realm' => 'nodeaccess_rid',
-    'grant_view' => 0,
-    'grant_update' => 0,
-    'grant_delete' => 0,
-    'priority' => $settings->get('priority'),
-  ];
+  // `nodeaccess_author` grant is loaded from `nodeaccess.settings`.
+  if (isset($bundle_roles_grants['author'])) {
+    // If the node's author is anonymous, ignore. Don't grant anonymous the
+    // author access to avoid unexpected permission leaks.
+    // @todo Add a test.
+    if ($node->getOwner()->isAuthenticated()) {
+      $grants[] = [
+        'realm' => 'nodeaccess_author',
+        'gid' => $node->getOwnerId(),
+      ] + $bundle_roles_grants['author'];
+    }
+    unset($bundle_roles_grants['author']);
+  }
 
+  $map_rid_gid = $settings->get('map_rid_gid');
+
+  // Load grants from the `nodeaccess` table.
   $db = \Drupal::database();
   $entries = $db->select('nodeaccess', 'n')
     ->fields('n')
-    ->condition('nid', $nid, '=')
+    ->condition('nid', $node->id())
     ->execute()
     ->fetchAll();
-  $node_count = count($entries);
 
-  if ($node_count < 1) {
-    // Node has no own grants, use defaults if published.
-    if ($node->isPublished()) {
-      $i = 0;
-      foreach ($default as $key => $val) {
-        if ($key != 'author') {
-          $rid = $roles_gids[$key];
-          $grants[$i] = $default[$key];
-          $grants[$i]['gid'] = $rid;
-          $i++;
-        }
-      }
-    }
-    else {
-      // Otherwise, check access to unpublished content for authenticated and
-      // anonymous users.
-      $role_perms = user_role_permissions([AccountInterface::ANONYMOUS_ROLE, AccountInterface::AUTHENTICATED_ROLE]);
-      // Anonymous user setting.
-      $grants[] = [
-        'gid' => AccountInterface::ANONYMOUS_ROLE,
-        'grant_view' => in_array('bypass node access', $role_perms[AccountInterface::ANONYMOUS_ROLE]),
-      ];
-      // Authenticated user setting.
-      $grants[] = [
-        'gid' => AccountInterface::AUTHENTICATED_ROLE,
-        'grant_view' => in_array('bypass node access', $role_perms[AccountInterface::AUTHENTICATED_ROLE]),
-      ];
-    }
-  }
-  else {
-    // Node has own grants, use them.
-    $db = \Drupal::database();
-    $entries = $db->select('nodeaccess', 'n')
-      ->fields('n')
-      ->condition('nid', $nid, '=')
-      ->execute()
-      ->fetchAll();
-
-    $grants = [];
+  // If grants found in the `nodeaccess` table, it means that this node has its
+  // own grants granted via the Grants tab, no need to load grants from the
+  // `nodeaccess.settings`.
+  if (!empty($entries)) {
     foreach ($entries as $row) {
       $grants[] = [
-        'gid' => $row->gid,
         'realm' => $row->realm,
+        'gid' => $row->gid,
         'grant_view' => $row->grant_view,
         'grant_update' => $row->grant_update,
         'grant_delete' => $row->grant_delete,
       ];
     }
+    return $grants;
   }
-  // Apply author grants.
-  $grant = $default['author'];
-  $grant['gid'] = $node->getOwnerId();
-  $grant['realm'] = 'nodeaccess_author';
-  // Include author grant even with all values FALSE, it may be
-  // needed to overwrite an older value.
-  $grants[] = $grant;
-  $updated_grants = [];
-  foreach ($grants as $id => $grant) {
-    // Merge missing default grant keys.
-    $updated_grants[] = $grants[$id] + $grant_defaults;
+
+  // Or load grants from `nodeaccess.settings`.
+  if (!empty($bundle_roles_grants)) {
+    foreach ($bundle_roles_grants as $role_id => $grant_values) {
+      // $grant_values holds values with key grant_view, grant_update and
+      // grant_delete.
+      $grants[] = [
+        'realm' => 'nodeaccess_role',
+        'gid' => $map_rid_gid[$role_id],
+      ] + $grant_values;
+    }
   }
-  return $updated_grants;
+  return $grants;
 }
 
 /**
@@ -122,211 +90,116 @@ function nodeaccess_node_access_records($node) {
  */
 function nodeaccess_node_grants(AccountInterface $account, $op) {
   $config = \Drupal::configFactory()->get('nodeaccess.settings');
-  $role_map = $config->get('role_map');
+  $map_rid_gid = $config->get('map_rid_gid');
   $roles = $account->getRoles();
-  $rids = [];
+  $grant_ids = [];
 
-  foreach ($roles as $role) {
-    $rids[] = $role_map[$role];
+  foreach ($roles as $role_id) {
+    $grant_ids[] = $map_rid_gid[$role_id];
+  }
+  $user_id = $account->id();
+  if ($account->isAnonymous()) {
+    return [
+      'nodeaccess_role' => $grant_ids,
+      'nodeaccess_user' => [$user_id],
+    ];
   }
   return [
-    'nodeaccess_rid' => $rids,
-    'nodeaccess_uid' => [$account->id()],
-    'nodeaccess_author' => [$account->id()],
+    'nodeaccess_role' => $grant_ids,
+    'nodeaccess_user' => [$user_id],
+    'nodeaccess_author' => [$user_id],
   ];
 }
 
 /**
- * Implements hook_entity_update().
+ * Implements hook_ENTITY_TYPE_insert().
  */
-function nodeaccess_entity_update(EntityInterface $entity) {
-  $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
+function nodeaccess_node_type_insert(NodeTypeInterface $node_type) {
+  // Update `grants_tab_availability` and `bundles_roles_grants` in
+  // `nodeacess.settings` to add this bundle related settings.
+  $bundle = $node_type->id();
+  $nodeaccess_settings = \Drupal::configFactory()->getEditable('nodeaccess.settings');
 
-  if ($entity instanceof RoleInterface) {
-    $role_alias = $config->get('role_alias');
-    if ($role_alias[$entity->id()]) {
-      $role_alias[$entity->id()]['alias'] = $entity->label();
-      $role_alias[$entity->id()]['name'] = $entity->label();
-    }
-    else {
-      $role_alias[$entity->id()] = [
-        'alias' => $entity->label(),
-        'name' => $entity->label(),
-        'weight' => 0,
-        'allow' => 0,
-      ];
-    }
-    $config->set('role_alias', $role_alias);
-    $config->save();
-  }
-}
-
-
-/**
- * Implements hook_entity_insert().
- */
-function nodeaccess_entity_insert(EntityInterface $entity) {
-  $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
-
-  if ($entity instanceof RoleInterface) {
-    $roles_gids = array_flip($config->get('role_map'));
-    $roles_gids[] = $entity->id();
-    $config->set('role_map', array_flip($roles_gids));
-    $role_alias = $config->get('role_alias');
-    $role_alias[$entity->id()] = [
-      'alias' => $entity->label(),
-      'name' => $entity->label(),
-      'weight' => 0,
-      'allow' => 0,
+  $bundle_roles_grants = [];
+  foreach (Role::loadMultiple() as $role_id => $role) {
+    $bundle_roles_grants[$role_id] = [
+      'grant_view' => 0,
+      'grant_update' => 0,
+      'grant_delete' => 0,
     ];
-    $config->set('role_alias', $role_alias);
-    $config->save();
   }
+  $bundle_roles_grants['author'] = [
+    'grant_view' => 0,
+    'grant_update' => 0,
+    'grant_delete' => 0,
+  ];
+  $grants_tab_availability = $nodeaccess_settings->get('grants_tab_availability');
+  $grants_tab_availability[$bundle] = FALSE;
+  $bundles_roles_grants = $nodeaccess_settings->get('bundles_roles_grants');
+  $bundles_roles_grants[$bundle] = $bundle_roles_grants;
+  $nodeaccess_settings
+    ->set('grants_tab_availability', $grants_tab_availability)
+    ->set('bundles_roles_grants', $bundles_roles_grants)
+    ->save();
+  // @todo display a message or something to promote end users to update
+  //   `nodeaccess.settings`.
+  node_access_needs_rebuild(TRUE);
 }
 
 /**
- * Implements hook_entity_delete().
+ * Implements hook_ENTITY_TYPE_delete().
  */
-function nodeaccess_entity_delete(EntityInterface $entity) {
-  $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
-
-  if ($entity instanceof RoleInterface) {
-    $roles_gids = $config->get('role_map');
-    unset($roles_gids[$entity->id()]);
-    $config->set('role_map', $roles_gids);
-    $role_alias = $config->get('role_alias');
-    unset($role_alias[$entity->id()]);
-    $config->set('role_alias', $role_alias);
-    $config->save();
-  }
+function nodeaccess_node_type_delete(NodeTypeInterface $node_type) {
+  // Update `grants_tab_availability` and `bundles_roles_grants` in
+  // `nodeacess.settings` to remove this bundle related settings.
+  $bundle = $node_type->id();
+  $nodeaccess_settings = \Drupal::configFactory()->getEditable('nodeaccess.settings');
+  $grants_tab_availability = $nodeaccess_settings->get('grants_tab_availability');
+  $bundles_roles_grants = $nodeaccess_settings->get('bundles_roles_grants');
+  unset($grants_tab_availability[$bundle]);
+  unset($bundles_roles_grants[$bundle]);
+  $nodeaccess_settings
+    ->set('grants_tab_availability', $grants_tab_availability)
+    ->set('bundles_roles_grants', $bundles_roles_grants)
+    ->save();
 }
 
 /**
- * Implements hook_node_delete().
+ * Implements hook_ENTITY_TYPE_delete().
  */
 function nodeaccess_node_delete(EntityInterface $node) {
-  // Deleting node, delete related permissions.
+  // Remove related records from the `nodeaccess` table .
   \Drupal::database()->delete('nodeaccess')
     ->condition('nid', $node->id())
     ->execute();
 }
 
 /**
- * Implements hook_ENTITY_TYPE_delete().
- */
-function nodeaccess_node_type_delete(NodeTypeInterface $type) {
-  $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
-  $allowed_types = $config->get('allowed_types');
-  unset($allowed_types[$type->id()]);
-  $config->clear($type->id())
-    ->set('allowed_types', $allowed_types)
-    ->save();
-}
-
-/**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function nodeaccess_node_type_insert(NodeTypeInterface $type) {
-  $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
-
-  // New node type, default to whatever is set for access content permission.
-  $role_perms = user_role_permissions([AccountInterface::ANONYMOUS_ROLE, AccountInterface::AUTHENTICATED_ROLE]);
-  $anonymous_access = (int) in_array('access content', $role_perms[AccountInterface::ANONYMOUS_ROLE]);
-  $authenticated_access = (int) in_array('access content', $role_perms[AccountInterface::AUTHENTICATED_ROLE]);
-
-  $grants[AccountInterface::ANONYMOUS_ROLE] = [
-    'grant_view' => $anonymous_access,
-    'grant_update' => 0,
-    'grant_delete' => 0,
-  ];
-  $grants[AccountInterface::AUTHENTICATED_ROLE] = [
-    'grant_view' => $authenticated_access,
-    'grant_update' => 0,
-    'grant_delete' => 0,
-  ];
-  $grants['author'] = [
-    'grant_view' => 0,
-    'grant_update' => 0,
-    'grant_delete' => 0,
-  ];
-  $allowed_types = $config->get('allowed_types');
-  $allowed_types[$type->id()] = 0;
-  $config->set($type->id(), $grants)
-    ->set('allowed_types', $allowed_types)
-    ->save();
-  node_access_needs_rebuild(TRUE);
+function nodeaccess_user_role_insert(EntityInterface $entity) {
+  /** @var \Drupal\user\RoleInterface $entity */
+  /** @var \Drupal\nodeaccess\NodeAccessHelper $nodeaccess_helper */
+  $nodeaccess_helper = \Drupal::service('nodeaccess.helper');
+  $nodeaccess_helper->addRoleRelateddSettings($entity);
 }
 
 /**
- * Implements hook_node_access().
+ * Implements hook_ENTITY_TYPE_update().
  */
-function nodeaccess_node_access(NodeInterface $node, $op, $account) {
-  $settings = \Drupal::configFactory()->get('nodeaccess.settings');
-  $role_map = $settings->get('role_map');
-  switch ($op) {
-    case 'update':
-    case 'delete':
-      // If the node belongs to a deleted user.
-      if ($account->id() == 0 && $node->getOwnerId() == 0) {
-        // We check if the role has particular access to this node.
-        $grants = _nodeaccess_get_grants($node);
-        $anonymous_rid = $role_map[AccountInterface::ANONYMOUS_ROLE];
-        // If anonymous has rights to this node, we allow them.
-        if (($grants['rid'][$anonymous_rid]['grant_update'] && $op == 'update') ||
-            ($grants['rid'][$anonymous_rid]['grant_delete'] && $op == 'delete')) {
-          return AccessResult::Allowed();
-        }
-        return AccessResult::forbidden();
-      }
-      break;
-  }
+function nodeaccess_user_role_update(EntityInterface $entity) {
+  /** @var \Drupal\user\RoleInterface $entity */
+  /** @var \Drupal\nodeaccess\NodeAccessHelper $nodeaccess_helper */
+  $nodeaccess_helper = \Drupal::service('nodeaccess.helper');
+  $nodeaccess_helper->updateRoleRelatedSettings($entity);
 }
 
 /**
- * Return the grants applied to a node object used for Grant form.
- *
- * @return array
- *   An array of grants with keys 'rid' for roles and 'uid' for users.
+ * Implements hook_ENTITY_TYPE_delete().
  */
-function _nodeaccess_get_grants($node) {
-  $grants = [];
-  // Load all roles.
-  $db = \Drupal::database();
-  $result = $db->select('nodeaccess', 'na')
-    ->fields('na', ['gid', 'grant_view', 'grant_update', 'grant_delete'])
-    ->condition('nid', $node->id, '=')
-    ->condition('realm', 'nodeaccess_rid', '=')
-    ->execute()
-    ->fetchAll();
-  foreach ($result as $grant) {
-    $grants['rid'][$grant->gid] = [
-      'grant_view' => $grant->grant_view,
-      'grant_update' => $grant->grant_update,
-      'grant_delete' => $grant->grant_delete,
-    ];
-  }
-  // Load users from node_access.
-  $db = \Drupal::database();
-  $entries = $db->select('nodeaccess', 'n');
-  $entries->join('users_field_data', 'ufd', 'ufd.uid = n.gid');
-  $entries->fields('n', ['grant_view', 'grant_update', 'grant_delete'])
-    ->condition('n.nid', $node->id, '=')
-    ->condition('n.realm', 'nodeaccess_uid', '=')
-    ->orderBy('ufd.name', 'ASC');
-  $result = $entries->execute();
-
-  $results = [];
-  while($data = $result->fetchObject()) {
-    $results[] = $data;
-  }
-  foreach ($result as $account) {
-    $grants['uid'][$account->uid] = [
-      'name' => $account->name,
-      'keep' => 1,
-      'grant_view' => $account->grant_view,
-      'grant_update' => $account->grant_update,
-      'grant_delete' => $account->grant_delete,
-    ];
-  }
-  return $grants;
+function nodeaccess_user_role_delete(EntityInterface $entity) {
+  /** @var \Drupal\user\RoleInterface $entity */
+  /** @var \Drupal\nodeaccess\NodeAccessHelper $nodeaccess_helper */
+  $nodeaccess_helper = \Drupal::service('nodeaccess.helper');
+  $nodeaccess_helper->deleteRoleRelatedSettings($entity);
 }

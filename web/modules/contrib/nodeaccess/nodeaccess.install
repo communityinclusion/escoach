@@ -6,52 +6,49 @@
  */
 
 use Drupal\node\Entity\NodeType;
+use Drupal\user\Entity\Role;
 
 /**
  * Implements hook_install().
  */
 function nodeaccess_install() {
-  // Set up default permissions to be view for authenticated and
-  // anonymous users, and all permissions for author.
-  $grants = [];
-  $role_perms = user_role_permissions(['anonymous', 'authenticated']);
-  $grants['anonymous']['grant_view'] = (int) in_array('access content', $role_perms['anonymous']);
-  $grants['authenticated']['grant_view'] = (int) in_array('access content', $role_perms['authenticated']);
-  $role_alias = [];
-  $settings = \Drupal::configFactory()->getEditable('nodeaccess.settings');
+  $role_ids = [];
+  $roles_settings = [];
+  foreach (Role::loadMultiple() as $role_id => $role) {
+    $role_ids[] = $role_id;
+    // Note: the role ID ($role_id) is a string.
+    $roles_settings[$role_id] = [
+      'display_name' => $role->label(),
+      'name' => $role->label(),
+      'weight' => 0,
+      'selected' => FALSE,
+    ];
+  }
 
-  foreach (NodeType::loadMultiple() as $type => $bundle) {
-    // We check the edit permissions for anonymous and authenticated users.
-    $edit_perm = 'edit any ' . $type . ' content';
-    $grants['anonymous']['grant_update'] = (int) in_array($edit_perm, $role_perms['anonymous']);
-    $grants['authenticated']['grant_update'] = (int) in_array($edit_perm, $role_perms['authenticated']);
-    // We check the delete permissions for anonymous and authenticated users.
-    $delete_perm = 'delete any ' . $type . ' content';
-    $grants['anonymous']['grant_delete'] = (int) in_array($delete_perm, $role_perms['anonymous']);
-    $grants['authenticated']['grant_delete'] = (int) in_array($delete_perm, $role_perms['authenticated']);
-    // Author Permissions.
-    $grants['author'] = [
+  $bundles_roles_grants = [];
+  foreach (NodeType::loadMultiple() as $bundle => $node_type) {
+    foreach ($role_ids as $role_id) {
+      $bundles_roles_grants[$bundle][$role_id] = [
+        'grant_view' => 0,
+        'grant_update' => 0,
+        'grant_delete' => 0,
+      ];
+    }
+    // @todo , avoid conflicting with a content type with machine name: author.
+    // Author is a special role.
+    $bundles_roles_grants[$bundle]['author'] = [
       'grant_view' => 0,
       'grant_update' => 0,
       'grant_delete' => 0,
     ];
-    $settings->set($type, $grants);
   }
-  $i = 1;
-  $role_map = [];
-  foreach (user_roles() as $id => $role) {
-    $role_alias[$id] = [
-      'alias' => $role->label(),
-      'name' => $role->label(),
-      'weight' => 0,
-      'allow' => 0,
-    ];
-    $role_map[$id] = $i;
-    $i++;
-  }
-  $settings->set('role_alias', $role_alias);
-  $settings->set('role_map', $role_map);
-  $settings->save();
+  \Drupal::configFactory()->getEditable('nodeaccess.settings')
+    ->set('bundles_roles_grants', $bundles_roles_grants)
+    // The rid means role ID which is a string, and the gid means grant ID which
+    // is an integer.
+    ->set('map_rid_gid', array_flip($role_ids))
+    ->set('roles_settings', $roles_settings)
+    ->save();
 }
 
 /**
@@ -127,4 +124,90 @@ function nodeaccess_update_8101() {
   }
   $config->set('role_alias', $role_alias);
   $config->save();
+}
+
+/**
+ * Updates realms.
+ */
+function nodeaccess_update_9001(&$sandbox) {
+  $database = \Drupal::database();
+  $database->update('nodeaccess')
+    ->fields([
+      'realm' => 'nodeaccess_user',
+    ])
+    ->condition('realm', 'nodeaccess_uid')
+    ->execute();
+  $database->update('nodeaccess')
+    ->fields([
+      'realm' => 'nodeaccess_role',
+    ])
+    ->condition('realm', 'nodeaccess_rid')
+    ->execute();
+}
+
+/**
+ * Migrates nodeaccess.settings.
+ */
+function nodeaccess_update_9002(&$sandbox) {
+  $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
+  // From grants to allowed_grant_operations.
+  $old_grants = $config->get('grants');
+  $config
+    ->set('allowed_grant_operations', [
+      'grant_view' => (boolean) $old_grants['view'],
+      'grant_update' => (boolean) $old_grants['edit'],
+      'grant_delete' => (boolean) $old_grants['delete'],
+    ])
+    ->clear('grants');
+
+  // From allowed_types to grants_tab_availability.
+  $old_allowed_types = $config->get('allowed_types') ?? [];
+  $grants_tab_availability = [];
+  foreach ($old_allowed_types as $bundle => $value) {
+    $grants_tab_availability[$bundle] = (boolean) $value;
+  }
+  $config
+    ->set('grants_tab_availability', $grants_tab_availability)
+    ->clear('allowed_types');
+
+  // From role_map to map_rid_gid.
+  $old_role_map = $config->get('role_map');
+  $config
+    ->set('map_rid_gid', $old_role_map)
+    ->clear('role_map');
+
+  // From role_alias to roles_settings.
+  $old_role_alias = $config->get('role_alias');
+  $roles_settings = [];
+  foreach ($old_role_alias as $role_id => $value) {
+    $roles_settings[$role_id] = [
+      'display_name' => $value['alias'],
+      'name' => $value['name'],
+      'weight' => (int) $value['weight'],
+      'selected' => (boolean) $value['allow'],
+    ];
+  }
+  $config
+    ->set('roles_settings', $roles_settings)
+    ->clear('role_alias');
+
+  $bundles = array_keys($old_allowed_types);
+  $bundles_roles_grants = [];
+  foreach ($bundles as $bundle) {
+    $old_bundle_settings = $config->get($bundle);
+    foreach ($old_bundle_settings as $role_id => $grant) {
+      $bundles_roles_grants[$bundle][$role_id] = [
+        'grant_view' => (int) $grant['grant_view'],
+        'grant_update' => (int) $grant['grant_update'],
+        'grant_delete' => (int) $grant['grant_delete'],
+      ];
+    }
+    $config->clear($bundle);
+  }
+  $config
+    ->set('bundles_roles_grants', $bundles_roles_grants)
+    ->clear('priority')
+    ->clear('preserve')
+    ->save();
+
 }
