@@ -18,6 +18,7 @@
  */
 #}
 
+{{ attach_library('commerce_order/form') }}
 {% set order_state = order_entity.getState.getLabel %}
 
 <div class="layout-order-form clearfix">

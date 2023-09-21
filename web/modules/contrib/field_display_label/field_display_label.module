@@ -65,3 +65,16 @@ function field_display_label_preprocess_field(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_help().
+ */
+function field_display_label_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.field_display_label':
+      $output = '<p>' . t('The Field Display Label module allows you to change the display label of a field on a per-bundle basis. This can be useful for changing the label of a field without needing to alter the field itself or override the label using a template.') . '</p>';
+      $output .= '<h3>' . t('Using the Field Display Label module') . '</h3>';
+      $output .= '<p>' . t('To use the Field Display Label module, navigate to the manage display page for a content type or entity bundle and click on the gear icon for the field you want to modify. From there, you can enter a custom label for the field and choose which view modes it applies to.') . '</p>';
+      return $output;
+  }
+}

@@ -301,10 +301,19 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
    */
   protected function getExposedInput(array $exposed_input = []): array {
     if (empty($exposed_input)) {
-      // To avoid unnecessary reset of selection, we apply default values. We do
-      // that, because default values can be provided or not in the request, and
-      // it doesn't change results.
-      $exposed_input = \array_merge($this->view->getExposedInput(), $this->view->exposed_raw_input);
+      // To avoid unnecessary reset of selection, we apply default values.
+      // We do that, because default values can be provided or not
+      // in the request, and it doesn't change results.
+      $exposed_input = $this->view->getExposedInput();
+
+      // Remove ajax_page_state that leaks to exposed input if AJAX is
+      // enabled on the view.
+      unset($exposed_input['ajax_page_state']);
+      foreach ($this->view->exposed_raw_input as $key => $value) {
+        if (!array_key_exists($key, $exposed_input)) {
+          $exposed_input[$key] = $value;
+        }
+      }
     }
     // Sort values to avoid problems when comparing old and current exposed
     // input.
@@ -372,6 +381,7 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
     $options['batch'] = ['default' => TRUE];
     $options['batch_size'] = ['default' => 10];
     $options['form_step'] = ['default' => TRUE];
+    $options['ajax_loader'] = ['default' => FALSE];
     $options['buttons'] = ['default' => FALSE];
     $options['clear_on_exposed'] = ['default' => TRUE];
     $options['action_title'] = ['default' => $this->t('Action')];
@@ -421,6 +431,13 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
       '#default_value' => $this->options['form_step'],
       // Due to #2879310 this setting must always be at TRUE.
       '#access' => FALSE,
+    ];
+
+    $form['ajax_loader'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show ajax throbber.'),
+      '#description' => $this->t('With this enabled, a throbber will be shown when an ajax petition from VBO is triggered.'),
+      '#default_value' => $this->options['ajax_loader'],
     ];
 
     $form['buttons'] = [
@@ -611,6 +628,10 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
       $this->view->style_plugin->options['views_bulk_operations_enabled'] = TRUE;
     }
     $form['#attached']['library'][] = 'views_bulk_operations/frontUi';
+    if ($this->options['ajax_loader']) {
+      $form['#attached']['drupalSettings']['vbo']['ajax_loader'] = TRUE;
+    }
+
     // Only add the bulk form options and buttons if
     // there are results and any actions are available.
     $action_options = $this->getBulkOptions();
@@ -624,8 +645,7 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
         if ($entity = $this->getEntity($row)) {
           $bulk_form_keys[$row_index] = self::calculateEntityBulkFormKey(
             $entity,
-            $row->{$base_field},
-            $row_index
+            $row->{$base_field}
           );
           $entity_labels[$row_index] = $entity->label();
         }
@@ -780,6 +800,7 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
             'class' => ['vbo-multipage-selector'],
           ],
         ];
+        $form['#attached']['drupalSettings']['vbo_selected_count'][$this->tempStoreData['view_id']][$this->tempStoreData['display_id']] = $count;
 
         // Get selection info elements.
         $form['header'][$this->options['id']]['multipage']['list'] = $this->getMultipageList($this->tempStoreData);

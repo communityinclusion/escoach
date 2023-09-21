@@ -1,10 +1,10 @@
 /**
  * @file
- * Affix for Bootstrap 4.
+ * Affix for Bootstrap 5.
  * https://www.codeply.com/users/skelly
  *
  */
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -26,7 +26,7 @@
 
       };
 
-      $(once('affixed', '[data-toggle="affix"]', context)).each(function () {
+      once('affixed', '[data-toggle="affix"]', context).forEach(function () {
         var ele = $(this),
             wrapper = $('<div></div>');
 
@@ -40,4 +40,4 @@
       });
     }
   }
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);
