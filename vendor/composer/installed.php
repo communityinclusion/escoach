@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '2f7b65f2e9fab2a5e4e75cf09855105faf55924c',
+        'reference' => '15f01b41893840c068a432c3f5e8d8a81647c8a8',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -798,12 +798,12 @@
             'dev_requirement' => false,
         ),
         'drupal/menu_breadcrumb' => array(
-            'pretty_version' => '1.16.0',
-            'version' => '1.16.0.0',
+            'pretty_version' => '2.0.0-alpha0',
+            'version' => '2.0.0.0-alpha0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/menu_breadcrumb',
             'aliases' => array(),
-            'reference' => '8.x-1.16',
+            'reference' => '2.0.0-alpha0',
             'dev_requirement' => false,
         ),
         'drupal/migrate_source_csv' => array(
@@ -886,7 +886,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '2f7b65f2e9fab2a5e4e75cf09855105faf55924c',
+            'reference' => '15f01b41893840c068a432c3f5e8d8a81647c8a8',
             'dev_requirement' => false,
         ),
         'drupal/registration_role' => array(
