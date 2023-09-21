@@ -12,29 +12,25 @@
 }
 
 .password-strength__indicator {
-  background-color: map-get($theme-colors,"success");
+  background-color: theme-color("success");
   -webkit-transition: width 0.5s ease-out;
   transition: width 0.5s ease-out;
 }
 
 .password-strength__indicator.is-weak {
-    background-color: map-get($theme-colors,"danger");
-
+    background-color: theme-color("danger");
 }
 
 .password-strength__indicator.is-fair {
-  background-color: map-get($theme-colors,"warning");
-
+  background-color: theme-color("warning");
 }
 
 .password-strength__indicator.is-good {
-  background-color: map-get($theme-colors,"info");
-
+  background-color: theme-color("info");
 }
 
 .password-strength__indicator.is-strong {
-  background-color: map-get($theme-colors,"success");
-
+  background-color: theme-color("success");
 }
 
 .password-confirm,
@@ -73,12 +69,12 @@
 /* Styling for the status indicator of the passwords match test.  */
 
 .password-confirm .ok {
-  color: map-get($theme-colors,"success");
+  color: theme-color("success");
   font-weight: bold;
 }
 
 .password-confirm .error {
-  color: map-get($theme-colors,"danger");
+  color: theme-color("danger");
   font-weight: bold;
 }
 
@@ -101,11 +97,11 @@ body.path-user {
       color: $primary-shade
     }
     .field__item {
-      padding: calc($spacer / 4) $spacer;
+      padding: $spacer/4 $spacer;
       border-radius: $spacer;
       background: $gray-200;
       min-width: 250px;
-      margin: calc($spacer / 4) 0;
+      margin: $spacer/4 0; 
     }
   }
 
@@ -114,11 +110,11 @@ body.path-user {
       color: $primary-shade
     }
     .field__item {
-      padding: calc($spacer / 4) $spacer;
+      padding: $spacer/4 $spacer;
       border-radius: $spacer;
       background: $gray-200;
       width: 100%;
-      margin: calc($spacer / 4) 0;
+      margin: $spacer/4 0; 
     }
   }
 }

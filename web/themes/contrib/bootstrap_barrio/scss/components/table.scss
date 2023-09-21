@@ -5,11 +5,11 @@
 
 .sticky-header thead th {
     vertical-align: bottom;
-    border-bottom: calc(2 * $table-border-width) solid $table-border-color;
+    border-bottom: (2 * $table-border-width) solid $table-border-color;
 }
 
 .sticky-header th {
-    padding: $table-cell-padding-x $table-cell-padding-y;
+    padding: $table-cell-padding;
     vertical-align: top;
     border-top: $table-border-width solid $table-border-color;
 }

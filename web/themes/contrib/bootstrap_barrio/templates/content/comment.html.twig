@@ -64,6 +64,7 @@
  * @see template_preprocess_comment()
  */
 #}
+
 {{ attach_library('bootstrap_barrio/comments') }}
 {%
   set classes = [
@@ -92,7 +93,7 @@
       reader without this information.
     #}
     {% if parent %}
-      <p class="visually-hidden">{{ parent }}</p>
+      <p class="sr-only">{{ parent }}</p>
     {% endif %}
   </div>
 

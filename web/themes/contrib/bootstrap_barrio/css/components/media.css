@@ -62,7 +62,7 @@
 .media-library-wrapper .form--inline {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: end;
 }
 
 .media-library-widget-modal .js-form-item {

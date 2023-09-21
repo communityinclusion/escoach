@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Default theme implementation for a card header footer layout.
+ * Default theme implementation for a media layout.
  *
  * Available variables:
  * - content: The content for this layout.
@@ -10,20 +10,12 @@
  * @ingroup themeable
  */
 #}
-<div{{ attributes.addClass('card', 'clearfix', 'media') }}>
+<div {{ attributes.addClass('media') }}>
 
-  <div class="row g-0">
+  {{ content.first }}
 
-    <div{{ region_attributes.first.addClass('col-md-4') }}>
-      {{ content.first }}
-    </div>
-
-    <div{{ region_attributes.second.addClass('col-md-8') }}>
-      <div class="card-body media-body">
-        {{ content.second }}
-      </div>
-    </div>
-
+  <div{{ region_attributes.second.addClass('media-body') }}>
+    {{ content.second }}
   </div>
 
 </div>
