@@ -10,13 +10,13 @@ namespace Drupal\es_homepage\Query;
  */
 
 
-class keyActivities extends HomePageQuery {
+class keyActivitiesQuery extends HomePageQuery {
   const QUESTION_ID = 483;
   const ACTIVITIES = [
-    'admin' => 11663,
-    'afterHire' => 11660,
-    'leadingToHire' => [11658, 11659, 11661],
-    'nonEmployment' => 11662
+    'Administrative' => 11663,
+    'AFTER hire' => 11660,
+    'Leading to hire' => [11658, 11659, 11661],
+    'Non-employment' => 11662
   ];
 
   public function __construct($year, $month, $email, $provider) {

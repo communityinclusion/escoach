@@ -4,7 +4,9 @@ namespace Drupal\es_homepage\Services;
 use Drupal\es_homepage\Query\bestPractices;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
-use Drupal\es_homepage\Query\keyActivities;
+use Drupal\es_homepage\Query\HomePageQuery;
+use Drupal\es_homepage\Query\keyActivitiesQuery;
+use Drupal\es_homepage\Query\StateQuery;
 
 
 class HomePageService {
@@ -15,7 +17,15 @@ class HomePageService {
 
   private $email;
 
+  /**
+   * @var string
+   */
   private $provider;
+
+  /**
+   * @var array
+   */
+  private $providerList;
 
   /**
    * @var string
@@ -37,15 +47,24 @@ class HomePageService {
    */
   private $entityTypeManager;
 
+  private $job_type;
+
+  /**
+   * @var array
+   */
+  private $stateList;
+
   public function __construct(AccountProxy $currentUser, EntityTypeManagerInterface $entityTypeManager) {
     $this->email = $currentUser->getEmail();
     $this->currentUser = $currentUser;
     $this->entityTypeManager = $entityTypeManager;
 
-    $this->getProvider();
+    // Default values
+    $this->job_type = 'Other';
+    $this->provider = '';
   }
 
-  private function getProvider() {
+  public function getProvider() {
     $profiles = $this->entityTypeManager->getStorage('profile')
       ->loadByProperties([
         'uid' => $this->currentUser->id(),
@@ -60,11 +79,17 @@ class HomePageService {
       if (isset($profile->field_provider->entity)) {
         $this->provider = $profile->field_provider->entity->getName();
       }
+      if (isset($profile->field_job_type->value)) {
+        $this->job_type = $profile->field_job_type->value;
+      }
     }
-
   }
 
-  public function setDateRange($year, $month) {
+  public function setCurrentProvider($provider) {
+    $this->provider = $provider;
+  }
+
+  public function setDateRange($year = NULL, $month = NULL) {
 
     if (!$year || !$month) {
       $today = new \DateTime();
@@ -84,10 +109,34 @@ class HomePageService {
     $this->previousYear = $prev->format('Y');
   }
 
+  public function getStateList($year, $month) {
+    $query = new StateQuery($year, $month, '', '');
+    $this->stateList = $query->execute();
+  }
 
-  public function keyActivities($year, $mont, $state = NULL) : array {
+  public function getProviderList() {
+    $profiles = $this->entityTypeManager->getStorage('profile')
+      ->loadByProperties([
+        'uid' => $this->currentUser->id(),
+        'type' => 'technical_assistant',
+        'is_default' => 1,
+      ]);
+
+    if ($profiles) {
+      $profile = current($profiles);
+    }
+    if (isset($profile)) {
+      if (isset($profile->field_providers)) {
+        foreach ($profile->field_providers as $provider) {
+          $this->providerList[] = $provider->entity->getName();
+        }
+      }
+    }
+  }
+
+  public function keyActivities($year, $month, $state = NULL) : array {
     $this->setDateRange($year, $month);
-    $keyActivities = new keyActivities($this->year, $this->month, $this->email, $this->provider);
+    $keyActivities = new keyActivitiesQuery($this->year, $this->month, $this->email, $this->provider);
 
     if (!empty($this->email)) {
       $keyActivities->buildSums('Me');
@@ -105,7 +154,7 @@ class HomePageService {
 
     $lastMonthResults = $keyActivities->execute();
 
-    $keyActivities = new keyActivities($this->previousYear, $this->previousMonth, $this->email, $this->provider);
+    $keyActivities = new keyActivitiesQuery($this->previousYear, $this->previousMonth, $this->email, $this->provider);
 
     if (!empty($this->email)) {
       $keyActivities->buildSums('Me');
@@ -113,13 +162,18 @@ class HomePageService {
     if (!empty($this->provider)) {
       $keyActivities->buildSums('Provider');
     }
+    if (!empty($state)) {
+      $keyActivities->buildSums('State', $state);
+    }
+
     $keyActivities->buildSums('All');
 
     $prevMonthResults = $keyActivities->execute();
 
     return [
-      'lastMonth' => $lastMonthResults,
-      'prevMonth' => $prevMonthResults
+      'activities' => array_keys($keyActivities::ACTIVITIES),
+      'lastMonth' => $lastMonthResults[0],
+      'prevMonth' => $prevMonthResults[0],
     ];
   }
 

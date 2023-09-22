@@ -13,6 +13,13 @@ class HomePageQuery extends BaseQuery {
 
   public function setDateRange($year, $month) {
 
+    if (!$year || !$month) {
+      $today = new \DateTime();
+      $lastMonth = $today->modify('first day of last month');
+      $month = $lastMonth->format('m');
+      $year = $lastMonth->format('Y');
+    }
+
     $this->query->addExpression('MONTH(date_submitted)', 'month');
 
     $fr_date = new \DateTime("$year-$month-01");
@@ -27,4 +34,14 @@ class HomePageQuery extends BaseQuery {
       'BETWEEN');
   }
 
+  public function addExpression($expr, $alias) {
+    $this->query->addExpression($expr, $alias);
+  }
+
+  protected function getMachineName($string) {
+    $transliterated = \Drupal::transliteration()->transliterate($string, LanguageInterface::LANGCODE_DEFAULT, '_');
+    $transliterated = mb_strtolower($transliterated);
+
+    return preg_replace('@[^a-z0-9_.]+@', '_', $transliterated);
+  }
 }
