@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HomePageController extends ControllerBase {
 
+  const TA_ROLE = 'ta_admin';
 
   /**
    * @var HomePageService
@@ -32,28 +33,58 @@ class HomePageController extends ControllerBase {
 
   public function activities($year = NULL, $month = NULL) : array {
 
-    $this->homePageService->setDateRange($year, $month);
+    $libraries = ['es_homepage/charts'];
+    $data = [];
 
+    $this->homePageService->setDateRange($year, $month);
+    $data['role'] = 'ANON';
     if ($this->currentUser->isAnonymous()) {
-      $this->homePageService->getStateList($year, $month);
+      $data['stateList'] = $this->homePageService->getStateList($year, $month);
+      $state = \Drupal::request()->get('state') ?? array_keys($data['stateList'])[0] ?? '';
+      $libraries[] = 'es_homepage/states';
     }
     else {
+      $state = NULL;
       $roles = $this->currentUser->getRoles();
-      if (in_array('TA', $roles)) {
-        $this->homePageService->getProviderList();
+      if (in_array(self::TA_ROLE, $roles)) {
+        $data['role'] = 'TA';
+        $data['providerList'] = $this->homePageService->getProviderList();
+        $libraries[] = 'es_homepage/providers';
+        $provider = \Drupal::request()->get('provider') ?? $data['providerList'][0];
+        $this->homePageService->setCurrentProvider($provider);
       }
       elseif (in_array('survey_participant', $roles)) {
         $this->homePageService->getProvider();
+        $data['role'] = $this->homePageService->getJobType();
       }
       else {
+        $data['role'] = 'OTHER';
         // Who else is left???
       }
     }
 
-    $data = $this->homePageService->keyActivities($year, $month, $state);
+    $data += $this->homePageService->keyActivities($year, $month, $data['role'], $state);
+    $chart = $this->homePageService->buildChart($data, $data['role']);
 
     return [
+      '#cache' => [
+        'contexts' => [
+          'url.query_args:state',
+          'url.query_args:provider',
+          'user',
+        ]
+      ],
       '#theme' => 'key_activities',
+      '#attached' => [
+        'library' => $libraries,
+        'drupalSettings' => [
+          'es_homepage' => [
+            'chart' => $chart['chart'],
+            'colors' => $chart['colors'],
+            'chart_type' =>  'bar',
+          ],
+        ],
+      ],
       '#data' => $data,
     ];
   }

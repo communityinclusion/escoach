@@ -1,7 +1,6 @@
 <?php
 namespace Drupal\es_homepage\Query;
 
-use Drupal\survey_dashboard\Query\BaseQuery;
 
 class HomePageQuery extends BaseQuery {
 
@@ -19,8 +18,6 @@ class HomePageQuery extends BaseQuery {
       $month = $lastMonth->format('m');
       $year = $lastMonth->format('Y');
     }
-
-    $this->query->addExpression('MONTH(date_submitted)', 'month');
 
     $fr_date = new \DateTime("$year-$month-01");
     $date = new \DateTime("$year-$month-01");

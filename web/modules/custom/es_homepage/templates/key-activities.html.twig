@@ -1,11 +1,10 @@
-KEY ACTIVITIES
 <div class="page-title">{{ data.title }}</div>
 
 {{ dump(data) }}
 
 {# Anon Users get State Select #}
 {% if data.stateList %}
-{% include '@es_homepage/state-select.html'  %}
+{% include '@es_homepage/state-select.html.twig' %}
 {% endif %}
 
 {# TA Users get Provider List #}

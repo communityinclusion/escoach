@@ -1,7 +1,14 @@
 <div class="state-select">
   <label>Choose a state</label>
-  <select name="state">
-    {% for state in data.stateList %}
-    <option value="{{ state }}">{{ state }}</option>
+  <select name="state" id="state-select">
+    {% for abbr, state in data.stateList %}
+      {% if state %}
+        {% if data.stateName and data.stateName == state %}
+          <option value="{{ abbr }}" selected="selected">{{ state }}</option>
+        {% else %}
+          <option value="{{ abbr }}">{{ state }}</option>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
   </select>
 </div>

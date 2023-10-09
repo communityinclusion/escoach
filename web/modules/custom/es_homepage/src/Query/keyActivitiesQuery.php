@@ -12,11 +12,28 @@ namespace Drupal\es_homepage\Query;
 
 class keyActivitiesQuery extends HomePageQuery {
   const QUESTION_ID = 483;
+  const VID = NULL;
   const ACTIVITIES = [
-    'Administrative' => 11663,
-    'AFTER hire' => 11660,
-    'Leading to hire' => [11658, 11659, 11661],
-    'Non-employment' => 11662
+    'LeadingToHire' => [
+      'label' => 'Leading to hire',
+      'answerIDs' => [11658, 11659, 11661],
+      'multiplier' => 1,
+    ],
+    'AfterHire' => [
+      'label' => 'AFTER hire',
+      'answerIDs' => 11660,
+      'multiplier' => 1,
+    ],
+    'Administrative' => [
+      'label' => 'Administrative',
+      'answerIDs' => 11663,
+      'multiplier' => -1,
+    ],
+    'NonEmployment' => [
+      'label' => 'Non-employment',
+      'answerIDs' => 11662,
+      'multiplier' => -1,
+    ],
   ];
 
   public function __construct($year, $month, $email, $provider) {
@@ -46,7 +63,8 @@ class keyActivitiesQuery extends HomePageQuery {
         $and = '';
     }
 
-    foreach ($this::ACTIVITIES as $category => $value) {
+    foreach ($this::ACTIVITIES as $category => $info) {
+      $value = $info['answerIDs'];
       $args = $commonArgs;
       $conditions = [];
       $alias = $category . $scope;
@@ -65,7 +83,7 @@ class keyActivitiesQuery extends HomePageQuery {
       }
       else {
         $ind1 = $this->getValueIndex();
-        $sql = sprintf('sum(case when answer%d IN (:value%d) %s then 1 else 0 end)',
+        $sql = sprintf('sum(case when answer%d = (:value%d) %s then 1 else 0 end)',
           $this::QUESTION_ID,
           $ind1,
           $and
