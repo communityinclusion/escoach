@@ -52,7 +52,6 @@ class BaseQuery {
 
     $database = \Drupal::database();
     $this->query = $database->select(self::BASE_TABLE, self::BASE_TABLE);
-
   }
 
   /**
@@ -75,4 +74,37 @@ class BaseQuery {
     return $this->valueIndex++;
   }
 
+  /**
+   * Add total sums for me and provider.
+   */
+  public function addSelectedSumsTotal($scope, $state = NULL) {
+    $args = [];
+    if ($scope == 'Me') {
+      $and = 'email = :email';
+      $args[':email'] = $this->email;
+    }
+    elseif ($scope == 'Provider') {
+      $and = 'provider = :provider';
+      $args[':provider'] = $this->provider;
+    }
+    elseif ($scope == 'State') {
+      $and = 'state = :state';
+      $args[':state'] = $state;
+    }
+    elseif ($scope == 'Observer') {
+      $and = "(regcode <= 10000 OR regcode IS NULL)";
+    }
+    elseif ($scope == 'All') {
+      $and = '1 = 1';
+    }
+    else {
+      return;
+    }
+
+    $sql = sprintf('sum(case when (%s) then 1 else 0 end)',
+      $and
+    );
+
+    $this->query->addExpression($sql, 'Total' . $scope, $args);
+  }
 }

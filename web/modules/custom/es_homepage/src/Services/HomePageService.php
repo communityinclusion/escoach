@@ -267,51 +267,23 @@ class HomePageService {
     $return = [];
 
     $this->setDateRange($year, $month);
-    $keyActivities = new keyActivitiesQuery($this->year, $this->month, $this->email, $this->provider);
 
-    $return['activities'] = $keyActivities::ACTIVITIES;
 
     $return['title'] = sprintf('Key Activities in %s, %d for ', $this->monthName, $this->year );
 
-    if (!empty($this->email)) {
-      $keyActivities->buildSums('Me');
+    $lastMonthResults = $this->buildKeyActivities($this->year, $this->month, $state);
+    $return['lastMonth'] = $this->processResults($lastMonthResults['records'][0], array_keys($lastMonthResults['activities']), $role, TRUE);
+
+    $return['activities'] = $lastMonthResults['activities'];
+    if (isset($lastMonthResults['stateName'])) {
+      $return['title'] .= $lastMonthResults['stateName'];
+    }
+    elseif (isset($lastMonthResults['provider'])) {
+      $return['title'] .= $lastMonthResults['provider'];
     }
 
-    if (!empty($this->provider)) {
-      $keyActivities->buildSums('Provider');
-      $return['provider'] = $this->provider;
-    }
-
-    if (!empty($state)) {
-      $keyActivities->buildSums('State', $state);
-      $return['stateName'] = $this->stateValues[$state];
-      $return['title'] .= $return['stateName'];
-    }
-
-    $keyActivities->buildSums('All');
-
-    $lastMonthResults = $keyActivities->execute();
-    $return['lastMonth'] = $this->processResults($lastMonthResults[0], array_keys($return['activities']), $role, TRUE);
-
-    $keyActivities = new keyActivitiesQuery($this->previousYear, $this->previousMonth, $this->email, $this->provider);
-
-    if (!empty($this->email)) {
-      $keyActivities->buildSums('Me');
-    }
-    if (!empty($this->provider)) {
-      $keyActivities->buildSums('Provider');
-    }
-    if (!empty($state)) {
-      $keyActivities->buildSums('State', $state);
-    }
-    else {
-      $return['title'] .= $this->provider;
-    }
-
-    $keyActivities->buildSums('All');
-
-    $prevMonthResults = $keyActivities->execute();
-    $return['prevMonth'] = $this->processResults($prevMonthResults[0], array_keys($return['activities']), $role);
+    $prevMonthResults = $this->buildKeyActivities($this->previousYear, $this->previousMonth, $state);
+    $return['prevMonth'] = $this->processResults($prevMonthResults['records'][0], array_keys($prevMonthResults['activities']), $role);
 
     $this->compareMonths($return);
 
@@ -340,13 +312,72 @@ class HomePageService {
     return $return;
   }
 
+  private function getTotals(&$data) {
+    foreach (['All', 'Me', 'Provider', 'State', 'Observer'] as $scope) {
+      $total = 0;
+      foreach ($data['activities'] as $activity => $info) {
+        if (!empty($data['records'][0][$activity . $scope])) {
+          $total+= $data['records'][0][$activity . $scope];
+        }
+      }
+      $data['records'][0]['Total' . $scope] = $total;
+    }
+  }
+
+  /**
+   * @param $year
+   * @param $month
+   *
+   * @return void
+   */
+  private function buildKeyActivities($year, $month, $state = NULL) {
+    $results = [];
+
+    $keyActivities = new keyActivitiesQuery($year, $month, $this->email, $this->provider);
+
+    if (!empty($this->email)) {
+      $keyActivities->buildSums('Me');
+      $keyActivities->addSelectedSumsTotal('Me');
+    }
+
+    if (!empty($this->provider)) {
+      $keyActivities->buildSums('Provider');
+      $keyActivities->addSelectedSumsTotal('Provider');
+      $results['provider'] = $this->provider;
+    }
+
+    if (!empty($state)) {
+      $results['stateName'] = $this->stateValues[$state];
+      $keyActivities->buildSums('State', $state);
+      $keyActivities->addSelectedSumsTotal('State', $state);
+    }
+
+    $keyActivities->buildSums('Observer');
+    $keyActivities->addSelectedSumsTotal('Observer');
+    $keyActivities->addSelectedSumsTotal('All');
+    $keyActivities->buildSums('All');
+
+    $results['records'] = $keyActivities->execute();
+    $results['activities'] = $keyActivities::ACTIVITIES;
+    $this->getTotals($results);
+
+    return $results;
+  }
+
+  /**
+   * @param $data
+   *
+   * @return void
+   */
   private function compareMonths(&$data) {
-    // -1 multiplier basically reverses the comparison for activities where more time spent is worse
+    // -1 multiplier reverses the comparison for activities where more time spent is worse
     foreach ($data['lastMonth'] as $scope => $info) {
       foreach ($data['activities'] as $machine => $activity) {
         if ($scope == 'All') {
           continue;
         }
+
+        // @todo - should this use avg instead of total?
         $last = $info[$machine]['total'] * $activity['multiplier'];
         $prev = $data['prevMonth'][$scope][$machine]['total'] * $activity['multiplier'];
         if ($last > $prev) {
@@ -366,17 +397,21 @@ class HomePageService {
 
     foreach ($activities as $activity) {
       $return['All'][$activity]['total'] = $results[$activity . 'All'];
-      $return['All'][$activity]['avg'] = $this->calculateAverage($results[$activity . 'All']);
+      $return['All'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'All');
+      $return['All'][$activity]['formatted'] = $this->formatDuration($return['All'][$activity]['avg']);
       if ($role == self::ANON_ROLE) {
         $return['State'][$activity]['total'] = $results[$activity . 'State'];
-        $return['State'][$activity]['avg'] = $this->calculateAverage($results[$activity . 'State']);
+        $return['State'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'State');
+        $return['State'][$activity]['formatted'] = $this->formatDuration($return['State'][$activity]['avg']);
       }
       elseif ($role != self::OTHER_ROLE ) {
         $return['Provider'][$activity]['total'] = $results[$activity . 'Provider'];
-        $return['Provider'][$activity]['avg'] = $this->calculateAverage($results[$activity . 'Provider']);
+        $return['Provider'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'Provider');
+        $return['Provider'][$activity]['formatted'] = $this->formatDuration($return['Provider'][$activity]['avg']);
         if ($role == self::CONSULTANT_ROLE) {
           $return['Me'][$activity]['total'] = $results[$activity . 'Me'];
-          $return['Me'][$activity]['avg'] = $this->calculateAverage($results[$activity . 'Me']);
+          $return['Me'][$activity]['avg'] = $this->calculateAverage($results, $activity,  'Me');
+          $return['Me'][$activity]['formatted'] = $this->formatDuration($return['Me'][$activity]['avg']);
         }
       }
     }
@@ -384,17 +419,60 @@ class HomePageService {
     return $return;
   }
 
-  public function calculateAverage($val) {
-    return $val;
+  public function calculateAverage($results, $alias, $scope) {
+    $totalCell = 'Total' . ucfirst($scope);
+    $dataCell = $alias . ucfirst($scope);
+
+    if (! isset($results[$totalCell]) || $results[$totalCell] == 0) {
+      return '0';
+    }
+
+    $totalValue = $results[$totalCell];
+    if ($scope == 'All') {
+      $totalValue -= $results['TotalObserver']; // A - E
+    }
+
+    if ($totalValue == 0) {
+      return 0;
+    }
+
+    $dayTotal = $results[$dataCell] / $totalValue * 8 / 24;
+
+    if ($scope == 'All') {
+        if ($alias == "Other") {
+          $results[$alias . 'Observer'] = 0;
+        }
+        $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+    }
+
+    return $dayTotal;
+  }
+
+
+  /**
+   * @param float $time
+   *
+   * @return string
+   */
+  private function formatDuration(float $time) : string {
+    $total_hours = $time * 24;
+    $hour_part = floor($total_hours);
+    $min_part = round(($total_hours - $hour_part) * 60);
+    if ($min_part == 60) {
+      $hour_part++;
+      $min_part = 0;
+    }
+    return sprintf("%d:%02d", $hour_part, $min_part);
   }
 
   /**
    * @param array $data
-   * @param string $role
    *
    * @return array
    */
-  public function buildChart(array $data, string $role) : array {
+  public function buildChart(array $data) : array {
+
+    $role = $data['role'];
     $chart = [];
 
     $default_colors = [
@@ -443,7 +521,7 @@ class HomePageService {
 
     $row = [$label ?? $source];
     foreach (array_keys($data['activities']) as $machine ) {
-      $row[] = (int)(300 * $data['lastMonth'][$source][$machine]['total']);
+      $row[] = (300 * $data['lastMonth'][$source][$machine]['avg']);
     }
     return $row;
   }

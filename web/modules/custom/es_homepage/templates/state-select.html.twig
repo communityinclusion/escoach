@@ -3,7 +3,7 @@
   <select name="state" id="state-select">
     {% for abbr, state in data.stateList %}
       {% if state %}
-        {% if data.stateName and data.stateName == state %}
+        {% if data.stateName and data.stateName == abbr %}
           <option value="{{ abbr }}" selected="selected">{{ state }}</option>
         {% else %}
           <option value="{{ abbr }}">{{ state }}</option>

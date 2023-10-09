@@ -3,7 +3,6 @@ namespace Drupal\es_homepage\Query;
 
 class ResponseRateQuery extends HomePageQuery {
 
-  const VID = NULL;
   const BASE_TABLE = 'surveycampaign_mailer';
 
   protected $email;

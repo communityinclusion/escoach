@@ -21,7 +21,7 @@
       <tr>
         <td>{{ info.label }}</td>
         {% if data.role == 'ANON' %}
-          <td>{{ data.lastMonth.State[machine].total }}
+          <td>{{ data.lastMonth.State[machine].formatted }}
           {% if data.lastMonth.State[machine].betterMonth %}
             <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
           {% endif %}
@@ -30,7 +30,7 @@
             {% endif %}
           </td>
         {% elseif data.role == 'Employment consultant' %}
-          <td>{{ data.lastMonth.Me[machine].total }}
+          <td>{{ data.lastMonth.Me[machine].formatted }}
             {% if data.lastMonth.Me[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
@@ -38,7 +38,7 @@
               <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
             {% endif %}
           </td>
-          <td>{{ data.lastMonth.Provider[machine].total }}
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
             {% if data.lastMonth.Provider[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
@@ -47,7 +47,7 @@
             {% endif %}
           </td>
         {% elseif data.role == 'Manager' %}
-          <td>{{ data.lastMonth.Provider[machine].total }}
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
             {% if data.lastMonth.Provider[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
@@ -56,7 +56,7 @@
             {% endif %}
           </td>
         {% elseif data.role == 'TA' %}
-          <td>{{ data.lastMonth.Provider[machine].total }}
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
             {% if data.lastMonth.Provider[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
@@ -65,7 +65,7 @@
             {% endif %}
           </td>
         {% endif %}
-        <td>{{ data.lastMonth.All[machine].total }}</td>
+        <td>{{ data.lastMonth.All[machine].formatted }}</td>
       </tr>
     {% endfor %}
     <tr>

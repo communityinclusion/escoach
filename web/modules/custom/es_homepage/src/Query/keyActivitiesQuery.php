@@ -12,7 +12,7 @@ namespace Drupal\es_homepage\Query;
 
 class keyActivitiesQuery extends HomePageQuery {
   const QUESTION_ID = 483;
-  const VID = NULL;
+
   const ACTIVITIES = [
     'LeadingToHire' => [
       'label' => 'Leading to hire',
@@ -58,6 +58,11 @@ class keyActivitiesQuery extends HomePageQuery {
         $and = 'AND state = :state';
         $commonArgs[':state'] = $state;
         break;
+
+      case 'Observer':
+        $and = "AND (regcode <= 10000 OR regcode IS NULL)";
+        break;
+
 
       default:
         $and = '';

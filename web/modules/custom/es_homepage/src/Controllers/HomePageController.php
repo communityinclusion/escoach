@@ -41,6 +41,7 @@ class HomePageController extends ControllerBase {
     if ($this->currentUser->isAnonymous()) {
       $data['stateList'] = $this->homePageService->getStateList($year, $month);
       $state = \Drupal::request()->get('state') ?? array_keys($data['stateList'])[0] ?? '';
+      $data['stateName'] = $state;
       $libraries[] = 'es_homepage/states';
     }
     else {
@@ -64,7 +65,7 @@ class HomePageController extends ControllerBase {
     }
 
     $data += $this->homePageService->keyActivities($year, $month, $data['role'], $state);
-    $chart = $this->homePageService->buildChart($data, $data['role']);
+    $chart = $this->homePageService->buildChart($data);
 
     return [
       '#cache' => [
