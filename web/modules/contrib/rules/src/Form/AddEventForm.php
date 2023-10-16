@@ -18,6 +18,13 @@ class AddEventForm extends FormBase {
   use AddEventFormTrait;
 
   /**
+   * The Reaction Rule being modified.
+   *
+   * @var \Drupal\rules\Entity\ReactionRuleConfig
+   */
+  protected $reactionRule;
+
+  /**
    * Constructs a new event add form.
    *
    * @param \Drupal\rules\Core\RulesEventManager $event_manager
@@ -67,7 +74,7 @@ class AddEventForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $rules_reaction_rule = NULL) {
-    $this->rule = $rules_reaction_rule;
+    $this->reactionRule = $rules_reaction_rule;
     $form = $this->buildEventForm($form, $form_state);
 
     $form['actions'] = ['#type' => 'actions'];
@@ -99,19 +106,19 @@ class AddEventForm extends FormBase {
       }
 
       // Add the bundle name to the event name if a bundle was selected.
-      $this->entityBundleBuilder('rules_reaction_rule', $this->rule, $form, $form_state);
+      $this->entityBundleBuilder('rules_reaction_rule', $this->reactionRule, $form, $form_state);
       $event_name = $form_state->getValue(['events', 0, 'event_name']);
     }
 
-    $this->rule->addEvent($event_name);
-    $this->rule->save();
+    $this->reactionRule->addEvent($event_name);
+    $this->reactionRule->save();
 
     $this->messenger()->addMessage($this->t('Added event %label to %rule.', [
       '%label' => $this->eventManager->getDefinition($event_name)['label'],
-      '%rule' => $this->rule->label(),
+      '%rule' => $this->reactionRule->label(),
     ]));
     $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
-      'rules_reaction_rule' => $this->rule->id(),
+      'rules_reaction_rule' => $this->reactionRule->id(),
     ]);
   }
 

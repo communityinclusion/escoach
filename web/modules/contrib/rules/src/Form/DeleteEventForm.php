@@ -17,6 +17,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class DeleteEventForm extends ConfirmFormBase {
 
   /**
+   * The Rules event manager.
+   *
+   * @var \Drupal\rules\Core\RulesEventManager
+   */
+  protected $eventManager;
+
+  /**
    * The RulesUI handler of the currently active UI.
    *
    * @var \Drupal\rules\Ui\RulesUiHandlerInterface
@@ -24,11 +31,11 @@ class DeleteEventForm extends ConfirmFormBase {
   protected $rulesUiHandler;
 
   /**
-   * The rule config object this form is for.
+   * The Reaction Rule being modified.
    *
    * @var \Drupal\rules\Entity\ReactionRuleConfig
    */
-  protected $rule;
+  protected $reactionRule;
 
   /**
    * The ID of the event in the rule.
@@ -82,7 +89,7 @@ class DeleteEventForm extends ConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, RulesUiHandlerInterface $rules_ui_handler = NULL, ReactionRuleConfig $rules_reaction_rule = NULL, $id = NULL) {
     $this->rulesUiHandler = $rules_ui_handler;
-    $this->rule = $rules_reaction_rule;
+    $this->reactionRule = $rules_reaction_rule;
     $this->id = $id;
     return parent::buildForm($form, $form_state);
   }
@@ -99,12 +106,12 @@ class DeleteEventForm extends ConfirmFormBase {
    */
   public function getQuestion() {
     // Do not allow to delete an event if there's only one.
-    if (count($this->rule->getEvents()) === 1) {
+    if (count($this->reactionRule->getEvents()) === 1) {
       throw new AccessDeniedHttpException('An event cannot be deleted if the reaction rule has only one.');
     }
 
     // Check of the event requested to be deleted, exists.
-    if (!$this->rule->hasEvent($this->id)) {
+    if (!$this->reactionRule->hasEvent($this->id)) {
       throw new NotFoundHttpException();
     }
 
@@ -127,12 +134,12 @@ class DeleteEventForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->rule->removeEvent($this->id);
-    $this->rule->save();
+    $this->reactionRule->removeEvent($this->id);
+    $this->reactionRule->save();
 
     $this->messenger()->addMessage($this->t('Deleted event %label from %rule.', [
       '%label' => $this->eventManager->getDefinition($this->id)['label'],
-      '%rule' => $this->rule->label(),
+      '%rule' => $this->reactionRule->label(),
     ]));
     $form_state->setRedirectUrl($this->getCancelUrl());
   }

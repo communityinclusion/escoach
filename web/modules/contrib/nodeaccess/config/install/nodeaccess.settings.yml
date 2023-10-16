@@ -1,6 +1,8 @@
-grants:
-  view: 1
-  edit: 1
-  delete: 1
-priority: 0
-preserve: 1
+allowed_grant_operations:
+  grant_view: true
+  grant_update: true
+  grant_delete: true
+bundles_roles_grants: {}
+grants_tab_availability: {}
+map_rid_gid: {}
+roles_settings: {}

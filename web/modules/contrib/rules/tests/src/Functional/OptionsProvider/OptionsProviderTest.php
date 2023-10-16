@@ -5,10 +5,10 @@ namespace Drupal\Tests\rules\Functional\OptionsProvider;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\rules\TypedData\Options\EntityBundleOptions;
-use Drupal\rules\TypedData\Options\FieldListOptions;
-use Drupal\rules\TypedData\Options\NodeTypeOptions;
 use Drupal\rules\TypedData\Options\EntityTypeOptions;
+use Drupal\rules\TypedData\Options\FieldListOptions;
 use Drupal\rules\TypedData\Options\LanguageOptions;
+use Drupal\rules\TypedData\Options\NodeTypeOptions;
 
 /**
  * Tests using option providers.
@@ -92,7 +92,7 @@ class OptionsProviderTest extends BrowserTestBase {
    * Provides test data for testOptionsProviders().
    */
   public function provideOptionsProviders() {
-    return [
+    $output = [
       'Entity bundles' => [
         EntityBundleOptions::class, [
           'Comment' => [
@@ -234,6 +234,49 @@ class OptionsProviderTest extends BrowserTestBase {
         ],
       ],
     ];
+
+    // @todo Remove this when Drupal 10.1 is the lowest-supported version.
+    if (version_compare(\Drupal::VERSION, '10.1') >= 0) {
+      // Some strings changed in Drupal 10.1.
+      // @see https://www.drupal.org/project/drupal/issues/3318549
+      $output['Entity bundles'][1] = [
+        'Comment' => [
+          'comment' => 'Default comments (comment)',
+        ],
+        'Contact message' => [
+          'feedback' => 'Website feedback (feedback)',
+          'personal' => 'Personal contact form (personal)',
+        ],
+        'Content' => [
+          'article' => 'Article',
+          'page' => 'Basic page (page)',
+        ],
+        'Content block' => [
+          'basic' => 'Basic block (basic)',
+        ],
+        'Custom menu link' => [
+          'menu_link_content' => 'Custom menu link (menu_link_content)',
+        ],
+        'File' => [
+          'file' => 'File',
+        ],
+        'Shortcut link' => [
+          'default' => 'Default',
+        ],
+        'Taxonomy term' => [
+          'tags' => 'Tags',
+        ],
+        'URL alias' => [
+          'path_alias' => 'URL alias (path_alias)',
+        ],
+        'User' => [
+          'user' => 'User',
+        ],
+      ];
+      $output['Entity types'][1]['block_content'] = 'Content block (block_content)';
+    }
+
+    return $output;
   }
 
 }

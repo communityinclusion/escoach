@@ -5,9 +5,9 @@ rules.autocomplete:
     - core/drupal
     - core/drupalSettings
     - core/drupal.ajax
+    - core/drupal.autocomplete
     - core/jquery
-    - core/jquery.once
-    - core/jquery.ui.autocomplete
+    - core/once
 
 rules_ui.listing:
   js:
@@ -31,7 +31,5 @@ rules.debug:
       css/debug.css: {}
   dependencies:
     - core/drupal
-    - core/drupalSettings
-    - core/jquery
-    - core/jquery.once
+    - core/once
     - core/jquery.ui

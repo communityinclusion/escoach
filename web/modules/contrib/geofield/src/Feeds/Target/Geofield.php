@@ -142,4 +142,19 @@ class Geofield extends FieldTargetBase implements ContainerFactoryPluginInterfac
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getSummary() {
+
+    $summary = parent::getSummary();
+
+    $summary[] = [
+      '#markup' => $this->t('<b>Instructions: </b>Use ONLY Centroid
+Latitude & Centroid Longitude in case of Lat/Lon coupled values<br>OR ONLY Geometry in case of WKT or GeoJson format. Don\'t use both.'),
+    ];
+
+    return $summary;
+  }
+
 }

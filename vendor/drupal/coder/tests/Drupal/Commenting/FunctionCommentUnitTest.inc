@@ -305,8 +305,8 @@ function test25() {
 /**
  * Type declarations should not have any illegal characters.
  *
- * @param \Ille*al $var
- *   This asterisk does not belong here.
+ * @param \Ille§al $var
+ *   This character does not belong here.
  *
  * @return \Some/Namespace
  *   This should not have a forward slash.
@@ -902,4 +902,49 @@ function test_return_non_falsy_string(): string {
  */
 function test_return_literal_string(): string {
   return '';
+}
+
+/**
+ * PHP 8 intersection types are ok.
+ *
+ * @param Foo&Bar $a
+ *   Intersection type parameter.
+ *
+ * @return Foo&Bar
+ *   Intersection type return declaration.
+ */
+function test_intersection_types(Foo&Bar $a): Foo&Bar {
+  return new Xyz();
+}
+
+/**
+ * Class comment.
+ */
+class Test3 {
+
+  /**
+   * Variadic parameters are ok.
+   *
+   * @param string[]|string ...$classes
+   *   A variadic parameter.
+   *
+   * @return array
+   *   The return array.
+   */
+  public function testVariadicParameter(...$classes): array {
+    return [];
+  }
+
+  /**
+   * Variadic parameters without description are not ok.
+   *
+   * @param string[]|string ...$classes
+   *
+   * @return array
+   *   The return array.
+   */
+  public function testVariadicParameterNoDescription(...$classes): array {
+    return [];
+  }
+
 }

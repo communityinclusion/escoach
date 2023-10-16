@@ -1,0 +1,67 @@
+nodeaccess.settings:
+  label: NodeAccess settings
+  type: config_object
+  mapping:
+    allowed_grant_operations:
+      label: Allowed grant operations on the form of the Grants tab
+      type: mapping
+      mapping:
+        grant_view:
+          label: View
+          type: boolean
+        grant_update:
+          label: Edit
+          type: boolean
+        grant_delete:
+          label: Delete
+          type: boolean
+    bundles_roles_grants:
+      label: Roles grants settings per bundle
+      type: sequence
+      sequence:
+        label: Bundle settings
+        type: sequence
+        sequence:
+          label: Role settings
+          type: mapping
+          mapping:
+            grant_view:
+              type: integer
+              label: Grant view
+            grant_update:
+              type: integer
+              label: Grant update
+            grant_delete:
+              type: integer
+              label: Grant delete
+    grants_tab_availability:
+      label: Allow the Grants tab to be available to the bundle or not
+      type: sequence
+      sequence:
+        label: Show
+        type: boolean
+    map_rid_gid:
+      label: Role ID - Grant ID map
+      type: sequence
+      sequence:
+        label: Grant ID
+        type: integer
+    roles_settings:
+      label: Roles settings
+      type: sequence
+      sequence:
+        type: mapping
+        label: Role settings
+        mapping:
+          display_name:
+            type: string
+            label: Role name for display
+          name:
+            type: string
+            label: Role name
+          weight:
+            type: integer
+            label: Weight
+          selected:
+            type: boolean
+            label: Selected and available on the Grants tab

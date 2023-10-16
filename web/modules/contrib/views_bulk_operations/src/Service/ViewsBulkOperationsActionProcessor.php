@@ -219,6 +219,8 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
 
     $this->view->setItemsPerPage($this->bulkFormData['batch_size']);
     $this->view->setCurrentPage($page);
+    $this->view->style_plugin = Views::pluginManager('style')->createInstance('default');
+    $this->view->style_plugin->init($this->view, $this->view->getDisplay());
     $this->view->build();
 
     $offset = $this->bulkFormData['batch_size'] * $page;
@@ -478,7 +480,7 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
         $results = [];
       }
       else {
-        foreach ($results as &$result) {
+        foreach ($results as $result) {
           if (!\is_array($result) && !$result instanceof MarkupInterface) {
             $deprecated = TRUE;
             break;
@@ -585,8 +587,15 @@ class ViewsBulkOperationsActionProcessor implements ViewsBulkOperationsActionPro
 
       // Ensure compatibility with a Batch API process.
       $context = [
-        'sandbox' => [],
-        'results' => [],
+        'sandbox' => [
+          'processed' => 0,
+          'total' => 0,
+          'page' => 0,
+          'current_batch' => 1,
+        ],
+        'results' => [
+          'operations' => [],
+        ],
       ];
       $this->setActionContext($context);
 

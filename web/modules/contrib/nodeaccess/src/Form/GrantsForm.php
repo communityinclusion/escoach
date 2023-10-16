@@ -2,15 +2,58 @@
 
 namespace Drupal\nodeaccess\Form;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\node\Entity\Node;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\node\NodeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Builds the configuration form.
+ * Builds the Grants form.
  */
 class GrantsForm extends FormBase {
+
+  /**
+   * The current database.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The node grant storage.
+   *
+   * @var \Drupal\node\NodeGrantDatabaseStorageInterface
+   */
+  protected $nodeGrantStorage;
+
+  /**
+   * The nodeaccess helper.
+   *
+   * @var \Drupal\nodeaccess\NodeAccessHelper
+   */
+  protected $nodeAccessHelper;
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function create(ContainerInterface $container) {
+    $instance = parent::create($container);
+    $instance->database = $container->get('database');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->nodeGrantStorage = $container->get('node.grant_storage');
+    $instance->nodeAccessHelper = $container->get('nodeaccess.helper');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -22,263 +65,90 @@ class GrantsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, Node $node = NULL) {
-    $db = \Drupal::database();
+  public function buildForm(array $form, FormStateInterface $form_state, NodeInterface $node = NULL) {
     $form_values = $form_state->getValues();
-    $settings = \Drupal::configFactory()->get('nodeaccess.settings');
-    $nid = $node->id();
-    $role_alias = $settings->get('role_alias');
-    $role_map = $settings->get('role_map');
-    $allowed_roles = [];
-    $user = $this->currentUser();
-    $allowed_grants = $settings->get('grants');
-    foreach ($role_alias as $id => $role) {
-      if ($role['allow']) {
-        $allowed_roles[] = $id;
-      }
-    }
-    if (!$form_values) {
-      $form_values = [];
-      // Load all roles.
-      foreach ($role_alias as $id => $role) {
-        $rid = $role_map[$id];
-        $query = $db->select('node_access', 'n')
-          ->fields('n', ['grant_view', 'grant_update', 'grant_delete'])
-          ->condition('n.gid', $rid, '=')
-          ->condition('n.realm', 'nodeaccess_rid', '=')
-          ->condition('n.nid', $nid)
-          ->execute();
-        $result = $query->fetchAssoc();
-        if (!empty($result)) {
-          $form_values['rid'][$rid] = [
-            'name' => $role['alias'],
-            'grant_view' => (boolean) $result['grant_view'],
-            'grant_update' => (boolean) $result['grant_update'],
-            'grant_delete' => (boolean) $result['grant_delete'],
-          ];
-        }
-        else {
-          $form_values['rid'][$rid] = [
-            'name' => $role['alias'],
-            'grant_view' => FALSE,
-            'grant_update' => FALSE,
-            'grant_delete' => FALSE,
-          ];
-        }
-      }
+    $nodeaccess_settings = $this->configFactory()->get('nodeaccess.settings');
 
-      // Load users from node_access.
-      $query = $db->select('node_access', 'n');
-      $query->join('users_field_data', 'ufd', 'ufd.uid = n.gid');
-      $query->fields('n', ['grant_view', 'grant_update', 'grant_delete', 'nid']);
-      $query->fields('ufd', ['name', 'uid']);
-      $query->condition('n.nid', $nid, '=');
-      $query->condition('n.realm', 'nodeaccess_uid', '=');
-      $query->orderBy('ufd.name', 'ASC');
-      $results = $query->execute();
-      while ($account = $results->fetchObject()) {
-        $form_values['uid'][$account->uid] = [
-          'name' => $account->name,
-          'keep' => 1,
-          'grant_view' => $account->grant_view,
-          'grant_update' => $account->grant_update,
-          'grant_delete' => $account->grant_delete,
-        ];
-      }
+    $nid = $node->id();
+    $user = $this->currentUser();
+
+    if (empty($form_values)) {
+      $form_values['nodeaccess_role'] = $this->nodeAccessHelper->loadRolesGrants($nodeaccess_settings, $nid);
+      $form_values['nodeaccess_user'] = $this->nodeAccessHelper->loadUsersGrants($nid);
     }
     else {
-      // Perform search.
-      if ($form_values['keys']) {
+      $form_values['nodeaccess_role'] = $form_values['nodeaccess_role'] ?? [];
+      $form_values['nodeaccess_user'] = $form_values['nodeaccess_user'] ?? [];
+      if (empty($form_state->getErrors()) && isset($form_values['search_uid'])) {
         $uids = [];
-        $query = $db->select('users_field_data', 'ufd');
-        $query->fields('ufd', ['uid', 'name']);
-        if (isset($form_values['uid']) && is_array($form_values['uid'])) {
-          $uids = array_keys($form_values['uid']);
+        if (!empty($form_values['nodeaccess_user'])) {
+          $uids = array_keys($form_values['nodeaccess_user']);
         }
-        if (!in_array($form_values['keys'], $uids)) {
-          array_push($uids, $form_values['keys']);
-        }
-        $query->condition('ufd.uid', $uids, 'IN');
-        $results = $query->execute();
-        while ($account = $results->fetchObject()) {
-          $form_values['uid'][$account->uid] = [
-            'name' => $account->name,
-            'keep' => 0,
-          ];
-        }
-      }
-      // Calculate default grants for found users.
-      if (isset($form_values['uid']) && is_array($form_values['uid'])) {
-        // set the cast type depending on which database engine is being used.
-        if (strstr($db->version(), 'MariaDB') !== FALSE) {
-          $cast_type = 'int';
-        }
-        elseif (strstr($db->clientVersion(), 'PostgreSQL') !== FALSE) {
-          $cast_type = 'integer';
-        }
-        else {
-          // assume it's MySQL.
-          $cast_type = 'unsigned';
-        }
-        foreach (array_keys($form_values['uid']) as $uid) {
-          if (!$form_values['uid'][$uid]['keep']) {
-            foreach (['grant_view', 'grant_update', 'grant_delete'] as $grant_type) {
+        $search_uid = $form_values['search_uid'];
 
-              $query = $db->select('node_access', 'na');
-              $query->join('user__roles', 'r', '(na.gid = CAST(r.roles_target_id as ' . $cast_type . '))');
-              $query->condition('na.nid', $nid, '=');
-              $query->condition('na.realm', 'nodeaccess_rid', '=');
-              $query->condition('r.entity_id', $uid, '=');
-              $query->condition($grant_type, '1', '=');
-              $query->range(0, 1);
-              $query = $query->countQuery();
-              $results = $query->execute();
-              $count1 = $results->fetchField();
-
-              $query = $db->select('node_access', 'na');
-              $query->condition('na.nid', $nid, '=');
-              $query->condition('na.realm', 'nodeaccess_uid', '=');
-              $query->condition('na.gid', $uid, '=');
-              $query->condition($grant_type, '1', '=');
-              $query->range(0, 1);
-              $query = $query->countQuery();
-              $results = $query->execute();
-              $count2 = $results->fetchField();
-
-              $form_values['uid'][$uid][$grant_type] = $count1 || $count2;
+        if (is_array($search_uid)) {
+          $search_uids = array_column($search_uid, 'target_id');
+          // @todo Refactor here.
+          foreach ($search_uids as $user_id) {
+            // @todo Display a message if the user/user ID is added already.
+            if (!in_array($user_id, $uids)) {
+              // Append the user's grant to the form values.
+              $form_values['nodeaccess_user'][$user_id] = $this->nodeAccessHelper->loadUserGrant($nodeaccess_settings, $user_id, $nid);
             }
-            $form_values['uid'][$uid]['keep'] = TRUE;
           }
         }
       }
     }
 
-    $form_values['rid'] = isset($form_values['rid']) ? $form_values['rid'] : [];
-    $form_values['uid'] = isset($form_values['uid']) ? $form_values['uid'] : [];
-    $roles = $form_values['rid'];
-    $users = $form_values['uid'];
-    $form['nid'] = [
-      '#type' => 'hidden',
-      '#value' => $nid,
-    ];
-
-    // If $preserve is TRUE, the fields the user is not allowed to view or
-    // edit are included in the form as hidden fields to preserve them.
-    $preserve = $settings->get('preserve');
-    // Roles table.
-    if (count($allowed_roles)) {
-      $header = [];
-      $header[] = $this->t('Role');
-      if ($allowed_grants['view']) {
-        $header[] = $this->t('View');
-      }
-      if ($allowed_grants['edit']) {
-        $header[] = $this->t('Edit');
-      }
-      if ($allowed_grants['delete']) {
-        $header[] = $this->t('Delete');
-      }
-      $form['rid'] = [
-        '#type' => 'table',
-        '#header' => $header,
-        '#tree' => TRUE,
-      ];
-      foreach ($allowed_roles as $id) {
-        $rid = $role_map[$id];
-        $form['rid'][$rid]['name'] = [
-          '#markup' => $role_alias[$id]['alias'],
-        ];
-        if ($allowed_grants['view']) {
-          $form['rid'][$rid]['grant_view'] = [
-            '#type' => 'checkbox',
-            '#default_value' => $roles[$rid]['grant_view'],
-          ];
-        }
-        if ($allowed_grants['edit']) {
-          $form['rid'][$rid]['grant_update'] = [
-            '#type' => 'checkbox',
-            '#default_value' => $roles[$rid]['grant_update'],
-          ];
-        }
-        if ($allowed_grants['delete']) {
-          $form['rid'][$rid]['grant_delete'] = [
-            '#type' => 'checkbox',
-            '#default_value' => $roles[$rid]['grant_delete'],
-          ];
-        }
-      }
+    // Available role IDs for grants settings with nodeaccess_role realm per
+    // node.
+    $selected_role_ids = $this->nodeAccessHelper->selectedRoleIds($nodeaccess_settings);
+    if (!empty($selected_role_ids)) {
+      $form['nodeaccess_role'] = $this->nodeAccessHelper->rolesSettingsRender($nodeaccess_settings, $selected_role_ids, $form_values['nodeaccess_role']);
     }
 
-    // Autocomplete returns errors if users don't have access to profiles.
     if ($user->hasPermission('access user profiles')) {
-      $form['keys'] = [
+      $form['search_uid'] = [
+        '#title' => $this->t('Users'),
+        '#default_value' => $form_values['search_uid'] ?? NULL,
         '#type' => 'entity_autocomplete',
-        '#default_value' => isset($form_values['keys']) ? $form_values['keys'] : '',
-        '#size' => 40,
         '#target_type' => 'user',
-        '#title' => $this->t('Enter names to search for users'),
+        '#selection_settings' => [
+          'include_anonymous' => FALSE,
+        ],
+        '#tags' => TRUE,
+        '#attributes' => ['placeholder' => 'Separate users with a comma'],
+        '#prefix' => '<p><div class="container-inline">',
       ];
     }
     else {
-      $form['keys'] = [
-        '#type' => 'textfield',
-        '#default_value' => isset($form_values['keys']) ? $form_values['keys'] : '',
+      $form['search_uid'] = [
+        '#title' => $this->t('User IDs'),
+        '#default_value' => $form_values['search_uid'] ?? NULL,
         '#size' => 40,
+        '#type' => 'textfield',
+        '#attributes' => ['placeholder' => 'Separate user IDs with a comma'],
+        '#prefix' => '<p><div class="container-inline">',
+        '#element_validate' => ['::validateSearchUid'],
       ];
     }
-    $form['keys']['#prefix'] = '<p><div class="container-inline">';
+    // @todo , `Search` could be `Load user(s)`?
+    // @todo , The newly loaded one on the top?
+    // @todo , Allow grant access per node for Author.
+    // @todo , Add description to explain how it works?
     $form['search'] = [
       '#type' => 'submit',
       '#value' => $this->t('Search'),
       '#submit' => ['::searchUser'],
       '#suffix' => '</div></p>',
     ];
-    // Users table.
-    if (count($users)) {
-      $header = [];
-      $header[] = $this->t('User');
-      $header[] = $this->t('Keep?');
-      if ($allowed_grants['view']) {
-        $header[] = $this->t('View');
-      }
-      if ($allowed_grants['edit']) {
-        $header[] = $this->t('Edit');
-      }
-      if ($allowed_grants['delete']) {
-        $header[] = $this->t('Delete');
-      }
-      $form['uid'] = [
-        '#type' => 'table',
-        '#header' => $header,
-      ];
-      foreach ($users as $uid => $account) {
-        $form['uid'][$uid]['name'] = [
-          '#markup' => $account['name'],
-        ];
-        $form['uid'][$uid]['keep'] = [
-          '#type' => 'checkbox',
-          '#default_value' => $account['keep'],
-        ];
-        if ($allowed_grants['view']) {
-          $form['uid'][$uid]['grant_view'] = [
-            '#type' => 'checkbox',
-            '#default_value' => $account['grant_view'],
-          ];
-        }
-        if ($allowed_grants['edit']) {
-          $form['uid'][$uid]['grant_update'] = [
-            '#type' => 'checkbox',
-            '#default_value' => $account['grant_update'],
-          ];
-        }
-        if ($allowed_grants['delete']) {
-          $form['uid'][$uid]['grant_delete'] = [
-            '#type' => 'checkbox',
-            '#default_value' => $account['grant_delete'],
-          ];
-        }
-      }
+    if (count($form_values['nodeaccess_user'])) {
+      $form['nodeaccess_user'] = $this->nodeAccessHelper->usersSettingsRender($nodeaccess_settings, $form_values['nodeaccess_user']);
+      $form['nodeaccess_user']['#element_validate'] = ['::validateGrants'];
     }
+
+    $form_state->set('node', $node);
+
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Save Grants'),
@@ -287,18 +157,104 @@ class GrantsForm extends FormBase {
   }
 
   /**
+   * Validates the search_uid.
+   *
+   * @param array $element
+   *   The search_uid form render array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public function validateSearchUid(array $element, FormStateInterface $form_state) {
+    // @todo , `keep` checked but none of `View`, `Edit` and `Delete` checked.
+    // $form_state->isValueEmpty() takes 0 as an empty value.
+    if ($form_state->getValue('search_uid') === '0') {
+      $form_state->setError($element, $this->t("0 is not an allowed user ID."));
+    }
+    // Ignore empty value.
+    if ($form_state->isValueEmpty('search_uid')) {
+      return;
+    }
+
+    $input = $form_state->getValue('search_uid');
+    $uids = explode(',', $input);
+    $sanitized_uids = [];
+    foreach ($uids as $uid) {
+      $trimmed_uid = trim($uid);
+      if (empty($trimmed_uid)) {
+        $form_state->setError($element, $this->t("Your @input can not be parsed correctly.", ['@input' => $input]));
+        return;
+      }
+      $trimmed_uid_int = (int) $trimmed_uid;
+      if ("$trimmed_uid_int" !== $trimmed_uid || $trimmed_uid_int <= 0) {
+        $form_state->setError($element, $this->t("@uid is not a valid user ID.", ['@uid' => $trimmed_uid]));
+        return;
+      }
+      $sanitized_uids[] = $trimmed_uid;
+    }
+
+    $users = $this->entityTypeManager->getStorage('user')->loadMultiple($sanitized_uids);
+
+    if (empty($users)) {
+      $form_state->setError($element, $this->t("No users found for your input @input.", ['@input' => $input]));
+    }
+
+    $value = [];
+    foreach (array_keys($users) as $uid) {
+      $value[] = ['target_id' => $uid];
+    }
+    $form_state->setValueForElement($element, $value);
+  }
+
+  /**
+   * Validates grants.
+   *
+   * @param array $element
+   *   The search_uid form render array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public function validateGrants(array $element, FormStateInterface $form_state) {
+    if ($form_state->isValueEmpty('nodeaccess_user')) {
+      return;
+    }
+    $nodeaccess_user = $form_state->getValue('nodeaccess_user');
+    if (is_array($nodeaccess_user)) {
+      $users_with_no_grants = [];
+      foreach ($nodeaccess_user as $uid => $grant) {
+        if ($grant['keep'] && !$grant['grant_view'] && !$grant['grant_update'] &&!$grant['grant_delete']) {
+          $users_with_no_grants[] = $uid;
+        }
+      }
+      if (!empty($users_with_no_grants)) {
+        $users = $this->entityTypeManager->getStorage('user')->loadMultiple($users_with_no_grants);
+        $usernames = [];
+        foreach ($users as $user) {
+          $usernames[] = $this->t("user @username (@uid)", [
+            '@username' => $user->label(),
+            '@uid' => $user->id(),
+          ]);
+        }
+        $form_state->setError($element, $this->t('Error: @usernames @predicate kept, but no permissions granted, uncheck "Keep?" or grant at least one permission of View, Edit and Delete.', [
+          '@usernames' => implode(', ', $usernames),
+          '@predicate' => $this->formatPlural(count($usernames), $this->t('is'), $this->t('are')),
+        ]));
+      }
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $uids = $form_state->getValue('uid');
+    $nodeaccess_user = $form_state->getValue('nodeaccess_user');
     // Delete unkept users.
-    if (!empty($uids) && is_array($uids)) {
-      foreach ($uids as $uid => $row) {
+    if (!empty($nodeaccess_user) && is_array($nodeaccess_user)) {
+      foreach ($nodeaccess_user as $uid => $row) {
         if (!$row['keep']) {
-          unset($uids[$uid]);
+          unset($nodeaccess_user[$uid]);
         }
       }
-      $form_state->setValue('uid', $uids);
+      $form_state->setValue('nodeaccess_user', $nodeaccess_user);
     }
   }
 
@@ -306,36 +262,36 @@ class GrantsForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $db = \Drupal::database();
-    // Update configuration.
-    $values = $form_state->getValues();
-    $nid = $values['nid'];
+    $form_values = $form_state->getValues();
     $grants = [];
-    $node = Node::load($nid);
-
-    foreach (['uid', 'rid'] as $type) {
-      $realm = 'nodeaccess_' . $type;
-      if (isset($values[$type]) && is_array($values[$type])) {
-        foreach ($values[$type] as $gid => $line) {
+    /** @var \Drupal\node\Entity\Node $node */
+    $node = $form_state->get('node');
+    $nid = $node->id();
+    foreach (['nodeaccess_user', 'nodeaccess_role'] as $realm) {
+      if (isset($form_values[$realm]) && is_array($form_values[$realm])) {
+        foreach ($form_values[$realm] as $grant_id => $values) {
           $grant = [
-            'gid' => $gid,
+            'gid' => $grant_id,
             'realm' => $realm,
-            'grant_view' => empty($line['grant_view']) ? 0 : $line['grant_view'],
-            'grant_update' => empty($line['grant_update']) ? 0 : $line['grant_update'],
-            'grant_delete' => empty($line['grant_delete']) ? 0 : $line['grant_delete'],
+            'grant_view' => empty($values['grant_view']) ? 0 : $values['grant_view'],
+            'grant_update' => empty($values['grant_update']) ? 0 : $values['grant_update'],
+            'grant_delete' => empty($values['grant_delete']) ? 0 : $values['grant_delete'],
           ];
+          // Grants with all 0 values, which are discarded and won't be written
+          // into the `node_access` table, so that they are discarded here and
+          // won't be written into the `nodeaccess` table further too.
           if ($grant['grant_view'] || $grant['grant_update'] || $grant['grant_delete']) {
             $grants[] = $grant;
           }
         }
       }
     }
-    // Save role and user grants to our own table.
-    $db->delete('nodeaccess')
+    $this->database->delete('nodeaccess')
       ->condition('nid', $nid)
       ->execute();
+    // Save role and user grants to our own table.
     foreach ($grants as $grant) {
-      $id = $db->insert('nodeaccess')
+      $this->database->insert('nodeaccess')
         ->fields([
           'nid' => $nid,
           'gid' => $grant['gid'],
@@ -346,21 +302,43 @@ class GrantsForm extends FormBase {
         ])
         ->execute();
     }
-    \Drupal::entityTypeManager()->getAccessControlHandler('node')->acquireGrants($node);
-    \Drupal::service('node.grant_storage')->write($node, $grants);
-    \Drupal::messenger()->addMessage($this->t('Grants saved.'));
-
-    $tags = ['node:' . $node->id()];
-    Cache::invalidateTags($tags);
+    /** @var \Drupal\node\NodeAccessControlHandler $node_access_control_handler */
+    $node_access_control_handler = $this->entityTypeManager->getAccessControlHandler('node');
+    $grants = $node_access_control_handler->acquireGrants($node);
+    $this->nodeGrantStorage->write($node, $grants);
+    $this->messenger()->addMessage($this->t('Grants saved.'));
+    Cache::invalidateTags($node->getCacheTagsToInvalidate());
   }
 
   /**
-   * Helper function to search usernames.
+   * Helper function to search uids/usernames.
    */
   public function searchUser(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $form_state->setRebuild();
     $form_state->setStorage($values);
+  }
+
+  /**
+   * Checks access to the `Grants` tab.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account to verify access.
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to check access against.
+   *
+   * @return \Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden
+   *   The access result.
+   */
+  public function access(AccountInterface $account, NodeInterface $node) {
+    $nodeaccess_settings = $this->configFactory()->get('nodeaccess.settings');
+    $grants_tab_availability = $nodeaccess_settings->get('grants_tab_availability');
+    $bundle = $node->bundle();
+    $allowed = $grants_tab_availability[$bundle] ?? FALSE;
+    if ($allowed && ($account->hasPermission("nodeaccess grant $bundle permissions") || $account->hasPermission('administer nodeaccess'))) {
+      return AccessResult::Allowed();
+    }
+    return AccessResult::forbidden();
   }
 
 }

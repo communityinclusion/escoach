@@ -154,7 +154,7 @@ parameters:
     # Enabling render cache debugging is not recommended in production
     # environments.
     # @default false
-    debug: true
+    debug: false
   # Cacheability debugging:
   #
   # Responses with cacheability metadata (CacheableResponseInterface instances)
