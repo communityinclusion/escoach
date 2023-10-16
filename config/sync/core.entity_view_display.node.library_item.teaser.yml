@@ -1,0 +1,59 @@
+uuid: d1759521-09cb-47df-8ca9-98374c8e568d
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.library_item.body
+    - field.field.node.library_item.field_custom_heading_for_closing
+    - field.field.node.library_item.field_file_resource
+    - field.field.node.library_item.field_heading_for_closing_screen
+    - field.field.node.library_item.field_library_id
+    - field.field.node.library_item.field_media_type
+    - field.field.node.library_item.field_publish_to_survey_date_s_
+    - field.field.node.library_item.field_sequencing_id
+    - field.field.node.library_item.field_short_version
+    - field.field.node.library_item.field_subjects
+    - field.field.node.library_item.field_use_standard_footer_
+    - field.field.node.library_item.field_web_link
+    - node.type.library_item
+  module:
+    - field_layout
+    - layout_discovery
+    - text
+    - user
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: node.library_item.teaser
+targetEntityType: node
+bundle: library_item
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_custom_heading_for_closing: true
+  field_file_resource: true
+  field_heading_for_closing_screen: true
+  field_library_id: true
+  field_media_type: true
+  field_publish_to_survey_date_s_: true
+  field_sequencing_id: true
+  field_short_version: true
+  field_subjects: true
+  field_use_standard_footer_: true
+  field_web_link: true

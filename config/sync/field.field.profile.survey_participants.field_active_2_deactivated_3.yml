@@ -1,0 +1,25 @@
+uuid: 9885cf4c-c41f-4fcc-8623-0be807e4b4f5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_active_2_deactivated_3
+    - profile.type.survey_participants
+id: profile.survey_participants.field_active_2_deactivated_3
+field_name: field_active_2_deactivated_3
+entity_type: profile
+bundle: survey_participants
+label: 'Active 2 Deactivated 3'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 2
+default_value_callback: ''
+settings:
+  min: 2
+  max: 3
+  prefix: ''
+  suffix: ''
+field_type: integer

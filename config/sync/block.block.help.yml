@@ -1,0 +1,20 @@
+uuid: dd7c69e7-070e-4073-9e2f-c6e823f2b439
+langcode: en
+status: true
+dependencies:
+  module:
+    - help
+  theme:
+    - b5subtheme
+id: help
+theme: b5subtheme
+region: content
+weight: -3
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Help
+  label_display: visible
+  provider: help
+visibility: {  }

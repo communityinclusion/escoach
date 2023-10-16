@@ -1,0 +1,19 @@
+uuid: c8ce24f0-1778-400d-8f70-65f85ed0e399
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_bar_chart_color
+    - taxonomy.vocabulary.who
+id: taxonomy_term.who.field_bar_chart_color
+field_name: field_bar_chart_color
+entity_type: taxonomy_term
+bundle: who
+label: 'Bar chart color'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

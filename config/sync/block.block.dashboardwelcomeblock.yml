@@ -1,0 +1,31 @@
+uuid: 21b203db-a43d-4938-9339-055a8e090d59
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:footer:9ede2f44-30ee-4e3e-8f65-0bd948625186'
+  module:
+    - block_content
+    - system
+  theme:
+    - escoach_boot4
+id: dashboardwelcomeblock
+theme: escoach_boot4
+region: highlighted
+weight: 0
+provider: null
+plugin: 'block_content:9ede2f44-30ee-4e3e-8f65-0bd948625186'
+settings:
+  id: 'block_content:9ede2f44-30ee-4e3e-8f65-0bd948625186'
+  label: 'Dashboard welcome block'
+  label_display: '0'
+  provider: block_content
+  status: true
+  info: ''
+  view_mode: full
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: /dashboard

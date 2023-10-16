@@ -1,0 +1,20 @@
+uuid: 45d04537-35a8-48d7-810a-146850cc2c95
+langcode: en
+status: true
+dependencies:
+  module:
+    - profile
+id: profile.field_active_2_deactivated_3
+field_name: field_active_2_deactivated_3
+entity_type: profile
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

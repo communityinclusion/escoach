@@ -1,0 +1,43 @@
+uuid: 7c3ba192-0ce8-454e-872c-538c621261a9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.who.field_alias
+    - field.field.taxonomy_term.who.field_bar_chart_color
+    - field.field.taxonomy_term.who.field_dashboard_question_id
+    - field.field.taxonomy_term.who.field_dashboard_response_id
+    - taxonomy.vocabulary.who
+  module:
+    - field_layout
+    - layout_discovery
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: taxonomy_term.who.default
+targetEntityType: taxonomy_term
+bundle: who
+mode: default
+content:
+  field_alias:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -4
+    region: content
+  field_bar_chart_color:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -3
+    region: content
+hidden:
+  description: true
+  field_dashboard_question_id: true
+  field_dashboard_response_id: true

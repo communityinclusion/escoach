@@ -1,0 +1,8 @@
+uuid: a65836b2-1031-4a10-ad1c-e4722c201a5a
+langcode: en
+status: true
+dependencies: {  }
+name: 'Media type'
+vid: media_type
+description: 'Library media types'
+weight: 0

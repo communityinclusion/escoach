@@ -1,0 +1,21 @@
+uuid: b679c938-99ce-4301-be2c-514b5fee7d74
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_participant_time_zone
+    - profile.type.survey_participants
+  module:
+    - options
+id: profile.survey_participants.field_participant_time_zone
+field_name: field_participant_time_zone
+entity_type: profile
+bundle: survey_participants
+label: 'Time zone'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

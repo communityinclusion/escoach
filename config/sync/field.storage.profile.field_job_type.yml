@@ -1,0 +1,33 @@
+uuid: e5ac4bfe-53d8-417d-b631-ff8ca318fbc7
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - profile
+id: profile.field_job_type
+field_name: field_job_type
+entity_type: profile
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: 'Employment consultant'
+      label: 'Employment consultant (i.e. employment specialist, job developer, job coach etc)'
+    -
+      value: Manager
+      label: 'Manager of a team of employment consultants'
+    -
+      value: Manager-consultant
+      label: 'Both manager and employment consultant'
+    -
+      value: Other
+      label: Other
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

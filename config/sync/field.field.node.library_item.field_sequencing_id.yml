@@ -1,0 +1,23 @@
+uuid: d3740359-1117-4a01-90e3-0994243c77f3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sequencing_id
+    - node.type.library_item
+id: node.library_item.field_sequencing_id
+field_name: field_sequencing_id
+entity_type: node
+bundle: library_item
+label: 'Sequencing ID'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

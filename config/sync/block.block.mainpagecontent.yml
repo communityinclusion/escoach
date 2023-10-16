@@ -1,0 +1,20 @@
+uuid: 039e47c9-0ffc-4240-b751-f799c7eb2f70
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - b5subtheme
+id: mainpagecontent
+theme: b5subtheme
+region: content
+weight: -1
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }
