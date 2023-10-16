@@ -1,0 +1,20 @@
+uuid: 20f74ec6-5e60-4b12-98bb-c833cd0c3cf6
+langcode: en
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_dashboard_question_id
+field_name: field_dashboard_question_id
+entity_type: taxonomy_term
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 4
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

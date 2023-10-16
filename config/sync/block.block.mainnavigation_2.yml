@@ -1,0 +1,39 @@
+uuid: c9392a6c-65a5-4d3c-b90b-6699ee12c881
+langcode: en
+status: false
+dependencies:
+  config:
+    - system.menu.main
+  module:
+    - menu_block
+    - user
+  theme:
+    - b5subtheme
+id: mainnavigation_2
+theme: b5subtheme
+region: header
+weight: -7
+provider: null
+plugin: 'menu_block:main'
+settings:
+  id: 'menu_block:main'
+  label: 'Survey admin menu'
+  label_display: visible
+  provider: menu_block
+  follow: false
+  follow_parent: child
+  label_link: false
+  label_type: block
+  level: 1
+  depth: 0
+  expand_all_items: false
+  parent: 'main:'
+  suggestion: main
+visibility:
+  user_role:
+    id: user_role
+    negate: false
+    context_mapping:
+      user: '@user.current_user_context:current_user'
+    roles:
+      administrator: administrator

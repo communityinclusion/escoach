@@ -1,0 +1,20 @@
+uuid: d5306796-812c-4141-97c0-16ea0c1c1847
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - b5subtheme
+id: messages
+theme: b5subtheme
+region: content
+weight: -6
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: Messages
+  label_display: '0'
+  provider: system
+visibility: {  }

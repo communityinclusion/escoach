@@ -1,0 +1,23 @@
+uuid: cbacb98c-d0b5-44e4-81cd-84d9a5bbc529
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_dashboard_response_id
+    - taxonomy.vocabulary.what
+id: taxonomy_term.what.field_dashboard_response_id
+field_name: field_dashboard_response_id
+entity_type: taxonomy_term
+bundle: what
+label: 'Response ID'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

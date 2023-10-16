@@ -1,0 +1,221 @@
+uuid: 62c75fb6-bc30-4d35-bb97-6a27a5ef1ed1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.library_item.body
+    - field.field.node.library_item.field_custom_heading_for_closing
+    - field.field.node.library_item.field_file_resource
+    - field.field.node.library_item.field_heading_for_closing_screen
+    - field.field.node.library_item.field_library_id
+    - field.field.node.library_item.field_media_type
+    - field.field.node.library_item.field_publish_to_survey_date_s_
+    - field.field.node.library_item.field_sequencing_id
+    - field.field.node.library_item.field_short_version
+    - field.field.node.library_item.field_subjects
+    - field.field.node.library_item.field_use_standard_footer_
+    - field.field.node.library_item.field_web_link
+    - node.type.library_item
+  module:
+    - datetime
+    - field_layout
+    - file
+    - layout_discovery
+    - link
+    - path
+    - scheduler
+    - text
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: node.library_item.default
+targetEntityType: node
+bundle: library_item
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 4
+    region: content
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+      show_summary: false
+    third_party_settings: {  }
+  created:
+    type: datetime_timestamp
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_custom_heading_for_closing:
+    type: string_textfield
+    weight: 7
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        572b885b-6161-4fdb-894a-e389fd834418:
+          entity_type: node
+          bundle: library_item
+          dependee: field_heading_
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: custom
+            effect: show
+            effect_options: {  }
+            selector: ''
+        ec7b87b3-4351-488d-b8f4-b01c7681544e:
+          entity_type: node
+          bundle: library_item
+          dependee: field_heading_for_closing_screen
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: custom
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_file_resource:
+    type: file_generic
+    weight: 9
+    region: content
+    settings:
+      progress_indicator: throbber
+    third_party_settings: {  }
+  field_heading_for_closing_screen:
+    type: options_select
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_library_id:
+    type: number
+    weight: 0
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_media_type:
+    type: options_buttons
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_publish_to_survey_date_s_:
+    type: datetime_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_sequencing_id:
+    type: number
+    weight: 1
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_short_version:
+    type: text_textarea
+    weight: 3
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_subjects:
+    type: options_select
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_use_standard_footer_:
+    type: options_select
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_web_link:
+    type: link_default
+    weight: 13
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 14
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    weight: 16
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 17
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 15
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    weight: 21
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 19
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 18
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

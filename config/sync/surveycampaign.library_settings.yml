@@ -1,0 +1,19 @@
+defaultid: null
+sg_clos_ques_id: '35'
+sg_clos_page_id: '2'
+defaultlibrarytext:
+  value: '<div class="short"><div style="text-align:center;"><a href="https://www.livecareer.com/career/advice/interview/informational-interviewing" target="_blank"><img src="https://surveygizmolibrary.s3.amazonaws.com/library/18871/ThankYou15.jpg" alt=""></a><div class="twLogo">&nbsp;</div></div></div>'
+  format: full_html
+finalpageheading: ' '
+alt_sg_clos_ques_id: '0'
+alt_sg_clos_page_id: '0'
+alt_finalpageheading: ' '
+alt_defaultlibrarytext:
+  value: '<div style="text-align:center;"><br><br><a href="https://www.livecareer.com/career/advice/interview/informational-interviewing" target="_blank"><span style="color:rgb(0,128,0);font-family:Calibri, sans-serif;font-size:17px;"><img src="https://surveygizmolibrary.s3.amazonaws.com/library/18871/ThankYou15.jpg" alt=""></span></a></div>'
+  format: full_html
+defaultfootertext:
+  value: '<div class="twLogo" style="text-align:center;"><p><a href="http://www.surveygizmo.com/s3/4164393/3W2017FB" target="_blank"><em><span style="color:rgb(0,128,0);font-size:15px;">Share your comments</span></em></a><em><span style="color:rgb(0,128,0);font-size:15px;">...&nbsp;</span></em></p><p><a href="https://www.es-coach.org/" target="_blank"><em><span style="color:rgb(0,128,0);font-size:15px;"><img class="flexImage" src="https://www.es-coach.org/sites/default/files/es-coach%20pics/ES-coach%20logo%20010722.PNG" alt="ES-Coach logo">&nbsp;</span></em></a></p></div>'
+  format: full_html
+alt_defaultfootertext:
+  value: '<div class="twLogo"><div style="text-align:center;"><p>&nbsp;</p><p>&nbsp;</p><p><a href="http://www.surveygizmo.com/s3/4164393/3W2017FB" target="_blank"><em><span style="color:rgb(0,128,0);font-size:15px;">Share your comments</span></em></a><em><span style="color:rgb(0,128,0);font-size:15px;">...</span></em></p><div class="twLogo" style="text-align:center;"><a href="http://www.thinkwork.org/s53" target="_blank"><em><span style="color:rgb(0,128,0);font-size:15px;"><strong><img class="flexImage" src="https://escoach.communityinclusion.org/sites/default/files/es-coach%20pics/ES-coach%20030521.PNG" alt="ES-Coach logo"></strong></span></em></a></div></div></div>'
+  format: full_html

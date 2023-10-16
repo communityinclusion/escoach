@@ -1,0 +1,23 @@
+uuid: 2af76cd9-7658-4440-a441-fe83c9e896da
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: content_alias
+label: 'content alias'
+type: 'canonical_entities:node'
+pattern: '[node:title]'
+selection_criteria:
+  64dd1e6f-9bdf-4242-a44e-71b5c91a9b8f:
+    id: 'entity_bundle:node'
+    negate: false
+    uuid: 64dd1e6f-9bdf-4242-a44e-71b5c91a9b8f
+    context_mapping:
+      node: node
+    bundles:
+      basic_page: basic_page
+      library_item: library_item
+selection_logic: and
+weight: -5
+relationships: {  }

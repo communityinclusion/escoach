@@ -1,0 +1,23 @@
+uuid: 59585d9c-85f6-4836-93c2-5b27217ef4ca
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - b5subtheme
+id: sitebranding
+theme: b5subtheme
+region: nav_branding
+weight: 0
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  label_display: '0'
+  provider: system
+  use_site_logo: false
+  use_site_name: false
+  use_site_slogan: false
+visibility: {  }

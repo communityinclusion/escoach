@@ -1,0 +1,28 @@
+uuid: fe6706d5-9e12-4de8-a9f2-42f522522dda
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.es_coach_user_library
+  module:
+    - system
+    - views
+  theme:
+    - b5subtheme
+id: exposedformes_coach_user_librarypage_1_3
+theme: b5subtheme
+region: sidebar_first
+weight: 0
+provider: null
+plugin: 'views_exposed_filter_block:es_coach_user_library-page_1'
+settings:
+  id: 'views_exposed_filter_block:es_coach_user_library-page_1'
+  label: ''
+  label_display: visible
+  provider: views
+  views_label: 'Search by topic'
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: /user-library

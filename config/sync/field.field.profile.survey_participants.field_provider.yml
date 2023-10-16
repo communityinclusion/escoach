@@ -1,0 +1,29 @@
+uuid: 9833f2aa-0372-4960-b942-f94af93df596
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_provider
+    - profile.type.survey_participants
+    - taxonomy.vocabulary.providers
+id: profile.survey_participants.field_provider
+field_name: field_provider
+entity_type: profile
+bundle: survey_participants
+label: Provider
+description: 'If the name of your organization does NOT show up, check that your code is correct. Ask your manager or email info@es-coach.org if you forgot your code.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      providers: providers
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

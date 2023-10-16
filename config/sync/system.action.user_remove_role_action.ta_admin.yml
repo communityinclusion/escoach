@@ -1,0 +1,14 @@
+uuid: cf47c543-e6f5-431c-baff-4dabf9ba9f66
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.ta_admin
+  module:
+    - user
+id: user_remove_role_action.ta_admin
+label: 'Remove the TA Admin role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: ta_admin

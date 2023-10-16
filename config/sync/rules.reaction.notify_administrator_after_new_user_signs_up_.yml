@@ -1,0 +1,51 @@
+uuid: be2c47ae-1dbf-4235-a691-087a236e0298
+langcode: en
+status: true
+dependencies: {  }
+id: notify_administrator_after_new_user_signs_up_
+label: 'Notify administrator after new user signs up.'
+events:
+  -
+    event_name: 'rules_entity_insert:user--user'
+description: ''
+tags: {  }
+config_version: '3'
+expression:
+  id: rules_rule
+  uuid: 397d8c37-1c43-46a9-a2f0-8b68c6c81784
+  weight: 0
+  conditions:
+    id: rules_and
+    uuid: b22735fd-a323-4567-bfab-3fbb818d0271
+    weight: 0
+    conditions: {  }
+  actions:
+    id: rules_action_set
+    uuid: 6e4bb8a3-810b-4feb-905f-77fabce8466b
+    weight: 0
+    actions:
+      -
+        id: rules_action
+        uuid: 546b8178-3bf0-46cd-bee5-8fc7e45919f2
+        weight: 0
+        action_id: rules_send_email
+        context_values:
+          to:
+            - info@es-coach.org
+          subject: 'A new user has registered on ES Coach'
+          message: 'A new user has registered on ES Coach.  Log in to https://es-coach.org/user as an admin to view the user''s details.'
+          reply: ''
+          language: ''
+        context_mapping: {  }
+        context_processors:
+          to:
+            rules_tokens: {  }
+          subject:
+            rules_tokens: {  }
+          message:
+            rules_tokens: {  }
+          reply:
+            rules_tokens: {  }
+          language:
+            rules_tokens: {  }
+        provides_mapping: {  }

@@ -1,0 +1,92 @@
+_core:
+  default_config_hash: Zno4MMkbreZeJZgnY0DXCPksXkuYye3MyIFlVuh-xLc
+allowed_grant_operations:
+  grant_view: true
+  grant_update: true
+  grant_delete: true
+bundles_roles_grants:
+  basic_page:
+    anonymous:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+    authenticated:
+      grant_view: 1
+      grant_update: 1
+      grant_delete: 0
+    administrator:
+      grant_view: 1
+      grant_update: 1
+      grant_delete: 1
+    survey_participant:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+    ta_admin:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+    author:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+  library_item:
+    anonymous:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+    authenticated:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+    administrator:
+      grant_view: 1
+      grant_update: 1
+      grant_delete: 1
+    survey_participant:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+    ta_admin:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+    author:
+      grant_view: 1
+      grant_update: 0
+      grant_delete: 0
+grants_tab_availability:
+  basic_page: false
+  library_item: false
+map_rid_gid:
+  anonymous: 1
+  authenticated: 2
+  administrator: 3
+  survey_participant: 4
+  ta_admin: 5
+roles_settings:
+  anonymous:
+    display_name: 'Anonymous user'
+    name: 'Anonymous user'
+    weight: 0
+    selected: false
+  authenticated:
+    display_name: 'Authenticated user'
+    name: 'Authenticated user'
+    weight: 0
+    selected: false
+  administrator:
+    display_name: Administrator
+    name: Administrator
+    weight: 0
+    selected: true
+  survey_participant:
+    display_name: 'Survey participant'
+    name: 'Survey participant'
+    weight: 0
+    selected: false
+  ta_admin:
+    display_name: 'TA Admin'
+    name: 'TA Admin'
+    weight: 0
+    selected: false

@@ -1,0 +1,8 @@
+uuid: a0095258-9d7a-4892-98d3-e0706e661fa1
+langcode: en
+status: true
+dependencies: {  }
+id: day_of
+label: 'Day of week'
+locked: false
+pattern: 'D, F j'
