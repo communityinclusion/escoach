@@ -1,1 +1,18 @@
-BEST PRACTICES
+<div class="page-title">{{ data.title }}</div>
+
+{{ dump(data) }}
+
+{# Anon Users get State Select #}
+{% if data.stateList %}
+  {% include '@es_homepage/state-select.html.twig' %}
+{% endif %}
+
+{# TA Users get Provider List #}
+{% if data.providerList %}
+  {% include  '@es_homepage/provider-select.html.twig'  %}
+{% endif %}
+
+{% include('@es_homepage//key-activities-bar-chart.html.twig')  %}
+
+{% include('@es_homepage/best-practices-table.html.twig')  %}
+{% include('@es_homepage/best-practices-legend.html.twig')  %}

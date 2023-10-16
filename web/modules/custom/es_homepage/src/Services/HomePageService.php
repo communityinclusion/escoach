@@ -1,7 +1,7 @@
 <?php
 namespace Drupal\es_homepage\Services;
 
-use Drupal\es_homepage\Query\bestPractices;
+use Drupal\es_homepage\Query\bestPracticesQuery;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\es_homepage\Query\HomePageQuery;
@@ -494,7 +494,8 @@ class HomePageService {
 
     switch ($role) {
       case self::ANON_ROLE:
-        $chart[] = $this->buildRow('State', $data, $data['stateName'] );
+        $stateName = $data['stateList'][$data['stateName']];
+        $chart[] = $this->buildRow('State', $data, $stateName ?? $data['stateName'] );
         break;
 
       case self::CONSULTANT_ROLE:
@@ -526,6 +527,39 @@ class HomePageService {
     return $row;
   }
 
+  private function buildBestPractices($year, $month, $state) {
+    $results = [];
+    $bestPractices = new bestPracticesQuery($this->year, $this->month, $this->email, $this->provider);
+
+    if (!empty($this->email)) {
+      $bestPractices->buildSums('Me');
+      $bestPractices->addSelectedSumsTotal('Me');
+    }
+
+    if (!empty($this->provider)) {
+      $bestPractices->buildSums('Provider');
+      $bestPractices->addSelectedSumsTotal('Provider');
+      $results['provider'] = $this->provider;
+    }
+
+    if (!empty($state)) {
+      $bestPractices->buildSums('State', $state);
+      $bestPractices->addSelectedSumsTotal('State', $state);
+      $results['stateName'] = $this->stateValues[$state];
+    }
+
+    $bestPractices->buildSums('Observer');
+    $bestPractices->addSelectedSumsTotal('Observer');
+    $bestPractices->addSelectedSumsTotal('All');
+    $bestPractices->buildSums('All');
+
+    $results['records'] = $bestPractices->execute();
+    $results['activities'] = $bestPractices::PRACTICES;
+    $this->getTotals($results);
+
+    return $results;
+  }
+
   /**
    * @param $year
    * @param $month
@@ -533,46 +567,31 @@ class HomePageService {
    *
    * @return array
    */
-  public function bestPractices($year, $month, $state = NULL) : array {
+  public function bestPractices($year, $month, $role,  $state = NULL) : array {
+    $return = [];
+
     $this->setDateRange($year, $month);
-    $bestPractices = new bestPractices($this->year, $this->month, $this->email, $this->provider);
 
-    if (!empty($this->email)) {
-      $bestPractices->buildSums('Me');
+    $return['title'] = sprintf('Key Activities in %s, %d for ', $this->monthName, $this->year );
+
+    $lastMonthResults = $this->buildBestPractices($this->year, $this->month, $state);
+    $return['lastMonth'] = $this->processResults($lastMonthResults['records'][0], array_keys($lastMonthResults['activities']), $role, TRUE);
+
+    $return['activities'] = $lastMonthResults['activities'];
+    if (isset($lastMonthResults['stateName'])) {
+      $return['title'] .= $lastMonthResults['stateName'];
+    }
+    elseif (isset($lastMonthResults['provider'])) {
+      $return['title'] .= $lastMonthResults['provider'];
     }
 
-    if (!empty($this->provider)) {
-      $bestPractices->buildSums('Provider');
-    }
+    $prevMonthResults = $this->buildBestPractices($this->previousYear, $this->previousMonth, $state);
+    $return['prevMonth'] = $this->processResults($prevMonthResults['records'][0], array_keys($prevMonthResults['activities']), $role);
 
-    if (!empty($state)) {
-      $bestPractices->buildSums('State', $state);
-    }
+    $this->compareMonths($return);
 
-    $bestPractices->buildSums('All');
 
-    $lastMonthResults = $bestPractices->execute();
+    return $return;
 
-    $bestPractices = new bestPractices($this->previousYear, $this->previousMonth, $this->email, $this->provider);
-
-    if (!empty($this->email)) {
-      $bestPractices->buildSums('Me');
-    }
-
-    if (!empty($this->provider)) {
-      $bestPractices->buildSums('Provider');
-    }
-
-    if (!empty($state)) {
-      $bestPractices->buildSums('State', $state);
-    }
-
-    $bestPractices->buildSums('All');
-
-    $prevMonthResults = $bestPractices->execute();
-    return [
-      'lastMonth' => $lastMonthResults,
-      'prevMonth' => $prevMonthResults
-    ];
   }
 }

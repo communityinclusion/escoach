@@ -10,46 +10,66 @@ namespace Drupal\es_homepage\Query;
  *  Natural supports (answer540 IN 11863, 11862 )
  */
 
-class bestPractices extends HomePageQuery {
+class bestPracticesQuery extends HomePageQuery {
   const QUESTION_ID = 483;
   const PRACTICES = [
     'inTheCommunity' => [
-      483 => [
-        11658,
-        11659,
-        11661
-      ],
-      482 => 11652
+      'label' => 'In the Community',
+      'multiplier' => 1,
+      'answerIDs' => [
+        483 => [
+          11658,
+          11659,
+          11661
+        ],
+        482 => 11652
+      ]
     ],
     'withFamilies' => [
-      483 => [
-        11658,
-        11659,
-        11661
-      ],
-      'OR' => [
-        481 => 11641,
-        590 => 12119
+      'label' => 'With Families',
+      'multiplier' => 1,
+      'answerIDs' => [
+        483 => [
+          11658,
+          11659,
+          11661
+        ],
+        'OR' => [
+          481 => 11641,
+          590 => 12119
+        ]
       ]
     ],
     'observing' => [
-      537 => [
-        11838,
-        11899,
-        12115
+      'label' => 'Observing',
+      'multiplier' => 1,
+      'answerIDs' => [
+        537 => [
+          11838,
+          11899,
+          12115
+        ]
       ]
     ],
     'networking' => [
-      538 => [
-        11845,
-        11844,
-        11843
+      'label' => 'Networking',
+      'multiplier' => 1,
+      'answerIDs' => [
+        538 => [
+          11845,
+          11844,
+          11843
+        ]
       ]
     ],
     'naturalSupports' => [
-      540 => [
-        11863,
-        11862
+      'label' => 'Natural Supports',
+      'multiplier' => 1,
+      'answerIDs' => [
+        540 => [
+          11863,
+          11862
+        ]
       ]
     ]
   ];
@@ -77,14 +97,20 @@ class bestPractices extends HomePageQuery {
         $commonArgs[':state'] = $state;
         break;
 
+      case 'Observer':
+        $and = "AND (regcode <= 10000 OR regcode IS NULL)";
+        break;
+
       default:
         $and = '';
     }
 
-    foreach ($this::PRACTICES as $category => $value) {
+    foreach ($this::PRACTICES as $category => $info) {
+      $value = $info['answerIDs'];
       $args = $commonArgs;
       $conditions = [];
       $alias = $category . $scope;
+      $when = [];
 
       foreach ($value as $qid => $values) {
         if ($qid == 'OR') {
@@ -97,33 +123,28 @@ class bestPractices extends HomePageQuery {
             $args[ ':who' . $scope . $idx++ . '[]'] = $respIDs;
           }
 
-          $and .= sprintf(' AND (%s)', implode(' OR ', $conditions) );
+          $when[] = sprintf('(%s)', implode(' OR ', $conditions) );
         }
         else {
           if (is_array($values)) {
             $ind = $this->getValueIndex();
-            $str_condition = sprintf('(answer%d IN (:value%d[]))', $qid, $ind);
+            $when[] = sprintf('(answer%d IN (:value%d[]))', $qid, $ind);
             $args[':value' . $ind . '[]'] = $values;
 
-            $sql = sprintf('sum(case when ((%s) %s) then 1 else 0 end)',
-              $str_condition,
-              $and
-            );
-
-            $this->query->addExpression($sql, $alias, $args);
           }
           else {
             $ind1 = $this->getValueIndex();
-            $sql = sprintf('sum(case when answer%d IN (:value%d) %s then 1 else 0 end)',
+            $when[] = sprintf('answer%d IN (:value%d)',
               $qid,
               $ind1,
-              $and
             );
 
             $args[':value' . $ind1] = $values;
           }
         }
       }
+
+      $sql = sprintf('sum(case when (%s) %s then 1 else 0 end)', implode(' AND ', $when), $and);
       $this->query->addExpression($sql, $alias, $args);
     }
   }

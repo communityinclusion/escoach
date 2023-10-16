@@ -33,6 +33,30 @@ class HomePageController extends ControllerBase {
 
   public function activities($year = NULL, $month = NULL) : array {
 
+    $return = $this->setup('key_activities', $year, $month);
+    $data = $return['#data'];
+    $data += $this->homePageService->keyActivities($year, $month, $data['role'], $data['stateName'] ?? '');
+    $chart = $this->homePageService->buildChart($data);
+    $return['#attached']['drupalSettings']['es_homepage']['chart'] = $chart['chart'];
+    $return['#attached']['drupalSettings']['es_homepage']['colors'] = $chart['colors'];
+    $return['#data'] = $data;
+    return $return;
+  }
+
+  public function bestPractices($year = NULL, $month = NULL, $state = NULL) : array {
+
+    $return = $this->setup('best_practices', $year, $month);
+    $data = $return['#data'];
+    $data += $this->homePageService->bestPractices($year, $month, $data['role'], $data['stateName'] ?? '');
+    $chart = $this->homePageService->buildChart($data);
+    $return['#attached']['drupalSettings']['es_homepage']['chart'] = $chart['chart'];
+    $return['#attached']['drupalSettings']['es_homepage']['colors'] = $chart['colors'];
+    $return['#data'] = $data;
+    return $return;
+
+  }
+
+  private function setup($which, $year, $month) {
     $libraries = ['es_homepage/charts'];
     $data = [];
 
@@ -53,19 +77,17 @@ class HomePageController extends ControllerBase {
         $libraries[] = 'es_homepage/providers';
         $provider = \Drupal::request()->get('provider') ?? $data['providerList'][0];
         $this->homePageService->setCurrentProvider($provider);
+        $data['provider'] = $provider;
       }
       elseif (in_array('survey_participant', $roles)) {
         $this->homePageService->getProvider();
         $data['role'] = $this->homePageService->getJobType();
       }
       else {
-        $data['role'] = 'OTHER';
+        $data['role'] = 'ANON';
         // Who else is left???
       }
     }
-
-    $data += $this->homePageService->keyActivities($year, $month, $data['role'], $state);
-    $chart = $this->homePageService->buildChart($data);
 
     return [
       '#cache' => [
@@ -75,27 +97,17 @@ class HomePageController extends ControllerBase {
           'user',
         ]
       ],
-      '#theme' => 'key_activities',
+      '#data' => $data,
+      '#theme' => $which,
       '#attached' => [
         'library' => $libraries,
         'drupalSettings' => [
           'es_homepage' => [
-            'chart' => $chart['chart'],
-            'colors' => $chart['colors'],
             'chart_type' =>  'bar',
           ],
         ],
       ],
-      '#data' => $data,
-    ];
-  }
 
-  public function bestPractices($year = NULL, $month = NULL, $state = NULL) : array {
-
-    $data = $this->homePageService->bestPractices($year, $month, $state);
-    return [
-      '#theme' => 'best_practices',
-      '#data' => $data,
     ];
   }
 
