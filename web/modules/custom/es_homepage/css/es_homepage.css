@@ -1,0 +1,31 @@
+#activities-table {
+  margin-top: 30px;
+  border: 1px solid black;
+  width: 75%
+}
+
+#activities-table td, #activities-table th  {
+  border: 1px solid grey;
+  padding: 3px;
+}
+
+.betterMonth::after {
+  color: #2E78D2;
+  text-align: left;
+  font-family: "fontawesome";
+  content: "\f271";
+}
+
+.betterAll:after {
+  color: #205493;
+  text-align: right;
+  font-family: "fontawesome";
+  content: "\f055";
+}
+
+.alertIcon:after {
+  color: #FF7043;
+  text-align: right;
+  font-family: "fontawesome";
+  content: "\f071";
+}

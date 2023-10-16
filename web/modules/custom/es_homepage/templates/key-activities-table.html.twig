@@ -1,0 +1,122 @@
+<div class="results-table">
+  <table id="activities-table" class="escoach-homepage-table">
+    <thead>
+    <tr>
+      <th>Activities</th>
+      {% if data.role == 'ANON' %}
+        <th>State</th>
+      {% elseif data.role == 'Employment consultant' %}
+        <th>Me</th>
+        <th>My Team</th>
+      {% elseif data.role == 'Manager' %}
+        <th>My Team</th>
+      {% elseif data.role == 'TA' %}
+        <th>Provider</th>
+      {% endif %}
+      <th{{ colspan }}>All</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for machine, info in data.activities %}
+      <tr>
+        <td>{{ info.label }}</td>
+        {% if data.role == 'ANON' %}
+          <td>{{ data.lastMonth.State[machine].formatted }}
+          {% if data.lastMonth.State[machine].betterMonth %}
+            <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+          {% endif %}
+            {% if data.lastMonth.State[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% elseif data.role == 'Employment consultant' %}
+          <td>{{ data.lastMonth.Me[machine].formatted }}
+            {% if data.lastMonth.Me[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Me[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
+            {% if data.lastMonth.Provider[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Provider[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% elseif data.role == 'Manager' %}
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
+            {% if data.lastMonth.Provider[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Provider[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% elseif data.role == 'TA' %}
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
+            {% if data.lastMonth.Provider[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Provider[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% endif %}
+        <td>{{ data.lastMonth.All[machine].formatted }}</td>
+      </tr>
+    {% endfor %}
+    <tr>
+      <td>Response Rate</td>
+      {% if data.role == 'ANON' %}
+        <td>{{ data.responseRate.State.responseRate * 100 }}%</td>
+      {% elseif data.role == 'Employment consultant' %}
+        <td>{{ data.responseRate.Me.responseRate * 100 }}%</td>
+        <td>{{ data.responseRate.Provider.responseRate * 100 }}%</td>
+      {% elseif data.role == 'Manager' %}
+        <td>{{ data.responseRate.Provider.responseRate * 100 }}%</td>
+      {% elseif data.role == 'TA' %}
+        <td>{{ data.responseRate.Provider.responseRate * 100 }}%</td>
+      {% endif %}
+      <td>{{ data.responseRate.All.responseRate * 100 }}%</td>
+    </tr>
+    <tr>
+      <td># of Respondents</td>
+      {% if data.role == 'ANON' %}
+        <td>{{ data.responseRate.State.netResponses }}
+          {% if data.responseRate.State.alert %}
+            <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
+          {% endif %}
+        </td>
+      {% elseif data.role == 'Employment consultant' %}
+        <td>{{ data.responseRate.Me.netResponses }}
+          {% if data.responseRate.Me.alert %}
+            <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
+          {% endif %}
+        </td>
+        <td>{{ data.responseRate.Provider.netResponses }}
+          {% if data.responseRate.Provider.alert %}
+            <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
+          {% endif %}
+        </td>
+      {% elseif data.role == 'Manager' %}
+        <td>{{ data.responseRate.Provider.netResponses }}
+          {% if data.responseRate.Provider.alert %}
+            <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
+          {% endif %}
+        </td>
+      {% elseif data.role == 'TA' %}
+        <td>{{ data.responseRate.Provider.netResponses }}
+          {% if data.responseRate.Provider.alert %}
+            <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
+          {% endif %}
+        </td>
+      {% endif %}
+      <td>{{ data.responseRate.All.netResponses }}</td>
+    </tr>
+
+    </tbody>
+  </table>
+</div>

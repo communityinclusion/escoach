@@ -1,0 +1,76 @@
+<div class="results-table">
+  <table id="activities-table" class="escoach-homepage-table">
+    <thead>
+    <tr>
+      <th>Activities</th>
+      {% if data.role == 'ANON' %}
+        <th>State</th>
+      {% elseif data.role == 'Employment consultant' %}
+        <th>Me</th>
+        <th>My Team</th>
+      {% elseif data.role == 'Manager' %}
+        <th>My Team</th>
+      {% elseif data.role == 'TA' %}
+        <th>Provider</th>
+      {% endif %}
+      <th{{ colspan }}>All</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% set count = 0 %}
+    {% for machine, info in data.activities %}
+      {% set count = count + 1 %}
+      <tr>
+        <td>{{ info.label }} <a href="#{{ machine }}">{{ count }}</a></td>
+        {% if data.role == 'ANON' %}
+          <td>{{ data.lastMonth.State[machine].formatted }}
+            {% if data.lastMonth.State[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.State[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% elseif data.role == 'Employment consultant' %}
+          <td>{{ data.lastMonth.Me[machine].formatted }}
+            {% if data.lastMonth.Me[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Me[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
+            {% if data.lastMonth.Provider[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Provider[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% elseif data.role == 'Manager' %}
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
+            {% if data.lastMonth.Provider[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Provider[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% elseif data.role == 'TA' %}
+          <td>{{ data.lastMonth.Provider[machine].formatted }}
+            {% if data.lastMonth.Provider[machine].betterMonth %}
+              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+            {% endif %}
+            {% if data.lastMonth.Provider[machine].betterAll %}
+              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+            {% endif %}
+          </td>
+        {% endif %}
+        <td>{{ data.lastMonth.All[machine].formatted }}</td>
+      </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+</div>

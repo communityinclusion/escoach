@@ -1,0 +1,5 @@
+name: 'ES Homepage'
+type: module
+description: 'Homepage views'
+core_version_requirement: ^9 || ^10
+package: 'Custom'

@@ -1,0 +1,15 @@
+es_homepage.activities:
+  path: '/home/activities'
+  defaults:
+    _controller: '\Drupal\es_homepage\Controllers\HomePageController::activities'
+    _title: 'Key Activities'
+  requirements:
+    _access: 'TRUE'
+
+es_homepage.best_practices:
+  path: '/home/best_practices'
+  defaults:
+    _controller: '\Drupal\es_homepage\Controllers\HomePageController::bestPractices'
+    _title: 'How much time do we invest in best practices'
+  requirements:
+    _access: 'TRUE'

@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function es_homepage_theme($existing, $type, $theme, $path) {
+  return [
+    'key_activities' => [
+      'variables' => [
+        'data' => null,
+      ]
+    ],
+    'best_practices' => [
+      'variables' => [
+        'data' => null,
+      ]
+    ]
+  ];
+}

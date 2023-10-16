@@ -1,0 +1,19 @@
+states:
+  version: 1.x
+  js:
+    js/state-select.js: {}
+
+providers:
+  version: 1.x
+  js:
+    js/provider-select.js: {}
+
+charts:
+  version: 1.x
+  css:
+    base:
+      css/es_homepage.css: {}
+      https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css: { external: true }
+  js:
+    js/es_homepage.js: {}
+    https://www.gstatic.com/charts/loader.js: { type: external, minified: true }

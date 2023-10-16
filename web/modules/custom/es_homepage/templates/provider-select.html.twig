@@ -1,0 +1,12 @@
+<div class="provider-select">
+  <label>Choose a provider</label>
+  <select name="provider" id="provider-select">
+    {% for provider in data.providerList %}d
+      {% if data.provider and data.provider == provider %}
+        <option value="{{ provider }}" selected="selected">{{ provider }}</option>
+      {% else %}
+        <option value="{{ provider }}">{{ provider }}</option>
+      {% endif %}
+    {% endfor %}
+  </select>
+</div>
