@@ -1,0 +1,14 @@
+uuid: c8cd5cfb-6083-420a-912b-53c477414795
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.ta_admin
+  module:
+    - user
+id: user_add_role_action.ta_admin
+label: 'Add the TA Admin role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: ta_admin

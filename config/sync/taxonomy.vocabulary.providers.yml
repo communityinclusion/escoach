@@ -1,0 +1,8 @@
+uuid: b592f499-0962-41c4-a5be-9d8bb7ef609e
+langcode: en
+status: true
+dependencies: {  }
+name: Providers
+vid: providers
+description: 'provider classification for survey participants'
+weight: 0

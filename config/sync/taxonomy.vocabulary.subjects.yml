@@ -1,0 +1,8 @@
+uuid: 5d6755e4-2c3b-4d7c-85e7-d408cfb067ff
+langcode: en
+status: true
+dependencies: {  }
+name: Subjects
+vid: subjects
+description: 'Subjects for library'
+weight: 0

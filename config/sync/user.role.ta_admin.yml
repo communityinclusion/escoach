@@ -1,0 +1,18 @@
+uuid: 21b303c8-04f9-4f04-8cae-6f18aae992c7
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.full_html
+  module:
+    - filter
+    - system
+id: ta_admin
+label: 'TA Admin'
+weight: 4
+is_admin: null
+permissions:
+  - 'access user profiles'
+  - 'use text format full_html'
+  - 'view the administration theme'
+  - 'view user email addresses'

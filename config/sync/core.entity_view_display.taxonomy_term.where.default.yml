@@ -1,0 +1,43 @@
+uuid: 59c61c8d-3ad9-439e-8b29-0383acc4adc6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.where.field_alias
+    - field.field.taxonomy_term.where.field_bar_chart_color
+    - field.field.taxonomy_term.where.field_dashboard_question_id
+    - field.field.taxonomy_term.where.field_dashboard_response_id
+    - taxonomy.vocabulary.where
+  module:
+    - field_layout
+    - layout_discovery
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: taxonomy_term.where.default
+targetEntityType: taxonomy_term
+bundle: where
+mode: default
+content:
+  field_alias:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -4
+    region: content
+  field_bar_chart_color:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -3
+    region: content
+hidden:
+  description: true
+  field_dashboard_question_id: true
+  field_dashboard_response_id: true

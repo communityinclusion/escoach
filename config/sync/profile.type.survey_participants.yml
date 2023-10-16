@@ -1,0 +1,14 @@
+uuid: a635beb7-c651-40f2-a7aa-3aab581ab174
+langcode: en
+status: true
+dependencies: {  }
+id: survey_participants
+label: 'Survey participants'
+display_label: 'Survey participation settings'
+multiple: false
+registration: true
+roles:
+  authenticated: authenticated
+  administrator: administrator
+allow_revisions: false
+new_revision: false

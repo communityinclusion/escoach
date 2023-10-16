@@ -1,0 +1,36 @@
+uuid: a88c1ebb-536c-4461-b9c5-c8a18c7134d5
+langcode: en
+status: false
+dependencies:
+  config:
+    - views.view.es_coach_library
+  module:
+    - system
+    - user
+    - views
+  theme:
+    - b5subtheme
+id: exposedformes_coach_librarypage_1_2
+theme: b5subtheme
+region: header
+weight: -6
+provider: null
+plugin: 'views_exposed_filter_block:es_coach_library-page_1'
+settings:
+  id: 'views_exposed_filter_block:es_coach_library-page_1'
+  label: ''
+  label_display: visible
+  provider: views
+  views_label: 'ES Coach Admin Library'
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: /es-coach-library
+  user_role:
+    id: user_role
+    negate: false
+    context_mapping:
+      user: '@user.current_user_context:current_user'
+    roles:
+      administrator: administrator

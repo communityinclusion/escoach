@@ -1,0 +1,14 @@
+uuid: d60bfcdf-6bd6-42f4-a4ec-6550f4ed4d37
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.survey_participant
+  module:
+    - user
+id: user_remove_role_action.survey_participant
+label: 'Remove the Survey participant role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: survey_participant

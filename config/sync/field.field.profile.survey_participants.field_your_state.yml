@@ -1,0 +1,21 @@
+uuid: 9a714bc1-0316-4b23-be9f-960197c0b463
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_your_state
+    - profile.type.survey_participants
+  module:
+    - options
+id: profile.survey_participants.field_your_state
+field_name: field_your_state
+entity_type: profile
+bundle: survey_participants
+label: 'Your state'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,363 @@
+interval: '300'
+defaultid: '5420562'
+defaultrandom: '0'
+defaulttime: '04:30'
+secondaryid: '6358399'
+secondrandom: '1'
+secondtime: null
+defaultenable: '0'
+secondenable: '1'
+secondarytodaytime: '2020-06-30 13:00:00'
+hour_range_low: '23400'
+hour_range_high: '55800'
+def_send_days:
+  Monday: Monday
+  Tuesday: Tuesday
+  Wednesday: Wednesday
+  Thursday: Thursday
+  Friday: Friday
+  Sunday: 0
+  Saturday: 0
+alt_send_days:
+  Sunday: 0
+  Monday: 0
+  Tuesday: 0
+  Wednesday: 0
+  Thursday: 0
+  Friday: 0
+  Saturday: 0
+def_inactive_trigger: '3'
+first_text_body:
+  value: 'Hi @name.  What was your primary activity today between @starttime and @endtime ? @link.'
+  format: plain_text
+first_text_format: full_html
+survey_admin_mail: info@es-coach.org
+def_reminder_num: '2'
+second_text_body:
+  value: 'Hi @name. Friendly reminder: what was your primary activity today, between @starttime and @endtime ? @link.'
+  format: plain_text
+third_text_body:
+  value: 'Hi @name. We have not heard from you yet. What was your primary activity today between @starttime and @endtime ? @link.'
+  format: plain_text
+secondary_reminder_num: '0'
+alt_first_text_body:
+  value: 'Good morning @name, please complete this short ES-Coach baseline survey about your professional characteristics: @link Thanks!'
+  format: plain_text
+alt_second_text_body:
+  value: ''
+  format: plain_text
+alt_third_text_body:
+  value: ''
+  format: plain_text
+def_survey_suspend_start_id: '587'
+def_survey_suspend_end_id: '588'
+alt_survey_suspend_start_id: ''
+alt_survey_suspend_end_id: ''
+def_holiday_name:
+  - MLK
+  - 'President Day'
+  - 'Memorial day'
+  - Juneteenth
+  - 'July 4th'
+  - 'Labor''s day'
+  - 'Indigenous day'
+  - 'Veterans day'
+  - Thanksgiving
+  - 'Thanksgiving day after'
+def_holiday_date:
+  - '2023-01-16'
+  - '2022-02-21'
+  - '2022-05-30'
+  - '2022-06-20'
+  - '2022-07-04'
+  - '2022-09-05'
+  - '2022-10-10'
+  - '2022-11-11'
+  - '2022-11-24'
+  - '2022-11-25'
+def_warning_trigger: '2'
+def_inactive_mode: '3'
+warning_text_body:
+  value: 'Hi @name. Watch for your es-coach today. You''re out of the office? Too busy? Pause es-coach at @invitelink by selecting "Out of office" on the first question. Thanks!'
+  format: plain_text
+cutoff_text_body:
+  value: 'Hi @name. Es-coach paused because you have not responded in a while. Resume it at es-coach.org/user/login then click on "Stop/Resume survey", then select “Active”. Or ask info@es-coach.org. Thanks!'
+  format: plain_text
+alt_repeat: '0'
+alt_hour_range_low: '32400'
+alt_hour_range_high: '36000'
+def_provider_name:
+  -
+    -
+      target_id: 1
+  -
+    -
+      target_id: 27
+  -
+    -
+      target_id: 252
+  -
+    -
+      target_id: 253
+  -
+    -
+      target_id: 254
+  -
+    -
+      target_id: 255
+  -
+    -
+      target_id: 256
+  -
+    -
+      target_id: 257
+  -
+    -
+      target_id: 258
+  -
+    -
+      target_id: 259
+  -
+    -
+      target_id: 260
+  -
+    -
+      target_id: 185
+  -
+    -
+      target_id: 276
+  -
+    -
+      target_id: 264
+  -
+    -
+      target_id: 265
+  -
+    -
+      target_id: 266
+  -
+    -
+      target_id: 267
+  -
+    -
+      target_id: 270
+  -
+    -
+      target_id: 271
+  -
+    -
+      target_id: 324
+  -
+    -
+      target_id: 273
+  -
+    -
+      target_id: 274
+  -
+    -
+      target_id: 275
+  -
+    -
+      target_id: 277
+  -
+    -
+      target_id: 278
+  -
+    -
+      target_id: 279
+  -
+    -
+      target_id: 280
+  -
+    -
+      target_id: 282
+  -
+    -
+      target_id: 53
+  -
+    -
+      target_id: 284
+  -
+    -
+      target_id: 285
+  -
+    -
+      target_id: 286
+  -
+    -
+      target_id: 289
+  -
+    -
+      target_id: 287
+  -
+    -
+      target_id: 288
+  -
+    -
+      target_id: 290
+  -
+    -
+      target_id: 291
+  -
+    -
+      target_id: 292
+  -
+    -
+      target_id: 293
+  -
+    -
+      target_id: 294
+  -
+    -
+      target_id: 295
+  -
+    -
+      target_id: 296
+  -
+    -
+      target_id: 297
+  -
+    -
+      target_id: 298
+  -
+    -
+      target_id: 299
+  -
+    -
+      target_id: 300
+  -
+    -
+      target_id: 301
+  -
+    -
+      target_id: 302
+  -
+    -
+      target_id: 303
+  -
+    -
+      target_id: 304
+  -
+    -
+      target_id: 305
+  -
+    -
+      target_id: 306
+  -
+    -
+      target_id: 307
+  -
+    -
+      target_id: 308
+  -
+    -
+      target_id: 309
+  -
+    -
+      target_id: 310
+  -
+    -
+      target_id: 311
+  -
+    -
+      target_id: 312
+  -
+    -
+      target_id: 313
+  -
+    -
+      target_id: 314
+  -
+    -
+      target_id: 315
+  -
+    -
+      target_id: 316
+  -
+    -
+      target_id: 317
+  -
+    -
+      target_id: 318
+  -
+    -
+      target_id: 319
+  -
+    -
+      target_id: 320
+  -
+    -
+      target_id: 322
+def_provider_code:
+  - '8899'
+  - '9976'
+  - '49698'
+  - '99504'
+  - '43130'
+  - '27259'
+  - '63493'
+  - '46294'
+  - '78886'
+  - '37829'
+  - '39569'
+  - '1344'
+  - '9999'
+  - '7883'
+  - '2356'
+  - '5897'
+  - '1436'
+  - '5378'
+  - '9665'
+  - '641072'
+  - '3272'
+  - '6378'
+  - '8193'
+  - '5024'
+  - '7311'
+  - '5250'
+  - '8880'
+  - '1751'
+  - '3628'
+  - '847698'
+  - '8801'
+  - '7090'
+  - '5716'
+  - '1647'
+  - '2746'
+  - '6289'
+  - '3861'
+  - '8878'
+  - '3445'
+  - '8733'
+  - '3924'
+  - '3880'
+  - '3552'
+  - '2613'
+  - '5601'
+  - '4559'
+  - '2763'
+  - '8225'
+  - '8491'
+  - '7424'
+  - '9506'
+  - '9686'
+  - '3625'
+  - '5367'
+  - '4776'
+  - '3233'
+  - '5801'
+  - '5930'
+  - '121437'
+  - '174771'
+  - '151637'
+  - '981007'
+  - '119990'
+  - '240947'
+  - '336195'
+  - '464319'
+  - '409460'
+alt_delay_period: '30'
+def_days_past_inactive: '21'
+comeback_text_body:
+  value: 'Hi @name, it has been a while since your last ES-Coach response. We miss you. Resume it at es-coach.org/user/login then click on "Stop/Resume survey", then select “Active”. Or ask info@es-coach.org. Thanks!'
+  format: plain_text

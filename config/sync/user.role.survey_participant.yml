@@ -1,0 +1,13 @@
+uuid: fe9e5d95-3f51-43aa-8063-8137c598b34a
+langcode: en
+status: true
+dependencies:
+  module:
+    - profile
+id: survey_participant
+label: 'Survey participant'
+weight: 3
+is_admin: null
+permissions:
+  - 'update own survey_participants profile'
+  - 'view own survey_participants profile'
