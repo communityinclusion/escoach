@@ -1,0 +1,29 @@
+uuid: 9221f8f4-aa2d-4062-8af2-d55ea94e16aa
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_providers
+    - profile.type.technical_assistant
+    - taxonomy.vocabulary.providers
+id: profile.technical_assistant.field_providers
+field_name: field_providers
+entity_type: profile
+bundle: technical_assistant
+label: Providers
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      providers: providers
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

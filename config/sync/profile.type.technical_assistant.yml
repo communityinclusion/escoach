@@ -1,0 +1,13 @@
+uuid: 535ab3da-54f6-4966-92fc-5f26031e7986
+langcode: en
+status: true
+dependencies: {  }
+id: technical_assistant
+label: 'Technical Assistant'
+display_label: 'Technical Assistant'
+multiple: false
+registration: false
+roles:
+  ta_admin: ta_admin
+allow_revisions: false
+new_revision: false
