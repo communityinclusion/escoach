@@ -9,11 +9,13 @@
 
   Drupal.behaviors.homepageStateSelect = {
     attach: function (context, settings) {
-      $('#state-select').once('select-state').on('change', function (evt) {
-        if ($(this).val()) {
-          let currentUrl = window.location.pathname;
-          window.location.href = currentUrl + '?state=' + $(this).val() + '&t=' + Date.now();
-        }
+      $(once('select-state', '#state-select', context)).each(function () {
+        $(this).on('change', function (evt) {
+          if ($(this).val()) {
+            let currentUrl = window.location.pathname;
+            window.location.href = currentUrl + '?state=' + $(this).val() + '&t=' + Date.now();
+          }
+        });
       });
     }
   };

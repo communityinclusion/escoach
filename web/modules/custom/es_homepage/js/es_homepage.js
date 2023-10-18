@@ -4,29 +4,50 @@
  *
  */
 (function ($, Drupal) {
-
   'use strict';
+
+  Drupal.behaviors.download = {
+    attach: function (context, settings) {
+      $(once('download', '#download-button', context)).each(function (evt) {
+        $(this).on('click', function (evt) {
+          var baseURL = '/home/download';
+
+          if ($('#state-select').length === 1) {
+            baseURL += '?state=' + $('#state-select').val();
+          }
+          else if ($('#provider-select').length === 1) {
+            baseURL += '?provider=' + $('#provider-select').val();
+          }
+
+          window.location.href = baseURL;
+        });
+      });
+    }
+  };
+
   Drupal.behaviors.homePageChart = {
     attach: function (context, settings) {
 
-    $(document).once('school-name').on('ajaxSuccess', function (evt, data) {
+      $(once('bind-ajax-success', document, context)).each(function (evt) {
+        $(this).on('ajaxSuccess', function (evt, data) {
 
-      google.charts.load('current', {packages: ['corechart', chartType]});
-      google.charts.setOnLoadCallback(drawBasic);
+          google.charts.load('current', {packages: ['corechart', chartType]});
+          google.charts.setOnLoadCallback(drawBasic);
 
-      for( var i in data.responseJSON) {
-        var setting = data.responseJSON[i];
-        if (setting.settings.es_homepage.chart) {
-          drupalSettings.es_homepage.chart = setting.settings.es_homepage.chart;
-          break;
-        }
-      }
-    });
+          for (var i in data.responseJSON) {
+            var setting = data.responseJSON[i];
+            if (setting.settings.es_homepage.chart) {
+              drupalSettings.es_homepage.chart = setting.settings.es_homepage.chart;
+              break;
+            }
+          }
+        });
+      });
 
-    $('#google-charts').once('chart').each(function () {
-      google.charts.load('current', {packages: ['corechart', 'bar']});
-      google.charts.setOnLoadCallback(drawBasic);
-    });
+      $(once('chart', '#google-charts', context)).each(function (evt) {
+        google.charts.load('current', {packages: ['corechart', 'bar']});
+        google.charts.setOnLoadCallback(drawBasic);
+      });
 
     function drawBasic() {
 
