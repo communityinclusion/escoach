@@ -63,6 +63,7 @@ class TwilioCoachService
         // create new campaign
         // IF this is a one-timer, make the expire data tomorrow.
         $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign?_method=PUT&type=email&linkdates[open]=" . urlencode("$gizmodate 03:00:00") . ($onetime ? "" : "&linkdates[close]=" . urlencode("$gizmodate 23:59:30")) . "&name=" . urlencode("$gizmodate Campaign") . "&tokenvariables=" . urlencode("starttime=$firstdate&endtime=$seconddate") . "&api_token={$api_key}&api_token_secret={$api_secret}";
+        \Drupal::logger('surveycampaign alert')->notice('URL: ' . $url);
 
 
 
@@ -82,7 +83,7 @@ class TwilioCoachService
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($ch);
-            //print_r($output);
+            //$readout = print_r($output,true);
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
             if(!$output) \Drupal::logger('surveycampaign alert')->notice('No Output from Alchemer: ');
