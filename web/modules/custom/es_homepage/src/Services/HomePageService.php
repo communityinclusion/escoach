@@ -1,6 +1,8 @@
 <?php
 namespace Drupal\es_homepage\Services;
 
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\es_homepage\Query\bestPracticesQuery;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
@@ -19,6 +21,8 @@ class HomePageService {
   const TA_ROLE = 'TA';
   const ANON_ROLE = 'ANON';
   const OTHER_ROLE = 'OTHER';
+  const BETTER_YES = 'YES';
+  const BETTER_NO = 'NO';
 
   private $stateValues = [
     'AL'  => 'Alabama',
@@ -156,6 +160,8 @@ class HomePageService {
       if (isset($profile->field_job_type->value)) {
         $this->job_type = $profile->field_job_type->value;
       }
+
+      return $this->provider;
     }
   }
 
@@ -377,6 +383,9 @@ class HomePageService {
           continue;
         }
 
+        $data['lastMonth'][$scope][$machine]['betterMonth'] = 0;
+        $data['lastMonth'][$scope][$machine]['betterAll'] = 0;
+
         // @todo - should this use avg instead of total?
         $last = $info[$machine]['total'] * $activity['multiplier'];
         $prev = $data['prevMonth'][$scope][$machine]['total'] * $activity['multiplier'];
@@ -392,6 +401,15 @@ class HomePageService {
       }
     }
   }
+
+  /**
+   * @param $results
+   * @param $activities
+   * @param $role
+   * @param $calcAvg
+   *
+   * @return array
+   */
   private function processResults($results, $activities, $role, $calcAvg = FALSE) {
     $return = [];
 
@@ -419,6 +437,13 @@ class HomePageService {
     return $return;
   }
 
+  /**
+   * @param $results
+   * @param $alias
+   * @param $scope
+   *
+   * @return float|int|string
+   */
   public function calculateAverage($results, $alias, $scope) {
     $totalCell = 'Total' . ucfirst($scope);
     $dataCell = $alias . ucfirst($scope);
@@ -463,6 +488,167 @@ class HomePageService {
       $min_part = 0;
     }
     return sprintf("%d:%02d", $hour_part, $min_part);
+  }
+
+  /**
+   * @param $activityData
+   * @param $bestPracticesData
+   *
+   * @return string
+   */
+  public function buildCSV($activityData, $bestPracticesData) {
+    $role = $activityData['role'];
+    $headers = ['Activities'];
+    switch ($role) {
+      case 'ANON':
+        $state = $activityData['stateList'][$activityData['stateName']] ?? NULL;
+        $headers[] =  $state ?? 'State';
+        $headers[] = 'Better than Last Month';
+        $headers[] = 'Better than All';
+        break;
+      case 'Employment consultant':
+        $headers[] = 'Me';
+        $headers[] = 'Better than Last Month';
+        $headers[] = 'Better than All';
+        $headers[] = 'My Team';
+        $headers[] = 'Better than Last Month';
+        $headers[] = 'Better than All';
+        break;
+      case 'Manager':
+        $headers[] = 'My Team';
+        $headers[] = 'Better than Last Month';
+        $headers[] = 'Better than All';
+        break;
+      case 'TA':
+        $headers[] = $activityData['provider'] ?? 'Provider';
+        $headers[] = 'Better than Last Month';
+        $headers[] = 'Better than All';
+    }
+    $headers[] = 'All';
+
+    $return = implode(',', $headers) . "\n";
+    $row = [];
+
+    foreach ($activityData['activities'] as $machine => $info) {
+      $row = [$info['label'] ];
+      switch ($role) {
+        case 'ANON':
+          $row = array_merge($row, $this->_getDataByScope($activityData, 'State', $machine));
+          break;
+        case 'Employment consultant':
+          $row = array_merge($row, $this->_getDataByScope($activityData, 'Me', $machine));
+          $row = array_merge($row, $this->_getDataByScope($activityData, 'Provider', $machine));
+          break;
+        case 'Manager':
+          $row = array_merge($row, $this->_getDataByScope($activityData, 'Provider', $machine));
+          break;
+        case 'TA':
+          $row = array_merge($row, $this->_getDataByScope($activityData, 'Provider', $machine));
+      }
+      $row[] = $activityData['lastMonth']['All'][$machine]['formatted'];
+      $return .= implode(',', $row) . "\n";
+    }
+
+
+    $return .= $this->buildResponseRateRows($activityData);
+
+    foreach ($bestPracticesData['activities'] as $machine => $info) {
+      $row = [$info['label'] ];
+      switch ($role) {
+        case 'ANON':
+          $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'State', $machine));
+          break;
+        case 'Employment consultant':
+          $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Me', $machine));
+          $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Provider', $machine));
+          break;
+        case 'Manager':
+          $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Provider', $machine));
+          break;
+        case 'TA':
+          $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Provider', $machine));
+      }
+      $row[] = $bestPracticesData['lastMonth']['All'][$machine]['formatted'];
+      $return .= implode(',', $row) . "\n";
+    }
+
+
+    /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
+    $fileRepository = \Drupal::service('file.repository');
+    $filename = \Drupal::service('file_system')->tempnam('temporary://', 'tmp_', Settings::get('file_temporary_path'));
+    $fileRepository->writeData($return, $filename, FileSystemInterface::EXISTS_REPLACE);
+    return $filename;
+  }
+
+  /**
+   * @param $activityData
+   *
+   * @return string
+   */
+  private function buildResponseRateRows($activityData) {
+    $role = $activityData['role'];
+    $row1 = ['Response Rate'];
+    $row2 = ['# of Respondents'];
+    switch ($role) {
+      case 'ANON':
+        $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'State', 'responseRate'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'State', 'netResponses'));
+        break;
+      case 'Employment consultant':
+        $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Me', 'responseRate'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Me', 'netResponses'));
+
+        $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
+        break;
+      case 'Manager':
+        $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
+        break;
+      case 'TA':
+        $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
+    }
+
+    $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'All', 'responseRate'));
+    $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'All', 'netResponses'));
+
+    $return = implode(',', $row1) . "\n";
+    $return .= implode(',', $row2) . "\n";
+
+
+    return $return;
+  }
+
+  /**
+   * @param $data
+   * @param $scope
+   * @param $which
+   *
+   * @return array
+   */
+  private function _getResponseRateByScope($data, $scope, $which) {
+    $val = $data['responseRate'][$scope][$which];
+    if ($which == 'responseRate') {
+      $val *= 100;
+    }
+
+    return [ $val,'','', ];
+  }
+
+  /**
+   * @param $data
+   * @param $scope
+   * @param $machine
+   *
+   * @return array
+   */
+  private function _getDataByScope($data, $scope, $machine) : array {
+    return [
+      $data['lastMonth'][$scope][$machine]['formatted'],
+      ($data['lastMonth'][$scope][$machine]['betterMonth'] ) ? self::BETTER_YES : self::BETTER_NO,
+      ($data['lastMonth'][$scope][$machine]['betterAll'] ) ? self::BETTER_YES : self::BETTER_NO
+    ];
   }
 
   /**

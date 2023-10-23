@@ -1,0 +1,32 @@
+uuid: 4ba8b3be-a9a8-4873-a60c-4a70f2de10dd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.technical_assistant.field_providers
+    - profile.type.technical_assistant
+  module:
+    - field_layout
+    - layout_discovery
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: profile.technical_assistant.default
+targetEntityType: profile
+bundle: technical_assistant
+mode: default
+content:
+  field_providers:
+    type: entity_reference_autocomplete
+    weight: 26
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  is_default: true

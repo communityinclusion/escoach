@@ -1,0 +1,29 @@
+uuid: e6da0dd8-d07a-47f3-94e1-d5aee6b01023
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.technical_assistant.field_providers
+    - profile.type.technical_assistant
+  module:
+    - field_layout
+    - layout_discovery
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings:
+      label: ''
+id: profile.technical_assistant.default
+targetEntityType: profile
+bundle: technical_assistant
+mode: default
+content:
+  field_providers:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

@@ -4,7 +4,10 @@ namespace Drupal\es_homepage\Controllers;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\es_homepage\Services\HomePageService;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class HomePageController extends ControllerBase {
 
@@ -54,6 +57,30 @@ class HomePageController extends ControllerBase {
     $return['#data'] = $data;
     return $return;
 
+  }
+
+  public function downloadCSV($year = NULL, $month = NULL) {
+    $activities = $this->activities($year, $month);
+    $practices = $this->bestPractices($year, $month);
+    $data = $this->homePageService->buildCSV($activities['#data'], $practices['#data']);
+
+    $filename = 'activity-download';
+    if ($provider = $this->homePageService->getProvider()) {
+      $filename .= '-' . $provider;
+    }
+    elseif (!empty($activities['#data']['stateName'])) {
+      $stateList = $this->homePageService->getStateList($year, $month);
+      $filename .= '-' . $stateList[$activities['#data']['stateName']];
+    }
+    $filename .= '.csv';
+
+    $response = new BinaryFileResponse($data);
+    $response->setContentDisposition(
+      ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+      $filename
+    );
+
+    return $response;
   }
 
   private function setup($which, $year, $month) {

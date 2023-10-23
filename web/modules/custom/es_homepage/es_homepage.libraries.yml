@@ -17,3 +17,7 @@ charts:
   js:
     js/es_homepage.js: {}
     https://www.gstatic.com/charts/loader.js: { type: external, minified: true }
+
+  dependencies:
+    - core/jquery
+    - core/once

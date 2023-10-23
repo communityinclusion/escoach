@@ -13,3 +13,11 @@ es_homepage.best_practices:
     _title: 'How much time do we invest in best practices'
   requirements:
     _access: 'TRUE'
+
+es_homepage.download_csv:
+  path: '/home/download'
+  defaults:
+    _controller: '\Drupal\es_homepage\Controllers\HomePageController::downloadCSV'
+    _title: 'Download'
+  requirements:
+    _access: 'TRUE'
