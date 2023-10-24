@@ -40,10 +40,7 @@ module:
   entity_browser: 0
   entity_reference_revisions: 0
   entity_usage: 0
-<<<<<<< HEAD
-=======
   es_homepage: 0
->>>>>>> 28225bc34cf57304bfc729ff13af54f5ad570167
   field: 0
   field_display_label: 0
   field_group: 0
