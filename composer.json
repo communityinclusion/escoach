@@ -63,6 +63,7 @@
         "drupal/scheduler": "^1.0",
         "drupal/search_api": "^1.14",
         "drupal/search_api_db": "^1.14",
+        "drupal/simple_mail": "^2.0",
         "drupal/smtp": "^1.0@beta",
         "drupal/subpathauto": "^1.0",
         "drupal/superfish": "^1.3",
