@@ -21,3 +21,19 @@ es_homepage.download_csv:
     _title: 'Download'
   requirements:
     _access: 'TRUE'
+
+es_homepage.download_providercsv:
+  path: '/home/download/provider'
+  defaults:
+    _controller: '\Drupal\es_homepage\Controllers\HomePageController::downloadProviderCSV'
+    _title: 'Download'
+  requirements:
+    _permission: 'access provider download'
+
+es_homepage.download_usercsv:
+  path: '/home/download/user'
+  defaults:
+    _controller: '\Drupal\es_homepage\Controllers\HomePageController::downloadUserCSV'
+    _title: 'Download'
+  requirements:
+    _permission: 'access user download'

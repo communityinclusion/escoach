@@ -4,7 +4,6 @@ namespace Drupal\es_homepage\Controllers;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\es_homepage\Services\HomePageService;
-use GuzzleHttp\Psr7\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -57,6 +56,32 @@ class HomePageController extends ControllerBase {
     $return['#data'] = $data;
     return $return;
 
+  }
+
+  public function downloadUserCSV($year = NULL, $month = NULL) {
+    $data = $this->homePageService->buildUserCSV($year, $month);
+    $filename = 'user-data.csv';
+
+    $response = new BinaryFileResponse($data);
+    $response->setContentDisposition(
+      ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+      $filename
+    );
+
+    return $response;
+  }
+
+  public function downloadProviderCSV($year = NULL, $month = NULL) {
+    $data = $this->homePageService->buildProviderCSV($year, $month);
+    $filename = 'provider-data.csv';
+
+    $response = new BinaryFileResponse($data);
+    $response->setContentDisposition(
+      ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+      $filename
+    );
+
+    return $response;
   }
 
   public function downloadCSV($year = NULL, $month = NULL) {
@@ -122,7 +147,7 @@ class HomePageController extends ControllerBase {
           'url.query_args:state',
           'url.query_args:provider',
           'user',
-        ]
+        ],
       ],
       '#data' => $data,
       '#theme' => $which,

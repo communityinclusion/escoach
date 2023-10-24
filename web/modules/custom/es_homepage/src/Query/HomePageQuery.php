@@ -31,6 +31,16 @@ class HomePageQuery extends BaseQuery {
       'BETWEEN');
   }
 
+  public function distinctProviders() {
+    $this->addExpression('distinct(provider)', 'provider');
+    $this->query->orderBy('provider', 'ASC');
+  }
+
+  public function distinctUsers() {
+    $this->addExpression('distinct(email)', 'email');
+    $this->query->orderBy('email', 'ASC');
+  }
+
   public function addExpression($expr, $alias) {
     $this->query->addExpression($expr, $alias);
   }

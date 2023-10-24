@@ -20,6 +20,7 @@ class HomePageService {
   const MANAGER_ROLE = 'Manager';
   const TA_ROLE = 'TA';
   const ANON_ROLE = 'ANON';
+  const ADMIN_ROLE = 'ADMIN';
   const OTHER_ROLE = 'OTHER';
   const BETTER_YES = 'YES';
   const BETTER_NO = 'NO';
@@ -181,6 +182,10 @@ class HomePageService {
     $this->provider = $provider;
   }
 
+  public function setCurrentUser($email) {
+    $this->email = $email;
+  }
+
   /**
    * @param $year
    * @param $month
@@ -297,7 +302,7 @@ class HomePageService {
     $results = $query->execute();
     $return['responseRate']['All'] = $results[0];
 
-    if ($role == self::CONSULTANT_ROLE) {
+    if ($role == self::CONSULTANT_ROLE || $role == self::ADMIN_ROLE) {
       $query->addMe();
       $results = $query->execute();
       $return['responseRate']['Me'] = $results[0];
@@ -426,7 +431,7 @@ class HomePageService {
         $return['Provider'][$activity]['total'] = $results[$activity . 'Provider'];
         $return['Provider'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'Provider');
         $return['Provider'][$activity]['formatted'] = $this->formatDuration($return['Provider'][$activity]['avg']);
-        if ($role == self::CONSULTANT_ROLE) {
+        if ($role == self::CONSULTANT_ROLE || (!empty($this->email) && $role == self::ADMIN_ROLE )) {
           $return['Me'][$activity]['total'] = $results[$activity . 'Me'];
           $return['Me'][$activity]['avg'] = $this->calculateAverage($results, $activity,  'Me');
           $return['Me'][$activity]['formatted'] = $this->formatDuration($return['Me'][$activity]['avg']);
@@ -473,6 +478,128 @@ class HomePageService {
     return $dayTotal;
   }
 
+  public function buildUserCSV($year, $month) {
+    $data = [];
+    $headers = ['User'];
+    foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
+      $headers[] = $info['label'];
+      $headers[] = 'Better than Last Month';
+      $headers[] = 'Better than Last All';
+    }
+    $headers[] = 'Response Rate';
+    $headers[] = '# of Respondents';
+
+    foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
+      $headers[] = $info['label'];
+      $headers[] = 'Better than Last Month';
+      $headers[] = 'Better than Last All';
+    }
+
+    $data = implode(',', $headers) . "\n";
+
+    $query = new HomePageQuery($year, $month, '', '');
+    $query->distinctUsers();
+    $results = $query->execute();
+
+    $this->setCurrentProvider('None');
+    foreach ($results as $result => $info) {
+      $user = $info['email'];
+      $rec = $this->getUserDownload($year, $month, $user);
+      $data .= implode(',', $rec) . "\n";
+    }
+
+    /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
+    $fileRepository = \Drupal::service('file.repository');
+    $filename = \Drupal::service('file_system')->tempnam('temporary://', 'tmp_', Settings::get('file_temporary_path'));
+    $fileRepository->writeData($data, $filename, FileSystemInterface::EXISTS_REPLACE);
+
+    return $filename;
+  }
+
+  public function buildProviderCSV($year, $month) {
+    $data = [];
+    $headers = ['Provider'];
+    foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
+      $headers[] = $info['label'];
+      $headers[] = 'Better than Last Month';
+      $headers[] = 'Better than Last All';
+    }
+    $headers[] = 'Response Rate';
+    $headers[] = '# of Respondents';
+
+    foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
+      $headers[] = $info['label'];
+      $headers[] = 'Better than Last Month';
+      $headers[] = 'Better than Last All';
+    }
+
+    $data = implode(',', $headers) . "\n";
+
+    $query = new HomePageQuery($year, $month, '', '');
+    $query->distinctProviders();
+    $results = $query->execute();
+
+    foreach ($results as $result => $info) {
+      $provider = $info['provider'];
+      $rec = $this->getProviderDownload($year, $month, $provider);
+      $data .= implode(',', $rec) . "\n";
+    }
+
+    /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
+    $fileRepository = \Drupal::service('file.repository');
+    $filename = \Drupal::service('file_system')->tempnam('temporary://', 'tmp_', Settings::get('file_temporary_path'));
+    $fileRepository->writeData($data, $filename, FileSystemInterface::EXISTS_REPLACE);
+
+    return $filename;
+  }
+
+  private function getUserDownload($year, $month, $email) {
+    $this->setCurrentUser($email);
+    $activities = $this->keyActivities($year, $month, self::ADMIN_ROLE);
+    $practices = $this->bestPractices($year, $month, self::ADMIN_ROLE);
+
+    $rec = [$email];
+    foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
+      $rec[] = $activities['lastMonth']['Me'][$machine]['formatted'];
+      $rec[] = $activities['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+      $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+    }
+
+    $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
+    $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
+
+    foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
+      $rec[] = $practices['lastMonth']['Me'][$machine]['formatted'];
+      $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+      $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+    }
+
+    return $rec;
+  }
+
+  private function getProviderDownload($year, $month, $provider) {
+    $this->setCurrentProvider($provider);
+    $activities = $this->keyActivities($year, $month, self::ADMIN_ROLE);
+    $practices = $this->bestPractices($year, $month, self::ADMIN_ROLE);
+
+    $rec = [$provider];
+    foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
+      $rec[] = $activities['lastMonth']['Provider'][$machine]['formatted'];
+      $rec[] = $activities['lastMonth']['Provider'][$machine]['betterMonth'] ? 'Yes' : 'No';
+      $rec[] = $activities['lastMonth']['Provider'][$machine]['betterAll'] ? 'Yes' : 'No';
+    }
+
+    $rec[] = $activities['responseRate']['Provider']['responseRate'] * 100 ?? 0;
+    $rec[] = $activities['responseRate']['Provider']['netResponses'] ?? 0;
+
+    foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
+      $rec[] = $practices['lastMonth']['Provider'][$machine]['formatted'];
+      $rec[] = $practices['lastMonth']['Provider'][$machine]['betterMonth'] ? 'Yes' : 'No';
+      $rec[] = $practices['lastMonth']['Provider'][$machine]['betterAll'] ? 'Yes' : 'No';
+    }
+
+    return $rec;
+  }
 
   /**
    * @param float $time

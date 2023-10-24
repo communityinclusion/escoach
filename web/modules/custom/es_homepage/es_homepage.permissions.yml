@@ -1,0 +1,7 @@
+'access provider download':
+  title: Access provider download
+  description: Allow users to access the all provider CSV download
+
+'access user download':
+  title: Access user download
+  description: Allow users to access the all user CSV download

@@ -1,0 +1,14 @@
+es_homepage.admin_provider_report:
+  title: Provider CSV Download
+  description: 'CSV export of best practices and key activities by Provider'
+  route_name: es_homepage.download_providercsv
+  menu_name: admin
+  parent: system.admin_reports
+  weight: 1000
+es_homepage.admin_user_report:
+  title: User CSV Download
+  description: 'CSV export of best practices and key activities by User'
+  route_name: es_homepage.download_usercsv
+  menu_name: admin
+  weight: 1001
+  parent: system.admin_reports
