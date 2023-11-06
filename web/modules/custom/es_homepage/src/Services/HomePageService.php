@@ -226,12 +226,14 @@ class HomePageService {
       $query = new StateQuery($year, $month, '', '');
       $results = $query->execute();
       foreach ($results as $result)  {
-        if (!empty($result['state'])) {
+        if (!empty($result['state']) && isset($this->stateValues[ $result['state']])) {
           $this->stateList[$result['state']] = $this->stateValues[ $result['state']];
         }
       }
-      asort($this->stateList);
-      reset($this->stateList);
+      if (!empty($this->stateList)) {
+        asort($this->stateList);
+        reset($this->stateList);
+      }
     }
     return $this->stateList;
   }
@@ -423,12 +425,12 @@ class HomePageService {
       $return['All'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'All');
       $return['All'][$activity]['formatted'] = $this->formatDuration($return['All'][$activity]['avg']);
       if ($role == self::ANON_ROLE) {
-        $return['State'][$activity]['total'] = $results[$activity . 'State'];
+        $return['State'][$activity]['total'] = $results[$activity . 'State'] ?? 0;
         $return['State'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'State');
         $return['State'][$activity]['formatted'] = $this->formatDuration($return['State'][$activity]['avg']);
       }
       elseif ($role != self::OTHER_ROLE ) {
-        $return['Provider'][$activity]['total'] = $results[$activity . 'Provider'];
+        $return['Provider'][$activity]['total'] = $results[$activity . 'Provider'] ?? 0;
         $return['Provider'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'Provider');
         $return['Provider'][$activity]['formatted'] = $this->formatDuration($return['Provider'][$activity]['avg']);
         if ($role == self::CONSULTANT_ROLE || (!empty($this->email) && $role == self::ADMIN_ROLE )) {
