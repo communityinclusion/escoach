@@ -230,8 +230,10 @@ class HomePageService {
           $this->stateList[$result['state']] = $this->stateValues[ $result['state']];
         }
       }
-      asort($this->stateList);
-      reset($this->stateList);
+      if (!empty($this->stateList)) {
+        asort($this->stateList);
+        reset($this->stateList);
+      }
     }
     return $this->stateList;
   }

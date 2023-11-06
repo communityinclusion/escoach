@@ -116,7 +116,8 @@ class HomePageController extends ControllerBase {
     $data['role'] = 'ANON';
     if ($this->currentUser->isAnonymous()) {
       $data['stateList'] = $this->homePageService->getStateList($year, $month);
-      $state = \Drupal::request()->get('state') ?? array_keys($data['stateList'])[0] ?? '';
+      $states = $data['stateList'] ?? [];
+      $state = \Drupal::request()->get('state') ?? array_keys($states)[0] ?? '';
       $data['stateName'] = $state;
       $libraries[] = 'es_homepage/states';
     }
