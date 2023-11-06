@@ -434,7 +434,7 @@ class HomePageService {
         $return['Provider'][$activity]['total'] = $results[$activity . 'Provider'] ?? 0;
         $return['Provider'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'Provider');
         $return['Provider'][$activity]['formatted'] = $this->formatDuration($return['Provider'][$activity]['avg']);
-        if ($role == self::CONSULTANT_ROLE || (!empty($this->email) && $role == self::ADMIN_ROLE )) {
+        if ($role == self::CONSULTANT_ROLE || (!empty($this->email) && $role == self::ADMIN_ROLE || $role == self::BOTH_ROLE )) {
           $return['Me'][$activity]['total'] = $results[$activity . 'Me'];
           $return['Me'][$activity]['avg'] = $this->calculateAverage($results, $activity,  'Me');
           $return['Me'][$activity]['formatted'] = $this->formatDuration($return['Me'][$activity]['avg']);
@@ -815,10 +815,11 @@ class HomePageService {
         break;
 
       case self::CONSULTANT_ROLE:
+      case self::BOTH_ROLE:
         $chart[] = $this->buildRow('Me', $data);
         // Intentional Drop-thru
       case self::MANAGER_ROLE:
-      case self::BOTH_ROLE:
+
         $chart[] = $this->buildRow('Provider', $data, 'My Team');
         break;
 
