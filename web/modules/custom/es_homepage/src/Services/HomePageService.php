@@ -18,6 +18,7 @@ class HomePageService {
   const ABBR_MONTH_NAME_FORMAT = 'M';
   const CONSULTANT_ROLE = 'Employment consultant';
   const MANAGER_ROLE = 'Manager';
+  const BOTH_ROLE = 'Manager-consultant';
   const TA_ROLE = 'TA';
   const ANON_ROLE = 'ANON';
   const ADMIN_ROLE = 'ADMIN';
@@ -817,6 +818,7 @@ class HomePageService {
         $chart[] = $this->buildRow('Me', $data);
         // Intentional Drop-thru
       case self::MANAGER_ROLE:
+      case self::BOTH_ROLE:
         $chart[] = $this->buildRow('Provider', $data, 'My Team');
         break;
 
