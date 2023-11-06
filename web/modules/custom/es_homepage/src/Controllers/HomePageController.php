@@ -114,14 +114,8 @@ class HomePageController extends ControllerBase {
 
     $this->homePageService->setDateRange($year, $month);
     $data['role'] = 'ANON';
-    if ($this->currentUser->isAnonymous()) {
-      $data['stateList'] = $this->homePageService->getStateList($year, $month);
-      $states = $data['stateList'] ?? [];
-      $state = \Drupal::request()->get('state') ?? array_keys($states)[0] ?? '';
-      $data['stateName'] = $state;
-      $libraries[] = 'es_homepage/states';
-    }
-    else {
+
+    if (!$this->currentUser->isAnonymous()) {
       $state = NULL;
       $roles = $this->currentUser->getRoles();
       if (in_array(self::TA_ROLE, $roles)) {
@@ -140,6 +134,14 @@ class HomePageController extends ControllerBase {
         $data['role'] = 'ANON';
         // Who else is left???
       }
+    }
+
+    if ($data['role'] == 'ANON') {
+      $data['stateList'] = $this->homePageService->getStateList($year, $month);
+      $states = $data['stateList'] ?? [];
+      $state = \Drupal::request()->get('state') ?? array_keys($states)[0] ?? '';
+      $data['stateName'] = $state;
+      $libraries[] = 'es_homepage/states';
     }
 
     return [
