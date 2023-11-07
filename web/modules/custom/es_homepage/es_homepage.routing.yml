@@ -10,7 +10,7 @@ es_homepage.best_practices:
   path: '/home/best_practices'
   defaults:
     _controller: '\Drupal\es_homepage\Controllers\HomePageController::bestPractices'
-    _title: 'How much time do we invest in best practices'
+    _title: 'Best Practices'
   requirements:
     _access: 'TRUE'
 

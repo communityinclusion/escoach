@@ -1,7 +1,7 @@
 <div class="page-title">{{ data.title }}</div>
-
+{% if data.debug %}
 {{ dump(data) }}
-
+{% endif %}
 {# Anon Users get State Select #}
 {% if data.stateList %}
 {% include '@es_homepage/state-select.html.twig' %}

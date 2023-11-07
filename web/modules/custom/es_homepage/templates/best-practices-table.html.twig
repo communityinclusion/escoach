@@ -1,4 +1,4 @@
-<div class="results-table">
+<div class="results-table maintable">
   <table id="activities-table" class="escoach-homepage-table">
     <thead>
     <tr>
@@ -21,7 +21,7 @@
     {% for machine, info in data.activities %}
       {% set count = count + 1 %}
       <tr>
-        <td>{{ info.label }} <a href="#{{ machine }}">{{ count }}</a></td>
+        <td>{{ info.label }} <a href="#{{ machine }}"><sup>{{ count }}</sup></a></td>
         {% if data.role == 'ANON' %}
           <td>{{ data.lastMonth.State[machine].formatted }}
             {% if data.lastMonth.State[machine].betterMonth %}
