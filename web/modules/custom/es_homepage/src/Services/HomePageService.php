@@ -291,8 +291,7 @@ class HomePageService {
 
     $this->setDateRange($year, $month);
 
-
-    $return['title'] = sprintf('Key Activities, %s, %d, ', $this->monthName, $this->year );
+    $return['title'] = sprintf('Key Activities in %s, %d for ', $this->monthName, $this->year);
 
     $lastMonthResults = $this->buildKeyActivities($this->year, $this->month, $state);
     $return['lastMonth'] = $this->processResults($lastMonthResults['records'][0], array_keys($lastMonthResults['activities']), $role, TRUE);
@@ -502,8 +501,7 @@ class HomePageService {
 
     // Table header.
     $data .= "Activities\n";
-    $this->setDateRange($year, $month);
-    $data .= "Activites in " . $this->monthName . " " . $this->previousYear . "\n";
+    //$data .= 'Activites for ' . $month . ',' . $year . "\n";
 
     $headers = ['User'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
@@ -518,9 +516,6 @@ class HomePageService {
       $headers[] = 'Better than Last Month';
       $headers[] = 'Better than Last All';
     }
-
-    $headers[] = 'Response Rate';
-    $headers[] = '# of Respondents';
 
     $data .= implode(',', $headers) . "\n";
 
@@ -553,8 +548,7 @@ class HomePageService {
 
     // Table header.
     $data .= "Key Activities\n";
-    $this->setDateRange($year, $month);
-    $data .= "Activites in " . $this->monthName . " " . $this->previousYear . "\n";
+    //$data .= 'Key activites for $month, $year' . "\n";
 
     $headers = ['Provider'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
@@ -568,9 +562,6 @@ class HomePageService {
       $headers[] = 'Better than Last Month';
       $headers[] = 'Better than Last All';
     }
-
-    $headers[] = 'Response Rate';
-    $headers[] = '# of Respondents';
 
     $data .= implode(',', $headers) . "\n";
 
@@ -608,6 +599,8 @@ class HomePageService {
         $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
       }
 
+      $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
+      $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
     }
 
     if (isset($practices['lastMonth']['Me'])) {
@@ -616,11 +609,6 @@ class HomePageService {
         $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
         $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
       }
-    }
-
-    if (isset($activities['responseRate']['Me'])) {
-      $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
-      $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
     }
 
     return $rec;
@@ -740,6 +728,8 @@ class HomePageService {
       $return .= implode(',', $row) . "\n";
     }
 
+    $return .= $this->buildResponseRateRows($activityData);
+
     // Table spacing and new header.
     $return .= ",,,\n";
     $return .= ",,,\n";
@@ -768,8 +758,6 @@ class HomePageService {
       $row[] = $bestPracticesData['lastMonth']['All'][$machine]['formatted'];
       $return .= implode(',', $row) . "\n";
     }
-
-    $return .= $this->buildResponseRateRows($activityData);
 
     /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
     $fileRepository = \Drupal::service('file.repository');
@@ -964,7 +952,7 @@ class HomePageService {
 
     $this->setDateRange($year, $month);
 
-    $return['title'] = sprintf('Best Practices, %s, %d, ', $this->monthName, $this->year );
+    $return['title'] = sprintf('Best practices in %s, %d for ', $this->monthName, $this->year);
 
     $lastMonthResults = $this->buildBestPractices($this->year, $this->month, $state);
     $return['lastMonth'] = $this->processResults($lastMonthResults['records'][0], array_keys($lastMonthResults['activities']), $role, TRUE);
