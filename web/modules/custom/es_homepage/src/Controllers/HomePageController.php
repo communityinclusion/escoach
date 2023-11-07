@@ -144,6 +144,10 @@ class HomePageController extends ControllerBase {
       $libraries[] = 'es_homepage/states';
     }
 
+    if (\Drupal::request()->get('debug')) {
+      $data['debug'] = 1;
+    }
+
     return [
       '#cache' => [
         'contexts' => [
