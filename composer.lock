@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ba7d21f92fb93d8cdeece892f94f0fb",
+    "content-hash": "d2bf0189a553224b24ddbebe6acb36a5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1987,54 +1987,6 @@
             "homepage": "http://drupal.org/project/address",
             "support": {
                 "source": "https://git.drupalcode.org/project/address"
-            }
-        },
-        {
-            "name": "drupal/admin_can_login_anyuser",
-            "version": "1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/admin_can_login_anyuser.git",
-                "reference": "8.x-1.2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/admin_can_login_anyuser-8.x-1.2.zip",
-                "reference": "8.x-1.2",
-                "shasum": "bbb427611276a2bb6da3f995a728eebcae28d8a1"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.2",
-                    "datestamp": "1586933346",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Project has not opted into security advisory coverage!"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "gangwarsurya",
-                    "homepage": "https://www.drupal.org/user/3496265"
-                },
-                {
-                    "name": "rahulchauhan_ec3",
-                    "homepage": "https://www.drupal.org/user/2706389"
-                }
-            ],
-            "description": "Administrator role user can login any user from admin",
-            "homepage": "https://www.drupal.org/project/admin_can_login_anyuser",
-            "support": {
-                "source": "https://git.drupalcode.org/project/admin_can_login_anyuser"
             }
         },
         {
@@ -5365,50 +5317,6 @@
             "homepage": "https://www.drupal.org/project/search_api",
             "support": {
                 "source": "https://git.drupalcode.org/project/search_api"
-            }
-        },
-        {
-            "name": "drupal/simple_mail",
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/simple_mail.git",
-                "reference": "2.0.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/simple_mail-2.0.0.zip",
-                "reference": "2.0.0",
-                "shasum": "7c040338651fd4983b1d668757f1edeba2688c3e"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "2.0.0",
-                    "datestamp": "1595014220",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "geerlingguy",
-                    "homepage": "https://www.drupal.org/user/389011"
-                }
-            ],
-            "description": "Email functionality for Drupal, simplified.",
-            "homepage": "https://www.drupal.org/project/simple_mail",
-            "support": {
-                "source": "https://git.drupalcode.org/project/simple_mail"
             }
         },
         {
