@@ -890,7 +890,7 @@ class HomePageService {
 
     $this->setDateRange($year, $month);
 
-    $return['title'] = sprintf('Key Activities in %s, %d for ', $this->monthName, $this->year );
+    $return['title'] = sprintf('Best Practices in %s, %d for ', $this->monthName, $this->year );
 
     $lastMonthResults = $this->buildBestPractices($this->year, $this->month, $state);
     $return['lastMonth'] = $this->processResults($lastMonthResults['records'][0], array_keys($lastMonthResults['activities']), $role, TRUE);
