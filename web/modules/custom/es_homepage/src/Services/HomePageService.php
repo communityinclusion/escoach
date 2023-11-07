@@ -1,17 +1,20 @@
 <?php
+
 namespace Drupal\es_homepage\Services;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Site\Settings;
 use Drupal\es_homepage\Query\bestPracticesQuery;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Session\AccountProxy;
 use Drupal\es_homepage\Query\HomePageQuery;
 use Drupal\es_homepage\Query\keyActivitiesQuery;
 use Drupal\es_homepage\Query\ResponseRateQuery;
 use Drupal\es_homepage\Query\StateQuery;
 
-
+/**
+ *
+ */
 class HomePageService {
 
   const FULL_MONTH_NAME_FORMAT = 'F';
@@ -123,12 +126,15 @@ class HomePageService {
    */
   private $stateList;
 
+  /**
+   *
+   */
   public function __construct(AccountProxy $currentUser, EntityTypeManagerInterface $entityTypeManager) {
     $this->email = $currentUser->getEmail();
     $this->currentUser = $currentUser;
     $this->entityTypeManager = $entityTypeManager;
 
-    // Default values
+    // Default values.
     $this->job_type = 'Other';
     $this->provider = '';
     $this->providerList = [];
@@ -183,6 +189,9 @@ class HomePageService {
     $this->provider = $provider;
   }
 
+  /**
+   *
+   */
   public function setCurrentUser($email) {
     $this->email = $email;
   }
@@ -210,7 +219,7 @@ class HomePageService {
 
     $this->monthName = $dt->format(self::ABBR_MONTH_NAME_FORMAT);
 
-    $prev = $dt->sub( \DateInterval::createFromDateString('1 days'));
+    $prev = $dt->sub(\DateInterval::createFromDateString('1 days'));
 
     $this->previousMonth = $prev->format('m');
     $this->previousYear = $prev->format('Y');
@@ -226,9 +235,9 @@ class HomePageService {
     if (!$this->stateList) {
       $query = new StateQuery($year, $month, '', '');
       $results = $query->execute();
-      foreach ($results as $result)  {
-        if (!empty($result['state']) && isset($this->stateValues[ $result['state']])) {
-          $this->stateList[$result['state']] = $this->stateValues[ $result['state']];
+      foreach ($results as $result) {
+        if (!empty($result['state']) && isset($this->stateValues[$result['state']])) {
+          $this->stateList[$result['state']] = $this->stateValues[$result['state']];
         }
       }
       if (!empty($this->stateList)) {
@@ -282,8 +291,7 @@ class HomePageService {
 
     $this->setDateRange($year, $month);
 
-
-    $return['title'] = sprintf('Key Activities in %s, %d for ', $this->monthName, $this->year );
+    $return['title'] = sprintf('Key Activities in %s, %d for ', $this->monthName, $this->year);
 
     $lastMonthResults = $this->buildKeyActivities($this->year, $this->month, $state);
     $return['lastMonth'] = $this->processResults($lastMonthResults['records'][0], array_keys($lastMonthResults['activities']), $role, TRUE);
@@ -326,12 +334,15 @@ class HomePageService {
     return $return;
   }
 
+  /**
+   *
+   */
   private function getTotals(&$data) {
     foreach (['All', 'Me', 'Provider', 'State', 'Observer'] as $scope) {
       $total = 0;
       foreach ($data['activities'] as $activity => $info) {
         if (!empty($data['records'][0][$activity . $scope])) {
-          $total+= $data['records'][0][$activity . $scope];
+          $total += $data['records'][0][$activity . $scope];
         }
       }
       $data['records'][0]['Total' . $scope] = $total;
@@ -394,7 +405,7 @@ class HomePageService {
         $data['lastMonth'][$scope][$machine]['betterMonth'] = 0;
         $data['lastMonth'][$scope][$machine]['betterAll'] = 0;
 
-        // @todo - should this use avg instead of total?
+        // @todo should this use avg instead of total?
         $last = $info[$machine]['total'] * $activity['multiplier'];
         $prev = $data['prevMonth'][$scope][$machine]['total'] * $activity['multiplier'];
         if ($last > $prev) {
@@ -430,13 +441,13 @@ class HomePageService {
         $return['State'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'State');
         $return['State'][$activity]['formatted'] = $this->formatDuration($return['State'][$activity]['avg']);
       }
-      elseif ($role != self::OTHER_ROLE ) {
+      elseif ($role != self::OTHER_ROLE) {
         $return['Provider'][$activity]['total'] = $results[$activity . 'Provider'] ?? 0;
         $return['Provider'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'Provider');
         $return['Provider'][$activity]['formatted'] = $this->formatDuration($return['Provider'][$activity]['avg']);
-        if ($role == self::CONSULTANT_ROLE || (!empty($this->email) && $role == self::ADMIN_ROLE || $role == self::BOTH_ROLE )) {
+        if ($role == self::CONSULTANT_ROLE || (!empty($this->email) && $role == self::ADMIN_ROLE || $role == self::BOTH_ROLE)) {
           $return['Me'][$activity]['total'] = $results[$activity . 'Me'];
-          $return['Me'][$activity]['avg'] = $this->calculateAverage($results, $activity,  'Me');
+          $return['Me'][$activity]['avg'] = $this->calculateAverage($results, $activity, 'Me');
           $return['Me'][$activity]['formatted'] = $this->formatDuration($return['Me'][$activity]['avg']);
         }
       }
@@ -456,13 +467,14 @@ class HomePageService {
     $totalCell = 'Total' . ucfirst($scope);
     $dataCell = $alias . ucfirst($scope);
 
-    if (! isset($results[$totalCell]) || $results[$totalCell] == 0) {
+    if (!isset($results[$totalCell]) || $results[$totalCell] == 0) {
       return '0';
     }
 
     $totalValue = $results[$totalCell];
     if ($scope == 'All') {
-      $totalValue -= $results['TotalObserver']; // A - E
+      // A - E.
+      $totalValue -= $results['TotalObserver'];
     }
 
     if ($totalValue == 0) {
@@ -472,17 +484,25 @@ class HomePageService {
     $dayTotal = $results[$dataCell] / $totalValue * 8 / 24;
 
     if ($scope == 'All') {
-        if ($alias == "Other") {
-          $results[$alias . 'Observer'] = 0;
-        }
-        $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
+      if ($alias == "Other") {
+        $results[$alias . 'Observer'] = 0;
+      }
+      $dayTotal = ($results[$dataCell] - $results[$alias . 'Observer']) / $totalValue * 8 / 24;
     }
 
     return $dayTotal;
   }
 
+  /**
+   *
+   */
   public function buildUserCSV($year, $month) {
-    $data = [];
+    $data = '';
+
+    // Table header.
+    $data .= "Activities\n";
+    //$data .= 'Activites for ' . $month . ',' . $year . "\n";
+
     $headers = ['User'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
@@ -498,7 +518,7 @@ class HomePageService {
       $headers[] = 'Better than Last All';
     }
 
-    $data = implode(',', $headers) . "\n";
+    $data .= implode(',', $headers) . "\n";
 
     $query = new HomePageQuery($year, $month, '', '');
     $query->distinctUsers();
@@ -507,8 +527,10 @@ class HomePageService {
     $this->setCurrentProvider('None');
     foreach ($results as $result => $info) {
       $user = $info['email'];
-      $rec = $this->getUserDownload($year, $month, $user);
-      $data .= implode(',', $rec) . "\n";
+      if ($user) {
+        $rec = $this->getUserDownload($year, $month, $user);
+        $data .= implode(',', $rec) . "\n";
+      }
     }
 
     /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
@@ -519,8 +541,16 @@ class HomePageService {
     return $filename;
   }
 
+  /**
+   *
+   */
   public function buildProviderCSV($year, $month) {
-    $data = [];
+    $data = '';
+
+    // Table header.
+    $data .= "Key Activities\n";
+    //$data .= 'Key activites for $month, $year' . "\n";
+
     $headers = ['Provider'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
@@ -536,7 +566,7 @@ class HomePageService {
       $headers[] = 'Better than Last All';
     }
 
-    $data = implode(',', $headers) . "\n";
+    $data .= implode(',', $headers) . "\n";
 
     $query = new HomePageQuery($year, $month, '', '');
     $query->distinctProviders();
@@ -556,30 +586,40 @@ class HomePageService {
     return $filename;
   }
 
+  /**
+   *
+   */
   private function getUserDownload($year, $month, $email) {
     $this->setCurrentUser($email);
     $activities = $this->keyActivities($year, $month, self::ADMIN_ROLE);
     $practices = $this->bestPractices($year, $month, self::ADMIN_ROLE);
 
     $rec = [$email];
-    foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
-      $rec[] = $activities['lastMonth']['Me'][$machine]['formatted'];
-      $rec[] = $activities['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
-      $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+    if (isset($activities['lastMonth']['Me'])) {
+      foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
+        $rec[] = $activities['lastMonth']['Me'][$machine]['formatted'];
+        $rec[] = $activities['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+        $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+      }
+
+      $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
+      $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
     }
 
-    $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
-    $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
-
-    foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
-      $rec[] = $practices['lastMonth']['Me'][$machine]['formatted'];
-      $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
-      $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+    if (isset($practices['lastMonth']['Me'])) {
+      foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
+        $rec[] = $practices['lastMonth']['Me'][$machine]['formatted'];
+        $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+        $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+      }
     }
 
     return $rec;
   }
 
+  /**
+   *
+   */
   private function getProviderDownload($year, $month, $provider) {
     $this->setCurrentProvider($provider);
     $activities = $this->keyActivities($year, $month, self::ADMIN_ROLE);
@@ -628,14 +668,21 @@ class HomePageService {
    */
   public function buildCSV($activityData, $bestPracticesData) {
     $role = $activityData['role'];
+    $return = '';
+
+    // Table header.
+    $return .= "Key Activities\n";
+    $return .= '"' . $activityData['title'] . '"' . "\n";
+
     $headers = ['Activities'];
     switch ($role) {
       case 'ANON':
         $state = $activityData['stateList'][$activityData['stateName']] ?? NULL;
-        $headers[] =  $state ?? 'State';
+        $headers[] = $state ?? 'State';
         $headers[] = 'Better than Last Month';
         $headers[] = 'Better than All';
         break;
+
       case 'Employment consultant':
         $headers[] = 'Me';
         $headers[] = 'Better than Last Month';
@@ -644,11 +691,13 @@ class HomePageService {
         $headers[] = 'Better than Last Month';
         $headers[] = 'Better than All';
         break;
+
       case 'Manager':
         $headers[] = 'My Team';
         $headers[] = 'Better than Last Month';
         $headers[] = 'Better than All';
         break;
+
       case 'TA':
         $headers[] = $activityData['provider'] ?? 'Provider';
         $headers[] = 'Better than Last Month';
@@ -656,22 +705,25 @@ class HomePageService {
     }
     $headers[] = 'All';
 
-    $return = implode(',', $headers) . "\n";
+    $return .= implode(',', $headers) . "\n";
     $row = [];
 
     foreach ($activityData['activities'] as $machine => $info) {
-      $row = [$info['label'] ];
+      $row = [$info['label']];
       switch ($role) {
         case 'ANON':
           $row = array_merge($row, $this->_getDataByScope($activityData, 'State', $machine));
           break;
+
         case 'Employment consultant':
           $row = array_merge($row, $this->_getDataByScope($activityData, 'Me', $machine));
           $row = array_merge($row, $this->_getDataByScope($activityData, 'Provider', $machine));
           break;
+
         case 'Manager':
           $row = array_merge($row, $this->_getDataByScope($activityData, 'Provider', $machine));
           break;
+
         case 'TA':
           $row = array_merge($row, $this->_getDataByScope($activityData, 'Provider', $machine));
       }
@@ -679,29 +731,36 @@ class HomePageService {
       $return .= implode(',', $row) . "\n";
     }
 
-
     $return .= $this->buildResponseRateRows($activityData);
 
+    // Table spacing and new header.
+    $return .= ",,,\n";
+    $return .= ",,,\n";
+    $return .= "Best Practices\n";
+    $return .= '"' . $bestPracticesData['title'] . '"' . "\n";
+
     foreach ($bestPracticesData['activities'] as $machine => $info) {
-      $row = [$info['label'] ];
+      $row = [$info['label']];
       switch ($role) {
         case 'ANON':
           $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'State', $machine));
           break;
+
         case 'Employment consultant':
           $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Me', $machine));
           $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Provider', $machine));
           break;
+
         case 'Manager':
           $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Provider', $machine));
           break;
+
         case 'TA':
           $row = array_merge($row, $this->_getDataByScope($bestPracticesData, 'Provider', $machine));
       }
       $row[] = $bestPracticesData['lastMonth']['All'][$machine]['formatted'];
       $return .= implode(',', $row) . "\n";
     }
-
 
     /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
     $fileRepository = \Drupal::service('file.repository');
@@ -724,6 +783,7 @@ class HomePageService {
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'State', 'responseRate'));
         $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'State', 'netResponses'));
         break;
+
       case 'Employment consultant':
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Me', 'responseRate'));
         $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Me', 'netResponses'));
@@ -731,10 +791,12 @@ class HomePageService {
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
         $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
         break;
+
       case 'Manager':
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
         $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
         break;
+
       case 'TA':
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
         $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
@@ -745,7 +807,6 @@ class HomePageService {
 
     $return = implode(',', $row1) . "\n";
     $return .= implode(',', $row2) . "\n";
-
 
     return $return;
   }
@@ -763,7 +824,7 @@ class HomePageService {
       $val *= 100;
     }
 
-    return [ $val,'','', ];
+    return [$val, '', ''];
   }
 
   /**
@@ -776,8 +837,8 @@ class HomePageService {
   private function _getDataByScope($data, $scope, $machine) : array {
     return [
       $data['lastMonth'][$scope][$machine]['formatted'],
-      ($data['lastMonth'][$scope][$machine]['betterMonth'] ) ? self::BETTER_YES : self::BETTER_NO,
-      ($data['lastMonth'][$scope][$machine]['betterAll'] ) ? self::BETTER_YES : self::BETTER_NO
+      ($data['lastMonth'][$scope][$machine]['betterMonth']) ? self::BETTER_YES : self::BETTER_NO,
+      ($data['lastMonth'][$scope][$machine]['betterAll']) ? self::BETTER_YES : self::BETTER_NO,
     ];
   }
 
@@ -798,9 +859,7 @@ class HomePageService {
       '#ffa500',
     ];
 
-    $activityList = [
-
-    ];
+    $activityList = [];
 
     $chart[] = ['Activities'];
     foreach ($data['activities'] as $machine => $info) {
@@ -811,13 +870,13 @@ class HomePageService {
     switch ($role) {
       case self::ANON_ROLE:
         $stateName = $data['stateList'][$data['stateName']];
-        $chart[] = $this->buildRow('State', $data, $stateName ?? $data['stateName'] );
+        $chart[] = $this->buildRow('State', $data, $stateName ?? $data['stateName']);
         break;
 
       case self::CONSULTANT_ROLE:
       case self::BOTH_ROLE:
         $chart[] = $this->buildRow('Me', $data);
-        // Intentional Drop-thru
+        // Intentional Drop-thru.
       case self::MANAGER_ROLE:
 
         $chart[] = $this->buildRow('Provider', $data, 'My Team');
@@ -836,15 +895,21 @@ class HomePageService {
     ];
   }
 
+  /**
+   *
+   */
   private function buildRow($source, $data, $label = NULL) : array {
 
     $row = [$label ?? $source];
-    foreach (array_keys($data['activities']) as $machine ) {
+    foreach (array_keys($data['activities']) as $machine) {
       $row[] = (300 * $data['lastMonth'][$source][$machine]['avg']);
     }
     return $row;
   }
 
+  /**
+   *
+   */
   private function buildBestPractices($year, $month, $state) {
     $results = [];
     $bestPractices = new bestPracticesQuery($this->year, $this->month, $this->email, $this->provider);
@@ -885,12 +950,12 @@ class HomePageService {
    *
    * @return array
    */
-  public function bestPractices($year, $month, $role,  $state = NULL) : array {
+  public function bestPractices($year, $month, $role, $state = NULL) : array {
     $return = [];
 
     $this->setDateRange($year, $month);
 
-    $return['title'] = sprintf('Best Practices in %s, %d for ', $this->monthName, $this->year );
+    $return['title'] = sprintf('Best practices in %s, %d for ', $this->monthName, $this->year);
 
     $lastMonthResults = $this->buildBestPractices($this->year, $this->month, $state);
     $return['lastMonth'] = $this->processResults($lastMonthResults['records'][0], array_keys($lastMonthResults['activities']), $role, TRUE);
@@ -908,8 +973,8 @@ class HomePageService {
 
     $this->compareMonths($return);
 
-
     return $return;
 
   }
+
 }
