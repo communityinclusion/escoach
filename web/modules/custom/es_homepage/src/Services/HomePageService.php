@@ -501,7 +501,8 @@ class HomePageService {
 
     // Table header.
     $data .= "Activities\n";
-    //$data .= 'Activites for ' . $month . ',' . $year . "\n";
+    $this->setDateRange($year, $month);
+    $data .= "Activites in " . $this->monthName . " " . $this->previousYear . "\n";
 
     $headers = ['User'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
@@ -549,7 +550,8 @@ class HomePageService {
 
     // Table header.
     $data .= "Key Activities\n";
-    //$data .= 'Key activites for $month, $year' . "\n";
+    $this->setDateRange($year, $month);
+    $data .= "Activites in " . $this->monthName . " " . $this->previousYear . "\n";
 
     $headers = ['Provider'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
