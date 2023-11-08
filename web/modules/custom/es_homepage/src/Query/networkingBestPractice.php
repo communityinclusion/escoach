@@ -1,5 +1,6 @@
 <?php
-namespace \Drupal\es_homepage\Query;
+
+namespace Drupal\es_homepage\Query;
 
 class networkingBestPractice extends HomePageQuery {
 
