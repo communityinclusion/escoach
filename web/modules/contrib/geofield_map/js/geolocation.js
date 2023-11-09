@@ -42,7 +42,10 @@
 
       // Bind the "updateGeoLocationFields" click event to the
       // "geofield-html5-geocode-button" button.
-      once('geofield_geolocation', 'input[name="geofield-html5-geocode-button"]').forEach(function (e) {
+      // NOTE: don't add the "input" filter in the selector to allow also
+      // <button> types
+      // (@see https://www.drupal.org/project/geofield_map/issues/3319940)
+      once('geofield_geolocation', '[name="geofield-html5-geocode-button"]').forEach(function (e) {
         $(e).click(function (e) {
           e.preventDefault();
           if (typeof geolocation_position !== 'undefined') {

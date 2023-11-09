@@ -392,12 +392,12 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
   protected function getAvailableDataSources() {
     $fields_geo_data = [];
 
-    /* @var \Drupal\views\Plugin\views\ViewsHandlerInterface $handler) */
+    /** @var \Drupal\views\Plugin\views\ViewsHandlerInterface $handler) */
     foreach ($this->displayHandler->getHandlers('field') as $field_id => $handler) {
       $label = $handler->adminLabel() ?: $field_id;
       $this->viewFields[$field_id] = $label;
       if (is_a($handler, '\Drupal\views\Plugin\views\field\EntityField')) {
-        /* @var \Drupal\views\Plugin\views\field\EntityField $handler */
+        /** @var \Drupal\views\Plugin\views\field\EntityField $handler */
         try {
           $entity_type = $handler->getEntityType();
         }
@@ -407,10 +407,12 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
         $field_storage_definitions = $this->entityFieldManager->getFieldStorageDefinitions($entity_type);
         $field_storage_definition = $field_storage_definitions[$handler->definition['field_name']];
 
-        $type = $field_storage_definition->getType();
-        $definition = $this->fieldTypeManager->getDefinition($type);
-        if (is_a($definition['class'], '\Drupal\geofield\Plugin\Field\FieldType\GeofieldItem', TRUE)) {
-          $fields_geo_data[$field_id] = $label;
+        if (isset($field_storage_definition)) {
+          $type = $field_storage_definition->getType();
+          $definition = $this->fieldTypeManager->getDefinition($type);
+          if (is_a($definition['class'], '\Drupal\geofield\Plugin\Field\FieldType\GeofieldItem', TRUE)) {
+            $fields_geo_data[$field_id] = $label;
+          }
         }
       }
     }
@@ -662,8 +664,8 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
     $map_themers_options = array_merge(['none' => 'None'], $this->mapThemerManager->getMapThemersList('ViewStyle'));
 
     $user_input = $form_state->getUserInput();
-    $map_themer_id = isset($user_input['style_options']['map_marker_and_infowindow']['theming']['plugin_id']) ? $user_input['style_options']['map_marker_and_infowindow']['theming']['plugin_id'] : NULL;
-    $default_map_themer = isset($this->options['map_marker_and_infowindow']['theming']['plugin_id']) ? $this->options['map_marker_and_infowindow']['theming']['plugin_id'] : 'none';
+    $map_themer_id = $user_input['style_options']['map_marker_and_infowindow']['theming']['plugin_id'] ?? NULL;
+    $default_map_themer = $this->options['map_marker_and_infowindow']['theming']['plugin_id'] ?? 'none';
     $selected_map_themer = !empty($map_themer_id) ? $map_themer_id : $default_map_themer;
 
     $plugin_id_warning = [
@@ -907,10 +909,10 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
               }
 
               // Render the entity with the selected view mode.
-              /* @var \Drupal\core\Entity\FieldableEntityInterface $entity */
+              /** @var \Drupal\core\Entity\FieldableEntityInterface $entity */
               if (isset($entity)) {
                 // Get and set (if not set) the Geofield cardinality.
-                /* @var \Drupal\Core\Field\FieldItemList $geofield_entity */
+                /** @var \Drupal\Core\Field\FieldItemList $geofield_entity */
                 if (!isset($js_settings['map_settings']['geofield_cardinality'])) {
                   try {
                     $geofield_entity = $entity->get($geofield_name);
@@ -936,10 +938,10 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                 // We need to define this before.
                 $description = [];
 
-                $description_field = isset($this->options['map_marker_and_infowindow']['infowindow_field']) ? $this->options['map_marker_and_infowindow']['infowindow_field'] : NULL;
+                $description_field = $this->options['map_marker_and_infowindow']['infowindow_field'] ?? NULL;
                 if (isset($description_field)) {
 
-                  /* @var \Drupal\Core\Field\FieldItemList $description_field_entity */
+                  /** @var \Drupal\Core\Field\FieldItemList $description_field_entity */
                   $description_field_entity = $entity->$description_field;
 
                   // Assure the view_mode to eventually fallback into the
@@ -992,7 +994,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                             $description[] = $this->rendered_fields[$id][$description_field];
                             break;
                           }
-                          $description[] = isset($value['value']) ? $value['value'] : NULL;
+                          $description[] = $value['value'] ?? NULL;
                         }
                       }
                       // Else get the views field value.
@@ -1007,7 +1009,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                 foreach ($this->rendered_fields[$id] as $field_name => $rendered_field) {
                   // Add Views fields to Json output as additional property.
                   if (!empty($rendered_field) && !$this->view->field[$field_name]->options['exclude']) {
-                    /* @var \Drupal\Core\Render\Markup $rendered_field */
+                    /** @var \Drupal\Core\Render\Markup $rendered_field */
                     $view_data[$field_name] = $rendered_field->__toString();
                   }
                   // Define possible tokens.
@@ -1015,7 +1017,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                 }
 
                 // Define a Tooltip for the Feature.
-                $tooltip_field = isset($this->options['map_marker_and_infowindow']['tooltip_field']) ? $this->options['map_marker_and_infowindow']['tooltip_field'] : NULL;
+                $tooltip_field = $this->options['map_marker_and_infowindow']['tooltip_field'] ?? NULL;
                 $tooltip = isset($entity) && !empty($tooltip_field) ? trim(html_entity_decode(strip_tags($this->rendered_fields[$id][$tooltip_field]), ENT_QUOTES)) : NULL;
 
                 foreach ($features as $k => &$feature) {
@@ -1035,7 +1037,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                     if (isset($this->options['map_marker_and_infowindow']['theming']) && $this->options['map_marker_and_infowindow']['theming']['plugin_id'] != 'none') {
                       $theming = $this->options['map_marker_and_infowindow']['theming'];
                       try {
-                        /* @var \Drupal\geofield_map\MapThemerInterface $map_themer */
+                        /** @var \Drupal\geofield_map\MapThemerInterface $map_themer */
                         $map_themer = $this->mapThemerManager->createInstance($theming['plugin_id'], ['geofieldMapView' => $this]);
                         $map_theming = $theming[$map_themer->getPluginId()]['values'];
                         if ($feature['geometry']->type === 'Point') {
@@ -1077,7 +1079,11 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
       }
 
       // Order the data features based on the 'weight' element.
-      usort($geojson_data, ['Drupal\Component\Utility\SortArray', 'sortByWeightElement']);
+      usort($geojson_data, [
+        'Drupal\Component\Utility\SortArray',
+        'sortByWeightElement',
+      ]
+      );
 
       $js_settings['data'] = [
         'features' => $geojson_data,

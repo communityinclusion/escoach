@@ -70,6 +70,9 @@ geocoder:
   js:
     js/geofield_map.geocoder.js: {}
   dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
     - core/drupal.autocomplete
 
 geojson:

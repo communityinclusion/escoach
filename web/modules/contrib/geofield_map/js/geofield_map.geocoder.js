@@ -101,7 +101,6 @@
         },
         // This bit is executed upon selection of an address.
         select: function (event, ui) {
-          let self = this;
           let zoom = geocoder_settings.zoom || 14;
           let map, position;
           switch (type) {
