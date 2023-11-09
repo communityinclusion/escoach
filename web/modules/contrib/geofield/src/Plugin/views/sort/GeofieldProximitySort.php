@@ -69,7 +69,7 @@ class GeofieldProximitySort extends SortPluginBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static (
+    return new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
@@ -92,8 +92,8 @@ class GeofieldProximitySort extends SortPluginBase {
     $context = $this->pluginDefinition['plugin_type'];
 
     $user_input = $form_state->getUserInput();
-    $source_plugin_id = isset($user_input['options']['source']) ? $user_input['options']['source'] : $this->options['source'];
-    $source_plugin_configuration = isset($user_input['options']['source_configuration']) ? $user_input['options']['source_configuration'] : $this->options['source_configuration'];
+    $source_plugin_id = $user_input['options']['source'] ?? $this->options['source'];
+    $source_plugin_configuration = $user_input['options']['source_configuration'] ?? $this->options['source_configuration'];
 
     $this->proximitySourceManager->buildCommonFormElements($form, $form_state, $this->options, $context);
 

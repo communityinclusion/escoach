@@ -46,8 +46,8 @@ class ManualOriginDefault extends GeofieldProximitySourceBase {
    */
   public function buildOptionsForm(array &$form, FormStateInterface $form_state, array $options_parents, $is_exposed = FALSE) {
 
-    $lat = isset($this->configuration['origin']['lat']) ? $this->configuration['origin']['lat'] : $this->origin['lat'];
-    $lon = isset($this->configuration['origin']['lon']) ? $this->configuration['origin']['lon'] : $this->origin['lon'];
+    $lat = $this->configuration['origin']['lat'] ?? $this->origin['lat'];
+    $lon = $this->configuration['origin']['lon'] ?? $this->origin['lon'];
 
     $form["origin"] = [
       '#title' => $this->t('Origin Coordinates'),
@@ -65,7 +65,7 @@ class ManualOriginDefault extends GeofieldProximitySourceBase {
       $form['origin_hidden_flag'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Hide the Origin Input elements from the Exposed Form'),
-        '#default_value' => isset($this->configuration['origin_hidden_flag']) ? $this->configuration['origin_hidden_flag'] : FALSE,
+        '#default_value' => $this->configuration['origin_hidden_flag'] ?? FALSE,
         '#states' => [
           'visible' => [
             ':input[name="options[expose_button][checkbox][checkbox]"]' => ['checked' => TRUE],
@@ -76,7 +76,7 @@ class ManualOriginDefault extends GeofieldProximitySourceBase {
       $form['origin_summary_flag'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Show (anyway) the Origin coordinates as summary in the Exposed Form'),
-        '#default_value' => isset($this->configuration['origin_summary_flag']) ? $this->configuration['origin_summary_flag'] : TRUE,
+        '#default_value' => $this->configuration['origin_summary_flag'] ?? TRUE,
         '#states' => [
           'visible' => [
             ':input[name="options[source_configuration][origin_hidden_flag]"]' => ['checked' => TRUE],

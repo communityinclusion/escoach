@@ -42,13 +42,13 @@ class GeofieldItem extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
-  public static function schema(FieldStorageDefinitionInterface $field) {
-    /* @var \Drupal\geofield\Plugin\GeofieldBackendManager $backend_manager */
+  public static function schema(FieldStorageDefinitionInterface $field_definition) {
+    /** @var \Drupal\geofield\Plugin\GeofieldBackendManager $backend_manager */
     $backend_manager = \Drupal::service('plugin.manager.geofield_backend');
     try {
-      /* @var \Drupal\geofield\Plugin\GeofieldBackendPluginInterface $backend_plugin */
-      if (!empty($field->getSetting('backend')) && $backend_manager->getDefinition($field->getSetting('backend')) != NULL) {
-        $backend_plugin = $backend_manager->createInstance($field->getSetting('backend'));
+      /** @var \Drupal\geofield\Plugin\GeofieldBackendPluginInterface $backend_plugin */
+      if (!empty($field_definition->getSetting('backend')) && $backend_manager->getDefinition($field_definition->getSetting('backend')) != NULL) {
+        $backend_plugin = $backend_manager->createInstance($field_definition->getSetting('backend'));
       }
     }
     catch (PluginException $e) {
@@ -192,11 +192,11 @@ class GeofieldItem extends FieldItemBase {
   public function isEmpty() {
     $value = $this->get('value')->getValue();
     if (!empty($value)) {
-      /* @var \Drupal\geofield\GeoPHP\GeoPHPInterface $geo_php_wrapper */
+      /** @var \Drupal\geofield\GeoPHP\GeoPHPInterface $geo_php_wrapper */
       // Note: Geofield FieldType doesn't support Dependency Injection yet
       // (https://www.drupal.org/node/2053415).
       $geo_php_wrapper = \Drupal::service('geofield.geophp');
-      /* @var \Geometry|null $geometry */
+      /** @var \Geometry|null $geometry */
       $geometry = $geo_php_wrapper->load($value);
       return $geometry instanceof \Geometry ? $geometry->isEmpty() : FALSE;
     }
@@ -221,12 +221,12 @@ class GeofieldItem extends FieldItemBase {
     // fwrite() of geoPHP::detectFormat()
     // @see https://php.watch/versions/8.1/internal-func-non-nullable-null-deprecation
     if ($this->value !== NULL) {
-      /* @var \Geometry $geom */
+      /** @var \Geometry $geom */
       $geom = \Drupal::service('geofield.geophp')->load($this->value);
     }
 
     if (!empty($geom) && !$geom->isEmpty()) {
-      /* @var \Point $centroid */
+      /** @var \Point $centroid */
       $centroid = $geom->getCentroid();
       $bounding = $geom->getBBox();
 

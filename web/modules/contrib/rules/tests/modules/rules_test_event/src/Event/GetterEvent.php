@@ -14,7 +14,7 @@ use Drupal\Component\EventDispatcher\Event;
  * get<PropertyName>().
  *
  * This class is meant for testing, to ensure Rules can access properties using
- * the methods declared in the 'getter' metatdata. A 'real' event class would
+ * the methods declared in the 'getter' metadata. A 'real' event class would
  * also have a constructor and/or setter methods to set the initial values of
  * the properties, and might have other methods that make use of these
  * properties to return a value.

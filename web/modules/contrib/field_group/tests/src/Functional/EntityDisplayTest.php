@@ -187,6 +187,64 @@ class EntityDisplayTest extends BrowserTestBase {
   }
 
   /**
+   * Test the html element formatter with label_as_html=TRUE.
+   */
+  public function testHtmlElementLabelHtml() {
+    $session = $this->assertSession();
+    $data = [
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test',
+        1 => 'body',
+      ],
+      'label' => '<strong>Test HTML</strong>',
+      'format_type' => 'html_element',
+      'format_settings' => [
+        'label' => 'Link',
+        'element' => 'div',
+        'id' => 'wrapper-id',
+        'classes' => 'test-class',
+        'label_as_html' => TRUE,
+        'show_label' => TRUE,
+      ],
+    ];
+    $this->createGroup('node', $this->type, 'view', 'default', $data);
+    $this->drupalGet('node/' . $this->node->id());
+    // See if the field group supports HTML elements in the label:
+    // We expect the HTML to be not escaped:
+    $session->elementContains('css', '#wrapper-id.test-class > h3', '<strong>Test HTML</strong>');
+  }
+
+  /**
+   * Test the html element formatter with label_as_html=FALSE.
+   */
+  public function testHtmlElementLabelNoHtml() {
+    $session = $this->assertSession();
+    $data = [
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test',
+        1 => 'body',
+      ],
+      'label' => '<strong>Test HTML</strong>',
+      'format_type' => 'html_element',
+      'format_settings' => [
+        'label' => 'Link',
+        'element' => 'div',
+        'id' => 'wrapper-id',
+        'classes' => 'test-class',
+        'label_as_html' => FALSE,
+        'show_label' => TRUE,
+      ],
+    ];
+    $this->createGroup('node', $this->type, 'view', 'default', $data);
+    $this->drupalGet('node/' . $this->node->id());
+    // See if the field group supports HTML elements in the label:
+    // We expect the HTML to be not escaped:
+    $session->elementContains('css', '#wrapper-id.test-class > h3', '&lt;strong&gt;Test HTML&lt;/strong&gt;');
+  }
+
+  /**
    * Test the fieldset formatter.
    */
   public function testFieldset() {
@@ -205,7 +263,6 @@ class EntityDisplayTest extends BrowserTestBase {
       ],
     ];
     $this->createGroup('node', $this->type, 'view', 'default', $data);
-
     $this->drupalGet('node/' . $this->node->id());
 
     // Test group ids and classes.
@@ -214,9 +271,64 @@ class EntityDisplayTest extends BrowserTestBase {
   }
 
   /**
+   * Test the fieldset formatter with label_as_html=TRUE.
+   */
+  public function testFieldsetLabelHtml() {
+    $session = $this->assertSession();
+    $data = [
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test',
+        1 => 'body',
+      ],
+      'label' => '<strong>Test Fieldset</strong>',
+      'format_type' => 'fieldset',
+      'format_settings' => [
+        'id' => 'fieldset-id',
+        'classes' => 'test-class',
+        'description' => 'test description',
+        'label_as_html' => TRUE,
+      ],
+    ];
+    $this->createGroup('node', $this->type, 'view', 'default', $data);
+    $this->drupalGet('node/' . $this->node->id());
+    // See if the field group supports HTML elements in the label:
+    // We expect the HTML to be not escaped:
+    $session->elementContains('css', '#fieldset-id.test-class > legend > span', '<strong>Test Fieldset</strong>');
+  }
+
+  /**
+   * Test the fieldset formatter with label_as_html=FALSE.
+   */
+  public function testFieldsetLabelNoHtml() {
+    $session = $this->assertSession();
+    $data = [
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test',
+        1 => 'body',
+      ],
+      'label' => '<strong>Test Fieldset</strong>',
+      'format_type' => 'fieldset',
+      'format_settings' => [
+        'id' => 'fieldset-id',
+        'classes' => 'test-class',
+        'description' => 'test description',
+        'label_as_html' => FALSE,
+      ],
+    ];
+    $this->createGroup('node', $this->type, 'view', 'default', $data);
+
+    $this->drupalGet('node/' . $this->node->id());
+    // See if the field group supports HTML elements in the label:
+    // We expect the HTML to be escaped (plain):
+    $session->elementContains('css', '#fieldset-id.test-class > legend > span', '&lt;strong&gt;Test Fieldset&lt;/strong&gt;');
+  }
+
+  /**
    * Test the tabs formatter.
    */
-  public function testTabs() {
+  public function testVerticalTabs() {
     $data = [
       'label' => 'Tab 1',
       'weight' => '1',
@@ -287,6 +399,134 @@ class EntityDisplayTest extends BrowserTestBase {
 
     // Test if it's a horizontal tab.
     $this->assertCount(1, $this->xpath('//div[@data-horizontal-tabs-panes=""]'), 'Tabs are shown horizontal.');
+  }
+
+  /**
+   * Test the vertical tab formatter inside tabs with label_as_html=TRUE.
+   *
+   * @todo The "label_as_html" is currently not working for vertical tabs,
+   * as the HTML is escaped in the core definition of the vertical tab. For more
+   * information see: https://www.drupal.org/project/field_group/issues/3363890.
+   */
+  public function todotestVerticalTabsLabelHtml() {
+    $session = $this->assertSession();
+    $data = [
+      'label' => '<em>Tab 1</em>',
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test',
+      ],
+      'format_type' => 'tab',
+      'format_settings' => [
+        'label' => '<em>Tab 1</em>',
+        'classes' => 'test-class',
+        'description' => '',
+        'formatter' => 'open',
+        'label_as_html' => TRUE,
+      ],
+    ];
+    $first_tab = $this->createGroup('node', $this->type, 'view', 'default', $data);
+
+    $data = [
+      'label' => '<em>Tab 2</em>',
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test_2',
+      ],
+      'format_type' => 'tab',
+      'format_settings' => [
+        'label' => '<em>Tab 2</em>',
+        'classes' => 'test-class-2',
+        'description' => 'description of second tab',
+        'formatter' => 'closed',
+        'label_as_html' => TRUE,
+      ],
+    ];
+    $second_tab = $this->createGroup('node', $this->type, 'view', 'default', $data);
+
+    $data = [
+      'label' => 'Tabs',
+      'weight' => '1',
+      'children' => [
+        0 => $first_tab->group_name,
+        1 => $second_tab->group_name,
+      ],
+      'format_type' => 'tabs',
+      'format_settings' => [
+        'direction' => 'vertical',
+        'label' => 'Tab 1',
+        'classes' => 'test-class-wrapper',
+      ],
+    ];
+    $this->createGroup('node', $this->type, 'view', 'default', $data);
+
+    $this->drupalGet('node/' . $this->node->id());
+    $session->elementContains('css', 'div.test-class-wrapper li.vertical-tabs__menu-item.first > a > strong', '<em>Tab 1</em>');
+    $session->elementContains('css', 'div.test-class-wrapper li.vertical-tabs__menu-item.last > a > strong', '<em>Tab 2</em>');
+  }
+
+  /**
+   * Test the vertical tab formatter inside tabs with label_as_html=FALSE.
+   *
+   * @todo The "label_as_html" is currently not working for vertical tabs,
+   * as the HTML is escaped in the core definition of the vertical tab. For more
+   * information see: https://www.drupal.org/project/field_group/issues/3363890.
+   */
+  public function todotestVerticalTabsLabelNoHtml() {
+    $session = $this->assertSession();
+    $data = [
+      'label' => '<em>Tab 1</em>',
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test',
+      ],
+      'format_type' => 'tab',
+      'format_settings' => [
+        'label' => '<em>Tab 1</em>',
+        'classes' => 'test-class',
+        'description' => '',
+        'formatter' => 'open',
+        'label_as_html' => FALSE,
+      ],
+    ];
+    $first_tab = $this->createGroup('node', $this->type, 'view', 'default', $data);
+
+    $data = [
+      'label' => '<em>Tab 2</em>',
+      'weight' => '1',
+      'children' => [
+        0 => 'field_test_2',
+      ],
+      'format_type' => 'tab',
+      'format_settings' => [
+        'label' => '<em>Tab 2</em>',
+        'classes' => 'test-class-2',
+        'description' => 'description of second tab',
+        'formatter' => 'closed',
+        'label_as_html' => FALSE,
+      ],
+    ];
+    $second_tab = $this->createGroup('node', $this->type, 'view', 'default', $data);
+
+    $data = [
+      'label' => 'Tabs',
+      'weight' => '1',
+      'children' => [
+        0 => $first_tab->group_name,
+        1 => $second_tab->group_name,
+      ],
+      'format_type' => 'tabs',
+      'format_settings' => [
+        'direction' => 'vertical',
+        'label' => 'Tab 1',
+        'classes' => 'test-class-wrapper',
+      ],
+    ];
+    $this->createGroup('node', $this->type, 'view', 'default', $data);
+
+    $this->drupalGet('node/' . $this->node->id());
+    $session->elementContains('css', 'div.test-class-wrapper li.vertical-tabs__menu-item.first > a > strong', '&lt;em&gt;Tab 1&lt;/em&gt');
+    $session->elementContains('css', 'div.test-class-wrapper li.vertical-tabs__menu-item.last > a > strong', '&lt;em&gt;Tab 2&lt;/em&gt');
   }
 
   /**

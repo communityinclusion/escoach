@@ -4,7 +4,7 @@ All notable changes to **drupal/field_hidden** will be documented in this file,
 using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
 
-## [2.0.0]
+## [2.0.0] - 2020-08-25
 
 ### Changed
 * Drupal 9 compatibility.

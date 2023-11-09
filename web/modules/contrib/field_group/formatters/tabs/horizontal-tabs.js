@@ -52,14 +52,14 @@
             var summaryElement = $this.find('> summary');
             var detailsTitle = summaryElement.first().find('.details-title')
             if (detailsTitle.length) {
-              var summaryText = detailsTitle.find('> span:last-child').text().trim();
+              var summary = detailsTitle.find('> span:last-child').html().trim();
             }
             else {
-              var summaryText = summaryElement.clone().children().remove().end().text().trim() || summaryElement.find('> span:first-child').text().trim();
+              var summary = summaryElement.clone().html().trim() || summaryElement.find('> span:first-child').html().trim();
             }
 
             var horizontal_tab = new Drupal.horizontalTab({
-              title: summaryText,
+              title: summary,
               details: $this
             });
             horizontal_tab.item.addClass('horizontal-tab-button-' + i);
@@ -244,7 +244,7 @@
 
     tab.item = $('<li class="horizontal-tab-button" tabindex="-1"></li>')
       .append(tab.link = $('<a href="#' + idAttr + '"></a>')
-        .append(tab.title = $('<strong></strong>').text(settings.title))
+        .append(tab.title = $('<strong></strong>').html(settings.title))
       );
 
     // No need to add summary on frontend.

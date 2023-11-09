@@ -54,9 +54,9 @@ class GeofieldDefaultFormatter extends FormatterBase implements ContainerFactory
    * @param string $view_mode
    *   The view mode.
    * @param array $third_party_settings
-   *   Any third party settings settings.
+   *   Any third party settings.
    * @param \Drupal\geofield\GeoPHP\GeoPHPInterface $geophp_wrapper
-   *   The The geoPhpWrapper.
+   *   The geoPhpWrapper.
    */
   public function __construct(
     $plugin_id,

@@ -116,6 +116,7 @@ class EntityFetchByField extends RulesActionBase implements ContainerFactoryPlug
     else {
       $query = $storage->getQuery();
       $entity_ids = $query
+        ->accessCheck(TRUE)
         ->condition($field_name, $field_value, '=')
         ->range(0, $limit)
         ->execute();

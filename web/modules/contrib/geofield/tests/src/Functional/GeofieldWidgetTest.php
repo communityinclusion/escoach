@@ -28,7 +28,7 @@ class GeofieldWidgetTest extends FieldTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'seven';
+  protected $defaultTheme = 'stark';
 
   /**
    * A field storage with cardinality 1 to use in this test class.
@@ -81,7 +81,10 @@ class GeofieldWidgetTest extends FieldTestBase {
     $this->assertSession = $this->assertSession();
 
     // Create a web user.
-    $this->drupalLogin($this->drupalCreateUser(['view test entity', 'administer entity_test content']));
+    $this->drupalLogin($this->drupalCreateUser([
+      'view test entity',
+      'administer entity_test content',
+    ]));
   }
 
   /**
