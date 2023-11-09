@@ -511,12 +511,14 @@ class HomePageService {
       $headers[] = 'Better than Last All';
     }
 
-
     foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
       $headers[] = $info['label'];
       $headers[] = 'Better than Last Month';
       $headers[] = 'Better than Last All';
     }
+
+    $headers[] = 'Response Rate';
+    $headers[] = '# of Respondents';
 
     $data .= implode(',', $headers) . "\n";
 
@@ -565,6 +567,9 @@ class HomePageService {
       $headers[] = 'Better than Last All';
     }
 
+    $headers[] = 'Response Rate';
+    $headers[] = '# of Respondents';
+
     $data .= implode(',', $headers) . "\n";
 
     $query = new HomePageQuery($year, $month, '', '');
@@ -611,6 +616,11 @@ class HomePageService {
         $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
         $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
       }
+    }
+
+    if (isset($activities['responseRate']['Me'])) {
+      $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
+      $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
     }
 
     return $rec;
