@@ -504,7 +504,11 @@ class HomePageService {
     $this->setDateRange($year, $month);
     $data .= "Activites in " . $this->monthName . " " . $this->previousYear . "\n";
 
-    $headers = ['User'];
+    $headers[] = 'User';
+    $headers[] = 'First name';
+    $headers[] = 'Last name';
+    $headers[] = 'Provider';
+    // $headers = ['Dashboard Url'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
       $headers[] = 'Better than Last Month';
@@ -534,6 +538,8 @@ class HomePageService {
         $data .= implode(',', $rec) . "\n";
       }
     }
+
+    $data .= "\n\nDownloaded from https://www.es-coach.org/ on " . date('F d Y', time());
 
     /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
     $fileRepository = \Drupal::service('file.repository');
@@ -582,6 +588,8 @@ class HomePageService {
       $data .= implode(',', $rec) . "\n";
     }
 
+    $data .= "\n\nDownloaded from https://www.es-coach.org/ on " . date('F d Y', time());
+
     /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
     $fileRepository = \Drupal::service('file.repository');
     $filename = \Drupal::service('file_system')->tempnam('temporary://', 'tmp_', Settings::get('file_temporary_path'));
@@ -593,12 +601,45 @@ class HomePageService {
   /**
    *
    */
+  private function getCurrentUserInfo(string $email) {
+    $user_storage = $this->entityTypeManager->getStorage('user');
+    $profile_storage = $this->entityTypeManager->getStorage('profile');
+    $query = $user_storage->getQuery();
+    $query->condition('mail', $email);
+    $results = $query->accessCheck(FALSE)->execute();
+    if ($results) {
+      $profile = $profile_storage->loadByProperties([
+        'uid' => reset($results),
+        'type' => 'survey_participants',
+      ]);
+      return reset($profile);
+    }
+  }
+
+  /**
+   *
+   */
   private function getUserDownload($year, $month, $email) {
     $this->setCurrentUser($email);
+    $current_user_survey_participants_profile = $this->getCurrentUserInfo($email);
     $activities = $this->keyActivities($year, $month, self::ADMIN_ROLE);
     $practices = $this->bestPractices($year, $month, self::ADMIN_ROLE);
-
     $rec = [$email];
+    if (isset($current_user_survey_participants_profile)) {
+      $first_name = $current_user_survey_participants_profile->field_survey_first_name->value ?? '';
+      $rec[] = $first_name;
+      $last_name = $current_user_survey_participants_profile->field_survey_last_name->value ?? '';
+      $rec[] = $last_name;
+      $provider = $current_user_survey_participants_profile->field_provider->entity->name->value ?? '';
+      $rec[] = $provider;
+      // $rec = $dashboard_url;
+    }
+    else {
+      $rec[] = '';
+      $rec[] = '';
+      $rec[] = '';
+      // $rec[] = '';
+    }
     if (isset($activities['lastMonth']['Me'])) {
       foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
         $rec[] = $activities['lastMonth']['Me'][$machine]['formatted'];
@@ -606,8 +647,6 @@ class HomePageService {
         $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
       }
 
-      $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
-      $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
     }
 
     if (isset($practices['lastMonth']['Me'])) {
@@ -620,7 +659,7 @@ class HomePageService {
 
     if (isset($activities['responseRate']['Me'])) {
       $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
-      $rec[] = $activities['responseRate']['Me']['netResponses'] ?? 0;
+      $rec[] = $activities['responseRate']['Me']['totalSurveysSent'] ?? 0;
     }
 
     return $rec;
@@ -648,7 +687,7 @@ class HomePageService {
     }
 
     $rec[] = $activities['responseRate']['Provider']['responseRate'] * 100 ?? 0;
-    $rec[] = $activities['responseRate']['Provider']['netResponses'] ?? 0;
+    $rec[] = $activities['responseRate']['Provider']['totalSurveysSent'] ?? 0;
 
     return $rec;
   }
@@ -740,8 +779,6 @@ class HomePageService {
       $return .= implode(',', $row) . "\n";
     }
 
-    $return .= $this->buildResponseRateRows($activityData);
-
     // Table spacing and new header.
     $return .= ",,,\n";
     $return .= ",,,\n";
@@ -770,6 +807,10 @@ class HomePageService {
       $row[] = $bestPracticesData['lastMonth']['All'][$machine]['formatted'];
       $return .= implode(',', $row) . "\n";
     }
+
+    $return .= ",,,\n";
+    $return .= ",,,\n";
+    $return .= $this->buildResponseRateRows($activityData);
 
     /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
     $fileRepository = \Drupal::service('file.repository');
