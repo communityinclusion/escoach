@@ -9,51 +9,63 @@
 
   Drupal.behaviors.surveyDashboard = {
     attach: function (context, settings) {
-      $('select[name="who"]').once('who-select').on('change', function (evt) {
-        $('select[name="where"]').val('_none');
-        Drupal.behaviors.surveyDashboard.validateSelection(this);
+      $(once('who-select', 'select[name="who"]', context)).each(function () {
+        $(this).on('change', function (evt) {
+          $('select[name="where"]').val('_none');
+          Drupal.behaviors.surveyDashboard.validateSelection(this);
+        });
       });
 
-      $('select[name="where"]').once('where-select').on('change', function (evt) {
-        $('select[name="who"]').val('_none');
-        Drupal.behaviors.surveyDashboard.validateSelection(this);
+      $(once('where-select', 'select[name="where"]', context)).each(function () {
+        $(this).on('change', function (evt) {
+          $('select[name="who"]').val('_none');
+          Drupal.behaviors.surveyDashboard.validateSelection(this);
+        });
       });
 
-      $('#edit-timeframe').once('timeframe').on('change', function (evt) {
-        if ($(this).val() != 'up-to-date') {
-          if ($('select[name="where"]').val() == 'any') {
-            $('select[name="where"]').val('_none');
+      $(once('timeframe', '#edit-timeframe', context)).each(function () {
+        $(this).on('change', function (evt) {
+          if ($(this).val() != 'up-to-date') {
+            if ($('select[name="where"]').val() == 'any') {
+              $('select[name="where"]').val('_none');
+            }
+            if ($('select[name="who"]').val() == 'any') {
+              $('select[name="who"]').val('_none');
+            }
+
           }
-          if ($('select[name="who"]').val() == 'any') {
-            $('select[name="who"]').val('_none');
-          }
-
-        }
+        });
       });
 
-      $('input[type="submit"]').once('validate-timeframe').on('click', function (evt) {
-        if ($('#edit-timeframe').val() != 'up-to-date' && $('input:checked[name^="what"]').length == 0 ) {
-          evt.stopPropagation();
-          evt.preventDefault();
-          alert('Please select at least one "What" option');
-        }
-        if ($('#edit-timeframe').val() == 'up-to-date' && $('input:checked[name^="what"]').length == 0 ) {
-          if ($('select[name="where"]').prop('selectedIndex') > 1 || $('select[name="who"]').prop('selectedIndex') > 1) {
+      $(once('validate-timeframe', 'input[type="submit"]', context)).each(function () {
+        $(this).on('click', function (evt) {
+          if ($('#edit-timeframe').val() != 'up-to-date' && $('input:checked[name^="what"]').length == 0 ) {
             evt.stopPropagation();
             evt.preventDefault();
             alert('Please select at least one "What" option');
           }
-        }
+          if ($('#edit-timeframe').val() == 'up-to-date' && $('input:checked[name^="what"]').length == 0 ) {
+            if ($('select[name="where"]').prop('selectedIndex') > 1 || $('select[name="who"]').prop('selectedIndex') > 1) {
+              evt.stopPropagation();
+              evt.preventDefault();
+              alert('Please select at least one "What" option');
+            }
+          }
+        });
       });
 
-      $('input.what-parent').once('select-children').change(function () {
-        $('input.what-parent-' + $(this).val()).prop('checked', $(this).prop('checked'));
+      $(once('select-children', 'input.what-parent', context)).each(function () {
+        $(this).change(function () {
+          $('input.what-parent-' + $(this).val()).prop('checked', $(this).prop('checked'));
+        });
       });
 
-      $('input.what-child').once('clear-parent').change(function () {
-        if (!$(this).prop('checked')) {
-          $('input#edit-what-' + $(this).data('parent-id')).prop('checked', false);
-        }
+      $(once('clear-parent', 'input.what-child', context)).each(function () {
+        $(this).change(function () {
+          if (!$(this).prop('checked')) {
+            $('input#edit-what-' + $(this).data('parent-id')).prop('checked', false);
+          }
+        });
       });
     },
     validateSelection: function (element) {
@@ -81,30 +93,33 @@
   Drupal.behaviors.surveyDashboardChart = {
     attach: function (context, settings) {
 
-      $(document).once('school-name').on('ajaxSuccess', function (evt, data) {
-        var chartType = 'bar';
-        if (drupalSettings.survey_dashboard &&
-          drupalSettings.survey_dashboard.chart_type) {
-          chartType = drupalSettings.survey_dashboard.chart_type;
-        }
-        google.charts.load('current', {packages: ['corechart', chartType]});
-        if (chartType == 'bar') {
-          google.charts.setOnLoadCallback(drawBasic);
-        }
-        else {
-          google.charts.setOnLoadCallback(drawLineChart);
-        }
-
-        for( var i in data.responseJSON) {
-          var setting = data.responseJSON[i];
-          if (setting.settings.survey_dashboard.chart) {
-            drupalSettings.survey_dashboard.chart = setting.settings.survey_dashboard.chart;
-            break;
+      $(once('school-name', document, context)).each(function () {
+        $(this).on('ajaxSuccess', function (evt, data) {
+          var chartType = 'bar';
+          if (drupalSettings.survey_dashboard &&
+            drupalSettings.survey_dashboard.chart_type) {
+            chartType = drupalSettings.survey_dashboard.chart_type;
           }
-        }
+          google.charts.load('current', {packages: ['corechart', chartType]});
+          if (chartType == 'bar') {
+            google.charts.setOnLoadCallback(drawBasic);
+          }
+          else {
+            google.charts.setOnLoadCallback(drawLineChart);
+          }
+
+          for( var i in data.responseJSON) {
+            var setting = data.responseJSON[i];
+            if (setting.settings.survey_dashboard.chart) {
+              drupalSettings.survey_dashboard.chart = setting.settings.survey_dashboard.chart;
+              break;
+            }
+          }
+        });
       });
 
-      $('#google-charts').once('chart').each(function () {
+      $(once('chart', '#google-charts', context)).each(function () {
+
         var chartType = 'bar';
         if (drupalSettings.survey_dashboard && drupalSettings.survey_dashboard.chart_type) {
           chartType = drupalSettings.survey_dashboard.chart_type;
@@ -116,7 +131,6 @@
         else {
           google.charts.setOnLoadCallback(drawLineChart);
         }
-
       });
 
       function drawBasic() {
