@@ -17,9 +17,11 @@
     "require": {
         "commerceguys/addressing": "^1.0.7",
         "composer/installers": "^1.2",
+        "cweagans/composer-patches": "^1.7",
         "drupal/address": "^1.8",
         "drupal/admin_toolbar": "^3.4",
         "drupal/auto_entitylabel": "^3.0",
+        "drupal/auto_login_url": "^2.0@alpha",
         "drupal/bootstrap5": "^3.0",
         "drupal/bootstrap_barrio": "^5.5",
         "drupal/bootstrap_library": "^2.0",
@@ -76,6 +78,7 @@
         "drupal/views_data_export": "^1.4",
         "drupal/workflow": "^1.1",
         "drush/drush": "^12.4",
+        "mglaman/composer-drupal-lenient": "^1.0",
         "pear/archive_tar": "^1.4.10",
         "symfony/phpunit-bridge": "^6.3",
         "symfony/process": "^6.3.0",
@@ -97,7 +100,9 @@
             "php-http/discovery": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
-            "drupal/core-project-message": true
+            "drupal/core-project-message": true,
+            "cweagans/composer-patches": true,
+            "mglaman/composer-drupal-lenient": true
         }
     },
     "extra": {
@@ -134,6 +139,14 @@
                 "  * Remove the plugin that prints this message:",
                 "      composer remove drupal/core-project-message"
             ]
+        },
+        "drupal-lenient": {
+            "allowed-list": ["drupal/auto_login_url"]
+        },
+        "patches": {
+            "drupal/auto_login_url": {
+                "D10 compatibility": "https://www.drupal.org/files/issues/2022-08-16/auto_login_url.2.x-dev.rector.patch"
+            }
         }
     }
 }
