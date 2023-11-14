@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "771da65623b449fd984cc63679af361d",
+    "content-hash": "1f4dce0433d0cb38b65a2ec2b0d30a8e",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2000,29 +2000,26 @@
         },
         {
             "name": "drupal/auto_login_url",
-            "version": "2.0.0-alpha2",
+            "version": "dev-2.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/auto_login_url.git",
-                "reference": "2.0.0-alpha2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/auto_login_url-2.0.0-alpha2.zip",
-                "reference": "2.0.0-alpha2",
-                "shasum": "dfef1113ec67afec9fe5ae080b8e1297b6f373c8"
+                "reference": "b6c7bd9996ed661b6cdd7ff25d2c4271bdfffcd8"
             },
             "require": {
                 "drupal/core": "^8 || ^9 || ^10"
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-2.x": "2.x-dev"
+                },
                 "drupal": {
-                    "version": "2.0.0-alpha2",
-                    "datestamp": "1659485237",
+                    "version": "2.0.0-alpha2+3-dev",
+                    "datestamp": "1699914409",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -2038,6 +2035,10 @@
                 {
                     "name": "matrixlord",
                     "homepage": "https://www.drupal.org/user/1538394"
+                },
+                {
+                    "name": "plach",
+                    "homepage": "https://www.drupal.org/user/183211"
                 },
                 {
                     "name": "vensires",
@@ -12789,7 +12790,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "drupal/auto_login_url": 15,
+        "drupal/auto_login_url": 20,
         "drupal/conditional_fields": 15,
         "drupal/csv_importer": 20,
         "drupal/entity_usage": 15,
