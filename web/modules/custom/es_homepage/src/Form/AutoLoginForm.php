@@ -40,7 +40,7 @@ class AutoLoginForm extends FormBase {
     $form['url'] = [
       '#type' => 'textfield',
       '#title' => 'Redirect URL',
-      '#description' => $this->t('Use fully-qualified URLs. e.g. https://escoach.com/dashboard'),
+      '#description' => $this->t('Use fully-qualified URLs. (e.g. https://escoach.com/dashboard)'),
       '#required' => TRUE,
     ];
 
