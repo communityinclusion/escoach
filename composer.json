@@ -144,9 +144,6 @@
             "allowed-list": ["drupal/auto_login_url"]
         },
         "patches": {
-            "drupal/auto_login_url": {
-                "D10 compatibility": "https://www.drupal.org/files/issues/2022-08-16/auto_login_url.2.x-dev.rector.patch"
-            }
         }
     }
 }
