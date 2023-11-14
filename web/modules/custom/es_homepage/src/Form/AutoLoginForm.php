@@ -1,10 +1,14 @@
 <?php
 namespace Drupal\es_homepage\Form;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\es_homepage\Services\AutoLoginService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class AutoLoginForm extends FormBase {
 
@@ -36,6 +40,7 @@ class AutoLoginForm extends FormBase {
     $form['url'] = [
       '#type' => 'textfield',
       '#title' => 'Redirect URL',
+      '#description' => $this->t('Use fully-qualified URLs. e.g. https://escoach.com/dashboard'),
       '#required' => TRUE,
     ];
 
@@ -50,8 +55,17 @@ class AutoLoginForm extends FormBase {
     // 1.  Delete previous links
     $this->autoLoginService->deleteAllLinks();
 
-    // 2.  Generate new links
-    $this->autoLoginService->generateLinks($form_state->getValue('url'));
+    // 2.  Generate new links/CSV
+    $data = $this->autoLoginService->generateLinks($form_state->getValue('url'));
+
+    $filename = 'user-links.csv';
+    $response = new BinaryFileResponse($data);
+    $response->setContentDisposition(
+      ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+      $filename
+    );
+
+    $form_state->setResponse($response);
   }
 
 }

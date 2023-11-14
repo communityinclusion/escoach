@@ -5,10 +5,19 @@ es_homepage.admin_provider_report:
   menu_name: admin
   parent: system.admin_reports
   weight: 1000
+
 es_homepage.admin_user_report:
   title: User CSV Download
   description: 'CSV export of best practices and key activities by User'
   route_name: es_homepage.download_usercsv
   menu_name: admin
   weight: 1001
+  parent: system.admin_reports
+
+es_homepage.admin_user_csv_export:
+  title: Export Users with Auto Login links
+  description: 'CSV export of Users with login links'
+  route_name: es_homepage.auto_login_form
+  menu_name: admin
+  weight: 1002
   parent: system.admin_reports

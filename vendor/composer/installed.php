@@ -3,7 +3,7 @@
         'name' => 'drupal/recommended-project',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'c088c005d197d5c8bad22766aa6203bcea0ea368',
+        'reference' => '8462225564885607cc2fca7063102e80dc24c874',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -269,12 +269,14 @@
             'dev_requirement' => false,
         ),
         'drupal/auto_login_url' => array(
-            'pretty_version' => '2.0.0-alpha2',
-            'version' => '2.0.0.0-alpha2',
-            'reference' => '2.0.0-alpha2',
+            'pretty_version' => 'dev-2.x',
+            'version' => 'dev-2.x',
+            'reference' => 'b6c7bd9996ed661b6cdd7ff25d2c4271bdfffcd8',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/auto_login_url',
-            'aliases' => array(),
+            'aliases' => array(
+                0 => '2.x-dev',
+            ),
             'dev_requirement' => false,
         ),
         'drupal/bootstrap5' => array(
@@ -848,7 +850,7 @@
         'drupal/recommended-project' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'c088c005d197d5c8bad22766aa6203bcea0ea368',
+            'reference' => '8462225564885607cc2fca7063102e80dc24c874',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

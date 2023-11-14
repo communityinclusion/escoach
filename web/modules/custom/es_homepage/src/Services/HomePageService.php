@@ -406,16 +406,18 @@ class HomePageService {
         $data['lastMonth'][$scope][$machine]['betterAll'] = 0;
 
         // @todo should this use avg instead of total?
-        $last = $info[$machine]['total'] * $activity['multiplier'];
-        $prev = $data['prevMonth'][$scope][$machine]['total'] * $activity['multiplier'];
-        if ($last > $prev) {
-          $data['lastMonth'][$scope][$machine]['betterMonth'] = 1;
-        }
+        if ($activity['multiplier'] !== 0) {
+          $last = $info[$machine]['total'] * $activity['multiplier'];
+          $prev = $data['prevMonth'][$scope][$machine]['total'] * $activity['multiplier'];
+          if ($last > $prev) {
+            $data['lastMonth'][$scope][$machine]['betterMonth'] = 1;
+          }
 
-        $last = $info[$machine]['avg'] * $activity['multiplier'];
-        $all = $data['prevMonth']['All'][$machine]['avg'] * $activity['multiplier'];
-        if ($last > $all) {
-          $data['lastMonth'][$scope][$machine]['betterAll'] = 1;
+          $last = $info[$machine]['avg'] * $activity['multiplier'];
+          $all = $data['prevMonth']['All'][$machine]['avg'] * $activity['multiplier'];
+          if ($last > $all) {
+            $data['lastMonth'][$scope][$machine]['betterAll'] = 1;
+          }
         }
       }
     }
@@ -927,10 +929,17 @@ class HomePageService {
    * @return array
    */
   private function _getDataByScope($data, $scope, $machine) : array {
+    if (str_starts_with($data['title'], 'Best practices')) {
+      $ignore = FALSE;
+    }
+    else {
+      $ignore = (keyActivitiesQuery::ACTIVITIES[$machine]['multiplier'] === 0);
+    }
+
     return [
       $data['lastMonth'][$scope][$machine]['formatted'],
-      ($data['lastMonth'][$scope][$machine]['betterMonth']) ? self::BETTER_YES : self::BETTER_NO,
-      ($data['lastMonth'][$scope][$machine]['betterAll']) ? self::BETTER_YES : self::BETTER_NO,
+      ($ignore) ? '-' : (($data['lastMonth'][$scope][$machine]['betterMonth']) ? self::BETTER_YES : self::BETTER_NO),
+      ($ignore)? '-' : (($data['lastMonth'][$scope][$machine]['betterAll']) ? self::BETTER_YES : self::BETTER_NO),
     ];
   }
 

@@ -22,7 +22,7 @@ class keyActivitiesQuery extends HomePageQuery {
     'AfterHire' => [
       'label' => 'AFTER hire',
       'answerIDs' => 11660,
-      'multiplier' => 1,
+      'multiplier' => 0,
     ],
     'Administrative' => [
       'label' => 'Administrative',
