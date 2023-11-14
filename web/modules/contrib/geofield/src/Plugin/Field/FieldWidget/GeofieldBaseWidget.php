@@ -51,7 +51,7 @@ abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactory
    * @param array $settings
    *   The formatter settings.
    * @param array $third_party_settings
-   *   Any third party settings settings.
+   *   Any third party settings.
    * @param \Drupal\geofield\GeoPHP\GeoPHPInterface $geophp_wrapper
    *   The geoPhpWrapper.
    * @param \Drupal\geofield\WktGeneratorInterface $wkt_generator
@@ -124,7 +124,7 @@ abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactory
    */
   protected function geofieldBackendValue($value) {
     $output = NULL;
-    /* @var \Geometry|null $geom */
+    /** @var \Geometry|null $geom */
     if ($this->geofieldBackend && $geom = $this->geoPhpWrapper->load($value)) {
       $output = $this->geofieldBackend->save($geom);
     }

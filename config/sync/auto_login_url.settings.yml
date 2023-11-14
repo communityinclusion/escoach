@@ -1,0 +1,6 @@
+secret: x2MNx581rgC4UOhIva03YaTEfGWJlYzZ8jTkuWVB0jLVgkf1TuBACw35a6RQmWOK
+expiration: 2592000
+delete: false
+token_length: 64
+_core:
+  default_config_hash: gc2e5HZ1VFTAxYuLWgCnHw08cwwQpNB0akfTl3eTesQ

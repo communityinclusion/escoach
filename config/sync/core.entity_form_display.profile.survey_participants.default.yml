@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.profile.survey_participants.field_active_2_deactivated_3
+    - field.field.profile.survey_participants.field_auto_login_url
     - field.field.profile.survey_participants.field_cell_phone
     - field.field.profile.survey_participants.field_job_type
     - field.field.profile.survey_participants.field_other_provider
@@ -36,6 +37,14 @@ content:
     weight: 26
     region: content
     settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_auto_login_url:
+    type: string_textfield
+    weight: 27
+    region: content
+    settings:
+      size: 60
       placeholder: ''
     third_party_settings: {  }
   field_cell_phone:

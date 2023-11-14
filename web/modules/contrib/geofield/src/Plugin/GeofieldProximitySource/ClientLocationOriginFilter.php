@@ -51,7 +51,7 @@ class ClientLocationOriginFilter extends ManualOriginDefault {
       $form['origin_summary_flag'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Show the Client Origin coordinates as summary in the Exposed Form'),
-        '#default_value' => isset($this->configuration['origin_summary_flag']) ? $this->configuration['origin_summary_flag'] : TRUE,
+        '#default_value' => $this->configuration['origin_summary_flag'] ?? TRUE,
       ];
     }
 

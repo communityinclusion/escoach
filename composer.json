@@ -17,21 +17,23 @@
     "require": {
         "commerceguys/addressing": "^1.0.7",
         "composer/installers": "^1.2",
+        "cweagans/composer-patches": "^1.7",
         "drupal/address": "^1.8",
-        "drupal/admin_can_login_anyuser": "^1.2",
         "drupal/admin_toolbar": "^3.4",
         "drupal/auto_entitylabel": "^3.0",
+        "drupal/auto_login_url": "^2.0@alpha",
         "drupal/bootstrap5": "^3.0",
         "drupal/bootstrap_barrio": "^5.5",
         "drupal/bootstrap_library": "^2.0",
         "drupal/captcha": "^2.0",
         "drupal/coder": "^8.3.2",
         "drupal/conditional_fields": "^4.0@alpha",
-        "drupal/core": "^9.5.11",
+        "drupal/core": "^10.1.6",
         "drupal/core-composer-scaffold": "^8.9.1",
         "drupal/core-project-message": "^8.8",
-        "drupal/core-recommended": "^9.1",
+        "drupal/core-recommended": "^10.1.6",
         "drupal/csv_importer": "1.x-dev",
+        "drupal/csv_serialization": "^4.0",
         "drupal/ctools": "^3.7",
         "drupal/devel": "^5.0",
         "drupal/email_registration": "^1.1",
@@ -42,7 +44,7 @@
         "drupal/field_hidden": "^2.0",
         "drupal/form_options_attributes": "^2.0",
         "drupal/geofield": "^1.1",
-        "drupal/geofield_map": "^2.57",
+        "drupal/geofield_map": "^3.0",
         "drupal/google_tag": "^1.4",
         "drupal/imce": "^3.0",
         "drupal/jquery_ui": "1.x-dev@dev",
@@ -73,14 +75,13 @@
         "drupal/upgrade_status": "^4.0",
         "drupal/viewfield": "^3.0@alpha",
         "drupal/views_bulk_operations": "^4.1",
-        "drupal/views_data_export": "^1.0@beta",
+        "drupal/views_data_export": "^1.4",
         "drupal/workflow": "^1.1",
-        "drush/drush": "^10.3",
+        "drush/drush": "^12.4",
+        "mglaman/composer-drupal-lenient": "^1.0",
         "pear/archive_tar": "^1.4.10",
-        "php-http/guzzle6-adapter": "^2.0",
-        "phpunit/phpunit": "^8",
         "symfony/phpunit-bridge": "^6.3",
-        "symfony/process": "^4.4.20",
+        "symfony/process": "^6.3.0",
         "twilio/sdk": "^6.4"
     },
     "require-dev": {
@@ -99,7 +100,9 @@
             "php-http/discovery": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
-            "drupal/core-project-message": true
+            "drupal/core-project-message": true,
+            "cweagans/composer-patches": true,
+            "mglaman/composer-drupal-lenient": true
         }
     },
     "extra": {
@@ -136,6 +139,14 @@
                 "  * Remove the plugin that prints this message:",
                 "      composer remove drupal/core-project-message"
             ]
+        },
+        "drupal-lenient": {
+            "allowed-list": ["drupal/auto_login_url"]
+        },
+        "patches": {
+            "drupal/auto_login_url": {
+                "D10 compatibility": "https://www.drupal.org/files/issues/2022-08-16/auto_login_url.2.x-dev.rector.patch"
+            }
         }
     }
 }

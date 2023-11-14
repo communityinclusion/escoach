@@ -3,6 +3,8 @@
 namespace Drupal\field_group\Plugin\field_group\FieldGroupFormatter;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Render\Markup;
 use Drupal\field_group\FieldGroupFormatterBase;
 
 /**
@@ -35,7 +37,7 @@ class AccordionItem extends FieldGroupFormatterBase {
     $element += [
       '#type' => 'field_group_accordion_item',
       '#effect' => $this->getSetting('effect'),
-      '#title' => $this->getLabel(),
+      '#title' => $this->getSetting('label_as_html') ? Markup::create(Xss::filterAdmin($this->getLabel())) : Markup::create(Html::escape($this->getLabel())),
       // Prevent \Drupal\content_translation\ContentTranslationHandler::addTranslatabilityClue()
       // from adding an incorrect suffix to the field group title.
       '#multilingual' => TRUE,

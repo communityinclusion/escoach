@@ -3,7 +3,7 @@
 namespace Drupal\Tests\rules\Functional;
 
 /**
- * Tests that each Rules Condition can be editted.
+ * Tests that each Rules Condition can be edited.
  *
  * @group RulesUi
  */

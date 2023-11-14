@@ -117,15 +117,7 @@ class DashboardForm extends FormBase {
       '#type' => 'submit',
       '#value' => $this->t('Submit'),
       '#weight' => 6,
-      '#ajax' => [
-        'event' => 'click',
-        'callback' => '::submitCallback',
-        'progress' => [
-          'type' => 'throbber',
-          'message' => 'Working...',
-        ],
-        'wrapper' => 'results',
-      ],
+
     ];
 
     $form['actions']['reset'] = [

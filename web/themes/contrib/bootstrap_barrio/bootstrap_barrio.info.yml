@@ -12,13 +12,12 @@ libraries-extend:
     - bootstrap_barrio/dropbutton
   file/drupal.file:
     - bootstrap_barrio/file
-  views/views.ajax:
-    - bootstrap_barrio/views.ajax
   node/drupal.node.preview:
     - bootstrap_barrio/drupal.node.preview
 
 ckeditor_stylesheets:
   - css/components/table.css
+ckeditor5-stylesheets: false
 
 regions:
   top_header: 'Top header'

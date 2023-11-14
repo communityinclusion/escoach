@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\GenericEvent as SymfonyGenericEvent;
  * passing them into the constructor as an associative array with property
  * names as keys and property values as values. Generic events expose their
  * properties through the GenericEvent::getArgument(string $property_name)
- * method. Because of this, we don't need to explictly declare properties or
+ * method. Because of this, we don't need to explicitly declare properties or
  * getter methods when subclassing GenericEvent.
  *
  * This class is meant for testing. GenericEvent is normally meant to be used

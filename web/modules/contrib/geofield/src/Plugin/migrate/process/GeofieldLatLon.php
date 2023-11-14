@@ -50,7 +50,7 @@ class GeofieldLatLon extends ProcessPluginBase implements ContainerFactoryPlugin
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     $value = array_map('floatval', $value);
-    list($lat, $lon) = $value;
+    [$lat, $lon] = $value;
 
     if (empty($lat) || empty($lon)) {
       return NULL;

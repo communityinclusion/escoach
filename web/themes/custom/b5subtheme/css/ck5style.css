@@ -9028,7 +9028,7 @@
   .ck-content .floatLeft {
     float: left;
     width: min-content; }
-  .ck-content .page-user-register #edit-survey-participants-profiles-0-entity-field-partic-suspension-dates-0, .ck-content .page-user-register #edit-survey-participants-profiles-0-entity-field-set-surveys-to-inactive-wrapper {
+  .ck-content #user-register-form #edit-survey-participants-profiles-0-entity-field-partic-suspension-dates-0, .ck-content #user-register-form #edit-survey-participants-profiles-0-entity-field-set-surveys-to-inactive-wrapper {
     display: none; }
   .ck-content .flexImage {
     width: 90%;

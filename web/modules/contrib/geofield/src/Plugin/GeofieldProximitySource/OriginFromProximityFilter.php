@@ -90,8 +90,8 @@ class OriginFromProximityFilter extends GeofieldProximitySourceBase implements C
 
     $user_input = $form_state->getUserInput();
     $proximity_filters_sources = $this->getAvailableProximityFilters();
-    $user_input_proximity_filter = isset($user_input['options']['source_configuration']['source_proximity_filter']) ? $user_input['options']['source_configuration']['source_proximity_filter'] : current(array_keys($proximity_filters_sources));
-    $source_proximity_filter = isset($this->configuration['source_proximity_filter']) ? $this->configuration['source_proximity_filter'] : $user_input_proximity_filter;
+    $user_input_proximity_filter = $user_input['options']['source_configuration']['source_proximity_filter'] ?? current(array_keys($proximity_filters_sources));
+    $source_proximity_filter = $this->configuration['source_proximity_filter'] ?? $user_input_proximity_filter;
 
     if (!empty($proximity_filters_sources)) {
       $form['source_proximity_filter'] = [

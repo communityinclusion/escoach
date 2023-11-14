@@ -22,6 +22,13 @@ es_homepage.download_csv:
   requirements:
     _access: 'TRUE'
 
+es_homepage.auto_login_form:
+  path: '/admin/reports/es_home/auto_login_urls'
+  defaults:
+    _form: '\Drupal\es_homepage\Form\AutoLoginForm'
+  requirements:
+    _permission: 'access auto_login form'
+
 es_homepage.download_providercsv:
   path: '/home/download/provider'
   defaults:

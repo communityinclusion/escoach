@@ -5,3 +5,7 @@
 'access user download':
   title: Access user download
   description: Allow users to access the all user CSV download
+
+'access auto_login form':
+  title: Access Auto Login Form
+  description: Allow users to access Auto Login Form to generate auto login links

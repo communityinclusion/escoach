@@ -150,7 +150,7 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
       throw new ContextException('ContextDefinition class must implement ' . ContextDefinitionInterface::class . '.');
     }
     // Default to Rules context definition class.
-    $values['class'] = isset($values['class']) ? $values['class'] : ContextDefinition::class;
+    $values['class'] = $values['class'] ?? ContextDefinition::class;
     if (!isset($values['value'])) {
       $values['value'] = 'any';
     }

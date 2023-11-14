@@ -72,7 +72,7 @@ trait ContextProviderTrait {
    * Returns the entity object if the upcast was successful, otherwise returns
    * NULL.
    *
-   * @todo Rather than returning NULL, we should probably throw an excpetion.
+   * @todo Rather than returning NULL, we should probably throw an exception.
    * That way the calling code may attempt an upcast, then continue on as it
    * used to if the upcast fails.
    *
