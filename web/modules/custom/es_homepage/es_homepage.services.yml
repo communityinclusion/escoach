@@ -3,3 +3,7 @@ services:
   es_homepage.home_page_service:
     class: \Drupal\es_homepage\Services\HomePageService
     arguments: ['@current_user', '@entity_type.manager']
+
+  es_homepage.auto_login_service:
+    class: \Drupal\es_homepage\Services\AutoLoginService
+

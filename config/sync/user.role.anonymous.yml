@@ -5,6 +5,7 @@ dependencies:
   config:
     - filter.format.restricted_html
   module:
+    - auto_login_url
     - filter
     - media
     - system
@@ -16,5 +17,6 @@ weight: 0
 is_admin: false
 permissions:
   - 'access content'
+  - 'use auto login url'
   - 'use text format restricted_html'
   - 'view media'

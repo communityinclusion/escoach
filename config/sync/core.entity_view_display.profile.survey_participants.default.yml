@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.profile.survey_participants.field_active_2_deactivated_3
+    - field.field.profile.survey_participants.field_auto_login_url
     - field.field.profile.survey_participants.field_cell_phone
     - field.field.profile.survey_participants.field_job_type
     - field.field.profile.survey_participants.field_other_provider
@@ -31,6 +32,14 @@ targetEntityType: profile
 bundle: survey_participants
 mode: default
 content:
+  field_auto_login_url:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 9
+    region: content
   field_cell_phone:
     type: string
     label: above

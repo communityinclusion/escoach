@@ -43,6 +43,10 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         array (
             'mglaman\\PHPStanDrupal\\' => 22,
         ),
+        'c' => 
+        array (
+            'cweagans\\Composer\\' => 18,
+        ),
         'W' => 
         array (
             'Webmozart\\Assert\\' => 17,
@@ -185,6 +189,7 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
             'Consolidation\\AnnotatedCommand\\' => 31,
             'Composer\\Semver\\' => 16,
             'Composer\\Installers\\' => 20,
+            'ComposerDrupalLenient\\' => 22,
             'CommerceGuys\\Addressing\\' => 24,
             'Clue\\StreamFilter\\' => 18,
         ),
@@ -210,6 +215,10 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         'mglaman\\PHPStanDrupal\\' => 
         array (
             0 => __DIR__ . '/..' . '/mglaman/phpstan-drupal/src',
+        ),
+        'cweagans\\Composer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cweagans/composer-patches/src',
         ),
         'Webmozart\\Assert\\' => 
         array (
@@ -617,6 +626,10 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         'Composer\\Installers\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
+        ),
+        'ComposerDrupalLenient\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mglaman/composer-drupal-lenient/src',
         ),
         'CommerceGuys\\Addressing\\' => 
         array (
