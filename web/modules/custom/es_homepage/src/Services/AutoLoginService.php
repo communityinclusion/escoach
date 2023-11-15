@@ -62,8 +62,7 @@ class AutoLoginService {
 
   private function getConsultantPIDs() {
     return \Drupal::entityQuery('profile')
-      ->condition('type', ['survey_participants', 'Manager-consultant'], 'IN')
-      ->condition('field_job_type', 'Employment consultant')
+      ->condition('type', ['survey_participants'] )
       ->accessCheck(TRUE)
       ->execute();
   }
