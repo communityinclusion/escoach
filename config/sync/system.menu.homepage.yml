@@ -1,0 +1,8 @@
+uuid: 4e56a47d-a2c6-4f8d-816f-19af579e2f90
+langcode: en
+status: true
+dependencies: {  }
+id: homepage
+label: Homepage
+description: 'Navigation for dashboard/consultant home page'
+locked: false
