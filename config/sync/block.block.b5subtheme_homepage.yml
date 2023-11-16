@@ -11,8 +11,8 @@ dependencies:
     - b5subtheme
 id: b5subtheme_homepage
 theme: b5subtheme
-region: nav_branding
-weight: 0
+region: content
+weight: -8
 provider: null
 plugin: 'menu_block:homepage'
 settings:
