@@ -9,7 +9,7 @@ dependencies:
 id: pagetitle
 theme: b5subtheme
 region: content
-weight: -5
+weight: -13
 provider: null
 plugin: page_title_block
 settings:
@@ -21,4 +21,4 @@ visibility:
   request_path:
     id: request_path
     negate: true
-    pages: '<front>'
+    pages: "<front>\r\n/home/activities\r\n/home/best_practices"

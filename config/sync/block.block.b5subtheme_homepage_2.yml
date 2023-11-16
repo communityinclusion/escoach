@@ -1,4 +1,4 @@
-uuid: e68e9f87-b778-4364-aa74-ee4c3d11d54d
+uuid: ea2135d1-17f5-4111-af9d-422676b2832d
 langcode: en
 status: true
 dependencies:
@@ -9,10 +9,10 @@ dependencies:
     - system
   theme:
     - b5subtheme
-id: b5subtheme_homepage
+id: b5subtheme_homepage_2
 theme: b5subtheme
-region: nav_branding
-weight: 0
+region: content
+weight: -9
 provider: null
 plugin: 'menu_block:homepage'
 settings:
@@ -33,4 +33,4 @@ visibility:
   request_path:
     id: request_path
     negate: false
-    pages: "/home/*\r\n/dashboard"
+    pages: "/home/activities\r\n/home/best_practices"

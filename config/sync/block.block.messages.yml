@@ -9,7 +9,7 @@ dependencies:
 id: messages
 theme: b5subtheme
 region: content
-weight: -6
+weight: -14
 provider: null
 plugin: system_messages_block
 settings:

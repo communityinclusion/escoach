@@ -7,7 +7,7 @@ dependencies:
 id: primaryadminactions
 theme: b5subtheme
 region: content
-weight: -2
+weight: -10
 provider: null
 plugin: local_actions_block
 settings:

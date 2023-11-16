@@ -9,7 +9,7 @@ dependencies:
 id: help
 theme: b5subtheme
 region: content
-weight: -3
+weight: -11
 provider: null
 plugin: help_block
 settings:
