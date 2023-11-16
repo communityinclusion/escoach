@@ -118,8 +118,8 @@ function surveycampaignCheckRegCode($formcode) {
     if($formcode && $formcode == preg_replace('/\s+/', '',$thiscode)) {
 
       $term = \Drupal\taxonomy\Entity\Term::load($thisname);
-      $termarray = array($term->getName());
-      return $termarray;
+      $termarray = $term ? array($term->getName()) : array();
+      return count($termarray) === 0 ? false : $termarray;
     }
   }
   return FALSE;
