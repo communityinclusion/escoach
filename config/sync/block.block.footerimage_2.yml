@@ -11,7 +11,7 @@ dependencies:
 id: footerimage_2
 theme: b5subtheme
 region: header
-weight: -3
+weight: 0
 provider: null
 plugin: 'block_content:7d558c59-71e6-40cd-aff9-3cb5125a761a'
 settings:

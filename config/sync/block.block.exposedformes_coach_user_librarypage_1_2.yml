@@ -12,7 +12,7 @@ dependencies:
 id: exposedformes_coach_user_librarypage_1_2
 theme: b5subtheme
 region: header
-weight: -4
+weight: 0
 provider: null
 plugin: 'views_exposed_filter_block:es_coach_user_library-page_1'
 settings:

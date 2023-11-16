@@ -33,7 +33,7 @@ expression:
           to:
             - info@es-coach.org
           subject: 'A new user has registered on ES Coach'
-          message: "A new user has registered on ES Coach.  Log in to https://es-coach.org/user as an admin to view the user's details."
+          message: 'A new user has registered on ES Coach.  Log in to https://es-coach.org/user as an admin to view the user''s details.'
           reply: ''
           language: ''
         context_mapping: {  }

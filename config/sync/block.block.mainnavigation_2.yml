@@ -12,7 +12,7 @@ dependencies:
 id: mainnavigation_2
 theme: b5subtheme
 region: header
-weight: -14
+weight: -7
 provider: null
 plugin: 'menu_block:main'
 settings:

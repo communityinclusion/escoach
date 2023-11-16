@@ -11,7 +11,7 @@ dependencies:
 id: usermenu_2
 theme: b5subtheme
 region: header
-weight: -2
+weight: 0
 provider: null
 plugin: 'superfish:user-menu'
 settings:

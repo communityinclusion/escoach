@@ -1,0 +1,36 @@
+uuid: e68e9f87-b778-4364-aa74-ee4c3d11d54d
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.homepage
+  module:
+    - menu_block
+    - system
+  theme:
+    - b5subtheme
+id: b5subtheme_homepage
+theme: b5subtheme
+region: content
+weight: -8
+provider: null
+plugin: 'menu_block:homepage'
+settings:
+  id: 'menu_block:homepage'
+  label: Homepage
+  label_display: '0'
+  provider: menu_block
+  follow: false
+  follow_parent: child
+  label_link: false
+  label_type: block
+  level: 1
+  depth: 0
+  expand_all_items: false
+  parent: 'homepage:'
+  suggestion: homepage
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/home/*\r\n/dashboard"

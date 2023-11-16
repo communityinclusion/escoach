@@ -9,7 +9,7 @@ dependencies:
 id: sitebranding
 theme: b5subtheme
 region: nav_branding
-weight: 0
+weight: -14
 provider: null
 plugin: system_branding_block
 settings:
