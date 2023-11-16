@@ -79,7 +79,17 @@
 
 
   nav .navbar-brand img {height: 104px;}
-  }
-  #navbarSupportedContent ul.sf-menu a {padding: .3em .5em}
-  #superfish-user-menu li a {color:#737373; font-weight: bold; text-decoration: none;}
-  #superfish-user-menu li a:hover {text-decoration: underline;}
+}
+#navbarSupportedContent ul.sf-menu a {padding: .3em .5em}
+#superfish-user-menu li a {color:#737373; font-weight: bold; text-decoration: none;}
+#superfish-user-menu li a:hover {text-decoration: underline;}
+
+#block-b5subtheme-homepage .nav {
+   .nav-item a {
+      padding: 15px 8px;
+      &.active {
+         background-color: $link-hover-color;
+         color: $white;
+      }
+   }
+}

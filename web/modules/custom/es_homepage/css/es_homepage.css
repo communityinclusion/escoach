@@ -143,9 +143,9 @@ tbody {border-right: 1px solid #c3c3c3!important;}
   .hidden-mobile {
     display: none;
   }
-  .nav-item .nav-link {
+  /* .nav-item .nav-link {
     font-size:.75em;
-  }
+  } */
 }
 
 .menu.nav-link:hover {
