@@ -44,6 +44,11 @@ class AutoLoginForm extends FormBase {
       '#required' => TRUE,
     ];
 
+    $form['delete'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Delete ALL  previously generated auto login links.'),
+    ];
+
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Generate CSV'),
@@ -53,7 +58,10 @@ class AutoLoginForm extends FormBase {
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // 1.  Delete previous links
-    $this->autoLoginService->deleteAllLinks();
+    $delete = $form_state->getValue('delete');
+    if ($delete == 1) {
+      $this->autoLoginService->deleteAllLinks();
+    }
 
     // 2.  Generate new links/CSV
     $data = $this->autoLoginService->generateLinks($form_state->getValue('url'));
