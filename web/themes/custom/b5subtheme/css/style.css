@@ -12992,9 +12992,6 @@ select#edit-tid--2 option[value="12"] {
   text-decoration: underline;
 }
 
-#block-b5subtheme-homepage .nav .nav-item a, #block-b5subtheme-homepage .media-library-view--widget .view-header .nav-item a, .media-library-view--widget #block-b5subtheme-homepage .view-header .nav-item a {
-  padding: 15px 8px;
-}
 #block-b5subtheme-homepage .nav .nav-item a.active, #block-b5subtheme-homepage .media-library-view--widget .view-header .nav-item a.active, .media-library-view--widget #block-b5subtheme-homepage .view-header .nav-item a.active, #block-b5subtheme-homepage .nav .nav-item .media-library-view--widget .view-header a.is-active, .media-library-view--widget .view-header #block-b5subtheme-homepage .nav .nav-item a.is-active, #block-b5subtheme-homepage .media-library-view--widget .view-header .nav-item a.is-active, .media-library-view--widget #block-b5subtheme-homepage .view-header .nav-item a.is-active {
   background-color: #0a58ca;
   color: #fff;

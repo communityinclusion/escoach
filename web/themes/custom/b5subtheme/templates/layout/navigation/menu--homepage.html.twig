@@ -30,7 +30,7 @@ We call a macro which calls itself to render the full tree.
   {% import _self as menus %}
   {% if items %}
     {% if menu_level == 0 %}
-<ul{{ attributes.addClass(['nav bg-light']) }}{{ attributes.addRole('tablist') }}>
+<ul{{ attributes.addClass(['nav nav-pills bg-light']) }}{{ attributes.addRole('tablist') }}>
   {% else %}
   <ul>
     {% endif %}

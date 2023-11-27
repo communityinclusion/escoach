@@ -11989,9 +11989,6 @@ a > .ck-content code {
 .ck-content #superfish-user-menu li a:hover {
   text-decoration: underline;
 }
-.ck-content #block-b5subtheme-homepage .nav .nav-item a, .ck-content #block-b5subtheme-homepage .media-library-view--widget .view-header .nav-item a, .ck-content .media-library-view--widget #block-b5subtheme-homepage .view-header .nav-item a {
-  padding: 15px 8px;
-}
 .ck-content #block-b5subtheme-homepage .nav .nav-item a.active, .ck-content #block-b5subtheme-homepage .media-library-view--widget .view-header .nav-item a.active, .ck-content .media-library-view--widget #block-b5subtheme-homepage .view-header .nav-item a.active, .ck-content #block-b5subtheme-homepage .nav .nav-item .media-library-view--widget .view-header a.is-active, .ck-content .media-library-view--widget .view-header #block-b5subtheme-homepage .nav .nav-item a.is-active, .ck-content #block-b5subtheme-homepage .media-library-view--widget .view-header .nav-item a.is-active, .ck-content .media-library-view--widget #block-b5subtheme-homepage .view-header .nav-item a.is-active {
   background-color: #0a58ca;
   color: #fff;
