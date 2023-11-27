@@ -19,14 +19,10 @@ bundle: technical_assistant
 mode: default
 content:
   field_providers:
-    type: entity_reference_autocomplete
+    type: options_buttons
     weight: 26
     region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+    settings: {  }
     third_party_settings: {  }
 hidden:
   is_default: true
