@@ -28,6 +28,7 @@ class HomePageService {
   const OTHER_ROLE = 'OTHER';
   const BETTER_YES = 'YES';
   const BETTER_NO = 'NO';
+  const MIN_RESPONSES = 3;
 
   private $stateValues = [
     'AL'  => 'Alabama',
@@ -317,6 +318,9 @@ class HomePageService {
       $query->addMe();
       $results = $query->execute();
       $return['responseRate']['Me'] = $results[0];
+      if ($results[0]['netResponses'] <= self::MIN_RESPONSES) {
+        $return['responseRate']['Me']['alert'] = TRUE;
+      }
     }
 
     $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider);
@@ -325,11 +329,17 @@ class HomePageService {
       $query->addState($state);
       $results = $query->execute();
       $return['responseRate']['State'] = $results[0];
+      if ($results[0]['netResponses'] <= self::MIN_RESPONSES) {
+        $return['responseRate']['State']['alert'] = TRUE;
+      }
     }
     else {
       $query->addProvider();
       $results = $query->execute();
       $return['responseRate']['Provider'] = $results[0];
+      if ($results[0]['netResponses'] <= self::MIN_RESPONSES) {
+        $return['responseRate']['Provider']['alert'] = TRUE;
+      }
     }
     return $return;
   }
