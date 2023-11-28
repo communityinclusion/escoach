@@ -35,6 +35,7 @@ class AutoLoginService {
       'Last Name',
       'Phone #',
       'Email',
+      'Job Type',
       'Login Link',
     ];
 
@@ -50,6 +51,7 @@ class AutoLoginService {
         $profile->field_survey_last_name->value,
         $profile->field_cell_phone->value,
         $profile->uid->entity->mail->value,
+        $profile->field_job_type->value,
         $url,
       ];
 
