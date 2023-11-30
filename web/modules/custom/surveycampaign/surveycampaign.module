@@ -239,6 +239,8 @@ function surveycampaign_cron()
   // closing screen management and results table population run just a few times in the very early AM-extended time 2/15
   $manageClosingBegin = date('H:i', strtotime('07:00'));
   $manageClosingEnd = date('H:i', strtotime('07:30'));
+  $nowTime = date('H:i');
+  $nowTime = date('H:i', strtotime($nowTime));
 
 
   if (($nowTime >= $manageClosingBegin) && ($nowTime <= $manageClosingEnd)){
