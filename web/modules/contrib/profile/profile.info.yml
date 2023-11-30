@@ -8,8 +8,3 @@ dependencies:
   - drupal:user
   - drupal:views
   - entity:entity
-
-# Information added by Drupal.org packaging script on 2022-10-07
-version: '8.x-1.7'
-project: 'profile'
-datestamp: 1665131794
