@@ -1,6 +1,8 @@
 <?php
 namespace Drupal\es_homepage\Query;
 
+use Drupal\survey_dashboard\Query\What;
+
 /**
  * Best Practice Queries
  *  In the Community (answer483 IN 11658, 11659, 11661, answer482 = 11652) - + residence = 11650, + business = 11651
@@ -76,6 +78,7 @@ class bestPracticesQuery extends HomePageQuery {
 
   public function __construct($year, $month, $email, $provider) {
     parent::__construct($year, $month, $email, $provider);
+    $this->query->condition('answer' . WHAT::QUESTION_ID, null, 'IS NOT');
   }
 
   public function buildSums($scope, $state = NULL) {

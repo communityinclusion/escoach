@@ -1020,7 +1020,7 @@ class HomePageService {
 
     $results['records'] = $bestPractices->execute();
     $results['activities'] = $bestPractices::PRACTICES;
-    $this->getTotals($results);
+//    $this->getTotals($results);
 
     return $results;
   }
