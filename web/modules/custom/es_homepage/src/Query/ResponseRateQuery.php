@@ -15,6 +15,7 @@ class ResponseRateQuery extends HomePageQuery {
     $this->query = $database->select(self::BASE_TABLE, 'mailer');
 
     $this->query->addExpression('count(*)', 'totalSurveysSent');
+    $this->query->addExpression('count(distinct(mailer.contactid))', 'respondents');
     $this->query->addExpression('count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end)', 'netResponses');
     $this->query->addExpression('(count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end))/count(*)', 'responseRate');
     $this->query->addJoin('LEFT', 'surveycampaign_results', 'results', 'mailer.contactid = results.contact_id');

@@ -29,6 +29,7 @@ class HomePageService {
   const BETTER_YES = 'YES';
   const BETTER_NO = 'NO';
   const MIN_RESPONSES = 3;
+  const MIN_RESPONSE_RATE = 0.75;
 
   private $stateValues = [
     'AL'  => 'Alabama',
@@ -313,13 +314,19 @@ class HomePageService {
     $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider);
     $results = $query->execute();
     $return['responseRate']['All'] = $results[0];
+    if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
+      $return['responseRate']['All']['strong'] = TRUE;
+    }
 
     if ($role == self::CONSULTANT_ROLE || $role == self::ADMIN_ROLE) {
       $query->addMe();
       $results = $query->execute();
       $return['responseRate']['Me'] = $results[0];
-      if ($results[0]['netResponses'] <= self::MIN_RESPONSES) {
+      if ($results[0]['respondents'] <= self::MIN_RESPONSES) {
         $return['responseRate']['Me']['alert'] = TRUE;
+      }
+      if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
+        $return['responseRate']['Me']['strong'] = TRUE;
       }
     }
 
@@ -329,16 +336,22 @@ class HomePageService {
       $query->addState($state);
       $results = $query->execute();
       $return['responseRate']['State'] = $results[0];
-      if ($results[0]['netResponses'] <= self::MIN_RESPONSES) {
+      if ($results[0]['respondents'] <= self::MIN_RESPONSES) {
         $return['responseRate']['State']['alert'] = TRUE;
+      }
+      if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
+        $return['responseRate']['State']['strong'] = TRUE;
       }
     }
     else {
       $query->addProvider();
       $results = $query->execute();
       $return['responseRate']['Provider'] = $results[0];
-      if ($results[0]['netResponses'] <= self::MIN_RESPONSES) {
+      if ($results[0]['respondents'] <= self::MIN_RESPONSES) {
         $return['responseRate']['Provider']['alert'] = TRUE;
+      }
+      if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
+        $return['responseRate']['Provider']['strong'] = TRUE;
       }
     }
     return $return;
@@ -843,29 +856,29 @@ class HomePageService {
     switch ($role) {
       case 'ANON':
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'State', 'responseRate'));
-        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'State', 'netResponses'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'State', 'respondents'));
         break;
 
       case 'Employment consultant':
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Me', 'responseRate'));
-        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Me', 'netResponses'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Me', 'respondents'));
 
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
-        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'respondents'));
         break;
 
       case 'Manager':
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
-        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'respondents'));
         break;
 
       case 'TA':
         $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'Provider', 'responseRate'));
-        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'netResponses'));
+        $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'Provider', 'respondents'));
     }
 
     $row1 = array_merge($row1, $this->_getResponseRateByScope($activityData, 'All', 'responseRate'));
-    $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'All', 'netResponses'));
+    $row2 = array_merge($row2, $this->_getResponseRateByScope($activityData, 'All', 'respondents'));
 
     $return = implode(',', $row1) . "\n";
     $return .= implode(',', $row2) . "\n";
