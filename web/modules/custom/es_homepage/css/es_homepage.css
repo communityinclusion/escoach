@@ -9,7 +9,9 @@
   padding: 3px;
 }
 
-
+#activities-table tr.response-rate {
+  border-top: 3px solid black;
+}
 
 .btn-primary,.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
   background-color: #168be2;;

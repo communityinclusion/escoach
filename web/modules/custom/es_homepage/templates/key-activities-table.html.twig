@@ -68,24 +68,84 @@
         <td>{{ data.lastMonth.All[machine].formatted }}</td>
       </tr>
     {% endfor %}
-    <tr>
+    <tr class="response-rate">
       <td>Response Rate</td>
       {% if data.role == 'ANON' %}
-        <td>{{ data.responseRate.State.responseRate * 100 }}%</td>
+        {% set responseRate = data.responseRate.State.responseRate * 100 %}
+        <td>{{ responseRate | number_format(1) }}%
+          {% if data.responseRate.State.strong %}
+            <span class="goodResponseIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Good Response"></span>
+          {% endif %}
+          {% if data.responseRate.State.betterMonth %}
+            <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+          {% endif %}
+          {% if data.responseRate.State.betterAll %}
+            <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+          {% endif %}
+        </td>
       {% elseif data.role == 'Employment consultant' or data.role == 'Manager-consultant' %}
-        <td>{{ data.responseRate.Me.responseRate * 100 }}%</td>
-        <td>{{ data.responseRate.Provider.responseRate * 100 }}%</td>
+        {% set responseRate = data.responseRate.Me.responseRate * 100 %}
+        <td>{{ responseRate | number_format(1) }}%
+          {% if data.responseRate.Me.strong %}
+            <span class="goodResponseIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Good Response"></span>
+          {% endif %}
+          {% if data.responseRate.Me.betterMonth %}
+            <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+          {% endif %}
+          {% if data.responseRate.Me.betterAll %}
+            <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+          {% endif %}
+        </td>
+        {% set responseRate = data.responseRate.Provider.responseRate * 100 %}
+        <td>{{ responseRate | number_format(1) }}%
+          {% if data.responseRate.Provider.strong %}
+            <span class="goodResponseIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Good Response"></span>
+          {% endif %}
+          {% if data.responseRate.Provider.betterMonth %}
+            <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+          {% endif %}
+          {% if data.responseRate.Provider.betterAll %}
+            <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+          {% endif %}
+        </td>
       {% elseif data.role == 'Manager' %}
-        <td>{{ data.responseRate.Provider.responseRate * 100 }}%</td>
+        {% set responseRate = data.responseRate.Provider.responseRate * 100 %}
+        <td>{{ responseRate | number_format(1) }}%
+          {% if data.responseRate.Provider.strong %}
+            <span class="goodResponseIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Good Response"></span>
+          {% endif %}
+          {% if data.responseRate.Provider.betterMonth %}
+            <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+          {% endif %}
+          {% if data.responseRate.Provider.betterAll %}
+            <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+          {% endif %}
+        </td>
       {% elseif data.role == 'TA' %}
-        <td>{{ data.responseRate.Provider.responseRate * 100 }}%</td>
+        {% set responseRate = data.responseRate.Provider.responseRate * 100 %}
+        <td>{{ responseRate | number_format(1) }}%
+          {% if data.responseRate.Provider.strong %}
+            <span class="goodResponseIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Good Response"></span>
+          {% endif %}
+          {% if data.responseRate.Provider.betterMonth %}
+            <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+          {% endif %}
+          {% if data.responseRate.Provider.betterAll %}
+            <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+          {% endif %}
+        </td>
       {% endif %}
-      <td>{{ data.responseRate.All.responseRate * 100 }}%</td>
+      {% set responseRate = data.responseRate.All.responseRate * 100 %}
+      <td>{{ responseRate | number_format(1) }}%
+        {% if data.responseRate.All.strong %}
+          <span class="goodResponseIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Good Response"></span>
+        {% endif %}
+      </td>
     </tr>
-    <tr>
+    <tr class="number-of-respondents">
       <td># of Respondents</td>
       {% if data.role == 'ANON' %}
-        <td>{{ data.responseRate.State.netResponses }}
+        <td>{{ data.responseRate.State.netResponses | number_format }}
           {% if data.responseRate.State.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
@@ -96,19 +156,19 @@
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
-        <td>{{ data.responseRate.Provider.netResponses }}
+        <td>{{ data.responseRate.Provider.netResponses | number_format }}
           {% if data.responseRate.Provider.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
       {% elseif data.role == 'Manager' %}
-        <td>{{ data.responseRate.Provider.netResponses }}
+        <td>{{ data.responseRate.Provider.netResponses | number_format }}
           {% if data.responseRate.Provider.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
       {% elseif data.role == 'TA' %}
-        <td>{{ data.responseRate.Provider.netResponses }}
+        <td>{{ data.responseRate.Provider.netResponses | number_format }}
           {% if data.responseRate.Provider.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
