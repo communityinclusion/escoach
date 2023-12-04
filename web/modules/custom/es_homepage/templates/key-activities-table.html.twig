@@ -68,7 +68,7 @@
         <td>{{ data.lastMonth.All[machine].formatted }}</td>
       </tr>
     {% endfor %}
-    <tr>
+    <tr class="response-rate">
       <td>Response Rate</td>
       {% if data.role == 'ANON' %}
         <td>{{ data.responseRate.State.responseRate * 100 }}%</td>
@@ -82,7 +82,7 @@
       {% endif %}
       <td>{{ data.responseRate.All.responseRate * 100 }}%</td>
     </tr>
-    <tr>
+    <tr class="number-of-respondents">
       <td># of Respondents</td>
       {% if data.role == 'ANON' %}
         <td>{{ data.responseRate.State.netResponses }}
