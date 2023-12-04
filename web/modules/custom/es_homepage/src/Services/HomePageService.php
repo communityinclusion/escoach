@@ -312,15 +312,18 @@ class HomePageService {
     $this->compareMonths($return);
 
     $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider);
-    $results = $query->execute();
-    $return['responseRate']['All'] = $results[0];
-    if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
+    $allResults = $query->execute();
+    $return['responseRate']['All'] = $allResults[0];
+    if ($allResults[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
       $return['responseRate']['All']['strong'] = TRUE;
     }
 
+
     if ($role == self::CONSULTANT_ROLE || $role == self::ADMIN_ROLE) {
       $query->addMe();
+      $prevQuery->addMe();
       $results = $query->execute();
+      $prevResults = $prevQuery->execute();
       $return['responseRate']['Me'] = $results[0];
       if ($results[0]['respondents'] <= self::MIN_RESPONSES) {
         $return['responseRate']['Me']['alert'] = TRUE;
@@ -328,13 +331,22 @@ class HomePageService {
       if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
         $return['responseRate']['Me']['strong'] = TRUE;
       }
+      if ($prevResults && $results[0]['responseRate'] > $prevResults[0]['responseRate']) {
+        $return['responseRate']['Me']['betterMonth'] = TRUE;
+      }
+      if ($results[0]['responseRate'] > $allResults[0]['responseRate']) {
+        $return['responseRate']['Me']['betterAll'] = TRUE;
+      }
     }
 
     $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider);
+    $prevQuery = new ResponseRateQuery($this->previousYear, $this->previousMonth, $this->email, $this->provider);
 
     if ($role == self::ANON_ROLE) {
       $query->addState($state);
+      $prevQuery->addState($state);
       $results = $query->execute();
+      $prevResults = $prevQuery->execute();
       $return['responseRate']['State'] = $results[0];
       if ($results[0]['respondents'] <= self::MIN_RESPONSES) {
         $return['responseRate']['State']['alert'] = TRUE;
@@ -342,16 +354,30 @@ class HomePageService {
       if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
         $return['responseRate']['State']['strong'] = TRUE;
       }
+      if ($prevResults && $results[0]['responseRate'] > $prevResults[0]['responseRate']) {
+        $return['responseRate']['State']['betterMonth'] = TRUE;
+      }
+      if ($results[0]['responseRate'] > $allResults[0]['responseRate']) {
+        $return['responseRate']['State']['betterAll'] = TRUE;
+      }
     }
     else {
       $query->addProvider();
+      $prevQuery->addProvider();
       $results = $query->execute();
+      $prevResults = $prevQuery->execute();
       $return['responseRate']['Provider'] = $results[0];
       if ($results[0]['respondents'] <= self::MIN_RESPONSES) {
         $return['responseRate']['Provider']['alert'] = TRUE;
       }
       if ($results[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
         $return['responseRate']['Provider']['strong'] = TRUE;
+      }
+      if ($prevResults && $results[0]['responseRate'] > $prevResults[0]['responseRate']) {
+        $return['responseRate']['Provider']['betterMonth'] = TRUE;
+      }
+      if ($results[0]['responseRate'] > $allResults[0]['responseRate']) {
+        $return['responseRate']['Provider']['betterAll'] = TRUE;
       }
     }
     return $return;
