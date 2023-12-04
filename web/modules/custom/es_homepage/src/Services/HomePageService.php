@@ -30,6 +30,7 @@ class HomePageService {
   const BETTER_NO = 'NO';
   const MIN_RESPONSES = 3;
   const MIN_RESPONSE_RATE = 0.75;
+  const AFTER_HIRE = 'AfterHire';
 
   private $stateValues = [
     'AL'  => 'Alabama',
@@ -560,11 +561,15 @@ class HomePageService {
     $headers[] = 'First name';
     $headers[] = 'Last name';
     $headers[] = 'Provider';
+    $headers[] = 'RegCode';
+    $headers[] = 'State';
     // $headers = ['Dashboard Url'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
-      $headers[] = 'Better than Last Month';
-      $headers[] = 'Better than Last All';
+      if ($machine != self::AFTER_HIRE) {
+        $headers[] = 'Better than Last Month';
+        $headers[] = 'Better than Last All';
+      }
     }
 
     foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
@@ -613,10 +618,13 @@ class HomePageService {
     $data .= "Activites in " . $this->monthName . " " . $this->previousYear . "\n";
 
     $headers = ['Provider'];
+//    $headers[] = 'State';
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
-      $headers[] = 'Better than Last Month';
-      $headers[] = 'Better than Last All';
+      if ($machine != self::AFTER_HIRE) {
+        $headers[] = 'Better than Last Month';
+        $headers[] = 'Better than Last All';
+      }
     }
 
     foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
@@ -684,19 +692,25 @@ class HomePageService {
       $rec[] = $last_name;
       $provider = $current_user_survey_participants_profile->field_provider->entity->name->value ?? '';
       $rec[] = $provider;
-      // $rec = $dashboard_url;
+      $regCode = $current_user_survey_participants_profile->field_registration_code->value ?? '';
+      $rec[] = $regCode;
+      $state = $current_user_survey_participants_profile->field_your_state->value ?? '';
+      $rec[] = $state;
     }
     else {
       $rec[] = '';
       $rec[] = '';
       $rec[] = '';
-      // $rec[] = '';
+      $rec[] = '';
+      $rec[] = '';
     }
     if (isset($activities['lastMonth']['Me'])) {
       foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
         $rec[] = $activities['lastMonth']['Me'][$machine]['formatted'];
-        $rec[] = $activities['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
-        $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+        if ($machine != self::AFTER_HIRE) {
+          $rec[] = $activities['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+          $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+        }
       }
 
     }
@@ -704,8 +718,10 @@ class HomePageService {
     if (isset($practices['lastMonth']['Me'])) {
       foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
         $rec[] = $practices['lastMonth']['Me'][$machine]['formatted'];
-        $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
-        $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+        if ($machine != self::AFTER_HIRE) {
+          $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+          $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
+        }
       }
     }
 
@@ -728,8 +744,10 @@ class HomePageService {
     $rec = [$provider];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $rec[] = $activities['lastMonth']['Provider'][$machine]['formatted'];
-      $rec[] = $activities['lastMonth']['Provider'][$machine]['betterMonth'] ? 'Yes' : 'No';
-      $rec[] = $activities['lastMonth']['Provider'][$machine]['betterAll'] ? 'Yes' : 'No';
+      if ($machine != self::AFTER_HIRE) {
+        $rec[] = $activities['lastMonth']['Provider'][$machine]['betterMonth'] ? 'Yes' : 'No';
+        $rec[] = $activities['lastMonth']['Provider'][$machine]['betterAll'] ? 'Yes' : 'No';
+      }
     }
 
     foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
