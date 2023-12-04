@@ -312,6 +312,7 @@ class HomePageService {
     $this->compareMonths($return);
 
     $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider);
+    $prevQuery = new ResponseRateQuery($this->previousYear, $this->previousMonth, $this->email, $this->provider);
     $allResults = $query->execute();
     $return['responseRate']['All'] = $allResults[0];
     if ($allResults[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
