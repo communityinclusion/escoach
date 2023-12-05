@@ -74,6 +74,14 @@ class BaseQuery {
     return $this->valueIndex++;
   }
 
+  public function addExpression($sql, $alias, $args = []) {
+    $this->query->addExpression($sql, $alias, $args);
+  }
+
+  public function condition($field, $value, $operator = '=') {
+    return $this->query->condition($field, $value, $operator);
+  }
+
   /**
    * Add total sums for me and provider.
    */

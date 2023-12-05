@@ -41,10 +41,6 @@ class HomePageQuery extends BaseQuery {
     $this->query->orderBy('email', 'ASC');
   }
 
-  public function addExpression($expr, $alias) {
-    $this->query->addExpression($expr, $alias);
-  }
-
   protected function getMachineName($string) {
     $transliterated = \Drupal::transliteration()->transliterate($string, LanguageInterface::LANGCODE_DEFAULT, '_');
     $transliterated = mb_strtolower($transliterated);
