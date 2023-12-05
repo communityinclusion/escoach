@@ -286,6 +286,16 @@ class TwilioCoachService
                     $senddate2 = $senddate2->modify("+ 210 minutes");
                     $senddate3 = $senddate3->modify("+ 240 minutes");
                 break;
+                case 'AT':
+                    $senddate = $senddate->modify("+ 240 minutes");
+                    $senddate2 = $senddate2->modify("+ 270 minutes");
+                    $senddate3 = $senddate3->modify("+ 300 minutes");
+                break;
+                case 'HT':
+                    $senddate = $senddate->modify("+ 300 minutes");
+                    $senddate2 = $senddate2->modify("+ 360 minutes");
+                    $senddate3 = $senddate3->modify("+ 420 minutes");
+                break;
                 default:
                     $senddate = $senddate;
                     $senddate2 = $senddate2->modify(" + 30 minutes");
