@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Site\Settings;
+use Drupal\es_homepage\Query\BaseQuery;
 use Drupal\es_homepage\Query\bestPracticesQuery;
 use Drupal\es_homepage\Query\HomePageQuery;
 use Drupal\es_homepage\Query\keyActivitiesQuery;
@@ -618,7 +619,7 @@ class HomePageService {
     $data .= "Activites in " . $this->monthName . " " . $this->previousYear . "\n";
 
     $headers = ['Provider'];
-//    $headers[] = 'State';
+    $headers[] = 'State';
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
       if ($machine != self::AFTER_HIRE) {
@@ -742,6 +743,8 @@ class HomePageService {
     $practices = $this->bestPractices($year, $month, self::ADMIN_ROLE);
 
     $rec = [$provider];
+    $rec[] = $this->getProviderState($provider);
+
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $rec[] = $activities['lastMonth']['Provider'][$machine]['formatted'];
       if ($machine != self::AFTER_HIRE) {
@@ -760,6 +763,14 @@ class HomePageService {
     $rec[] = $activities['responseRate']['Provider']['totalSurveysSent'] ?? 0;
 
     return $rec;
+  }
+
+  private function getProviderState($provider) {
+    $query = new BaseQuery('', $provider);
+    $query->addExpression('MAX(state)', 'state');
+    $query->condition('provider', $provider);
+    $result = $query->execute();
+    return $result[0]['state'] ?? '';
   }
 
   /**
