@@ -24,7 +24,11 @@ class bestPracticesQuery extends HomePageQuery {
           11659,
           11661
         ],
-        482 => 11652
+        482 => [
+          11650,
+          11651,
+          11652,
+        ]
       ]
     ],
     'withFamilies' => [
