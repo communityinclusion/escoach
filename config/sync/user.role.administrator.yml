@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - block_content.type.footer
     - filter.format.full_html
     - filter.format.restricted_html
     - node.type.basic_page
@@ -18,6 +19,7 @@ dependencies:
     - actions_permissions
     - admin_toolbar_search
     - auto_entitylabel
+    - auto_login_url
     - block
     - block_content
     - captcha
@@ -29,6 +31,7 @@ dependencies:
     - entity_browser
     - entity_reference_revisions
     - entity_usage
+    - es_homepage
     - field_ui
     - file
     - filter
@@ -70,6 +73,8 @@ is_admin: null
 permissions:
   - 'access administration pages'
   - 'access arguments page'
+  - 'access auto_login form'
+  - 'access block library'
   - 'access content overview'
   - 'access contextual links'
   - 'access devel information'
@@ -80,6 +85,7 @@ permissions:
   - 'access panels in-place editing'
   - 'access paragraphs_library_items entity browser pages'
   - 'access profile overview'
+  - 'access provider download'
   - 'access rules debug'
   - 'access simple page'
   - 'access site in maintenance mode'
@@ -87,11 +93,15 @@ permissions:
   - 'access slab cachedump'
   - 'access taxonomy overview'
   - 'access toolbar'
+  - 'access user download'
   - 'access user profiles'
   - 'administer CAPTCHA settings'
   - 'administer account settings'
   - 'administer actions'
   - 'administer advanced pane settings'
+  - 'administer auto login url'
+  - 'administer block content'
+  - 'administer block types'
   - 'administer block_content display'
   - 'administer block_content fields'
   - 'administer block_content form display'
@@ -183,6 +193,7 @@ permissions:
   - 'create media'
   - 'create paragraph library item'
   - 'create survey_participants profile'
+  - 'create technical_assistant profile'
   - 'create terms in media_type'
   - 'create terms in providers'
   - 'create terms in subjects'
@@ -192,17 +203,21 @@ permissions:
   - 'create url aliases'
   - 'delete all revisions'
   - 'delete any basic_page content'
+  - 'delete any file'
   - 'delete any library_item content'
   - 'delete any media'
   - 'delete any survey_participants profile'
+  - 'delete any technical_assistant profile'
   - 'delete basic_page revisions'
   - 'delete conditional fields'
   - 'delete library_item revisions'
   - 'delete media'
   - 'delete orphan revisions'
   - 'delete own basic_page content'
+  - 'delete own files'
   - 'delete own library_item content'
   - 'delete own survey_participants profile'
+  - 'delete own technical_assistant profile'
   - 'delete terms in media_type'
   - 'delete terms in providers'
   - 'delete terms in subjects'
@@ -210,6 +225,7 @@ permissions:
   - 'delete terms in where'
   - 'delete terms in who'
   - 'edit any basic_page content'
+  - 'edit any footer block content'
   - 'edit any library_item content'
   - 'edit behavior plugin settings'
   - 'edit conditional fields'
@@ -222,6 +238,7 @@ permissions:
   - 'edit terms in what'
   - 'edit terms in where'
   - 'edit terms in who'
+  - 'execute email_registration_update_username user'
   - 'execute entity:publish_action block_content'
   - 'execute entity:publish_action media'
   - 'execute entity:publish_action menu_link_content'
@@ -268,9 +285,11 @@ permissions:
   - 'import configuration'
   - 'link to any page'
   - 'nodeaccess grant basic_page permissions'
+  - 'nodeaccess grant library_item permissions'
   - 'notify of path changes'
   - 'perform batch updates entity usage'
   - 'revert all revisions'
+  - 'revert any footer block content revisions'
   - 'revert basic_page revisions'
   - 'revert library_item revisions'
   - 'schedule publishing of nodes'
@@ -280,9 +299,12 @@ permissions:
   - 'synchronize configuration'
   - 'update any media'
   - 'update any survey_participants profile'
+  - 'update any technical_assistant profile'
   - 'update media'
   - 'update own survey_participants profile'
+  - 'update own technical_assistant profile'
   - 'use admin toolbar search'
+  - 'use auto login url'
   - 'use ipe with page manager'
   - 'use panels caching features'
   - 'use panels dashboard'
@@ -291,13 +313,16 @@ permissions:
   - 'use text format restricted_html'
   - 'view all media revisions'
   - 'view all revisions'
+  - 'view any footer block content history'
   - 'view any profile'
   - 'view any survey_participants profile'
+  - 'view any technical_assistant profile'
   - 'view basic_page revisions'
   - 'view conditional fields'
   - 'view library_item revisions'
   - 'view own profile'
   - 'view own survey_participants profile'
+  - 'view own technical_assistant profile'
   - 'view own unpublished content'
   - 'view own unpublished media'
   - 'view own unpublished profile'
