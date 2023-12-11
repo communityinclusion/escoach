@@ -188,7 +188,7 @@ function surveycampaign_profile_cellphone_validate (&$form, $form_state) {
     foreach($storage as $profile) {
 
         if( $checknewphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)){
-            $form_state->setErrorByName("The phone number you entered is already assigned to another user.");
+            $form_state->setErrorByName("survey_participants_profiles][0][entity][field_cell_phone][0][value", "The phone number you entered,$formphone, is already assigned to another user.");
           }
     }
 
