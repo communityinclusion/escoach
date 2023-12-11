@@ -162,6 +162,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
             '#title' => $this->t('Provider name'),
             '#description' => $this->t('Enter your provider or agency name.'),
             '#tags' => TRUE,
+            '#required' => TRUE,
             '#default_value' => $term,
             '#selection_settings' => [
             'target_bundles' => ['providers'],
@@ -174,6 +175,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
 
         $form['configuration']['default_settings']['shell']['provider_fieldset'][$i]['provider_code'] = [
             '#type' => 'textfield',
+            '#required' => TRUE,
             '#title' => $this->t('Provider code'),
             '#maxlength' => 64,
             '#size' => 64,
