@@ -175,13 +175,24 @@ function _surveycampaign_user_form_submit(array $form, FormStateInterface $form_
   $form_state->setRedirect('<front>');
 }
 
+
 function surveycampaign_profile_cellphone_validate (&$form, $form_state) {
   $formphone = $form_state->getValues()['survey_participants_profiles'][0]['entity']['field_cell_phone'][0]['value'];
   $checknewphone = preg_replace('/\D+/', '',$formphone);
   $storage = \Drupal::entityTypeManager()->getStorage('profile')
-            ->loadByProperties([
-                'type' => 'survey_participants',
-            ]);
+        ->loadByProperties([
+            'type' => 'survey_participants',
+            'is_default' => 1,
+        ]);
+
+    foreach($storage as $profile) {
+
+        if( $checknewphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value)){
+            $form_state->setErrorByName("The phone number you entered is already assigned to another user.");
+          }
+    }
+
+
   if (!preg_match('/^\d{10}$/', $checknewphone)) {
     $form_state->setErrorByName("survey_participants_profiles][0][entity][field_cell_phone][0][value", "Cellphone number $formphone must be a 10-digit North American phone number in the format (###) ###-####. No leading \"1\"");
   }
@@ -239,7 +250,7 @@ function surveycampaign_cron()
   // closing screen management and results table population run just a few times in the very early AM-extended time 2/15
   $manageClosingBegin = date('H:i', strtotime('07:00'));
   $manageClosingEnd = date('H:i', strtotime('07:30'));
-  
+
 
 
   if (($nowTime >= $manageClosingBegin) && ($nowTime <= $manageClosingEnd)){
