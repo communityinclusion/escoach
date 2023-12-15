@@ -11993,5 +11993,12 @@ a > .ck-content code {
   background-color: #0a58ca;
   color: #fff;
 }
+.ck-content .region-nav-branding,
+.ck-content .region-nav-additional {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: wrap;
+}
 
 /*# sourceMappingURL=ck5style.css.map */
