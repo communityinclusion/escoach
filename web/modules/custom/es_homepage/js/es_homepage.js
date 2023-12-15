@@ -6,6 +6,15 @@
 (function ($, Drupal) {
   'use strict';
 
+  Drupal.behaviors.tooltips = {
+    attach: function (context, settings) {
+      $(once('body', 'body', context)).each(function (evt) {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+      });
+    }
+  }
+
   Drupal.behaviors.download = {
     attach: function (context, settings) {
       $(once('download', '#download-button', context)).each(function (evt) {
