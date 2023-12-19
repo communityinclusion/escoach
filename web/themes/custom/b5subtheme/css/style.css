@@ -12997,4 +12997,12 @@ select#edit-tid--2 option[value="12"] {
   color: #fff;
 }
 
+.region-nav-branding,
+.region-nav-additional {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
 /*# sourceMappingURL=style.css.map */

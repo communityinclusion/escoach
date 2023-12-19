@@ -92,3 +92,11 @@
       }
    }
 }
+
+.region-nav-branding,
+.region-nav-additional {
+   display: flex;
+   justify-content: space-between;
+   width: 100%;
+   flex-wrap: wrap;
+}
