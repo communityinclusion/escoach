@@ -50,12 +50,17 @@
               break;
             }
           }
+
         });
       });
 
       $(once('chart', '#google-charts', context)).each(function (evt) {
         google.charts.load('current', {packages: ['corechart', 'bar']});
         google.charts.setOnLoadCallback(drawBasic);
+
+        $(window).on('resize', function () {
+          drawBasic();
+        });
       });
 
     function drawBasic() {
