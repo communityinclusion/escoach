@@ -131,6 +131,11 @@
         else {
           google.charts.setOnLoadCallback(drawLineChart);
         }
+
+        $(window).on('resize', function () {
+          drawBasic();
+        });
+
       });
 
       function drawBasic() {
