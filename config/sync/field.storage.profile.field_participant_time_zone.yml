@@ -13,16 +13,22 @@ settings:
   allowed_values:
     -
       value: ET
-      label: ET
+      label: 'Eastern Time'
     -
       value: CT
-      label: CT
+      label: 'Central Time'
     -
       value: MT
-      label: MT
+      label: 'Mountain Time'
     -
       value: PT
-      label: PT
+      label: 'Pacific Time'
+    -
+      value: AT
+      label: 'Alaska Time'
+    -
+      value: HT
+      label: 'Hawaii Time'
   allowed_values_function: ''
 module: options
 locked: false
