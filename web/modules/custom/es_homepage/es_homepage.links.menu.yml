@@ -9,7 +9,7 @@ es_homepage.admin_provider_report:
 es_homepage.admin_user_report:
   title: User CSV Download
   description: 'CSV export of best practices and key activities by User'
-  route_name: es_homepage.download_usercsv
+  route_name: es_homepage.create_usercsv
   menu_name: admin
   weight: 1001
   parent: system.admin_reports
