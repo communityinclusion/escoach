@@ -53,6 +53,7 @@ class SurveyUsersService
                         $uservalueregcode = $profile->get('field_registration_code')->value ? $profile->get('field_registration_code')->value : '1000';
                         $providervalueregcode = $this->checkProviderRegCode($provider);
                         $regcode = $uservalueregcode;
+                        $autologinurl = $profile->get('field_auto_login_url')->value ? $profile->get('field_auto_login_url')->value : '';
                         if($uservalueregcode != $providervalueregcode) {
                           $profile->set('field_registration_code', array(
                               'value' => "$providervalueregcode"));
@@ -61,7 +62,7 @@ class SurveyUsersService
                         }
                         $your_state = $profile->get('field_your_state')->value && $profile->get('field_your_state')->value ? $profile->get('field_your_state')->value : null;
 
-                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode,$your_state,$jobtype);
+                        if($jobtype && $jobtype != 'Manager') $userarray[$user]= array($useremail,$firstname,$lastname,$cellphone,$timezone,$suspension,$suspension_end,$activstatus,$provider,$regcode,$your_state,$jobtype,$autologinurl);
                     }
                 }
        }
