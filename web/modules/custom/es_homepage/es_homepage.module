@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Url;
+
 /**
  * Implements hook_theme().
  */
@@ -16,4 +19,37 @@ function es_homepage_theme($existing, $type, $theme, $path) {
       ]
     ]
   ];
+}
+
+function es_homepage_batch_process_user_headers($headers, $filename, $context) {
+  $context['results']['data'] = $headers;
+  $context['results']['filename'] = $filename;
+}
+
+function es_homepage_batch_process_user($user, $year, $month, $context) {
+  $service = Drupal::service('es_homepage.home_page_service');
+  $rec = $service->getUserDownload($year, $month, $user);
+  $context['results']['data'] .= implode(',', $rec) . "\n";
+}
+
+function es_homepage_batch_process_user_finished($success, $results, $operations) {
+  if ($success) {
+    $data = $results['data'];
+    $filename = $results['filename'];
+    $data .= "\n\nDownloaded from https://www.es-coach.org/ on " . date('F d Y', time());
+
+    /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
+    $fileRepository = Drupal::service('file.repository');
+
+    $fileRepository->writeData($data, $filename, FileSystemInterface::EXISTS_REPLACE);
+    $batch_id = base64_encode($filename);
+    $url = Url::fromRoute('es_homepage.download_usercsv', ['batch_id' => $batch_id])->toString();
+
+    Drupal::messenger()->addStatus('Operation complete.  Click <a href="%url">here</a> to download CSV if you are not automatically redirected',[
+      '%url' => $url,
+    ]);
+  }
+  else {
+    Drupal::messenger()->addError('There was a problem generating your download');
+  }
 }

@@ -3,9 +3,11 @@ namespace Drupal\es_homepage\Controllers;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountProxy;
+use Drupal\Core\Url;
 use Drupal\es_homepage\Services\HomePageService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class HomePageController extends ControllerBase {
@@ -58,11 +60,29 @@ class HomePageController extends ControllerBase {
 
   }
 
-  public function downloadUserCSV($year = NULL, $month = NULL) {
-    $data = $this->homePageService->buildUserCSV($year, $month);
+  public function batchUserCSV($year = NULL, $month = NULL) {
+    $filename = $this->homePageService->buildUserCSV($year, $month);
+    $batch_id = base64_encode($filename);
+    $url = Url::fromRoute('es_homepage.download_usercsv_landing', ['batch_id' => $batch_id])->toString();
+    return batch_process($url);
+  }
+
+  public function UserCsvLanding($batch_id) {
+    $url = Url::fromRoute('es_homepage.download_usercsv', ['batch_id' => $batch_id])->toString();
+    $content = [
+      '#markup' => 'Click <a href="' . $url . '">HERE</a> to download user CSV'
+    ];
+
+    $output = \Drupal::service('renderer')->render($content);
+    return new Response($output);
+  }
+
+  public function downloadUserCSV($batch_id) {
+    $csvFilename = base64_decode($batch_id);
+
     $filename = 'user-data.csv';
 
-    $response = new BinaryFileResponse($data);
+    $response = new BinaryFileResponse($csvFilename);
     $response->setContentDisposition(
       ResponseHeaderBag::DISPOSITION_ATTACHMENT,
       $filename

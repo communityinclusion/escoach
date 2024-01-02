@@ -4,8 +4,11 @@ namespace Drupal\es_homepage\Services;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\TempStore\PrivateTempStore;
+use Drupal\Core\Url;
 use Drupal\es_homepage\Query\BaseQuery;
 use Drupal\es_homepage\Query\bestPracticesQuery;
 use Drupal\es_homepage\Query\HomePageQuery;
@@ -131,9 +134,14 @@ class HomePageService {
   private $stateList;
 
   /**
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  private $messenger;
+
+  /**
    *
    */
-  public function __construct(AccountProxy $currentUser, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(AccountProxy $currentUser, EntityTypeManagerInterface $entityTypeManager, MessengerInterface $messenger) {
     $this->email = $currentUser->getEmail();
     $this->currentUser = $currentUser;
     $this->entityTypeManager = $entityTypeManager;
@@ -142,6 +150,7 @@ class HomePageService {
     $this->job_type = 'Other';
     $this->provider = '';
     $this->providerList = [];
+    $this->messenger = $messenger;
   }
 
   /**
@@ -589,21 +598,25 @@ class HomePageService {
     $results = $query->execute();
 
     $this->setCurrentProvider('None');
+    $filename = \Drupal::service('file_system')->tempnam('temporary://', 'tmp_', Settings::get('file_temporary_path'));
+
+    $batch = [
+      'operations' => [
+        ['es_homepage_batch_process_user_headers',[$data, $filename]]
+      ],
+      'finished' => 'es_homepage_batch_process_user_finished',
+      'title' => t('User CSV Download'),
+      'progress_message' => t('Processed @current out of @total.'),
+      'init_message' => t('Preparing user downloads'),
+    ];
     foreach ($results as $result => $info) {
       $user = $info['email'];
       if ($user) {
-        $rec = $this->getUserDownload($year, $month, $user);
-        $data .= implode(',', $rec) . "\n";
+        $batch['operations'][] = ['es_homepage_batch_process_user', [$user, $year, $month]];
       }
     }
 
-    $data .= "\n\nDownloaded from https://www.es-coach.org/ on " . date('F d Y', time());
-
-    /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
-    $fileRepository = \Drupal::service('file.repository');
-    $filename = \Drupal::service('file_system')->tempnam('temporary://', 'tmp_', Settings::get('file_temporary_path'));
-    $fileRepository->writeData($data, $filename, FileSystemInterface::EXISTS_REPLACE);
-
+    batch_set($batch);
     return $filename;
   }
 
@@ -680,7 +693,7 @@ class HomePageService {
   /**
    *
    */
-  private function getUserDownload($year, $month, $email) {
+  public function getUserDownload($year, $month, $email) {
     $this->setCurrentUser($email);
     $current_user_survey_participants_profile = $this->getCurrentUserInfo($email);
     $activities = $this->keyActivities($year, $month, self::ADMIN_ROLE);
