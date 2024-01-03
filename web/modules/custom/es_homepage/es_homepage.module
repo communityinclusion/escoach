@@ -17,7 +17,12 @@ function es_homepage_theme($existing, $type, $theme, $path) {
       'variables' => [
         'data' => null,
       ]
-    ]
+    ],
+    'user_download' => [
+      'variables' => [
+        'url' => NULL,
+      ],
+    ],
   ];
 }
 
@@ -45,9 +50,7 @@ function es_homepage_batch_process_user_finished($success, $results, $operations
     $batch_id = base64_encode($filename);
     $url = Url::fromRoute('es_homepage.download_usercsv', ['batch_id' => $batch_id])->toString();
 
-    Drupal::messenger()->addStatus('Operation complete.  Click <a href="%url">here</a> to download CSV if you are not automatically redirected',[
-      '%url' => $url,
-    ]);
+    Drupal::messenger()->addStatus('Operation complete.');
   }
   else {
     Drupal::messenger()->addError('There was a problem generating your download');

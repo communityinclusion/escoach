@@ -56,7 +56,7 @@ es_homepage.download_usercsv:
 es_homepage.download_usercsv_landing:
   path: '/home/download/user/complete/{batch_id}'
   defaults:
-    _controller: '\Drupal\es_homepage\Controllers\HomePageController::UserCsvLanding'
+    _controller: '\Drupal\es_homepage\Controllers\HomePageController::userCsvLanding'
     _title: 'Download User CSV'
   requirements:
     _permission: 'access user download'
