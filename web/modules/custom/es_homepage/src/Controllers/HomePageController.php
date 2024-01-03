@@ -67,14 +67,14 @@ class HomePageController extends ControllerBase {
     return batch_process($url);
   }
 
-  public function UserCsvLanding($batch_id) {
+  public function userCsvLanding($batch_id) {
     $url = Url::fromRoute('es_homepage.download_usercsv', ['batch_id' => $batch_id])->toString();
     $content = [
-      '#markup' => 'Click <a href="' . $url . '">HERE</a> to download user CSV'
+      '#theme' => 'user_download',
+      '#url' => $url,
     ];
 
-    $output = \Drupal::service('renderer')->render($content);
-    return new Response($output);
+    return $content;
   }
 
   public function downloadUserCSV($batch_id) {
