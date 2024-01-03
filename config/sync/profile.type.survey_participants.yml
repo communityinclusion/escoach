@@ -10,5 +10,7 @@ registration: true
 roles:
   authenticated: authenticated
   administrator: administrator
+  survey_participant: survey_participant
+  ta_admin: ta_admin
 allow_revisions: false
 new_revision: false

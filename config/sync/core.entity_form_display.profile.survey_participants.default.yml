@@ -34,14 +34,14 @@ mode: default
 content:
   field_active_2_deactivated_3:
     type: field_hidden_number
-    weight: 26
+    weight: 10
     region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
   field_auto_login_url:
     type: string_textfield
-    weight: 27
+    weight: 11
     region: content
     settings:
       size: 60
