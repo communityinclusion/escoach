@@ -11239,4 +11239,7 @@ select#edit-tid--2 option[value="12"] {
 .form-item-field-auto-login-url-0-value {
   display: none; }
 
+.toolbar-icon-10 .form-item-field-auto-login-url-0-value {
+  display: block; }
+
 /*# sourceMappingURL=style.css.map */

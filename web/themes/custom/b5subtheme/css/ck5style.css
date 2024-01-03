@@ -9118,5 +9118,7 @@
     flex-wrap: wrap; }
   .ck-content .form-item-field-auto-login-url-0-value {
     display: none; }
+  .ck-content .toolbar-icon-10 .form-item-field-auto-login-url-0-value {
+    display: block; }
 
 /*# sourceMappingURL=ck5style.css.map */

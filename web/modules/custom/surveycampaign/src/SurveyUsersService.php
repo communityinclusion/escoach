@@ -20,6 +20,7 @@ class SurveyUsersService
 
         $storage = $this->entityTypeManager->getStorage('user');
         $query = $storage->getQuery();
+        $query->accessCheck(FALSE);
         $userids = $query->execute();
         $users = $storage->loadMultiple($userids);
         $userarray = array();
