@@ -20,20 +20,19 @@
 
 
 
-        once('toggleHeading','input.toggleHeading', context).foreach(function(value,i) {
-                $(value).change(function(){
-                  var inputName = $(this).attr('name');
-                  var checkedVal = $('input[name="' + inputName + '"]:checked').val();
-                  var optionalText = $(this).closest('.inner-fieldset').find('.customHeading').attr('id');
-                  if(checkedVal == '4') {
-                  if($('#' + optionalText).hasClass('hideOption')) {$('#' + optionalText).removeClass('hideOption');}
+        $(once('toggleHeading','input.toggleHeading', context)).change(function() {
 
-                  } else { $('#' + optionalText).val('');
-                       if(!$('#' + optionalText).hasClass('hideOption')) {$('#' + optionalText).addClass('hideOption');
+                var inputName = $(this).attr('name');
+                var checkedVal = $('input[name="' + inputName + '"]:checked').val();
+                var optionalText = $(this).closest('.inner-fieldset').find('.customHeading').attr('id');
+                if(checkedVal == '4') {
+                if($('#' + optionalText).hasClass('hideOption')) {$('#' + optionalText).removeClass('hideOption');}
 
-                      }
-                  }
-              });
+                } else { $('#' + optionalText).val('');
+                     if(!$('#' + optionalText).hasClass('hideOption')) {$('#' + optionalText).addClass('hideOption');
+
+                    }
+                }
 
 
           });
