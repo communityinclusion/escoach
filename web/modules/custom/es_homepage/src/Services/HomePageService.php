@@ -740,7 +740,7 @@ class HomePageService {
     }
 
     if (isset($activities['responseRate']['Me'])) {
-      $rec[] = $activities['responseRate']['Me']['responseRate'] * 100 ?? 0;
+      $rec[] = round($activities['responseRate']['Me']['responseRate'] * 100) ?? 0;
       $rec[] = $activities['responseRate']['Me']['totalSurveysSent'] ?? 0;
     }
 
@@ -772,7 +772,7 @@ class HomePageService {
       $rec[] = $practices['lastMonth']['Provider'][$machine]['betterAll'] ? 'Yes' : 'No';
     }
 
-    $rec[] = $activities['responseRate']['Provider']['responseRate'] * 100 ?? 0;
+    $rec[] = round($activities['responseRate']['Provider']['responseRate'] * 100) ?? 0;
     $rec[] = $activities['responseRate']['Provider']['totalSurveysSent'] ?? 0;
 
     return $rec;
@@ -966,6 +966,7 @@ class HomePageService {
     $val = $data['responseRate'][$scope][$which];
     if ($which == 'responseRate') {
       $val *= 100;
+      $val = round($val);
     }
 
     return [$val, '', ''];
