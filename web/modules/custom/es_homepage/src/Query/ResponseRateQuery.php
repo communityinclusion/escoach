@@ -19,7 +19,7 @@ class ResponseRateQuery extends HomePageQuery {
     $this->query->addExpression('count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end)', 'netResponses');
     $this->query->addExpression('(count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end))/count(*)', 'responseRate');
     $this->query->addJoin('LEFT', 'surveycampaign_results', 'results', 'mailer.contactid = results.contact_id');
-    $this->setDateRange($year, $month);
+    $this->setDateRange($year, $month, 'mailer.senddate');
     $this->query->condition('mailer.surveyid', 5420562);
     $this->email = $email;
     $this->provider = $provider;

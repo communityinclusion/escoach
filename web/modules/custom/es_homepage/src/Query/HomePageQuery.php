@@ -10,7 +10,7 @@ class HomePageQuery extends BaseQuery {
     $this->setDateRange($year, $month);
   }
 
-  public function setDateRange($year, $month) {
+  public function setDateRange($year, $month, $dateField = 'date_submitted') {
 
     if (!$year || !$month) {
       $today = new \DateTime();
@@ -23,7 +23,7 @@ class HomePageQuery extends BaseQuery {
     $date = new \DateTime("$year-$month-01");
     $to_date = $date->modify('last day of this month');
 
-    $this->query->condition('date_submitted',
+    $this->query->condition($dateField,
       [
         $fr_date->format('Y-m-d 00:00:00'),
         $to_date->format('Y-m-d 23:59:59'),
