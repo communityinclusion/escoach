@@ -589,7 +589,7 @@ class HomePageService {
     }
 
     $headers[] = 'Response Rate';
-    $headers[] = '# of Respondents';
+    $headers[] = '# of Responses';
 
     $data .= implode(',', $headers) . "\n";
 
