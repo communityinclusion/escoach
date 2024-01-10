@@ -466,10 +466,10 @@ class HomePageService {
         $data['lastMonth'][$scope][$machine]['betterMonth'] = 0;
         $data['lastMonth'][$scope][$machine]['betterAll'] = 0;
 
-        // @todo should this use avg instead of total?
+
         if ($activity['multiplier'] !== 0) {
-          $last = $info[$machine]['total'] * $activity['multiplier'];
-          $prev = $data['prevMonth'][$scope][$machine]['total'] * $activity['multiplier'];
+          $last = $info[$machine]['avg'] * $activity['multiplier'];
+          $prev = $data['prevMonth'][$scope][$machine]['avg'] * $activity['multiplier'];
           if ($last > $prev) {
             $data['lastMonth'][$scope][$machine]['betterMonth'] = 1;
           }
@@ -589,7 +589,7 @@ class HomePageService {
     }
 
     $headers[] = 'Response Rate';
-    $headers[] = '# of Respondents';
+    $headers[] = '# of Responses';
 
     $data .= implode(',', $headers) . "\n";
 
