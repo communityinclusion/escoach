@@ -145,36 +145,36 @@
     <tr class="number-of-respondents">
       <td># of Respondents</td>
       {% if data.role == 'ANON' %}
-        <td>{{ data.responseRate.State.netResponses | number_format }}
+        <td>{{ data.responseRate.State.respondents | number_format }}
           {% if data.responseRate.State.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
       {% elseif data.role == 'Employment consultant' or data.role == 'Manager-consultant' %}
-        <td>{{ data.responseRate.Me.netResponses }}
+        <td>{{ data.responseRate.Me.respondents }}
           {% if data.responseRate.Me.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
-        <td>{{ data.responseRate.Provider.netResponses | number_format }}
+        <td>{{ data.responseRate.Provider.respondents | number_format }}
           {% if data.responseRate.Provider.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
       {% elseif data.role == 'Manager' %}
-        <td>{{ data.responseRate.Provider.netResponses | number_format }}
+        <td>{{ data.responseRate.Provider.respondents | number_format }}
           {% if data.responseRate.Provider.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
       {% elseif data.role == 'TA' %}
-        <td>{{ data.responseRate.Provider.netResponses | number_format }}
+        <td>{{ data.responseRate.Provider.respondents | number_format }}
           {% if data.responseRate.Provider.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
       {% endif %}
-      <td>{{ data.responseRate.All.netResponses }}</td>
+      <td>{{ data.responseRate.All.respondents }}</td>
     </tr>
     </tbody>
   </table>

@@ -13,7 +13,24 @@
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
       });
     }
-  }
+  };
+
+  Drupal.behaviors.es_home_menu = {
+    attach: function (context, settings) {
+      $(once('menu-links', 'nav.menu--homepage ul li a', context)).each(function () {
+        var baseURL = $(this).attr('href');
+        if (baseURL != '/dashboard') {
+          if ($('#state-select').length === 1) {
+            baseURL += '?state=' + $('#state-select').val();
+          }
+          else if ($('#provider-select').length === 1) {
+            baseURL += '?provider=' + encodeURIComponent($('#provider-select').val());
+          }
+          $(this).attr('href', baseURL);
+        }
+      });
+    }
+  };
 
   Drupal.behaviors.download = {
     attach: function (context, settings) {
@@ -22,10 +39,11 @@
           var baseURL = '/home/download';
 
           if ($('#state-select').length === 1) {
-            baseURL += '?state=' + $('#state-select').val();
+
+            baseURL += '?state=' + encodeURIComponent($('#state-select').val());
           }
           else if ($('#provider-select').length === 1) {
-            baseURL += '?provider=' + $('#provider-select').val();
+            baseURL += '?provider=' + encodeURIComponent($('#provider-select').val());
           }
 
           window.location.href = baseURL;
