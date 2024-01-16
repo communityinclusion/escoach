@@ -100,6 +100,7 @@
       var data = google.visualization.arrayToDataTable(drupalSettings.es_homepage.chart);
 
       var options = {
+        title: 'Monthly percentage of time in activities',
         width: '100%',
         height: 300,
         legend: {position: 'top', maxLines:4},
