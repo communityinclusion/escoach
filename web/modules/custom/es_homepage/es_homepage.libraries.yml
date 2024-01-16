@@ -1,3 +1,8 @@
+auto_login:
+  version: 1.x
+  js:
+    js/auto-login.js: {}
+
 states:
   version: 1.x
   js:
