@@ -151,10 +151,7 @@
           {% endif %}
         </td>
       {% elseif data.role == 'Employment consultant' or data.role == 'Manager-consultant' %}
-        <td>{{ data.responseRate.Me.respondents }}
-          {% if data.responseRate.Me.alert %}
-            <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
-          {% endif %}
+        <td>&nbsp;
         </td>
         <td>{{ data.responseRate.Provider.respondents | number_format }}
           {% if data.responseRate.Provider.alert %}
