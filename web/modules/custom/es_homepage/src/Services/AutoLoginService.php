@@ -12,6 +12,22 @@ class AutoLoginService {
   public function __construct() {
 
   }
+
+  /**
+   * Clear auto login URL fields in all profiles.
+   *
+   * @return void
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function clearLinks() {
+    $pids = $this->getConsultantPIDs();
+    $profiles = Profile::loadMultiple($pids);
+    foreach ($profiles as $profile) {
+      $profile->field_auto_login_url = NULL;
+      $profile->save();
+    }
+  }
+
   /**
    * @param $uid
    * @param $destination
