@@ -154,3 +154,7 @@ tbody {border-right: 1px solid #c3c3c3!important;}
   text-decoration: underline;
   text-underline-offset: 0.375em!important;
 }
+
+legend {
+  margin-top: 20px;
+}
