@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\geofield\Kernel;
 
+use Drupal\geofield\GeoPHP\GeoPHPWrapper;
 use Drupal\geofield\Plugin\Validation\Constraint\GeoConstraint;
 use Drupal\geofield\Plugin\Validation\Constraint\GeoConstraintValidator;
-use Drupal\geofield\GeoPHP\GeoPHPWrapper;
 use Drupal\KernelTests\KernelTestBase;
 
 /**

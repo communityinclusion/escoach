@@ -2,8 +2,8 @@
 
 namespace Drupal\geofield\Plugin\GeofieldProximitySource;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines 'Geofield Client Location Origin' plugin.

@@ -2,10 +2,10 @@
 
 namespace Drupal\Tests\recaptcha\Functional;
 
-use Drupal\Core\Url;
 use Drupal\Component\Utility\Html;
-use Drupal\Tests\BrowserTestBase;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Url;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test basic functionality of reCAPTCHA module.
@@ -149,7 +149,13 @@ class ReCaptchaBasicTest extends BrowserTestBase {
     // Check if there is a reCAPTCHA on the login form.
     $this->drupalGet('user/login');
     $this->assertSession()->responseContains($grecaptcha);
-    $this->assertSession()->responseContains('<script src="' . Url::fromUri('https://www.google.com/recaptcha/api.js', ['query' => ['hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId()], 'absolute' => TRUE])->toString() . '" async defer></script>');
+    $options_2 = [
+      'query' => [
+        'hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
+      ],
+      'absolute' => TRUE,
+    ];
+    $this->assertSession()->responseContains('<script src="' . Url::fromUri('https://www.google.com/recaptcha/api.js', $options_2)->toString() . '" async defer></script>');
     $this->assertSession()->responseNotContains($grecaptcha . '<noscript>');
 
     // Test if the fall back url is properly build and noscript code added.
@@ -169,19 +175,27 @@ class ReCaptchaBasicTest extends BrowserTestBase {
     // Check if there is a reCAPTCHA with global url on the login form.
     $this->config('recaptcha.settings')->set('use_globally', TRUE)->save();
     $this->drupalGet('user/login');
-    $this->assertSession()->responseContains('<script src="' . Url::fromUri('https://www.recaptcha.net/recaptcha/api.js', ['query' => ['hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId()], 'absolute' => TRUE])->toString() . '" async defer></script>');
+    $options_2 = [
+      'query' => [
+        'hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
+      ],
+      'absolute' => TRUE,
+    ];
+    $this->assertSession()->responseContains('<script src="' . Url::fromUri('https://www.recaptcha.net/recaptcha/api.js', $options_2)->toString() . '" async defer></script>');
     $this->assertSession()->responseContains(Html::escape(Url::fromUri('https://www.recaptcha.net/recaptcha/api/fallback', $options)->toString()));
 
     // Check that data-size attribute does not exists.
     $this->config('recaptcha.settings')->set('widget.size', '')->save();
     $this->drupalGet('user/login');
-    $element = $this->xpath('//div[@class=:class and @data-size=:size]', [':class' => 'g-recaptcha', ':size' => 'small']);
+    $args = [':class' => 'g-recaptcha', ':size' => 'small'];
+    $element = $this->xpath('//div[@class=:class and @data-size=:size]', $args);
     $this->assertEmpty($element, 'Tag contains no data-size attribute.');
 
     // Check that data-size attribute exists.
     $this->config('recaptcha.settings')->set('widget.size', 'small')->save();
     $this->drupalGet('user/login');
-    $element = $this->xpath('//div[@class=:class and @data-size=:size]', [':class' => 'g-recaptcha', ':size' => 'small']);
+    $args = [':class' => 'g-recaptcha', ':size' => 'small'];
+    $element = $this->xpath('//div[@class=:class and @data-size=:size]', $args);
     $this->assertNotEmpty($element, 'Tag contains data-size attribute and value.');
 
     // Try to log in, which should fail.

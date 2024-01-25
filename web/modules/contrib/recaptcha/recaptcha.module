@@ -5,11 +5,10 @@
  * Verifies if user is a human without necessity to solve a CAPTCHA.
  */
 
-use ReCaptcha\ReCaptcha;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
-use Drupal\recaptcha\ReCaptcha\RequestMethod\Drupal8Post;
+use ReCaptcha\ReCaptcha;
 
 /**
  * Implements hook_help().
@@ -76,7 +75,6 @@ function recaptcha_captcha($op, $captcha_type = '') {
           $captcha['captcha_validate'] = 'recaptcha_captcha_validation';
           $captcha['form']['captcha_response'] = [
             '#type' => 'hidden',
-            '#value' => 'Google no captcha',
           ];
 
           // As the validate callback does not depend on sid or solution, this
@@ -123,7 +121,15 @@ function recaptcha_captcha($op, $captcha_type = '') {
                   [
                     '#tag' => 'script',
                     '#attributes' => [
-                      'src' => Url::fromUri($recaptcha_src, ['query' => ['hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId()], 'absolute' => TRUE])->toString(),
+                      'src' => Url::fromUri(
+                        $recaptcha_src,
+                        [
+                          'query' => [
+                            'hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
+                          ],
+                          'absolute' => TRUE,
+                        ]
+                      )->toString(),
                       'async' => TRUE,
                       'defer' => TRUE,
                     ],
@@ -151,23 +157,26 @@ function recaptcha_captcha($op, $captcha_type = '') {
  */
 function recaptcha_captcha_validation($solution, $response, $element, $form_state) {
   $config = \Drupal::config('recaptcha.settings');
+  $request_stack = \Drupal::service('request_stack');
 
+  $recaptcha_response = $request_stack->getCurrentRequest()->request->get('g-recaptcha-response');
   $recaptcha_secret_key = $config->get('secret_key');
-  if (empty($_POST['g-recaptcha-response']) || empty($recaptcha_secret_key)) {
+  if (empty($recaptcha_response) || empty($recaptcha_secret_key)) {
     return FALSE;
   }
 
   // Use Drupal::httpClient() to circumvent all issues with the Google library.
-  $recaptcha = new ReCaptcha($recaptcha_secret_key, new Drupal8Post());
+  $drupal8post = Drupal::service('recaptcha.drupal8post');
+  $recaptcha = new ReCaptcha($recaptcha_secret_key, $drupal8post);
 
   // Ensures the hostname matches. Required if "Domain Name Validation" is
   // disabled for credentials.
   if ($config->get('verify_hostname')) {
-    $recaptcha->setExpectedHostname($_SERVER['SERVER_NAME']);
+    $recaptcha->setExpectedHostname(\Drupal::request()->getHost());
   }
 
   $resp = $recaptcha->verify(
-    $_POST['g-recaptcha-response'],
+    $recaptcha_response,
     \Drupal::request()->getClientIp()
   );
 
@@ -189,12 +198,12 @@ function recaptcha_captcha_validation($solution, $response, $element, $form_stat
       'missing-input-response' => t('The response parameter is missing.'),
       'missing-input-secret' => t('The secret parameter is missing.'),
       'hostname-mismatch' => t('Expected hostname did not match.'),
-      'unknown-error' => t('Not a success, but no error codes received!'),
     ];
     $info_codes = [
       'challenge-timeout' => t('Challenge timeout.'),
       'score-threshold-not-met' => t('Score threshold not met.'),
       'timeout-or-duplicate' => t('The challenge response timed out or was already verified.'),
+      'unknown-error' => t('Not a success, but no error codes received!'),
     ];
     foreach ($resp->getErrorCodes() as $code) {
       if (isset($info_codes[$code])) {
@@ -219,5 +228,12 @@ function recaptcha_captcha_validation($solution, $response, $element, $form_stat
 function template_preprocess_recaptcha_widget_noscript(&$variables) {
   $variables['sitekey'] = $variables['widget']['sitekey'];
   $variables['language'] = $variables['widget']['language'];
-  $variables['url'] = Url::fromUri($variables['widget']['recaptcha_src_fallback'], ['query' => ['k' => $variables['widget']['sitekey'], 'hl' => $variables['widget']['language']], 'absolute' => TRUE])->toString();
+  $options = [
+    'query' => [
+      'k' => $variables['widget']['sitekey'],
+      'hl' => $variables['widget']['language'],
+    ],
+    'absolute' => TRUE,
+  ];
+  $variables['url'] = Url::fromUri($variables['widget']['recaptcha_src_fallback'], $options)->toString();
 }

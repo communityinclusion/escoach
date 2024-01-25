@@ -2,9 +2,9 @@
 
 namespace Drupal\geofield\Plugin\GeofieldProximitySource;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\geofield\Plugin\GeofieldProximitySourceBase;
-use Drupal\Component\Render\FormattableMarkup;
 
 /**
  * Defines 'Geofield Manual Origin' plugin.

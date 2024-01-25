@@ -15,9 +15,9 @@
   ],
   "support": {
     "issues": "https://www.drupal.org/project/issues/recaptcha",
-    "source": "https://git.drupal.org/project/recaptcha.git"
+    "source": "https://git.drupalcode.org/project/recaptcha.git"
   },
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "require": {
     "drupal/captcha": "^1.4 || ^2",
     "google/recaptcha": "^1.2"

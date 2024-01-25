@@ -2,13 +2,13 @@
 
 namespace Drupal\geofield\Plugin\Field\FieldType;
 
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Field\FieldItemBase;
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemBase;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\TypedData\DataDefinition;
 
 /**
  * Plugin implementation of the 'geofield' field type.
@@ -52,7 +52,7 @@ class GeofieldItem extends FieldItemBase {
       }
     }
     catch (PluginException $e) {
-      watchdog_exception("geofield_backend_manager", $e);
+      \Drupal::service('logger.factory')->get('geofield')->error($e->getMessage());
     }
     return [
       'columns' => [

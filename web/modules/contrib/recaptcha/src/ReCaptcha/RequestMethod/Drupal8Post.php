@@ -2,6 +2,7 @@
 
 namespace Drupal\recaptcha\ReCaptcha\RequestMethod;
 
+use GuzzleHttp\ClientInterface;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod;
 use ReCaptcha\RequestParameters;
@@ -10,6 +11,21 @@ use ReCaptcha\RequestParameters;
  * Sends POST requests to the reCAPTCHA service with Drupal 8 httpClient.
  */
 class Drupal8Post implements RequestMethod {
+
+
+  /**
+   * Guzzle\Client instance.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
+  protected $httpClient;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(ClientInterface $http_client) {
+    $this->httpClient = $http_client;
+  }
 
   /**
    * Submit the POST request with the specified parameters.
@@ -32,7 +48,7 @@ class Drupal8Post implements RequestMethod {
       'http_errors' => FALSE,
     ];
 
-    $response = \Drupal::httpClient()->post(ReCaptcha::SITE_VERIFY_URL, $options);
+    $response = $this->httpClient->post(ReCaptcha::SITE_VERIFY_URL, $options);
 
     if ($response->getStatusCode() == 200) {
       // The service request was successful.

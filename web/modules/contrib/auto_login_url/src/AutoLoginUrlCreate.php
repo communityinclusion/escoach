@@ -2,9 +2,11 @@
 
 namespace Drupal\auto_login_url;
 
-use Drupal\Core\Database\Connection;
 use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
 
 /**
  * Class AutoLoginUrlCreate.
@@ -21,10 +23,26 @@ class AutoLoginUrlCreate {
   protected $connection;
 
   /**
+   * The config factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * The Auto Login Url General service.
+   *
+   * @var \Drupal\auto_login_url\AutoLoginUrlGeneral
+   */
+  protected $autoLoginUrlGeneral;
+
+  /**
    * Constructor.
    */
-  public function __construct(Connection $connection) {
+  public function __construct(Connection $connection, ConfigFactoryInterface $config_factory, AutoLoginUrlGeneral $auto_login_url_general) {
     $this->connection = $connection;
+    $this->configFactory = $config_factory;
+    $this->autoLoginUrlGeneral = $auto_login_url_general;
   }
 
   /**
@@ -41,13 +59,13 @@ class AutoLoginUrlCreate {
    *   Auto Login URL.
    */
   public function create($uid, $destination, $absolute = FALSE) {
-    $config = \Drupal::config('auto_login_url.settings');
+    $config = $this->configFactory->get('auto_login_url.settings');
 
     // Get ALU secret.
-    $auto_login_url_secret = \Drupal::service('auto_login_url.general')->getSecret();
+    $auto_login_url_secret = $this->autoLoginUrlGeneral->getSecret();
 
     // Get user password.
-    $password = \Drupal::service('auto_login_url.general')->getUserHash($uid);
+    $password = $this->autoLoginUrlGeneral->getUserHash($uid);
 
     // Create key.
     $key = Settings::getHashSalt() . $auto_login_url_secret . $password;
@@ -90,14 +108,7 @@ class AutoLoginUrlCreate {
       ])
       ->execute();
 
-    // Check if link is absolute.
-    $absolute_path = '';
-    if ($absolute) {
-      global $base_url;
-      $absolute_path = $base_url . '/';
-    }
-
-    return $absolute_path . 'autologinurl/' . $uid . '/' . $hash;
+    return Url::fromRoute('auto_login_url.login', ['uid' => $uid, 'hash' => $hash], ['absolute' => $absolute])->toString();
   }
 
   /**

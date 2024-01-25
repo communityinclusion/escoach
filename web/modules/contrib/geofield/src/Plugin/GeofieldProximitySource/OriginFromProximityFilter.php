@@ -2,10 +2,11 @@
 
 namespace Drupal\geofield\Plugin\GeofieldProximitySource;
 
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelTrait;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\geofield\Plugin\GeofieldProximitySourceBase;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,6 +28,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class OriginFromProximityFilter extends GeofieldProximitySourceBase implements ContainerFactoryPluginInterface {
+
+  use LoggerChannelTrait;
 
   /**
    * The geofield proximity manager.
@@ -175,7 +178,7 @@ class OriginFromProximityFilter extends GeofieldProximitySourceBase implements C
         $origin = $source_plugin->getOrigin();
       }
       catch (\Exception $e) {
-        watchdog_exception('geofield', $e);
+        $this->getLogger('geofield')->error($e->getMessage());
       }
     }
     return $origin;

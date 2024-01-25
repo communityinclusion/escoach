@@ -6,8 +6,3 @@ configure: auto_login_url.settings
 dependencies:
   - drupal:system
   - drupal:user
-
-# Information added by Drupal.org packaging script on 2022-08-03
-version: '2.0.0-alpha2'
-project: 'auto_login_url'
-datestamp: 1659485240

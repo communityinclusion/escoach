@@ -2,13 +2,14 @@
 
 namespace Drupal\geofield\Plugin\views\argument;
 
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelTrait;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
 use Drupal\geofield\WktGenerator;
 use Drupal\views\Plugin\views\argument\Formula;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
-use Drupal\Core\Render\Markup;
 
 /**
  * Argument handler for geofield proximity.
@@ -21,6 +22,8 @@ use Drupal\Core\Render\Markup;
  * @ViewsArgument("geofield_proximity_argument")
  */
 class GeofieldProximityArgument extends Formula implements ContainerFactoryPluginInterface {
+
+  use LoggerChannelTrait;
 
   /**
    * The WktGenerator object.
@@ -80,7 +83,7 @@ class GeofieldProximityArgument extends Formula implements ContainerFactoryPlugi
         'value' => 'GEOFIELD_FEET',
       ],
       'nmi' => [
-        'label' => $this->T('Nautical MIles'),
+        'label' => $this->T('Nautical Miles'),
         'value' => 'GEOFIELD_NAUTICAL_MILES',
       ],
     ];
@@ -91,7 +94,7 @@ class GeofieldProximityArgument extends Formula implements ContainerFactoryPlugi
    * Get the markup list of the Unites.
    *
    * @return string
-   *   The the markup list of the Unites.
+   *   The markup list of the Unites.
    */
   protected function unitsListMarkup() {
     $markup = '';
@@ -181,7 +184,7 @@ class GeofieldProximityArgument extends Formula implements ContainerFactoryPlugi
       }
     }
     catch (\Exception $e) {
-      watchdog_exception('geofield', $e);
+      $this->getLogger('geofield')->error($e->getMessage());
     }
 
   }

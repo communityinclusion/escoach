@@ -3,10 +3,10 @@
 namespace Drupal\geofield\Plugin\migrate\process;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\geofield\WktGeneratorInterface;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
-use Drupal\geofield\WktGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

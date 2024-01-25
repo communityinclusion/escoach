@@ -3,11 +3,11 @@
 namespace Drupal\Tests\geofield\Functional;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\field\Functional\FieldTestBase;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Tests the Geofield widgets.

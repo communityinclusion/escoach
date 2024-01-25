@@ -1,7 +1,7 @@
 services:
   logger.channel.geofield:
     parent: logger.channel_base
-    arguments: [ 'geofield' ]
+    arguments: ['geofield']
 
   plugin.manager.geofield_backend:
     class: Drupal\geofield\Plugin\GeofieldBackendManager

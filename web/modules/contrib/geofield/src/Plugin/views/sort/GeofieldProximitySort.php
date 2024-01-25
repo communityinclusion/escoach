@@ -3,10 +3,11 @@
 namespace Drupal\geofield\Plugin\views\sort;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\views\Plugin\views\sort\SortPluginBase;
-use Drupal\geofield\Plugin\views\GeofieldProximityHandlerTrait;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
+use Drupal\geofield\Plugin\views\GeofieldProximityHandlerTrait;
+use Drupal\views\Plugin\views\sort\SortPluginBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Field handler to sort Geofields by proximity.
@@ -18,6 +19,7 @@ use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
 class GeofieldProximitySort extends SortPluginBase {
 
   use GeofieldProximityHandlerTrait;
+  use LoggerChannelTrait;
 
   /**
    * The geofield proximity manager.
@@ -110,7 +112,7 @@ class GeofieldProximitySort extends SortPluginBase {
       $this->sourcePlugin->buildOptionsForm($form['source_configuration'], $form_state, ['source_configuration']);
     }
     catch (\Exception $e) {
-      watchdog_exception('geofield', $e);
+      $this->getLogger('geofield')->error($e->getMessage());
     }
 
     parent::buildOptionsForm($form, $form_state);
@@ -125,7 +127,7 @@ class GeofieldProximitySort extends SortPluginBase {
       $this->sourcePlugin->validateOptionsForm($form['source_configuration'], $form_state, ['source_configuration']);
     }
     catch (\Exception $e) {
-      watchdog_exception('geofield', $e);
+      $this->getLogger('geofield')->error($e->getMessage());
       $form_state->setErrorByName($form['source'], $this->t("The Proximity Source couldn't be set due to: @error", [
         '@error' => $e,
       ]));

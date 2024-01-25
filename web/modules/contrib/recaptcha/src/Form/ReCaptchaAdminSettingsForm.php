@@ -4,7 +4,6 @@ namespace Drupal\recaptcha\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
 
 /**
  * Configure reCAPTCHA settings for this site.
@@ -39,7 +38,7 @@ class ReCaptchaAdminSettingsForm extends ConfigFormBase {
 
     $form['general']['recaptcha_site_key'] = [
       '#default_value' => $config->get('site_key'),
-      '#description' => $this->t('The site key given to you when you <a href=":url">register for reCAPTCHA</a>.', [':url' => 'https://www.google.com/recaptcha/admin']),
+      '#description' => $this->t('The site key given to you when you <a href=":url" target="_blank">register for reCAPTCHA</a>.', [':url' => 'https://www.google.com/recaptcha/admin']),
       '#maxlength' => 40,
       '#required' => TRUE,
       '#title' => $this->t('Site key'),
@@ -48,7 +47,7 @@ class ReCaptchaAdminSettingsForm extends ConfigFormBase {
 
     $form['general']['recaptcha_secret_key'] = [
       '#default_value' => $config->get('secret_key'),
-      '#description' => $this->t('The secret key given to you when you <a href=":url">register for reCAPTCHA</a>.', [':url' => 'https://www.google.com/recaptcha/admin']),
+      '#description' => $this->t('The secret key given to you when you <a href=":url" target="_blank">register for reCAPTCHA</a>.', [':url' => 'https://www.google.com/recaptcha/admin']),
       '#maxlength' => 40,
       '#required' => TRUE,
       '#title' => $this->t('Secret key'),

@@ -2,21 +2,24 @@
 
 namespace Drupal\geofield\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\geofield\Plugin\GeofieldBackendManager;
-use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\geofield\GeoPHP\GeoPHPInterface;
+use Drupal\geofield\Plugin\GeofieldBackendManager;
 use Drupal\geofield\WktGeneratorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Abstract class for Geofield widgets.
  */
 abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactoryPluginInterface {
+
+  use LoggerChannelTrait;
 
   /**
    * The Geofield Backend setup for the specific Field definition.
@@ -76,7 +79,7 @@ abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactory
       }
     }
     catch (PluginException $e) {
-      watchdog_exception("geofield base widget", $e);
+      $this->getLogger('geofield')->error($e->getMessage());
     }
 
     $this->geoPhpWrapper = $geophp_wrapper;
@@ -107,7 +110,6 @@ abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactory
     $element['#attached']['library'] = [
       'geofield/geofield_general',
     ];
-
     return ['value' => $element];
   }
 

@@ -1,0 +1,4 @@
+services:
+  recaptcha.drupal8post:
+    class: Drupal\recaptcha\ReCaptcha\RequestMethod\Drupal8Post
+    arguments: ['@http_client']

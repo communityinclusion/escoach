@@ -4,11 +4,12 @@ namespace Drupal\geofield\Plugin\views\filter;
 
 use Drupal\Core\Database\Query\Condition;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\views\Plugin\views\filter\NumericFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Field handler to filter Geofields by proximity.
@@ -18,6 +19,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ViewsFilter("geofield_proximity_filter")
  */
 class GeofieldProximityFilter extends NumericFilter {
+
+  use LoggerChannelTrait;
 
   /**
    * The Renderer service property.
@@ -247,7 +250,7 @@ class GeofieldProximityFilter extends NumericFilter {
       }
     }
     catch (\Exception $e) {
-      watchdog_exception('geofield', $e);
+      $this->getLogger('geofield')->error($e->getMessage());
     }
   }
 
@@ -314,7 +317,7 @@ class GeofieldProximityFilter extends NumericFilter {
       $this->sourcePlugin->buildOptionsForm($form['source_configuration'], $form_state, ['source_configuration']);
     }
     catch (\Exception $e) {
-      watchdog_exception('geofield', $e);
+      $this->getLogger('geofield')->error($e->getMessage());
     }
   }
 
@@ -327,7 +330,7 @@ class GeofieldProximityFilter extends NumericFilter {
       $this->sourcePlugin->validateOptionsForm($form['source_configuration'], $form_state, ['source_configuration']);
     }
     catch (\Exception $e) {
-      watchdog_exception('geofield', $e);
+      $this->getLogger('geofield')->error($e->getMessage());
       $form_state->setErrorByName($form['source'], $this->t("The Proximity Source couldn't be set due to: @error", [
         '@error' => $e,
       ]));
@@ -585,7 +588,7 @@ class GeofieldProximityFilter extends NumericFilter {
         }
       }
       catch (\Exception $e) {
-        watchdog_exception('geofield', $e);
+        $this->getLogger('geofield')->error($e->getMessage());
         $form_state->setErrorByName($form['value']['source_configuration'], $this->t("The Proximity Source couldn't be set due to: @error", [
           '@error' => $e,
         ]));
@@ -638,7 +641,7 @@ class GeofieldProximityFilter extends NumericFilter {
       ];
     }
     catch (\Exception $e) {
-      watchdog_exception('geofield', $e);
+      $this->getLogger('geofield')->error($e->getMessage());
       return NULL;
     }
   }
