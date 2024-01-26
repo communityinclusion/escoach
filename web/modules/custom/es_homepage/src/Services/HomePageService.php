@@ -576,10 +576,8 @@ class HomePageService {
     // $headers = ['Dashboard Url'];
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
-      if ($machine != self::AFTER_HIRE) {
-        $headers[] = 'Better than Last Month';
-        $headers[] = 'Better than Last All';
-      }
+      $headers[] = 'Better than Last Month';
+      $headers[] = 'Better than Last All';
     }
 
     foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
@@ -635,10 +633,8 @@ class HomePageService {
     $headers[] = 'State';
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $headers[] = $info['label'];
-      if ($machine != self::AFTER_HIRE) {
-        $headers[] = 'Better than Last Month';
-        $headers[] = 'Better than Last All';
-      }
+      $headers[] = 'Better than Last Month';
+      $headers[] = 'Better than Last All';
     }
 
     foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
@@ -721,10 +717,8 @@ class HomePageService {
     if (isset($activities['lastMonth']['Me'])) {
       foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
         $rec[] = $activities['lastMonth']['Me'][$machine]['formatted'];
-        if ($machine != self::AFTER_HIRE) {
-          $rec[] = $activities['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
-          $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
-        }
+        $rec[] = $activities['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+        $rec[] = $activities['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
       }
 
     }
@@ -732,10 +726,8 @@ class HomePageService {
     if (isset($practices['lastMonth']['Me'])) {
       foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
         $rec[] = $practices['lastMonth']['Me'][$machine]['formatted'];
-        if ($machine != self::AFTER_HIRE) {
-          $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
-          $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
-        }
+        $rec[] = $practices['lastMonth']['Me'][$machine]['betterMonth'] ? 'Yes' : 'No';
+        $rec[] = $practices['lastMonth']['Me'][$machine]['betterAll'] ? 'Yes' : 'No';
       }
     }
 
@@ -760,10 +752,8 @@ class HomePageService {
 
     foreach (keyActivitiesQuery::ACTIVITIES as $machine => $info) {
       $rec[] = $activities['lastMonth']['Provider'][$machine]['formatted'];
-      if ($machine != self::AFTER_HIRE) {
-        $rec[] = $activities['lastMonth']['Provider'][$machine]['betterMonth'] ? 'Yes' : 'No';
-        $rec[] = $activities['lastMonth']['Provider'][$machine]['betterAll'] ? 'Yes' : 'No';
-      }
+      $rec[] = $activities['lastMonth']['Provider'][$machine]['betterMonth'] ? 'Yes' : 'No';
+      $rec[] = $activities['lastMonth']['Provider'][$machine]['betterAll'] ? 'Yes' : 'No';
     }
 
     foreach (bestPracticesQuery::PRACTICES as $machine => $info) {
