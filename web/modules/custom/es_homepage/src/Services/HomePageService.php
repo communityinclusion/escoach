@@ -475,7 +475,7 @@ class HomePageService {
           }
 
           $last = $info[$machine]['avg'] * $activity['multiplier'];
-          $all = $data['prevMonth']['All'][$machine]['avg'] * $activity['multiplier'];
+          $all = $data['lastMonth']['All'][$machine]['avg'] * $activity['multiplier'];
           if ($last > $all) {
             $data['lastMonth'][$scope][$machine]['betterAll'] = 1;
           }
