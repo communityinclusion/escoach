@@ -763,7 +763,7 @@ class HomePageService {
     }
 
     $rec[] = round($activities['responseRate']['Provider']['responseRate'] * 100) ?? 0;
-    $rec[] = $activities['responseRate']['Provider']['totalSurveysSent'] ?? 0;
+    $rec[] = $activities['responseRate']['Provider']['respondents'] ?? 0;
 
     return $rec;
   }
