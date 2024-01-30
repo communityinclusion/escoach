@@ -475,7 +475,7 @@ class HomePageService {
           }
 
           $last = $info[$machine]['avg'] * $activity['multiplier'];
-          $all = $data['prevMonth']['All'][$machine]['avg'] * $activity['multiplier'];
+          $all = $data['lastMonth']['All'][$machine]['avg'] * $activity['multiplier'];
           if ($last > $all) {
             $data['lastMonth'][$scope][$machine]['betterAll'] = 1;
           }
@@ -763,7 +763,7 @@ class HomePageService {
     }
 
     $rec[] = round($activities['responseRate']['Provider']['responseRate'] * 100) ?? 0;
-    $rec[] = $activities['responseRate']['Provider']['totalSurveysSent'] ?? 0;
+    $rec[] = $activities['responseRate']['Provider']['respondents'] ?? 0;
 
     return $rec;
   }
