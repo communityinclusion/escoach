@@ -262,6 +262,19 @@ class HomePageService {
   }
 
   /**
+   * @param string $state
+   *
+   * @return int
+   */
+  public function getStateProviderCount(string $state, $year, $month) : int {
+    $query = new HomePageQuery($year, $month, '', '');
+    $query->condition('state', $state);
+    $query->addExpression('count(distinct(provider))', 'providerCount');
+    $result = $query->execute();
+    return $result[0]['providerCount'] ?? 0;
+  }
+
+  /**
    * @return void
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
