@@ -563,7 +563,7 @@ class TwilioCoachService
             {
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
-                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&customfield4={$your_state}&customfield5={$job_type}&customfield6={$autologinurl}&api_token={$api_key}&api_token_secret={$api_secret}";
+                $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&customfield4={$your_state}&customfield5={$job_type}" . ($autologinurl && $autologinurl != "" ? "&customfield6={$autologinurl}" : "") . "&api_token={$api_key}&api_token_secret={$api_secret}";
                 \Drupal::logger('surveycampaign')->notice("URL: " . $url);
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
