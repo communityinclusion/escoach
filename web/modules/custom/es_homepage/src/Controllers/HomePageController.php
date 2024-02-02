@@ -128,6 +128,17 @@ class HomePageController extends ControllerBase {
     return $response;
   }
 
+  private function getStateListMin($year, $month, $min = 3) : array {
+    $states = $this->homePageService->getStateList($year, $month);
+    $options = [];
+    foreach ($states as $state => $name) {
+      if ($this->homePageService->getStateProviderCount($state, $year, $month) > $min) {
+        $options[$state] = $name;
+      }
+    }
+    return $options;
+  }
+
   private function setup($which, $year, $month) {
     $libraries = ['es_homepage/charts'];
     $data = [];
@@ -157,7 +168,7 @@ class HomePageController extends ControllerBase {
     }
 
     if ($data['role'] == 'ANON') {
-      $data['stateList'] = $this->homePageService->getStateList($year, $month);
+      $data['stateList'] = $this->getStateListMin($year, $month, 3);
       $states = $data['stateList'] ?? [];
       $state = \Drupal::request()->get('state') ?? array_keys($states)[0] ?? '';
       $data['stateName'] = $state;
