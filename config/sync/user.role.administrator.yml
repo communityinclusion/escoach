@@ -36,6 +36,7 @@ dependencies:
     - file
     - filter
     - geofield_map
+    - help
     - image
     - imce
     - mailgun
@@ -80,6 +81,7 @@ permissions:
   - 'access devel information'
   - 'access entity usage statistics'
   - 'access files overview'
+  - 'access help pages'
   - 'access media overview'
   - 'access memcache statistics'
   - 'access panels in-place editing'
@@ -189,6 +191,7 @@ permissions:
   - 'change own username'
   - 'configure geofield_map'
   - 'create basic_page content'
+  - 'create footer block content'
   - 'create library_item content'
   - 'create media'
   - 'create paragraph library item'
@@ -204,6 +207,8 @@ permissions:
   - 'delete all revisions'
   - 'delete any basic_page content'
   - 'delete any file'
+  - 'delete any footer block content'
+  - 'delete any footer block content revisions'
   - 'delete any library_item content'
   - 'delete any media'
   - 'delete any survey_participants profile'

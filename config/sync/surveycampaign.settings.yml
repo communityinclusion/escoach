@@ -1,5 +1,5 @@
 interval: '300'
-defaultid: '5420562'
+defaultid: '7664184'
 defaultrandom: '0'
 defaulttime: '04:30'
 secondaryid: '6358399'
@@ -158,7 +158,7 @@ def_provider_name:
       target_id: 275
   -
     -
-      target_id: 277
+      target_id: 280
   -
     -
       target_id: 278
@@ -288,6 +288,12 @@ def_provider_name:
   -
     -
       target_id: 322
+  -
+    -
+      target_id: 369
+  -
+    -
+      target_id: 371
 def_provider_code:
   - '8899'
   - '9976'
@@ -356,6 +362,8 @@ def_provider_code:
   - '336195'
   - '464319'
   - '409460'
+  - '617626'
+  - '374519'
 alt_delay_period: '30'
 def_days_past_inactive: '21'
 comeback_text_body:

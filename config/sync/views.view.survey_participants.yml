@@ -12,6 +12,7 @@ dependencies:
     - field.storage.profile.field_survey_first_name
     - field.storage.profile.field_survey_last_name
     - user.role.survey_participant
+    - user.role.ta_admin
   module:
     - csv_serialization
     - datetime_range
@@ -892,6 +893,49 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        roles_target_id_1:
+          id: roles_target_id_1
+          table: user__roles
+          field: roles_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: user
+          entity_field: roles
+          plugin_id: user_roles
+          operator: not
+          value:
+            ta_admin: ta_admin
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
       filter_groups:
         operator: AND
         groups:

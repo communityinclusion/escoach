@@ -12,5 +12,5 @@ features:
   node_user_picture: false
 logo:
   path: 'public://es_coach_header_0.png'
-  url: ''
+  url: null
   use_default: false
