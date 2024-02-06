@@ -249,7 +249,7 @@ function surveycampaign_cron()
   }
   // closing screen management and results table population run just a few times in the very early AM-extended time 2/15
   $manageClosingBegin = date('H:i', strtotime('07:00'));
-  $manageClosingEnd = date('H:i', strtotime('11:30'));
+  $manageClosingEnd = date('H:i', strtotime('7:30'));
 
 
 
@@ -257,8 +257,8 @@ function surveycampaign_cron()
 
     $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid,$todaydate);
     //$manageclosing2 = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid2,$todaydate);
-  //  $saveResponses = \Drupal::service('surveycampaign.survey_responses')->load($surveyid);
-  //  $saveResponses2 = \Drupal::service('surveycampaign.survey_responses')->load($surveyid2);
+    $saveResponses = \Drupal::service('surveycampaign.survey_responses')->load($surveyid);
+    $saveResponses2 = \Drupal::service('surveycampaign.survey_responses')->load($surveyid2);
   }
 
   $accountSwitcher->switchBack();
