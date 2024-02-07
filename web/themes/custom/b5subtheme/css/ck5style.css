@@ -9031,8 +9031,8 @@
   .ck-content .page-user-register #edit-survey-participants-profiles-0-entity-field-partic-suspension-dates-0, .ck-content .page-user-register #edit-survey-participants-profiles-0-entity-field-set-surveys-to-inactive-wrapper {
     display: none; }
   .ck-content .flexImage {
-    width: 90%;
-    max-width: 500px;
+    width: 90% !important;
+    max-width: 500px !important;
     margin: 0 0 0 5%;
     display: block;
     height: 100%; }
