@@ -24,3 +24,9 @@
 
 # Ignore .env files as they are personal
 /.env
+
+#Ignore Sass Cache
+/web/themes/custom/b5subtheme/.sass-cache
+
+#Ignore ddev files
+/.ddev
