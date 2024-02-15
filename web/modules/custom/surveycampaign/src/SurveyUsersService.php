@@ -55,7 +55,7 @@ class SurveyUsersService
                         $providervalueregcode = $this->checkProviderRegCode($provider);
                         $regcode = $uservalueregcode;
                         $autologinurl = $profile->get('field_auto_login_url')->value ? $profile->get('field_auto_login_url')->value : '';
-                        if($uservalueregcode != $providervalueregcode) {
+                        if($uservalueregcode != $providervalueregcode && $providervalueregcode && $providervalueregcode != '') {
                           $profile->set('field_registration_code', array(
                               'value' => "$providervalueregcode"));
                           $profile->save();
