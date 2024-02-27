@@ -132,7 +132,7 @@ class HomePageController extends ControllerBase {
     $states = $this->homePageService->getStateList($year, $month);
     $options = [];
     foreach ($states as $state => $name) {
-      if ($this->homePageService->getStateProviderCount($state, $year, $month) > $min) {
+      if ($this->homePageService->getStateProviderCount($state, $year, $month) >= $min) {
         $options[$state] = $name;
       }
     }
