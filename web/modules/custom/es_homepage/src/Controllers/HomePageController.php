@@ -153,7 +153,7 @@ class HomePageController extends ControllerBase {
         $data['role'] = 'TA';
         $data['providerList'] = $this->homePageService->getProviderList();
         $libraries[] = 'es_homepage/providers';
-        $provider = \Drupal::request()->get('provider') ?? $data['providerList'][0];
+        $provider = \Drupal::request()->get('provider') ?? NULL;
         $this->homePageService->setCurrentProvider($provider);
         $data['provider'] = $provider;
       }

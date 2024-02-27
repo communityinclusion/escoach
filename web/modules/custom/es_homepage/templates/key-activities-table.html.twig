@@ -11,7 +11,7 @@
         <th>My Team</th>
       {% elseif data.role == 'Manager' %}
         <th>My Team</th>
-      {% elseif data.role == 'TA' %}
+      {% elseif data.role == 'TA' and data.provider %}
         <th>Provider</th>
       {% endif %}
       <th{{ colspan }}>All</th>
@@ -56,7 +56,7 @@
               <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
             {% endif %}
           </td>
-        {% elseif data.role == 'TA' %}
+        {% elseif data.role == 'TA' and data.provider %}
           <td>{{ data.lastMonth.Provider[machine].formatted }}
             {% if data.lastMonth.Provider[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
@@ -122,7 +122,7 @@
             <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
           {% endif %}
         </td>
-      {% elseif data.role == 'TA' %}
+      {% elseif data.role == 'TA' and data.provider %}
         {% set responseRate = data.responseRate.Provider.responseRate * 100 %}
         <td>{{ responseRate | number_format(1) }}%
           {% if data.responseRate.Provider.strong %}
@@ -165,7 +165,7 @@
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
           {% endif %}
         </td>
-      {% elseif data.role == 'TA' %}
+      {% elseif data.role == 'TA' and data.provider %}
         <td>{{ data.responseRate.Provider.respondents | number_format }}
           {% if data.responseRate.Provider.alert %}
             <span class="alertIcon" data-bs-toggle="tooltip" data-placement="top" data-bs-title="At least 3 respondents are required"></span>
