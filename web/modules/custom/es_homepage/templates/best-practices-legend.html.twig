@@ -46,6 +46,10 @@
         <strong>Response Rate</strong> = Valid responses divided by surveys received</li>
       <li>
         <strong># of Respondents </strong> = = # of employment consultants who completed surveys</li>
+      {% if data.role == 'ANON' %}
+        <li>
+          <strong>State</strong> = U.S. state with at least three employment programs participating</li>
+      {% endif %}
       <li>
         <strong>Note</strong> All data are estimates. Greater accuracy is achieved when all team members complete all their daily surveys, when at work</li>
     </ul>
