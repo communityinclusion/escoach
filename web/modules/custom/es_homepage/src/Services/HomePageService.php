@@ -1067,7 +1067,7 @@ class HomePageService {
    */
   private function buildBestPractices($year, $month, $state) {
     $results = [];
-    $bestPractices = new bestPracticesQuery($this->year, $this->month, $this->email, $this->provider);
+    $bestPractices = new bestPracticesQuery($year, $month, $this->email, $this->provider);
 
     if (!empty($this->email)) {
       $bestPractices->buildSums('Me');
