@@ -78,6 +78,7 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
 
 }
 
+
 function surveylogin_submit_handler($form, FormStateInterface $form_state) {
     $url = \Drupal\Core\Url::fromRoute('es_homepage.activities');
     $form_state->setRedirectUrl($url);
