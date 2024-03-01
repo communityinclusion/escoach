@@ -51,6 +51,9 @@ function surveycampaign_preprocess_page(&$variables) {
 }
 
 function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'user_login_form') {
+     $form['#submit'][] = 'surveylogin_submit_handler';
+  }
 
   if($form['#id'] == 'surveymessages-configuration-form' ) {
 
@@ -356,6 +359,14 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
 }
 
 
+
+/**
+ * Custom submit handler for login form.
+ */
+function surveylogin_submit_handler($form, FormStateInterface $form_state) {
+    $url = \Drupal\Core\Url::fromRoute('es_homepage.activities');
+    $form_state->setRedirectUrl($url);
+  }
 
 function _surveycampaign_profile_register_validate (&$form, $form_state) {
 
