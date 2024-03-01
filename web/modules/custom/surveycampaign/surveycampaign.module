@@ -83,6 +83,7 @@ function surveylogin_submit_handler($form, FormStateInterface $form_state) {
     $form_state->setRedirectUrl($url);
 }
 
+
 function _surveycampaign_profile_survey_participants_edit_submit(array $form, FormStateInterface $form_state){
   $activeswitch = $form_state->getValue( ['field_set_surveys_to_inactive',0,'value']);
   \Drupal::logger('surveycampaign')->notice("Active setting: " . $activeswitch);
