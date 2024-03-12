@@ -31,7 +31,12 @@
             {% endif %}
           </td>
         {% elseif data.role == 'Employment consultant' or data.role == 'Manager-consultant' %}
-          <td>{{ data.lastMonth.Me[machine].formatted }}
+          <td>
+            {% if data.responseRate.Me.responseRate == 0 %}
+              --
+            {% else %}
+            {{ data.lastMonth.Me[machine].formatted }}
+            {% endif %}
             {% if data.lastMonth.Me[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
@@ -39,7 +44,12 @@
               <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
             {% endif %}
           </td>
-          <td>{{ data.lastMonth.Provider[machine].formatted }}
+          <td>
+            {% if data.responseRate.Provider.responseRate == 0 %}
+              --
+            {% else %}
+            {{ data.lastMonth.Provider[machine].formatted }}
+            {% endif %}
             {% if data.lastMonth.Provider[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
@@ -48,7 +58,12 @@
             {% endif %}
           </td>
         {% elseif data.role == 'Manager' %}
-          <td>{{ data.lastMonth.Provider[machine].formatted }}
+          <td>
+            {% if data.responseRate.Provider.responseRate == 0 %}
+              --
+            {% else %}
+              {{ data.lastMonth.Provider[machine].formatted }}
+            {% endif %}
             {% if data.lastMonth.Provider[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
@@ -57,7 +72,12 @@
             {% endif %}
           </td>
         {% elseif data.role == 'TA' and data.provider %}
-          <td>{{ data.lastMonth.Provider[machine].formatted }}
+          <td>
+            {% if data.responseRate.Provider.responseRate == 0 %}
+              --
+            {% else %}
+              {{ data.lastMonth.Provider[machine].formatted }}
+            {% endif %}
             {% if data.lastMonth.Provider[machine].betterMonth %}
               <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
             {% endif %}
