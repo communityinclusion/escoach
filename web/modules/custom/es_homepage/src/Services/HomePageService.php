@@ -335,6 +335,18 @@ class HomePageService {
 
     $this->compareMonths($return);
 
+    $this->getResponseRates($return, $role, $state);
+    return $return;
+  }
+
+  /**
+   * @param array $return
+   * @param string $role
+   * @param string|NULL $state
+   *
+   * @return void
+   */
+  private function getResponseRates(array &$return, string $role, string $state = NULL) {
     $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider);
     $prevQuery = new ResponseRateQuery($this->previousYear, $this->previousMonth, $this->email, $this->provider);
     $allResults = $query->execute();
@@ -405,7 +417,6 @@ class HomePageService {
         $return['responseRate']['Provider']['betterAll'] = TRUE;
       }
     }
-    return $return;
   }
 
   /**
@@ -1127,6 +1138,7 @@ class HomePageService {
     $return['prevMonth'] = $this->processResults($prevMonthResults['records'][0], array_keys($prevMonthResults['activities']), $role);
 
     $this->compareMonths($return);
+    $this->getResponseRates($return, $role, $state);
 
     return $return;
 

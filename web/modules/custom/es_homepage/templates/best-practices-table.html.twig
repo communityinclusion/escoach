@@ -38,12 +38,12 @@
               --
             {% else %}
               {{ data.lastMonth.Me[machine].formatted }}
-            {% endif %}
-            {% if data.lastMonth.Me[machine].betterMonth %}
-              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
-            {% endif %}
-            {% if data.lastMonth.Me[machine].betterAll %}
-              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+              {% if data.lastMonth.Me[machine].betterMonth %}
+                <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+              {% endif %}
+              {% if data.lastMonth.Me[machine].betterAll %}
+                <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+              {% endif %}
             {% endif %}
           </td>
           <td>
@@ -51,12 +51,12 @@
               --
             {% else %}
               {{ data.lastMonth.Provider[machine].formatted }}
-            {% endif %}
-            {% if data.lastMonth.Provider[machine].betterMonth %}
-              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
-            {% endif %}
-            {% if data.lastMonth.Provider[machine].betterAll %}
-              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+              {% if data.lastMonth.Provider[machine].betterMonth %}
+                <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+              {% endif %}
+              {% if data.lastMonth.Provider[machine].betterAll %}
+                <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+              {% endif %}
             {% endif %}
           </td>
         {% elseif data.role == 'Manager' %}
@@ -65,12 +65,12 @@
               --
             {% else %}
               {{ data.lastMonth.Provider[machine].formatted }}
-            {% endif %}
-            {% if data.lastMonth.Provider[machine].betterMonth %}
-              <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
-            {% endif %}
-            {% if data.lastMonth.Provider[machine].betterAll %}
-              <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+              {% if data.lastMonth.Provider[machine].betterMonth %}
+                <span class="betterMonth" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than last month"></span>
+              {% endif %}
+              {% if data.lastMonth.Provider[machine].betterAll %}
+                <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
+              {% endif %}
             {% endif %}
           </td>
         {% elseif data.role == 'TA' and data.provider %}
