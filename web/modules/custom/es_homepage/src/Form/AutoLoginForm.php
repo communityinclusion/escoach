@@ -47,6 +47,8 @@ class AutoLoginForm extends FormBase {
       '#title' => 'Redirect URL',
       '#description' => $this->t('Use fully-qualified URLs. (e.g. https://escoach.com/dashboard)'),
       '#required' => FALSE,
+      '#maxlength' => 1000,
+      '#size' => 80,
       '#states' => [
         'visible' => [
           ':input[name="clear"]' => ['checked' => FALSE]
