@@ -26,7 +26,16 @@ class ResponseRateQuery extends HomePageQuery {
   }
 
   public function addMe() {
-    $this->query->condition('results.email', $this->email);
+    $tmpQuery = \Drupal::database()->select('surveycampaign_results', 'results');
+    $tmpQuery->addExpression('distinct(name)', 'fullname');
+    $tmpQuery->condition('email', $this->email);
+    $result = $tmpQuery->execute();
+    if ($result) {
+      $val = $result->fetch();
+      $this->query->condition('mailer.fullname', $val->fullname);
+    }
+
+
   }
 
   public function addProvider() {
