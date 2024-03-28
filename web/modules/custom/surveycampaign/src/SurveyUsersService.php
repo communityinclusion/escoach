@@ -82,7 +82,7 @@ class SurveyUsersService
 
       for ($i = 0; $i < $countnames; $i++) {
         $thiscode = !empty($provcodes) && $provcodes[$i] ? $provcodes[$i] : null;
-        $thisname = !empty($provnames) &&  $provnames[$i][0]['target_id'] ? \Drupal\taxonomy\Entity\Term::load($provnames[$i][0]['target_id'])->get('name')->value : null;
+        $thisname = !empty($provnames) &&  $provnames[$i][0]['target_id'] ? (\Drupal\taxonomy\Entity\Term::load($provnames[$i][0]['target_id']) ? \Drupal\taxonomy\Entity\Term::load($provnames[$i][0]['target_id'])->get('name')->value : 'provider missing' ): 'provider missing';
 
         if($thisname && $thisname == $providername) {
 
