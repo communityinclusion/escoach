@@ -6,7 +6,7 @@
       <th>Activities</th>
       {% if data.role == 'ANON' %}
         <th>State</th>
-      {% elseif data.role == 'Employment consultant' %}
+      {% elseif data.role == 'Employment consultant' or data.role == 'Manager-consultant' %}
         <th>Me</th>
         <th>My Team</th>
       {% elseif data.role == 'Manager' %}
@@ -32,7 +32,7 @@
               <span class="betterAll" data-bs-toggle="tooltip" data-placement="top" data-bs-title="Better than All"></span>
             {% endif %}
           </td>
-        {% elseif data.role == 'Employment consultant' %}
+        {% elseif data.role == 'Employment consultant' or data.role == 'Manager-consultant' %}
           <td>
             {% if data.responseRate.Me.responseRate == 0 %}
               --
