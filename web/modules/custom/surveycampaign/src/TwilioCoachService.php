@@ -85,7 +85,7 @@ class TwilioCoachService
             //print_r($output);
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
-            if(!$output) \Drupal::logger('surveycampaign alert')->notice('No Output from Alchemer: ');
+            // if(!$output)  \Drupal::logger('surveycampaign alert')->notice('No Output from Alchemer: ');
 
 
             foreach($output as $response)
@@ -564,7 +564,7 @@ class TwilioCoachService
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
                 $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&customfield4={$your_state}&customfield5={$job_type}" . ($autologinurl && $autologinurl != "" ? "&customfield6={$autologinurl}" : "") . "&api_token={$api_key}&api_token_secret={$api_secret}";
-                \Drupal::logger('surveycampaign')->notice("URL: " . $url);
+               // \Drupal::logger('surveycampaign')->notice("URL: " . $url);
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -580,7 +580,7 @@ class TwilioCoachService
                 if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
-                \Drupal::logger('surveycampaign')->notice("Name: " . $lastname . "Did not reply: " . $didnotreply . " Warning: " . $warning);
+                // \Drupal::logger('surveycampaign')->notice("Name: " . $lastname . "Did not reply: " . $didnotreply . " Warning: " . $warning);
 
                 if($didnotreply >= $cutoff && !$inactive) {
 
@@ -590,7 +590,7 @@ class TwilioCoachService
                 {
 
                     if (!is_bool($output)) {
-                        \Drupal::logger('surveycampaign')->notice("First warning sent to mailer");
+                        // \Drupal::logger('surveycampaign')->notice("First warning sent to mailer");
                         $todaylink = $output->invitelink;
                         $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
@@ -939,7 +939,7 @@ class TwilioCoachService
             $nowTime = date('H:i', strtotime($currentTime));
             $sendTime = date('H:i', strtotime('12:00'));
             if(($warningmode == '2' || $warningmode == '3') && $isprimary) {
-                \Drupal::logger('surveycampaign alert')->notice('Going to mail manager');
+               // \Drupal::logger('surveycampaign alert')->notice('Going to mail manager');
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
             //if(($warningmode == '1' || $warningmode == '3') && $isprimary && $nowTime <= $sendTime ) {

@@ -77,7 +77,7 @@ class SurveyUsersService
       $provcodes = $configuser->get('def_provider_code');
       $provnames = $configuser->get('def_provider_name');
       $countnames = is_array($provnames) ? count($provnames) : 0;
-        \Drupal::logger('surveycampaign alert')->notice(" Provname: " . $providername);
+        // \Drupal::logger('surveycampaign alert')->notice(" Provname: " . $providername);
 
 
       for ($i = 0; $i < $countnames; $i++) {
@@ -201,7 +201,7 @@ class SurveyUsersService
                 $profile->set('field_active_2_deactivated_3', array(
                     'value' => $setcancel));
                 $profile->save();
-                \Drupal::logger('surveycampaign')->notice("Vars: " . $useremail . "  " . $firstname . " " . $lastname);
+                // \Drupal::logger('surveycampaign')->notice("Vars: " . $useremail . "  " . $firstname . " " . $lastname);
                 return array($useremail,$firstname,$lastname);
 
             }
