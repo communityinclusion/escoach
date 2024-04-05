@@ -270,6 +270,7 @@ class HomePageService {
     $query = new HomePageQuery($year, $month, '', '');
     $query->condition('state', $state);
     $query->addExpression('count(distinct(provider))', 'providerCount');
+    $query->condition('regcode', 10000, '>=');
     $result = $query->execute();
     return $result[0]['providerCount'] ?? 0;
   }
