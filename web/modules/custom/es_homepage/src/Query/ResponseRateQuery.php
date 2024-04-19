@@ -21,9 +21,12 @@ class ResponseRateQuery extends HomePageQuery {
     $this->query->addJoin('LEFT', 'surveycampaign_results', 'results', 'mailer.contactid = results.contact_id');
     $this->setDateRange($year, $month, 'mailer.senddate');
     $this->query->condition('mailer.surveyid', 5420562);
-    $this->query->condition('results.regcode', 10000, '>=');
     $this->email = $email;
     $this->provider = $provider;
+  }
+
+  public function addMinRegCode($regCode = 10000) {
+    $this->query->condition('results.regcode', $regCode, '>=');
   }
 
   public function addMe() {
