@@ -8,16 +8,19 @@ class ResponseRateQuery extends HomePageQuery {
   protected $email;
   protected $provider;
 
-  public function __construct($year, $month, $email, $provider) {
+  public function __construct($year, $month, $email, $provider, $exclude = 0) {
 
     // Not calling parent::__construct because it uses suverycampaign_results as the base table
     $database = \Drupal::database();
     $this->query = $database->select(self::BASE_TABLE, 'mailer');
 
+    if ($exclude) {
+      $excludeStr = ' AND results.regcode >= 10000 ';
+    }
     $this->query->addExpression('count(*)', 'totalSurveysSent');
     $this->query->addExpression('count(distinct(email))', 'respondents');
     $this->query->addExpression('count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end)', 'netResponses');
-    $this->query->addExpression('(count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end))/count(*)', 'responseRate');
+    $this->query->addExpression("(count(case when mailer.Complete =1 $excludeStr then 1 end)- count(case when results.answer482 = 11760 $excludeStr then 1 end))/count(*)", 'responseRate');
     $this->query->addJoin('LEFT', 'surveycampaign_results', 'results', 'mailer.contactid = results.contact_id');
     $this->setDateRange($year, $month, 'mailer.senddate');
     $this->query->condition('mailer.surveyid', 5420562);

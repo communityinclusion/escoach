@@ -348,10 +348,9 @@ class HomePageService {
    * @return void
    */
   private function getResponseRates(array &$return, string $role, string $state = NULL) {
-    $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider);
-    $prevQuery = new ResponseRateQuery($this->previousYear, $this->previousMonth, $this->email, $this->provider);
-    $query->addMinRegCode();
-    $prevQuery->addMinRegCode();
+    $query = new ResponseRateQuery($this->year, $this->month, $this->email, $this->provider, 1);
+    $prevQuery = new ResponseRateQuery($this->previousYear, $this->previousMonth, $this->email, $this->provider, 1);
+
     $allResults = $query->execute();
     $return['responseRate']['All'] = $allResults[0];
     if ($allResults[0]['responseRate'] > self::MIN_RESPONSE_RATE) {
