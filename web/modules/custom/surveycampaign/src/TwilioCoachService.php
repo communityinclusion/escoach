@@ -38,7 +38,6 @@ class TwilioCoachService
         $datesubmitted = "&filter[field][0]=datesubmitted&filter[operator][0]=>=&filter[value][0]=$gizmodate+01:00:00&resultsperpage=150";//Submit date greater than today at 1:00 AM
         $loginslug = "api_token={$api_key}&api_token_secret={$api_secret}";
 
-        //$k = array_rand($array);
         //$v = $array[$k];
         $senddays = $type == 1 ? $config->get('def_send_days') : $config->get('alt_send_days');
         $sendtoday = false;
