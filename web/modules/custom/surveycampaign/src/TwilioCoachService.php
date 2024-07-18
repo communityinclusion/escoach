@@ -17,7 +17,7 @@ class TwilioCoachService
     public function load($surveyid,$type = 1,$day = 0,$fixdate = null) {
 
         $user = 'oliver.lyons@umb.edu'; //Email address used to log in
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
         $onetime = $type == '2'  && $config->get('alt_repeat') == '0' ? true : false;
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
@@ -25,7 +25,7 @@ class TwilioCoachService
         //Else use the default heading and text for the final screen, from the lib settings page defaults.
         // call the manage closing screen function (if today's date/default to do the work of changing things in SG
         $defaultenable = $type == 1 ? $config->get('defaultenable') : $config->get('secondenable');
-        require $_SERVER['SERVER_ADDR'] == '162.243.15.189' || $_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
+        require $_SERVER['SERVER_ADDR'] == '162.243.15.189' || $_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
         $survey = '5500151';//Survey to pull from
         $todaydate = date("Y-m-d");
         $tomorrowdate = new DateTime("$todaydate");
@@ -38,7 +38,6 @@ class TwilioCoachService
         $datesubmitted = "&filter[field][0]=datesubmitted&filter[operator][0]=>=&filter[value][0]=$gizmodate+01:00:00&resultsperpage=150";//Submit date greater than today at 1:00 AM
         $loginslug = "api_token={$api_key}&api_token_secret={$api_secret}";
 
-        //$k = array_rand($array);
         //$v = $array[$k];
         $senddays = $type == 1 ? $config->get('def_send_days') : $config->get('alt_send_days');
         $sendtoday = false;
@@ -85,7 +84,7 @@ class TwilioCoachService
             //print_r($output);
             //The standard return from the API is JSON, decode to php.
             $output= json_decode($output);
-            if(!$output) \Drupal::logger('surveycampaign alert')->notice('No Output from Alchemer: ');
+            // if(!$output)  \Drupal::logger('surveycampaign alert')->notice('No Output from Alchemer: ');
 
 
             foreach($output as $response)
@@ -122,7 +121,7 @@ class TwilioCoachService
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
         $finalpageid = $surveytype == 'default' ?  $libconfig->get('sg_clos_page_id') :  $libconfig->get('alt_sg_clos_page_id');
         $finalquestionid = $surveytype == 'default' ? $libconfig->get('sg_clos_ques_id') : $libconfig->get('alt_sg_clos_ques_id');
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $entity = \Drupal::entityTypeManager()->getStorage('node');
         $query = $entity->getQuery();
 
@@ -231,7 +230,7 @@ class TwilioCoachService
         $onetime = false;
         $onetime = !$isprimary && $config->get('alt_repeat') === '0' ? true : false;
         //read mailer table
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
         $database = \Drupal::database();
         $query =  $database->select('surveycampaign_mailer','sm')
@@ -484,7 +483,7 @@ class TwilioCoachService
                 $bodytext = $firsttextbody;
                 break;
         }
-       include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+       include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
 
       // A Twilio number you own with SMS capabilities
       $twilio_number = "+16172497169";
@@ -564,7 +563,7 @@ class TwilioCoachService
 
                 //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
                 $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&customfield4={$your_state}&customfield5={$job_type}" . ($autologinurl && $autologinurl != "" ? "&customfield6={$autologinurl}" : "") . "&api_token={$api_key}&api_token_secret={$api_secret}";
-                // \Drupal::logger('surveycampaign')->notice("URL: " . $url);
+               // \Drupal::logger('surveycampaign')->notice("URL: " . $url);
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -580,7 +579,7 @@ class TwilioCoachService
                 if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
-               // \Drupal::logger('surveycampaign')->notice("Name: " . $lastname . "Did not reply: " . $didnotreply . " Warning: " . $warning);
+                // \Drupal::logger('surveycampaign')->notice("Name: " . $lastname . "Did not reply: " . $didnotreply . " Warning: " . $warning);
 
                 if($didnotreply >= $cutoff && !$inactive) {
 
@@ -590,7 +589,7 @@ class TwilioCoachService
                 {
 
                     if (!is_bool($output)) {
-                      //  \Drupal::logger('surveycampaign')->notice("First warning sent to mailer");
+                        // \Drupal::logger('surveycampaign')->notice("First warning sent to mailer");
                         $todaylink = $output->invitelink;
                         $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
@@ -652,7 +651,7 @@ class TwilioCoachService
 
     }
     function updateCampaignTime($surveyid,$pastdate,$newdate,$day) {
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
         $gizmodate = new DateTime("$todaydate");
         $gizmodate->modify("+ $day day");
@@ -939,7 +938,7 @@ class TwilioCoachService
             $nowTime = date('H:i', strtotime($currentTime));
             $sendTime = date('H:i', strtotime('12:00'));
             if(($warningmode == '2' || $warningmode == '3') && $isprimary) {
-                \Drupal::logger('surveycampaign alert')->notice('Going to mail manager');
+               // \Drupal::logger('surveycampaign alert')->notice('Going to mail manager');
                 $result = $mailManager->mail($module, $key, $to, $langcode, $params, $siteemail, $send);
             }
             //if(($warningmode == '1' || $warningmode == '3') && $isprimary && $nowTime <= $sendTime ) {
