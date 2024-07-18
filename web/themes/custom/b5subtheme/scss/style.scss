@@ -102,3 +102,148 @@
 }
 .form-item-field-auto-login-url-0-value { display: none;}
 .toolbar-icon-10 .form-item-field-auto-login-url-0-value { display: block;}
+
+
+
+/*--- Home and About page styles --*/
+
+section {
+  padding: 60px 0;
+  overflow: hidden;
+}
+
+
+.section-title {
+  padding-bottom: 40px;
+}
+
+.section-title h2 {
+font-size: 24px;
+  font-weight: 500;
+  padding: 0;
+  line-height: 1px;
+  margin: 0 0 5px 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #aaaaaa;
+
+}
+
+
+
+
+.testimonial-container {
+    text-align: center;
+    padding-bottom: 40px;
+    height:100%;
+}
+
+.testimonial-card {
+    background-color: #fff;
+    padding: 30px;
+    text-align: center;
+    font-style: italic;
+    position: relative;
+    border-radius: 5px;
+      height:100%;
+}
+
+
+.testimonial-card2 {
+    background-color: #f4f4f4;
+    padding: 30px;
+    text-align: center;
+    font-style: italic;
+    position: relative;
+    border-radius: 5px;
+      height:100%;
+}
+
+
+.testimonial-card2::after {
+    background-color: inherit;
+    bottom: -7px;
+    content: "";
+    display: block;
+    height: 14px;
+    left: 50%;
+    margin-left: -7px;
+    position: absolute;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    width: 14px;
+}
+.testimonial-card p {
+    font-size: 18px;
+    line-height: 36px;
+    margin-bottom: 16px;
+}
+
+
+.color-blue {background-color:#0177ae; width:24px;height:24px;display: inline-block}
+.color-white {background-color:#fff; width:24px;height:24px;display: inline-block}
+.color-green {background-color:#5c9731; width:24px;height:24px;display: inline-block}
+
+
+.text-success {color:#5c9731!important}
+
+
+.about .icon-boxes h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0177ae;
+  margin-bottom: 15px;
+}
+
+.about .icon-box {
+  margin-top: 40px;
+}
+
+.about .icon-box .icon {
+  float: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid #0177ae;
+  border-radius: 50px;
+  transition: 0.5s;
+}
+
+.about .icon-box .icon i {
+  color: #0177ae;
+  font-size: 32px;
+}
+
+.about .icon-box:hover .icon {
+  background: #0177ae;
+  border-color: #0177ae;
+}
+
+.about .icon-box:hover .icon i {
+  color: #fff;
+}
+
+.about .icon-box .title {
+  margin-left: 85px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.about .icon-box .title a {
+  color: #343a40;
+  transition: 0.3s;
+}
+
+.about .icon-box .title a:hover {
+  color: #0177ae;
+}
+
+.about .icon-box .description {
+  margin-left: 85px;
+  line-height: 24px;
+  font-size: 14px;
+}
+
