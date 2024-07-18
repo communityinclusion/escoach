@@ -77,6 +77,14 @@ function surveycampaign_form_alter(&$form, FormStateInterface $form_state, $form
 
 
 }
+
+
+function surveylogin_submit_handler($form, FormStateInterface $form_state) {
+    $url = \Drupal\Core\Url::fromRoute('es_homepage.activities');
+    $form_state->setRedirectUrl($url);
+}
+
+
 function _surveycampaign_profile_survey_participants_edit_submit(array $form, FormStateInterface $form_state){
   $activeswitch = $form_state->getValue( ['field_set_surveys_to_inactive',0,'value']);
   \Drupal::logger('surveycampaign')->notice("Active setting: " . $activeswitch);
@@ -252,7 +260,7 @@ function surveycampaign_cron()
   }
   // closing screen management and results table population run just a few times in the very early AM-extended time 2/15
   $manageClosingBegin = date('H:i', strtotime('07:00'));
-  $manageClosingEnd = date('H:i', strtotime('7:30'));
+  $manageClosingEnd = date('H:i', strtotime('7:45'));
 
 
 
@@ -260,8 +268,8 @@ function surveycampaign_cron()
 
     $manageclosing = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid,$todaydate);
     //$manageclosing2 = \Drupal::service('surveycampaign.twilio_coach')->manageClosingScreen($surveyid2,$todaydate);
-  //  $saveResponses = \Drupal::service('surveycampaign.survey_responses')->load($surveyid);
-  //  $saveResponses2 = \Drupal::service('surveycampaign.survey_responses')->load($surveyid2);
+    $saveResponses = \Drupal::service('surveycampaign.survey_responses')->load($surveyid);
+    $saveResponses2 = \Drupal::service('surveycampaign.survey_responses')->load($surveyid2);
   }
 
   $accountSwitcher->switchBack();
@@ -359,14 +367,6 @@ function surveycampaign_entity_insert(Drupal\Core\Entity\EntityInterface $entity
 }
 
 
-
-/**
- * Custom submit handler for login form.
- */
-function surveylogin_submit_handler($form, FormStateInterface $form_state) {
-    $url = \Drupal\Core\Url::fromRoute('es_homepage.activities');
-    $form_state->setRedirectUrl($url);
-  }
 
 function _surveycampaign_profile_register_validate (&$form, $form_state) {
 
