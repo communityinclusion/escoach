@@ -251,17 +251,18 @@ function surveycampaign_cron()
   $checkTime = date('H:i', strtotime($checkTime));
   $runTasksBegin = date('H:i', strtotime('07:00'));
   $runTasksEnd = date('H:i', strtotime('20:00'));
+  $nowTime = date('H:i');
+  $nowTime = date('H:i', strtotime($nowTime));
   if (($checkTime >= $runTasksBegin) && ($checkTime <= $runTasksEnd)){
       $send = $surveyid ? \Drupal::service('surveycampaign.twilio_coach')->load($surveyid,1,0) : null;
       $send2 = $surveyid2 ? \Drupal::service('surveycampaign.twilio_coach')->load($surveyid2,2,0) : null;
       $sendtext2 = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid2,$campaignid2);
       $sendtext = \Drupal::service('surveycampaign.twilio_coach')->textSchedule($surveyid,$campaignid);
-    $nowTime = date('H:i');
-    $nowTime = date('H:i', strtotime($nowTime));
+    
   }
   // closing screen management and results table population run just a few times in the very early AM-extended time 2/15
-  $manageClosingBegin = date('H:i', strtotime('07:00'));
-  $manageClosingEnd = date('H:i', strtotime('7:45'));
+  $manageClosingBegin = date('H:i', strtotime('06:00'));
+  $manageClosingEnd = date('H:i', strtotime('6:45'));
 
 
 
