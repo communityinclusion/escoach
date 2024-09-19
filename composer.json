@@ -35,7 +35,7 @@
         "drupal/core-recommended": "^10.1.6",
         "drupal/csv_importer": "1.x-dev",
         "drupal/csv_serialization": "^4.0",
-        "drupal/ctools": "^3.7",
+        "drupal/ctools": "^3.15",
         "drupal/devel": "^5.0",
         "drupal/email_registration": "^1.1",
         "drupal/entity_browser": "^2.3",
