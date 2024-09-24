@@ -247,3 +247,40 @@ font-size: 24px;
   font-size: 14px;
 }
 
+/* Homepage */
+
+
+ .paragraph--type--section{
+   margin:30px 0;
+   border-bottom:1px solid #333;
+}
+
+.paragraph--type--section h2 .field--name-bp-header {
+   
+  font-weight: 700;
+  padding:  10px 0;
+  margin: 0 0 5px 0;
+  letter-spacing: 2px;
+ text-transform: uppercase;
+  color: #0177ae;
+  margin-left:4px;
+}
+
+.paragraph--type--section h2 .field--name-bp-header:before {
+  content:url(https://rp-escoach.communityinclusion.org/sites/default/files/escoach-before-header.svg);
+margin-right:4px;}
+
+
+
+.paragraph--id--93  .paragraph__column  
+.paragraph--type--bp-columns {
+  outline:#000 solid 1px;
+  background-color:#003366;
+  color:#fff;
+   margin:5px;
+  margin:4px;
+  padding:5px;
+  }
+
+.paragraph--id--93  .paragraph__column  
+.paragraph--type--bp-columns p {padding:5px; text-align:center}
