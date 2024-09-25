@@ -252,18 +252,20 @@ font-size: 24px;
 
  .paragraph--type--section{
    margin:30px 0;
-   border-bottom:1px solid #333;
 }
+.paragraph--id--81, .paragraph--id--124 {background-color:#f8f9fa}
+
 
 .paragraph--type--section h2 .field--name-bp-header {
    
   font-weight: 700;
   padding:  10px 0;
-  margin: 0 0 5px 0;
+  margin: 0 0 25px 0;
   letter-spacing: 2px;
  text-transform: uppercase;
   color: #0177ae;
   margin-left:4px;
+border-bottom: 1px solid #eee;
 }
 
 .paragraph--type--section h2 .field--name-bp-header:before {
@@ -273,7 +275,6 @@ margin-right:4px;}
 
 
 .paragraph--id--93  .paragraph__column .paragraph--type--bp-columns {
-  outline:#000 solid 1px;
   background-color:#003366;
   color:#fff;
    margin:5px;
@@ -282,3 +283,6 @@ margin-right:4px;}
   }
 
 .paragraph--id--93  .paragraph__column .paragraph--type--bp-columns p {padding:5px; text-align:center}
+
+.paragraph--type--section.paragraph--id--81, .paragraph--type--section.paragraph--id--124 {background-color:#f8f9fa}
+
