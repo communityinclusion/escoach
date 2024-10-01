@@ -14,6 +14,8 @@ class ResponseRateQuery extends HomePageQuery {
     $database = \Drupal::database();
     $this->query = $database->select(self::BASE_TABLE, 'mailer');
 
+    $excludeStr = '';
+
     if ($exclude) {
       $excludeStr = ' AND results.regcode >= 10000 ';
     }
@@ -22,6 +24,7 @@ class ResponseRateQuery extends HomePageQuery {
     $this->query->addExpression('count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end)', 'netResponses');
     $this->query->addExpression("(count(case when mailer.Complete =1 $excludeStr then 1 end)- count(case when results.answer482 = 11760 $excludeStr then 1 end))/count(*)", 'responseRate');
     $this->query->addJoin('LEFT', 'surveycampaign_results', 'results', 'mailer.contactid = results.contact_id');
+    $this->query->addJoin('LEFT', 'provider_state_map', 'map', 'mailer.provider = map.provider');
     $this->setDateRange($year, $month, 'mailer.senddate');
     $this->query->condition('mailer.surveyid', 5420562);
     $this->email = $email;
@@ -50,6 +53,6 @@ class ResponseRateQuery extends HomePageQuery {
   }
 
   public function addState($state) {
-    $this->query->condition('results.state', $state);
+    $this->query->condition('map.state', $state);
   }
 }
