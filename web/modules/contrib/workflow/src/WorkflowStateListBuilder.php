@@ -2,6 +2,7 @@
 
 namespace Drupal\workflow;
 
+use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Config\Entity\DraggableListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -27,7 +28,6 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     }
 
     $wid = $workflow->id();
-    /** @var \Drupal\workflow\Entity\WorkflowState[] $entities */
     $entities = parent::load();
     foreach ($entities as $key => $entity) {
       if ($entity->getWorkflowId() != $wid) {
@@ -50,11 +50,11 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
    */
   public function buildHeader() {
     // The column 'weight' is added by parent in the draggable EntityList.
-    //  $header['weight'] = $this->t('Weight');
+    // $header['weight'] = $this->t('Weight');
     // Some columns are not welcome in the list.
-    //  $header['module'] = $this->t('Module');
-    //  $header['wid'] = $this->t('Workflow');
-    //  $header['sysid'] = $this->t('Sysid');
+    // $header['module'] = $this->t('Module');
+    // $header['wid'] = $this->t('Workflow');
+    // $header['sysid'] = $this->t('Sysid');
     // Add separate empty column for Drag handle for UX reasons.
     $header['drag_handle'] = '';
     // Column 'label' is manipulated in parent::buildForm(). Use 'label_new'.
@@ -103,10 +103,10 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
      *  Build the Row.
      */
     // The column 'weight' is added by parent in the draggable EntityList.
-    //  $row['weight'] = $state->weight;
+    // $row['weight'] = $state->weight;
     // Some columns are not welcome in the list.
-    //  $row['module'] = $state->getModule();
-    //  $row['wid'] = $state->getWorkflow();
+    // $row['module'] = $state->getModule();
+    // $row['wid'] = $state->getWorkflow();
 
     // Add separate empty column for Drag handle for UX reasons.
     // Drag handle can be invisible at the end of this function.
@@ -117,7 +117,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     $row['label_new'] = [
       '#markup' => $label,
       '#type' => 'textfield',
-      '#size' => 30,
+      '#size' => 60,
       '#maxlength' => 255,
       '#default_value' => $label,
       '#title' => NULL, // This hides the red 'required' asterisk.
@@ -127,23 +127,26 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     $row['id'] = [
       '#type' => 'machine_name',
       '#title' => NULL, // This hides the red 'required' asterisk.
-      '#size' => 30,
-      '#description' => NULL,
       '#disabled' => TRUE,
+      '#maxlength' => ConfigEntityStorage::MAX_ID_LENGTH,
+      '#size' => ConfigEntityStorage::MAX_ID_LENGTH,
       '#default_value' => $state->id(),
-      // N.B.: Keep machine_name in WorkflowState and ~ListBuilder aligned.
+      // N.B. Keep machine_name aligned in WorkflowState and ~ListBuilder.
       '#required' => FALSE,
+      '#description' => NULL,
       // @todo D8: enable machine_name as interactive WorkflowState element.
       '#machine_name' => [
         // Add local helper function 'exists' at the bottom of this class.
         'exists' => [$this, 'exists'],
         // 'source' => ['label_new'],
         'source' => ['states', $state->id(), 'label_new'],
+        // Add '()' characters from exclusion list since creation state has it.
         // 'replace_pattern' =>'([^a-z0-9_]+)|(^custom$)',
-      // Add '()' characters from exclusion list since creation state has it.
         'replace_pattern' => '[^a-z0-9_()]+',
-      // Add '()' characters from exclusion list since creation state has it.
-        'error' => $this->t('The machine-readable name must be unique, and can only contain lowercase letters, numbers, and underscores.'),
+        'error' => $this->t(
+          'The machine-readable name must be unique, and can only contain
+          lowercase letters, numbers, and underscores.'
+        ),
       ],
     ];
     $row['sysid'] = [
@@ -183,6 +186,18 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
 
   /**
    * {@inheritdoc}
+   *
+   * Override parent, avoiding error in EntityBase::toUrl():
+   * "The entity cannot have a URI as it does not have an ID"
+   */
+  public function buildOperations(EntityInterface $entity) {
+    $is_new = $entity->isNew();
+    $build = $is_new ? [] : parent::buildOperations($entity);
+    return $build;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
@@ -205,9 +220,9 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
 
     $form['entities']['#prefix'] = '<div id="states_table_wrapper">';
     $form['entities']['#suffix'] = '</div>';
-    // Create a placeholder WorkflowState (It must NOT be saved to DB). Add it to the item list.
-    if ($form_state->getTriggeringElement() && $form_state->getTriggeringElement()['#name'] === 'add_state') {
-      $sid = '';
+    // Add an empty WorkflowState (It must NOT be saved to DB) to the list.
+    if ($form_state->getTriggeringElement()['#name'] ?? '' === 'add_state') {
+      $sid = NULL;
       $placeholder = $workflow->createState($sid, FALSE);
       $placeholder->set('label', '');
       $this->entities['placeholder'] = $placeholder;
@@ -260,7 +275,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     // @todo D8: enable WorkflowState machine_name as interactive element.
     foreach ($form_state->getValue($this->entitiesKey) as $sid => $value) {
       /** @var \Drupal\workflow\Entity\WorkflowState $state */
-      $state = isset($this->entities[$sid]) ? $this->entities[$sid] : NULL;
+      $state = $this->entities[$sid] ?? NULL;
 
       // State is de-activated (reassigning current content).
       if ($state && $state->isActive() && !$value['status']) {
@@ -277,16 +292,23 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
 
   /**
    * {@inheritdoc}
-   *
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     if (!$workflow = workflow_url_get_workflow()) {
       return [];
     }
 
-    // The default min_weight is -10. Work with it.
-    $creation_weight = -11;
-    $max_weight = -9;
+    $creation_weight = -1000;
+    static $max_weight = -999;
+
+    if ($form_state->getTriggeringElement()['#name'] === 'add_state') {
+      // Unset previous input in placeholder and rebuild the form.
+      $input = $form_state->getUserInput();
+      unset($input['entities']['placeholder']['label_new']);
+      $form_state->setUserInput($input);
+      $form_state->setRebuild();
+      return;
+    }
 
     // The WorkflowState entities are always saved.
     foreach ($form_state->getValue($this->entitiesKey) as $sid => $value) {
@@ -300,7 +322,6 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
 
       /** @var \Drupal\workflow\Entity\WorkflowState $state */
       $state = $this->entities[$sid];
-
       if ($state && $state->isActive() && !$value['status'] && $sid) {
         // State is deactivated, reassigning current content.
         $new_sid = $value['reassign'];
@@ -338,16 +359,14 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
         $this->messenger()->addStatus($message);
       }
 
+      $max_weight = max($max_weight, $state->get($this->weightKey));
       $weight = $value['weight'];
       if ($value['sysid'] == WORKFLOW_CREATION_STATE) {
         // Assure Creation state is first in line.
         $weight = $creation_weight;
       }
-      elseif ($sid === 'placeholder') {
-        // Add a new State.
-        $state->set('id', $value['id']);
-        // Set a proper weight to the new state, adding as last.
-        $max_weight = max($max_weight, $state->get($this->weightKey));
+      elseif ($state->isNew()) {
+        // Set proper weight to the new state, adding as last.
         $weight = $max_weight + 1;
       }
       $state->set($this->weightKey, $weight);
@@ -363,14 +382,6 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
       }
     }
 
-    if ($form_state->getTriggeringElement()['#name'] === 'add_state') {
-      // Unset previous input in placeholder and rebuild the form.
-      $input = $form_state->getUserInput();
-      unset($input['entities']['placeholder']['label_new']);
-      $form_state->setUserInput($input);
-      $form_state->setRebuild();
-    }
-
     return $this->messenger()->addStatus($this->t('The Workflow states have been updated.'));
   }
 
@@ -378,7 +389,9 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
    * Button 'Add State' callback.
    *
    * @param array $form
+   *   The form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    *
    * @return array
    */
@@ -392,10 +405,14 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
    * Function is registered in 'machine_name' form element.
    *
    * @param string $name
+   *   The machine name.
    * @param array $element
+   *   The element.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    *
    * @return bool
+   *   TRUE if the machine name already exists, else FALSE.
    */
   public function exists($name, array $element, FormStateInterface $form_state) {
     $state_names = [];

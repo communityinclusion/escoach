@@ -3,9 +3,13 @@
 namespace Drupal\rules\Plugin\Condition;
 
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\path_alias\AliasManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\path_alias\AliasManagerInterface;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\LanguageOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -33,6 +37,26 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_path_has_alias",
+  label: new TranslatableMarkup("Path has alias"),
+  category: new TranslatableMarkup("Path"),
+  context_definitions: [
+    "path" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Path"),
+      description: new TranslatableMarkup("Specifies the existing path you wish to check. For example, '/node/28' or '/forum/1'.")
+    ),
+    "language" => new ContextDefinition(
+      data_type: "language",
+      label: new TranslatableMarkup("Language"),
+      description: new TranslatableMarkup("If specified, the language for which the URL alias applies."),
+      options_provider: LanguageOptions::class,
+      default_value: NULL,
+      required: FALSE
+    ),
+  ]
+)]
 class PathHasAlias extends RulesConditionBase implements ContainerFactoryPluginInterface {
 
   /**

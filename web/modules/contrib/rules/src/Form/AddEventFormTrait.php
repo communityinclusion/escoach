@@ -6,6 +6,8 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Core\RulesConfigurableEventHandlerInterface;
 
+// cspell:ignore notselected
+
 /**
  * Trait for adding an event.
  *

@@ -2,7 +2,11 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\ComparisonOperatorTextOptions;
 
 /**
  * Provides a 'Text comparison' condition.
@@ -32,6 +36,33 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_text_comparison",
+  label: new TranslatableMarkup("Text comparison"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "text" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Text"),
+      description: new TranslatableMarkup("Specifies the text data to evaluate."),
+      assignment_restriction: "selector"
+    ),
+    "operator" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Operator"),
+      description: new TranslatableMarkup("The comparison operator. One of 'contains', 'starts', 'ends', or 'regex'. Defaults to 'contains'."),
+      options_provider: ComparisonOperatorTextOptions::class,
+      assignment_restriction: "input",
+      default_value: "contains",
+      required: FALSE
+    ),
+    "match" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Matching text"),
+      description: new TranslatableMarkup("A string (or pattern in the case of regex) to search for in the given text data.")
+    ),
+  ]
+)]
 class TextComparison extends RulesConditionBase {
 
   /**

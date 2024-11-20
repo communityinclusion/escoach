@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
@@ -34,7 +36,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Add user role', $this->action->summary());
   }
 
@@ -43,7 +45,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testAddOneRoleNoSave() {
+  public function testAddOneRoleNoSave(): void {
     // Set-up a mock user.
     $account = $this->prophesizeEntity(UserInterface::class);
 
@@ -71,7 +73,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testAddThreeRoles() {
+  public function testAddThreeRoles(): void {
     // Set-up a mock user.
     $account = $this->prophesizeEntity(UserInterface::class);
     // Mock hasRole.
@@ -110,7 +112,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testAddExistingRole() {
+  public function testAddExistingRole(): void {
     // Set-up a mock user with role 'administrator'.
     $account = $this->prophesizeEntity(UserInterface::class);
     $account->hasRole('administrator')->willReturn(TRUE);
@@ -136,7 +138,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testAddExistingAndNonexistentRole() {
+  public function testAddExistingAndNonexistentRole(): void {
     // Set-up a mock user with role 'administrator' but without 'editor'.
     $account = $this->prophesizeEntity(UserInterface::class);
     $account->hasRole('administrator')->willReturn(TRUE)

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
@@ -33,7 +35,7 @@ class UserRoleRemoveTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Remove user role', $this->action->summary());
   }
 
@@ -42,7 +44,7 @@ class UserRoleRemoveTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testRemoveExistingRoleNoSave() {
+  public function testRemoveExistingRoleNoSave(): void {
 
     // Set-up a mock user with role 'editor'.
     $account = $this->prophesizeEntity(UserInterface::class);
@@ -71,7 +73,7 @@ class UserRoleRemoveTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testRemoveNonExistingRole() {
+  public function testRemoveNonExistingRole(): void {
 
     // Set-up a mock user with role 'editor'.
     $account = $this->prophesizeEntity(UserInterface::class);

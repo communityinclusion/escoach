@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\Core\Logger\LoggerChannelInterface;
@@ -80,7 +82,7 @@ class ConditionExpressionTest extends UnitTestCase {
   /**
    * Tests that context values get data processed with processor mappings.
    */
-  public function testDataProcessor() {
+  public function testDataProcessor(): void {
     $this->conditionManager->createInstance('test_condition', ['negate' => FALSE])
       ->willReturn($this->trueCondition->reveal())
       ->shouldBeCalledTimes(1);
@@ -139,7 +141,7 @@ class ConditionExpressionTest extends UnitTestCase {
   /**
    * Tests that negating a condition works.
    */
-  public function testNegation() {
+  public function testNegation(): void {
     $this->trueCondition->getContextDefinitions()->willReturn([]);
     $this->trueCondition->refineContextDefinitions([])->shouldBeCalledTimes(1);
     $this->trueCondition->getProvidedContextDefinitions()

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
 use Drupal\rules\Context\ContextConfig;
@@ -18,7 +20,7 @@ class PrepareExecutionMetadataStateTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a variable can be added by an action and is then available.
    */
-  public function testAddingVariable() {
+  public function testAddingVariable(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $rule->addAction('rules_variable_add', ContextConfig::create()
       ->setValue('type', 'string')
@@ -35,7 +37,7 @@ class PrepareExecutionMetadataStateTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests partial state setup until an expression is reached in the tree.
    */
-  public function testPreparingUntil() {
+  public function testPreparingUntil(): void {
     // Setup a rule with 2 actions.
     $rule = $this->rulesExpressionManager->createRule();
     $rule->addAction('rules_variable_add', ContextConfig::create()
@@ -64,7 +66,7 @@ class PrepareExecutionMetadataStateTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that state preparation also works for actions in a loop.
    */
-  public function testPrepareInLoop() {
+  public function testPrepareInLoop(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
@@ -89,7 +91,7 @@ class PrepareExecutionMetadataStateTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the loop list item is removed after the loop.
    */
-  public function testPrepareAfterLoop() {
+  public function testPrepareAfterLoop(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);

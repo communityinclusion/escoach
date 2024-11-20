@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -18,7 +20,7 @@ class AutoSaveTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests auto saving after an action execution.
    */
-  public function testActionAutoSave() {
+  public function testActionAutoSave(): void {
     $rule = $this->rulesExpressionManager->createRule();
     // Just leverage the entity save action, which by default uses auto-saving.
     $rule->addAction('rules_entity_save', ContextConfig::create()

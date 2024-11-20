@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Ui\RulesUiConfigHandler;
@@ -39,13 +41,12 @@ class RulesUiEmbedTest extends RulesKernelTestBase {
 
     $this->installConfig(['system']);
     $this->installConfig(['rules_test_ui_embed']);
-    $this->installSchema('system', ['sequences']);
   }
 
   /**
    * @covers \Drupal\rules\Ui\RulesUiManager
    */
-  public function testUiManager() {
+  public function testUiManager(): void {
     $definition = $this->rulesUiManager->getDefinitions();
     $this->assertArrayHasKey('rules_test_ui_embed.settings_conditions', $definition);
     $this->assertInstanceOf(RulesUiDefinition::class, $definition['rules_test_ui_embed.settings_conditions']);

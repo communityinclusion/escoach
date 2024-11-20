@@ -5,6 +5,9 @@ namespace Drupal\Tests\rules\Functional;
 /**
  * Tests that each Rules Action can be edited.
  *
+ * @todo Add declare(strict_types=1) after figuring out how to handle boolean
+ * context value entry. Specifically, in "3. List item add".
+ *
  * @group RulesUi
  */
 class ActionsFormTest extends RulesBrowserTestBase {
@@ -67,7 +70,7 @@ class ActionsFormTest extends RulesBrowserTestBase {
    *
    * @dataProvider dataActionsFormWidgets
    */
-  public function testActionsFormWidgets($id, $required = [], $defaulted = [], $widgets = [], $selectors = [], $provides = []) {
+  public function testActionsFormWidgets(string $id, array $required = [], array $defaulted = [], array $widgets = [], array $selectors = [], array $provides = []): void {
     $expressionManager = $this->container->get('plugin.manager.rules_expression');
     $storage = $this->container->get('entity_type.manager')->getStorage('rules_reaction_rule');
 
@@ -150,7 +153,7 @@ class ActionsFormTest extends RulesBrowserTestBase {
   }
 
   /**
-   * Provides data for testActionsFormWidgets().
+   * Data provider - provides data for testActionsFormWidgets().
    *
    * @return array
    *   The test data array. The top level keys are free text but should be short
@@ -172,7 +175,7 @@ class ActionsFormTest extends RulesBrowserTestBase {
    *   - (optional) Provides values. This is an associative array with keys
    *     equal to the field names and values equal to values to set.
    */
-  public function dataActionsFormWidgets() {
+  public static function dataActionsFormWidgets(): array {
     // Instead of directly returning the full set of test data, create variable
     // $data to hold it. This allows for manipulation before the final return.
     $data = [

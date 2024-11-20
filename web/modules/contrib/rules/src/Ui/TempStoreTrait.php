@@ -204,7 +204,7 @@ trait TempStoreTrait {
    * Gets the temporary storage repository from the factory.
    *
    * @return \Drupal\Core\TempStore\SharedTempStore
-   *   The shareds storage.
+   *   The shared storage.
    */
   private function getTempStore() {
     if (!isset($this->tempStore)) {

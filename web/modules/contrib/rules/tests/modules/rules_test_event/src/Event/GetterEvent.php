@@ -52,7 +52,7 @@ class GetterEvent extends Event {
    * @return string
    *   The value of publicProperty.
    */
-  public function publicGetter() {
+  public function publicGetter(): string {
     return $this->publicProperty;
   }
 
@@ -62,7 +62,7 @@ class GetterEvent extends Event {
    * @return string
    *   The value of protectedProperty.
    */
-  public function protectedGetter() {
+  public function protectedGetter(): string {
     return $this->protectedProperty;
   }
 
@@ -72,7 +72,7 @@ class GetterEvent extends Event {
    * @return string
    *   The value of privateProperty.
    */
-  public function privateGetter() {
+  public function privateGetter(): string {
     return $this->privateProperty;
   }
 

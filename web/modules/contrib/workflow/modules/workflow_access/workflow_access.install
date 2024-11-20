@@ -36,6 +36,7 @@ function workflow_access_update_8001(&$sandbox) {
  */
 function workflow_access_update_8002(&$sandbox) {
   // Remove the table. Data is now in config.
+  /** @var \Drupal\Core\Database\Schema $schema */
   $schema = Database::getConnection()->schema();
   $schema->dropTable('workflow_access');
   // Rebuild data.

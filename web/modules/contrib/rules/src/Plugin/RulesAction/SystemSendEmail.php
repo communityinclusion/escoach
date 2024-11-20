@@ -6,7 +6,11 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\LanguageOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -49,6 +53,44 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_send_email",
+  label: new TranslatableMarkup("Send email"),
+  category: new TranslatableMarkup("System"),
+  context_definitions: [
+    "to" => new ContextDefinition(
+      data_type: "email",
+      label: new TranslatableMarkup("Send to"),
+      description: new TranslatableMarkup("Email address(es) drupal will send an email to."),
+      multiple: TRUE
+    ),
+    "subject" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Subject"),
+      description: new TranslatableMarkup("The email's subject.")
+    ),
+    "message" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Message"),
+      description: new TranslatableMarkup("The email's message body. Drupal will by default remove all HTML tags. If you want to use HTML you must override this behavior by installing a contributed module such as Mime Mail.")
+    ),
+    "reply" => new ContextDefinition(
+      data_type: "email",
+      label: new TranslatableMarkup("Reply to"),
+      description: new TranslatableMarkup("The email's reply-to address. Leave it empty to use the site-wide configured address."),
+      default_value: NULL,
+      required: FALSE
+    ),
+    "language" => new ContextDefinition(
+      data_type: "language",
+      label: new TranslatableMarkup("Language"),
+      description: new TranslatableMarkup("If specified, the language object (not language code) used for getting the email message and subject."),
+      options_provider: LanguageOptions::class,
+      default_value: NULL,
+      required: FALSE
+    ),
+  ]
+)]
 class SystemSendEmail extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

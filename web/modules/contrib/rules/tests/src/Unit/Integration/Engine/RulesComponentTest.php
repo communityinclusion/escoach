@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
 use Drupal\rules\Context\ContextConfig;
@@ -19,7 +21,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   /**
    * Tests executing a rule providing context based upon given context.
    */
-  public function testRuleExecutionWithContext() {
+  public function testRuleExecutionWithContext(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $rule->addAction('rules_test_string',
@@ -34,13 +36,14 @@ class RulesComponentTest extends RulesIntegrationTestBase {
 
     // Ensure the provided context is returned.
     $this->assertArrayHasKey('concatenated', $result);
+    // cspell:ignore foofoo
     $this->assertEquals('foofoo', $result['concatenated']);
   }
 
   /**
    * @covers ::getExpression
    */
-  public function testGetExpression() {
+  public function testGetExpression(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $this->assertSame(RulesComponent::create($rule)->getExpression(), $rule);
   }
@@ -48,7 +51,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   /**
    * @covers ::getContextDefinitions
    */
-  public function testGetContextDefinitions() {
+  public function testGetContextDefinitions(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $definition = ContextDefinition::create('string');
     $component = RulesComponent::create($rule)
@@ -61,7 +64,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   /**
    * @covers ::getProvidedContext
    */
-  public function testGetProvidedContext() {
+  public function testGetProvidedContext(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $component = RulesComponent::create($rule)
       ->provideContext('test');
@@ -72,7 +75,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   /**
    * @covers ::getState
    */
-  public function testGetState() {
+  public function testGetState(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $component = RulesComponent::create($rule);
     $this->assertInstanceOf(ExecutionStateInterface::class, $component->getState());

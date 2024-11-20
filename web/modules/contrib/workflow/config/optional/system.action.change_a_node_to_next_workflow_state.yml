@@ -1,10 +1,12 @@
-langcode: nl
+langcode: en
 status: true
 dependencies:
   module:
-    - drupal:action
-    - drupal:node
-    - workflow:workflow
+    - node
+    - workflow
+core_version_requirement: '>=8'
+_core:
+  default_config_hash: S1bCdy2XNgeKY8AwFjwDEuLgV_vYHL9rWa2eULno0bw
 id: change_a_node_to_next_workflow_state
 label: 'Change a node to next Workflow state'
 type: node
@@ -14,8 +16,10 @@ configuration:
   id: change_a_node_to_next_workflow_state
   plugin: workflow_node_next_state_action
   type: node
-  workflow_scheduling:
+  timestamp:
     scheduled: '0'
   comment: 'New state is set by a triggered Action.'
   force: 0
   actions: {  }
+  field_name: ''
+  to_sid: ''

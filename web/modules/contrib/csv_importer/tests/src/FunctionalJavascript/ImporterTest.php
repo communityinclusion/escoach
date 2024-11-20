@@ -3,9 +3,9 @@
 namespace Drupal\Tests\csv_importer\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
-use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\user\Entity\User;
 
 /**
  * Tests CSV importer.

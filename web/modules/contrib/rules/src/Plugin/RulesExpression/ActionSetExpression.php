@@ -2,8 +2,11 @@
 
 namespace Drupal\rules\Plugin\RulesExpression;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\ExecutionStateInterface;
 use Drupal\rules\Engine\ActionExpressionContainer;
+use Drupal\rules\Form\Expression\ActionContainerForm;
 
 /**
  * Holds a set of actions and executes all of them.
@@ -14,6 +17,11 @@ use Drupal\rules\Engine\ActionExpressionContainer;
  *   form_class = "\Drupal\rules\Form\Expression\ActionContainerForm"
  * )
  */
+#[RulesExpression(
+  id: "rules_action_set",
+  label: new TranslatableMarkup("Action set"),
+  form_class: ActionContainerForm::class
+)]
 class ActionSetExpression extends ActionExpressionContainer {
 
   /**

@@ -5,7 +5,7 @@ namespace Drupal\workflow\Plugin\Validation\Constraint;
 use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
 
 /**
- * Supports validating Workflow Field names.
+ * Supports validating Workflow field names.
  *
  * @see https://drupalwatchdog.com/volume-5/issue-2/introducing-drupal-8s-entity-validation-api
  *

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\Component\EventDispatcher\Event;
@@ -40,13 +42,12 @@ class EventIntegrationTest extends RulesKernelTestBase {
     $this->installConfig(['field']);
     $this->installConfig(['node']);
     $this->installSchema('node', ['node_access']);
-    $this->installSchema('system', ['sequences']);
   }
 
   /**
    * Test that the user login hook triggers the Rules event listener.
    */
-  public function testUserLoginEvent() {
+  public function testUserLoginEvent(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log',
@@ -76,7 +77,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * Test that the user logout hook triggers the Rules event listener.
    */
-  public function testUserLogoutEvent() {
+  public function testUserLogoutEvent(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log');
@@ -103,7 +104,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * Test that the cron hook triggers the Rules event listener.
    */
-  public function testCronEvent() {
+  public function testCronEvent(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log');
@@ -129,7 +130,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * Test that a Logger message triggers the Rules debug logger listener.
    */
-  public function testSystemLoggerEvent() {
+  public function testSystemLoggerEvent(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log');
@@ -156,7 +157,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * Test that Drupal initializing triggers the Rules debug logger listener.
    */
-  public function testInitEvent() {
+  public function testInitEvent(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log');
@@ -192,7 +193,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * Test that Drupal terminating triggers the Rules debug logger listener.
    */
-  public function testTerminateEvent() {
+  public function testTerminateEvent(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log');
@@ -228,7 +229,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * Test that rules config supports multiple events.
    */
-  public function testMultipleEvents() {
+  public function testMultipleEvents(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log');
@@ -267,7 +268,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
    *
    * @dataProvider providerTestEntityOriginal
    */
-  public function testEntityOriginal($event_name) {
+  public function testEntityOriginal(string $event_name): void {
     // Create a node that we will change and save later.
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
@@ -313,9 +314,9 @@ class EventIntegrationTest extends RulesKernelTestBase {
   }
 
   /**
-   * Provides test data for testEntityOriginal().
+   * Data provider - provides test data for testEntityOriginal().
    */
-  public function providerTestEntityOriginal() {
+  public static function providerTestEntityOriginal(): array {
     return [
       ['rules_entity_presave:node'],
       ['rules_entity_update:node'],
@@ -325,7 +326,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that entity events are fired for the correct bundle.
    */
-  public function testBundleQualifiedEvents() {
+  public function testBundleQualifiedEvents(): void {
     // Create an article node type and a page node type.
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')->create([

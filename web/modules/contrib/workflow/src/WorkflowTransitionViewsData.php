@@ -2,7 +2,10 @@
 
 namespace Drupal\workflow;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\field\FieldStorageConfigInterface;
 use Drupal\views\EntityViewsData;
+use Drupal\workflow\Entity\WorkflowManager;
 
 /**
  * Provides the views data for the workflow entity type.
@@ -37,19 +40,21 @@ class WorkflowTransitionViewsData extends EntityViewsData {
 
     // @todo Reverse this relationship. See also taxonomy/src/NodeTermData.php.
     // $data[$base_table]['nid'] = [
-    //  'title' => $this->t('Content with workflow'),
-    //  'help' => $this->t('Relate all content with a workflow.'),
-    //  'relationship' => [
-    //    'id' => 'standard',
-    //    'base' => 'node',
-    //    'base field' => 'nid',
-    //    'label' => $this->t('node'),
-    //    'skip base' => 'node',
-    //  ],
+    //   'title' => $this->t('Content with workflow'),
+    //   'help' => $this->t('Relate all content with a workflow.'),
+    //   'relationship' => [
+    //     'id' => 'standard',
+    //     'base' => 'node',
+    //     'base field' => 'nid',
+    //     'label' => $this->t('node'),
+    //     'skip base' => 'node',
+    //   ],
     // ];
+    $data[$base_table]['from_sid']['field']['id'] = 'workflow_state';
     $data[$base_table]['from_sid']['filter']['id'] = 'workflow_state';
     $data[$base_table]['from_sid']['help'] = $this->t('The name of the previous state of the transition.');
 
+    $data[$base_table]['to_sid']['field']['id'] = 'workflow_state';
     $data[$base_table]['to_sid']['filter']['id'] = 'workflow_state';
     $data[$base_table]['to_sid']['help'] = $this->t('The name of the new state of the transition. (For the latest transition, this is the current state.)');
 
@@ -170,6 +175,80 @@ class WorkflowTransitionViewsData extends EntityViewsData {
     ];
 
     return $data;
+  }
+
+  /**
+   * Implements hook_field_views_data().
+   */
+  public static function fieldViewsData(FieldStorageConfigInterface $field) {
+    $data = views_field_default_views_data($field);
+    $settings = $field->getSettings();
+
+    foreach ($data as $table_name => $table_data) {
+      foreach ($table_data as $field_name => $field_data) {
+        if ($field_name == 'delta') {
+          continue;
+        }
+        if (isset($field_data['filter'])) {
+          $data[$table_name][$field_name]['filter']['wid'] = (array_key_exists('workflow_type', $settings)) ? $settings['workflow_type'] : '';
+          $data[$table_name][$field_name]['filter']['id'] = 'workflow_state';
+        }
+        if (isset($field_data['argument'])) {
+          $data[$table_name][$field_name]['argument']['id'] = 'workflow_state';
+        }
+      }
+    }
+
+    return $data;
+  }
+
+  /**
+   * Implements hook_views_data_alter().
+   */
+  public static function viewsDataAlter(array &$data) {
+    // Provide an integration for each entity type except workflow entities.
+    // Copied from comment.views.inc.
+    foreach (\Drupal::entityTypeManager()->getDefinitions() as $entity_type_id => $entity_type) {
+      if (WorkflowManager::isWorkflowEntityType($entity_type_id)) {
+        continue;
+      }
+      if (!$entity_type->entityClassImplements(ContentEntityInterface::class)) {
+        continue;
+      }
+      if (!$entity_type->getBaseTable()) {
+        continue;
+      }
+
+      $field_map = workflow_get_workflow_fields_by_entity_type($entity_type_id);
+      if ($field_map) {
+        $base_table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
+        $args = ['@entity_type' => $entity_type_id];
+        foreach ($field_map as $field_name => $field) {
+          $data[$base_table][$field_name . '_tid'] = [
+            'title' => t('Workflow transitions on @entity_type using field: @field_name', $args + ['@field_name' => $field_name]),
+            'help' => t('Relate all transitions on @entity_type. This will create 1 duplicate record for every transition. Usually if you need this it is better to create a Transition view.', $args),
+            'relationship' => [
+              'group' => t('Workflow transition'),
+              'label' => t('workflow transition'),
+              'base' => 'workflow_transition_history',
+              'base field' => 'entity_id',
+              'relationship field' => $entity_type->getKey('id'),
+              'id' => 'standard',
+              'extra' => [
+                [
+                  'field' => 'entity_type',
+                  'value' => $entity_type_id,
+                ],
+                [
+                  'field' => 'field_name',
+                  'value' => $field_name,
+                ],
+              ],
+            ],
+          ];
+        }
+      }
+    }
   }
 
 }

@@ -49,7 +49,7 @@ class Parser implements ParserInterface {
    * {@inheritdoc}
    */
   public function getCsvFieldsById(int $id) {
-    $csv = $this->getCsvById($id);
+    $csv = $this->getCsvById($id, NULL);
 
     if ($csv && is_array($csv)) {
       return $csv[0];

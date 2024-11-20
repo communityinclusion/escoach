@@ -9,6 +9,8 @@ use Drupal\rules\Ui\RulesUiComponentProviderInterface;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\RulesComponent;
 
+// cspell:ignore triggerable
+
 /**
  * Reaction rule configuration entity to persistently store configuration.
  *

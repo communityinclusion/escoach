@@ -3,7 +3,11 @@
 namespace Drupal\rules\Plugin\Condition;
 
 use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\FieldListOptions;
 
 /**
  * Provides a 'Entity has field' condition.
@@ -29,6 +33,26 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_entity_has_field",
+  label: new TranslatableMarkup("Entity has field"),
+  category: new TranslatableMarkup("Entity"),
+  context_definitions: [
+    "entity" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Entity"),
+      description: new TranslatableMarkup("Specifies the entity for which to evaluate the condition."),
+      assignment_restriction: "selector"
+    ),
+    "field" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Field"),
+      description: new TranslatableMarkup("The name of the field to check for."),
+      options_provider: FieldListOptions::class,
+      assignment_restriction: "input"
+    ),
+  ]
+)]
 class EntityHasField extends RulesConditionBase {
 
   /**

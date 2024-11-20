@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -31,7 +33,7 @@ class ListCountIsTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     // Test that the list count is greater than 2.
     $condition = $this->condition
       ->setContextValue('list', [1, 2, 3, 4])

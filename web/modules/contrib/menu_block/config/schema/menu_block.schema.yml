@@ -26,6 +26,12 @@ block.settings.menu_block:*:
     parent:
       type: string
       label: 'Parent menu link'
+    render_parent:
+      type: boolean
+      label: 'Render parent menu link'
     suggestion:
       type: string
       label: 'Theme suggestion'
+    hide_on_nonactive:
+      type: boolean
+      label: 'Hide on pages not included in the menu'

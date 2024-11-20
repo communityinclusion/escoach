@@ -2,6 +2,8 @@
 
 namespace Drupal\rules\Core;
 
+// cspell:ignore triggerable
+
 /**
  * Interface for objects that are triggerable.
  */

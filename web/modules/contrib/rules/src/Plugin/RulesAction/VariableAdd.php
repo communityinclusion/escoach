@@ -2,6 +2,9 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
@@ -32,6 +35,31 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_variable_add",
+  label: new TranslatableMarkup("Add a variable"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Data Type"),
+      description: new TranslatableMarkup("Specifies the type of the variable that should be added."),
+      assignment_restriction: "input"
+    ),
+    "value" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Value"),
+      description: new TranslatableMarkup("Optionally, specify the initial value of the variable."),
+      required: FALSE
+    ),
+  ],
+  provides: [
+    "variable_added" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Added variable")
+    ),
+  ]
+)]
 class VariableAdd extends RulesActionBase {
 
   /**

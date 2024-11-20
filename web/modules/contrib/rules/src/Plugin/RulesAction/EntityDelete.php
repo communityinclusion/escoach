@@ -3,6 +3,9 @@
 namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
@@ -23,6 +26,19 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_entity_delete",
+  label: new TranslatableMarkup("Delete entity"),
+  category: new TranslatableMarkup("Entity"),
+  context_definitions: [
+    "entity" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Entity"),
+      description: new TranslatableMarkup("Specifies the entity, which should be deleted permanently."),
+      assignment_restriction: "selector"
+    ),
+  ]
+)]
 class EntityDelete extends RulesActionBase {
 
   /**

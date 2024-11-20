@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -30,7 +32,7 @@ class DataCalculateValueTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Calculate a numeric value', $this->action->summary());
   }
 
@@ -39,7 +41,7 @@ class DataCalculateValueTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testAdditionAction() {
+  public function testAdditionAction(): void {
     $input_1 = mt_rand();
     $input_2 = mt_rand();
     $this->action->setContextValue('input_1', $this->getTypedData('float', $input_1))
@@ -55,7 +57,7 @@ class DataCalculateValueTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testSubtractionAction() {
+  public function testSubtractionAction(): void {
     $input_1 = mt_rand();
     $input_2 = mt_rand();
     $this->action->setContextValue('input_1', $this->getTypedData('float', $input_1))
@@ -71,7 +73,7 @@ class DataCalculateValueTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testMultiplicationAction() {
+  public function testMultiplicationAction(): void {
     $input_1 = mt_rand();
     $input_2 = mt_rand();
     $this->action->setContextValue('input_1', $this->getTypedData('float', $input_1))
@@ -87,7 +89,7 @@ class DataCalculateValueTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testDivisionAction() {
+  public function testDivisionAction(): void {
     $input_1 = mt_rand();
     $input_2 = mt_rand();
     $this->action->setContextValue('input_1', $this->getTypedData('float', $input_1))
@@ -103,7 +105,7 @@ class DataCalculateValueTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testMinimumAction() {
+  public function testMinimumAction(): void {
     $input_1 = mt_rand();
     $input_2 = mt_rand();
     $this->action->setContextValue('input_1', $this->getTypedData('float', $input_1))
@@ -119,7 +121,7 @@ class DataCalculateValueTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testMaximumAction() {
+  public function testMaximumAction(): void {
     $input_1 = mt_rand();
     $input_2 = mt_rand();
     $this->action->setContextValue('input_1', $this->getTypedData('float', $input_1))

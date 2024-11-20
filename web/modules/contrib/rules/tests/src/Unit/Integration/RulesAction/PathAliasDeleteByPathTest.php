@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -46,7 +48,7 @@ class PathAliasDeleteByPathTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Delete all aliases for a path', $this->action->summary());
   }
 
@@ -55,7 +57,7 @@ class PathAliasDeleteByPathTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecution() {
+  public function testActionExecution(): void {
     $path = '/node/1';
     $this->action->setContextValue('path', $path);
 

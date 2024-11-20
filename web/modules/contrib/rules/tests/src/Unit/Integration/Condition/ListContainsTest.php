@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -32,7 +34,7 @@ class ListContainsTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
 
     // Test array of string values.
     $list = ['One', 'Two', 'Three'];

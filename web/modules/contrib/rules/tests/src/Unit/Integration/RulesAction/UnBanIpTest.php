@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Logger\LoggerChannelInterface;
@@ -77,7 +79,7 @@ class UnBanIpTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Remove the ban on an IP address', $this->action->summary());
   }
 
@@ -91,7 +93,7 @@ class UnBanIpTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithContextIpv4() {
+  public function testActionExecutionWithContextIpv4(): void {
     // TEST-NET-1 IPv4.
     $ipv4 = '192.0.2.0';
     $this->action->setContextValue('ip', $ipv4);
@@ -113,7 +115,7 @@ class UnBanIpTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithContextIpv6() {
+  public function testActionExecutionWithContextIpv6(): void {
     // TEST-NET-1 IPv4 '192.0.2.0' converted to IPv6.
     $ipv6 = '2002:0:0:0:0:0:c000:200';
     $this->action->setContextValue('ip', $ipv6);
@@ -132,7 +134,7 @@ class UnBanIpTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithoutContextIp() {
+  public function testActionExecutionWithoutContextIp(): void {
     // TEST-NET-1 IPv4.
     $ip = '192.0.2.0';
 

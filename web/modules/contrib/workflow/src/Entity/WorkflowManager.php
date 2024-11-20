@@ -12,7 +12,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
-use Drupal\field\Entity\FieldConfig;
 
 /**
  * Manages entity type plugin definitions.
@@ -149,12 +148,14 @@ class WorkflowManager implements WorkflowManagerInterface {
       return;
     }
 
-    $user = workflow_current_user();
+    if (!$field_names = workflow_get_workflow_field_names($entity)) {
+      return;
+    }
 
-    foreach (workflow_get_workflow_field_names($entity) as $field_name) {
-      // Transition is created in widget or WorkflowTransitionForm.
+    foreach ($field_names as $field_name) {
       /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
-      $transition = $entity->{$field_name}->__get('workflow_transition');
+      // @todo Transition is created in widget or WorkflowTransitionForm.
+      $transition = $entity->{$field_name}->__get('_workflow_transition') ?? NULL;
       if (!$transition) {
         // We come from creating/editing an entity via entity_form, with core widget or hidden Workflow widget.
         // @todo D8: From an Edit form with hidden widget.
@@ -166,11 +167,12 @@ class WorkflowManager implements WorkflowManagerInterface {
         }
 
         // Creating a Node with hidden Workflow Widget. Generate valid first transition.
+        $user ??= workflow_current_user();
         $comment = '';
         $old_sid = WorkflowManager::getPreviousStateId($entity, $field_name);
         $new_sid = $entity->{$field_name}->value;
         if ((!$new_sid) && $wid = $entity->{$field_name}->getSetting('workflow_type')) {
-          /** @var \Drupal\workflow\Entity\Workflow $workflow */
+          /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
           $workflow = Workflow::load($wid);
           $new_sid = $workflow->getFirstSid($entity, $field_name, $user);
         }
@@ -212,6 +214,101 @@ class WorkflowManager implements WorkflowManagerInterface {
         $entity->{$field_name}->setValue($originalValue);
       }
     }
+
+    // Invalidate cache tags for entity so that local tasks rebuild,
+    // when Workflow is a BaseField.
+    if ($field_names) {
+      $entity->getCacheTagsToInvalidate();
+    }
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function deleteTransitionsOfEntity(EntityInterface $entity, $transition_type, $field_name, $langcode = '') {
+    $entity_type_id = $entity->getEntityTypeId();
+    $entity_id = $entity->id();
+
+    switch ($transition_type) {
+      case 'workflow_transition':
+        foreach (WorkflowTransition::loadMultipleByProperties($entity_type_id, [$entity_id], [], $field_name, $langcode, NULL, 'ASC', $transition_type) as $transition) {
+          $transition->delete();
+        }
+        break;
+
+      case 'workflow_scheduled_transition':
+        foreach (WorkflowScheduledTransition::loadMultipleByProperties($entity_type_id, [$entity_id], [], $field_name, $langcode, NULL, 'ASC', $transition_type) as $transition) {
+          $transition->delete();
+        }
+        break;
+    }
+  }
+
+  /**
+   * Gets the creation sid for a given $entity and $field_name.
+   *
+   * Is a helper function for:
+   * - workflow_node_current_state()
+   * - workflow_node_previous_state()
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   * @param string $field_name
+   *
+   * @return string
+   *   The ID of the creation State for the Workflow of the field.
+   */
+  private static function getCreationStateId(EntityInterface $entity, $field_name) {
+    $sid = '';
+
+    /** @var \Drupal\Core\Config\Entity\ConfigEntityBase $entity */
+    /** @var \Drupal\Core\Field\FieldDefinitionInterface $field_config */
+    $field_config = $entity->get($field_name)->getFieldDefinition();
+    $field_storage = $field_config->getFieldStorageDefinition();
+    $wid = $field_storage->getSetting('workflow_type');
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
+    $workflow = $wid ? Workflow::load($wid) : NULL;
+    if (!$workflow) {
+      \Drupal::messenger()->addError(t('Workflow %wid cannot be loaded. Contact your system administrator.', ['%wid' => $wid]));
+    }
+    else {
+      $sid = $workflow->getCreationSid();
+    }
+
+    return $sid;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getCurrentStateId(EntityInterface $entity, $field_name = '') {
+    $sid = '';
+
+    if (!$entity) {
+      return $sid;
+    }
+
+    // If $field_name is not known, yet, determine it.
+    $field_name = ($field_name) ? $field_name : workflow_get_field_name($entity, $field_name);
+    // If $field_name is found, get more details.
+    if (!$field_name || !isset($entity->{$field_name})) {
+      // Return the initial value.
+      return $sid;
+    }
+
+    // Normal situation: get the value.
+    $sid = $entity->{$field_name}->value;
+    if ($sid) {
+      return $sid;
+    }
+
+    // Entity is new or in preview or there is no current state. Use previous state.
+    // (E.g., content was created before adding workflow.)
+    if (!$sid || !empty($entity->isNew()) || !empty($entity->in_preview)) {
+      $sid = self::getPreviousStateId($entity, $field_name);
+    }
+
+    return $sid;
   }
 
   /**
@@ -244,8 +341,8 @@ class WorkflowManager implements WorkflowManagerInterface {
     // @todo Read history with an explicit langcode(?).
     $langcode = ''; // $entity->language()->getId();
     // @todo D8: #2373383 Add integration with older revisions via Revisioning module.
-    $entity_type = $entity->getEntityTypeId();
-    $last_transition = WorkflowTransition::loadByProperties($entity_type, $entity->id(), [], $field_name, $langcode, 'DESC');
+    $entity_type_id = $entity->getEntityTypeId();
+    $last_transition = WorkflowTransition::loadByProperties($entity_type_id, $entity->id(), [], $field_name, $langcode, 'DESC');
     if ($last_transition) {
       $sid = $last_transition->getToSid(); // @see #2637092, #2612702
     }
@@ -258,38 +355,45 @@ class WorkflowManager implements WorkflowManagerInterface {
   }
 
   /**
-   * Gets the creation sid for a given $entity and $field_name.
+   * Implements hook_entity_delete().
    *
-   * Is a helper function for:
-   * - workflow_node_current_state()
-   * - workflow_node_previous_state()
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   * @param string $field_name
-   *
-   * @return string
-   *   The ID of the creation State for the Workflow of the field.
+   * Delete the corresponding workflow table records.
    */
-  private static function getCreationStateId(EntityInterface $entity, $field_name) {
-    $sid = '';
+  public static function entityDelete(EntityInterface $entity) {
+    // @todo Test with multiple workflows.
+    switch (TRUE) {
+      case $entity::class == 'Drupal\field\Entity\FieldConfig':
+      case $entity::class == 'Drupal\field\Entity\FieldStorageConfig':
+        // A Workflow field is removed from an entity.
+        // @todo Test; use deleteTransitionsOfEntity().
+        $field_config = $entity;
+        /** @var \Drupal\Core\Entity\ContentEntityBase $field_config */
+        $entity_type_id = (string) $field_config->get('entity_type');
+        $field_name = (string) $field_config->get('field_name');
+        /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
+        foreach (WorkflowScheduledTransition::loadMultipleByProperties($entity_type_id, [], [], $field_name) as $transition) {
+          $transition->delete();
+        }
+        WorkflowManager::deleteTransitionsOfEntity($entity, 'workflow_transition', $field_name);
+        foreach (WorkflowTransition::loadMultipleByProperties($entity_type_id, [], [], $field_name) as $transition) {
+          $transition->delete();
+        }
+        break;
 
-    /** @var \Drupal\Core\Config\Entity\ConfigEntityBase $entity */
-    /** @var \Drupal\Core\Field\FieldDefinitionInterface $field_config */
-    $field_config = $entity->get($field_name)->getFieldDefinition();
-    $field_storage = $field_config->getFieldStorageDefinition();
-    $wid = $field_storage->getSetting('workflow_type');
-    if ($wid) {
-      /** @var \Drupal\workflow\Entity\Workflow $workflow */
-      $workflow = Workflow::load($wid);
-      if (!$workflow) {
-        \Drupal::messenger()->addError(t('Workflow %wid cannot be loaded. Contact your system administrator.', ['%wid' => $wid]));
-      }
-      else {
-        $sid = $workflow->getCreationSid();
-      }
+      case !WorkflowManager::isWorkflowEntityType($entity->getEntityTypeId()):
+        // A 'normal' entity is deleted.
+        foreach ($fields = _workflow_info_fields($entity) as $field_id => $field_storage) {
+          $field_name = $field_storage->getName();
+          /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
+          WorkflowManager::deleteTransitionsOfEntity($entity, 'workflow_scheduled_transition', $field_name);
+          WorkflowManager::deleteTransitionsOfEntity($entity, 'workflow_transition', $field_name);
+        }
+        break;
+
+      default:
+        // A Workflow entity.
+        break;
     }
-
-    return $sid;
   }
 
   /**
@@ -344,33 +448,6 @@ class WorkflowManager implements WorkflowManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public static function participateUserRoles(EntityInterface $workflow) {
-    $type_id = $workflow->id();
-    foreach (user_roles() as $rid => $role) {
-      $perms = ["create $type_id workflow_transition" => 1];
-      user_role_change_permissions($rid, $perms);  // <=== Enable Roles.
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getWorkflowTransitionForm(EntityInterface $entity, $field_name, array $form_state_additions = []) {
-    // Create a transition, to pass to the form. No need to use setValues().
-    $current_sid = workflow_node_current_state($entity, $field_name);
-    $transition = WorkflowTransition::create([$current_sid, 'field_name' => $field_name]);
-    $transition->setTargetEntity($entity);
-
-    // Create the WorkflowTransitionForm.
-    /** @var \Drupal\Core\Entity\EntityFormBuilder $entity_form_builder */
-    $entity_form_builder = \Drupal::getContainer()->get('entity.form_builder');
-    $form = $entity_form_builder->getForm($transition, 'add', $form_state_additions);
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getFieldMap($entity_type_id = '') {
     if ($entity_type_id) {
       $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
@@ -384,56 +461,6 @@ class WorkflowManager implements WorkflowManagerInterface {
       return $map[$entity_type_id] ?? [];
     }
     return $map;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getAttachedFields($entity_type_id, $bundle) {
-    $added_fields = [];
-
-    // Determine the fields added by Field UI.
-    $entity_field_manager = \Drupal::service('entity_field.manager');
-    // $extra_fields = $this->entityFieldManager->getExtraFields($entity_type_id, $bundle);
-    // $base_fields = $this->entityFieldManager->getBaseFieldDefinitions($entity_type_id, $bundle);
-    $fields = $entity_field_manager->getFieldDefinitions($entity_type_id, $bundle);
-    foreach ($fields as $key => $field) {
-      // Remove BaseFieldDefinition, BaseFieldOverride.
-      if (($field instanceof FieldConfig)) {
-        $added_fields[$key] = $field;
-      }
-    }
-    return $added_fields;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getCurrentStateId(EntityInterface $entity, $field_name = '') {
-    $sid = '';
-
-    if (!$entity) {
-      return $sid;
-    }
-
-    // If $field_name is not known, yet, determine it.
-    $field_name = ($field_name) ? $field_name : workflow_get_field_name($entity, $field_name);
-    // If $field_name is found, get more details.
-    if (!$field_name || !isset($entity->{$field_name})) {
-      // Return the initial value.
-      return $sid;
-    }
-
-    // Normal situation: get the value.
-    $sid = $entity->{$field_name}->value;
-
-    // Entity is new or in preview or there is no current state. Use previous state.
-    // (E.g., content was created before adding workflow.)
-    if (!$sid || !empty($entity->isNew()) || !empty($entity->in_preview)) {
-      $sid = self::getPreviousStateId($entity, $field_name);
-    }
-
-    return $sid;
   }
 
   /**

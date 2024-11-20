@@ -65,8 +65,8 @@ class TamperManager extends DefaultPluginManager implements TamperManagerInterfa
   /**
    * {@inheritdoc}
    */
-  public function getGroupedDefinitions(array $definitions = NULL) {
-    $definitions = $this->getSortedDefinitions(isset($definitions) ? $definitions : $this->getDefinitions());
+  public function getGroupedDefinitions(?array $definitions = NULL) {
+    $definitions = $this->getSortedDefinitions($definitions ?? $this->getDefinitions());
     $grouped_definitions = [];
     foreach ($definitions as $id => $definition) {
       $grouped_definitions[(string) $definition['category']][$id] = $definition;
@@ -80,9 +80,9 @@ class TamperManager extends DefaultPluginManager implements TamperManagerInterfa
    * @return \Drupal\tamper\TamperInterface[]
    *   List of tamper plugins.
    */
-  public function getSortedDefinitions(array $definitions = NULL) {
+  public function getSortedDefinitions(?array $definitions = NULL) {
     // Sort the plugins first by category, then by label.
-    $definitions = isset($definitions) ? $definitions : $this->getDefinitions();
+    $definitions = $definitions ?? $this->getDefinitions();
     uasort($definitions, function ($a, $b) {
       if ($a['category'] != $b['category']) {
         return strnatcasecmp($a['category'], $b['category']);

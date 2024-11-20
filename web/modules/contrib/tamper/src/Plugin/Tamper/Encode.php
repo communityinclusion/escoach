@@ -3,8 +3,9 @@
 namespace Drupal\tamper\Plugin\Tamper;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\tamper\TamperableItemInterface;
 use Drupal\tamper\TamperBase;
+use Drupal\tamper\TamperableItemInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Plugin implementation for encoding / decoding.
@@ -66,17 +67,25 @@ class Encode extends TamperBase {
       'json_decode' => $this->t('Json Decode'),
       'base64_encode' => $this->t('Base64 Encode'),
       'base64_decode' => $this->t('Base64 Decode'),
+      'yaml_encode' => $this->t('YAML Encode'),
+      'yaml_decode' => $this->t('YAML Decode'),
     ];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function tamper($data, TamperableItemInterface $item = NULL) {
+  public function tamper($data, ?TamperableItemInterface $item = NULL) {
     $function = $this->getSetting(self::SETTING_MODE);
 
     if (function_exists($function)) {
       $data = call_user_func($function, $data);
+    }
+    elseif ($function === 'yaml_encode') {
+      $data = Yaml::dump($data);
+    }
+    elseif ($function === 'yaml_decode') {
+      $data = Yaml::parse($data);
     }
 
     return $data;

@@ -3,10 +3,10 @@
 namespace Drupal\entity_usage\Plugin\QueueWorker;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\RevisionableStorageInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\entity_usage\EntityUpdateManager;
 use Drupal\entity_usage\EntityUpdateManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -90,6 +90,8 @@ class EntityUsageRegenerateTrackingInfoWorker extends QueueWorkerBase implements
     $entity = NULL;
     $storage = $this->entityTypeManager->getStorage($entityTypeId);
     if ($storage->getEntityType()->isRevisionable() && $revisionId) {
+      assert($storage instanceof RevisionableStorageInterface);
+
       $entity = $storage->loadRevision($revisionId);
     }
     elseif ($id) {

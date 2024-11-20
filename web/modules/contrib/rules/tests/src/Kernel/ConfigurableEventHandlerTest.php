@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -40,7 +42,6 @@ class ConfigurableEventHandlerTest extends RulesKernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installSchema('system', ['sequences']);
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
     $this->installConfig(['field']);
@@ -81,7 +82,7 @@ class ConfigurableEventHandlerTest extends RulesKernelTestBase {
    *
    * @todo Add integrity check that node.field_integer is detected by Rules.
    */
-  public function testConfigurableEventHandler() {
+  public function testConfigurableEventHandler(): void {
     // Create rule1 with the 'rules_entity_presave:node--page' event.
     $rule1 = $this->expressionManager->createRule();
     $rule1->addAction('rules_test_debug_log',
@@ -129,9 +130,9 @@ class ConfigurableEventHandlerTest extends RulesKernelTestBase {
     $event_dispatcher->dispatch($event, "rules_entity_presave:$entity_type_id");
 
     // Test that the action in the rule1 logged node value.
-    $this->assertRulesDebugLogEntryExists(11, 1);
+    $this->assertRulesDebugLogEntryExists('11', 1);
     // Test that the action in the rule2 logged node value.
-    $this->assertRulesDebugLogEntryExists(22, 0);
+    $this->assertRulesDebugLogEntryExists('22', 0);
   }
 
 }

@@ -2,11 +2,11 @@
 
 namespace Drupal\csv_importer\Form;
 
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\csv_importer\ParserInterface;
 use Drupal\csv_importer\Plugin\ImporterManager;
@@ -75,7 +75,7 @@ class ImporterForm extends FormBase {
    * @param \Drupal\csv_importer\Plugin\ImporterManager $importer
    *   The importer plugin manager service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $entity_bundle_info, ParserInterface $parser, RendererInterface $renderer, ImporterManager $importer) {
+  final public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $entity_bundle_info, ParserInterface $parser, RendererInterface $renderer, ImporterManager $importer) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->entityBundleInfo = $entity_bundle_info;
@@ -155,7 +155,7 @@ class ImporterForm extends FormBase {
           '#title' => $this->t('Select importer'),
           '#options' => $options,
           '#default_value' => 0,
-          '#weight' => 25,
+          '#weight' => 10,
         ];
       }
 
@@ -350,7 +350,7 @@ class ImporterForm extends FormBase {
 
     $entity_fields = $this->getEntityTypeFields($entity_type, $entity_type_bundle);
 
-    if ($required = $this->getEntityTypeMissingFields($entity_type, $entity_fields['required'], $csv_parse)) {
+    if ($required = $this->getEntityTypeMissingFields($entity_type, $entity_fields['required'] ?? [], $csv_parse)) {
       $render = [
         '#theme' => 'item_list',
         '#items' => $required,

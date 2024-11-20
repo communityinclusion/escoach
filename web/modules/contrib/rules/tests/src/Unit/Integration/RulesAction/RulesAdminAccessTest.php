@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -17,7 +19,7 @@ class RulesAdminAccessTest extends RulesIntegrationTestBase {
   /**
    * Test administrative access to plugin configuration UI.
    */
-  public function testRespectsAdminPermissions() {
+  public function testRespectsAdminPermissions(): void {
     // 3 user classes to test.
     $super_admin = $this->prophesize(AccountInterface::class);
     $super_admin->hasPermission(Argument::any())->willReturn(TRUE);
@@ -55,7 +57,6 @@ class RulesAdminAccessTest extends RulesIntegrationTestBase {
 
     $user = $joe_user->reveal();
     $this->assertFalse($action->checkConfigurationAccess($user), "Ordinary user lacks admin access");
-
   }
 
 }

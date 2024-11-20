@@ -3,8 +3,11 @@
 namespace Drupal\rules\Plugin\Condition;
 
 use Drupal\ban\BanIpManagerInterface;
-use Drupal\rules\Core\RulesConditionBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
+use Drupal\rules\Core\RulesConditionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -26,6 +29,20 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_ip_is_banned",
+  label: new TranslatableMarkup("IP address is banned"),
+  category: new TranslatableMarkup("Ban"),
+  context_definitions: [
+    "ip" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("IP Address"),
+      description: new TranslatableMarkup("Determine if an IP address is banned using the Ban Module. If no IP is provided, the current user IP is used."),
+      default_value: NULL,
+      required: FALSE
+    ),
+  ]
+)]
 class IpIsBanned extends RulesConditionBase implements ContainerFactoryPluginInterface {
 
   /**

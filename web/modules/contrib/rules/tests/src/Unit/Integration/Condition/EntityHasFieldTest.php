@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -32,7 +34,7 @@ class EntityHasFieldTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     $entity = $this->prophesizeEntity(ContentEntityInterface::class);
     $entity->hasField('existing-field')->willReturn(TRUE)
       ->shouldBeCalledTimes(1);

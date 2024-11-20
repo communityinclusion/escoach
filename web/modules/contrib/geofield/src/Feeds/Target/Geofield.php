@@ -88,7 +88,7 @@ class Geofield extends FieldTargetBase implements ContainerFactoryPluginInterfac
         foreach ($columns as $column => $value) {
 
           // Add Lat/Lon Coordinates.
-          if (in_array($column, ['lat', 'lon'])) {
+          if (in_array($column, ['lat', 'lon']) && isset($value)) {
             foreach ($value as $item) {
               $coordinates[$column][] = $item;
             }
@@ -126,7 +126,7 @@ class Geofield extends FieldTargetBase implements ContainerFactoryPluginInterfac
 
     // Here is been preparing values for Lat/Lon coordinates.
     foreach ($values as $column => $value) {
-      if (in_array($column, ['lat', 'lon'])) {
+      if (in_array($column, ['lat', 'lon']) && isset($value)) {
         $separated_coordinates = explode(" ", $value);
         $values[$column] = [];
 

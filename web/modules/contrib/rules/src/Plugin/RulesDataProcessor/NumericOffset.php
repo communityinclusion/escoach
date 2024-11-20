@@ -3,8 +3,10 @@
 namespace Drupal\rules\Plugin\RulesDataProcessor;
 
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\rules\Context\DataProcessorInterface;
 use Drupal\rules\Context\ExecutionStateInterface;
+use Drupal\rules\Attribute\RulesDataProcessor;
 
 /**
  * A data processor for applying numerical offsets.
@@ -17,6 +19,10 @@ use Drupal\rules\Context\ExecutionStateInterface;
  *   label = @Translation("Apply numeric offset")
  * )
  */
+#[RulesDataProcessor(
+  id: "rules_numeric_offset",
+  label: new TranslatableMarkup("Apply numeric offset")
+)]
 class NumericOffset extends PluginBase implements DataProcessorInterface {
 
   /**

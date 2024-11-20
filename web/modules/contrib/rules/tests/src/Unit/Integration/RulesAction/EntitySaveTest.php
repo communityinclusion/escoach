@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -41,7 +43,7 @@ class EntitySaveTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Save entity', $this->action->summary());
   }
 
@@ -50,7 +52,7 @@ class EntitySaveTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionImmediately() {
+  public function testActionExecutionImmediately(): void {
     $this->entity->save()->shouldBeCalledTimes(1);
 
     $this->action->setContextValue('entity', $this->entity->reveal())
@@ -65,7 +67,7 @@ class EntitySaveTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionPostponed() {
+  public function testActionExecutionPostponed(): void {
     $this->entity->save()->shouldNotBeCalled();
 
     $this->action->setContextValue('entity', $this->entity->reveal());

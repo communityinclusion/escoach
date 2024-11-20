@@ -39,7 +39,7 @@ class AggregateTest extends TamperPluginTestBase {
    * @return array
    *   A list of data sets, used by ::functionValues().
    */
-  protected function dataSets(): array {
+  protected static function dataSets(): array {
     return [
       // Example taken from https://en.wikipedia.org/wiki/Average.
       [
@@ -128,7 +128,7 @@ class AggregateTest extends TamperPluginTestBase {
   /**
    * Data provider for ::testFunction().
    */
-  public function functionValues() {
+  public static function functionValues() {
     $functions = [
       'average',
       'count',
@@ -141,7 +141,7 @@ class AggregateTest extends TamperPluginTestBase {
     ];
 
     $return = [];
-    foreach ($this->dataSets() as $set) {
+    foreach (static::dataSets() as $set) {
       foreach ($functions as $function) {
         $return[] = [
           'function' => $function,
@@ -170,7 +170,7 @@ class AggregateTest extends TamperPluginTestBase {
   /**
    * Data provider for ::testCount().
    */
-  public function countValues() {
+  public static function countValues() {
     return [
       [
         'mode' => 'normal',
@@ -197,7 +197,8 @@ class AggregateTest extends TamperPluginTestBase {
    * Test invalid data throws exception.
    */
   public function testInvalidDataUntouched() {
-    $this->expectException(TamperException::class, 'Input should be an array.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be an array.');
     $plugin = $this->instantiatePluginWithConfig([
       aggregate::SETTING_FUNCTION => 'average',
     ]);

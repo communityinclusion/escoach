@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -50,7 +52,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Create a test path alias', $this->action->summary());
   }
 
@@ -59,7 +61,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithUnsavedEntity() {
+  public function testActionExecutionWithUnsavedEntity(): void {
     $path_alias = $this->prophesizeEntity(PathAliasInterface::class);
 
     // Test that the alias is only saved once.
@@ -89,7 +91,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithSavedEntity() {
+  public function testActionExecutionWithSavedEntity(): void {
     $path_alias = $this->prophesizeEntity(PathAliasInterface::class);
 
     // Test that the alias is only saved once.

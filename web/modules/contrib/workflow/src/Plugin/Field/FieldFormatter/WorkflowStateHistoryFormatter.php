@@ -19,9 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "workflow_state_history",
  *   module = "workflow",
  *   label = @Translation("Workflow state history"),
- *   field_types = {
- *     "workflow"
- *   },
+ *   field_types = {"workflow"},
  *   quickedit = {
  *     "editor" = "disabled"
  *   }

@@ -4,8 +4,8 @@ namespace Drupal\tamper\Plugin\Tamper;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\tamper\Exception\TamperException;
-use Drupal\tamper\TamperableItemInterface;
 use Drupal\tamper\TamperBase;
+use Drupal\tamper\TamperableItemInterface;
 
 /**
  * Plugin implementation for performing basic math.
@@ -68,6 +68,7 @@ class Math extends TamperBase {
       '#required' => TRUE,
       '#description' => $this->t('A numerical value.'),
       '#default_value' => $this->getSetting(self::SETTING_VALUE),
+      '#step' => 'any',
     ];
 
     return $form;
@@ -112,7 +113,7 @@ class Math extends TamperBase {
   /**
    * {@inheritdoc}
    */
-  public function tamper($data, TamperableItemInterface $item = NULL) {
+  public function tamper($data, ?TamperableItemInterface $item = NULL) {
     $operation = $this->getSetting(self::SETTING_OPERATION);
     $flip = $this->getSetting(self::SETTING_FLIP);
     $value = $this->getSetting(self::SETTING_VALUE);

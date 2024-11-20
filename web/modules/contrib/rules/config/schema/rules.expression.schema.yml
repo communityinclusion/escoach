@@ -70,7 +70,8 @@ rules_expression.rules_and:
       type: sequence
       label: 'Conditions'
       sequence:
-        - type: rules_expression.[id]
+        type: rules_expression.[id]
+        label: "Rules Expression"
 
 rules_expression.rules_or:
   type: rules_expression
@@ -83,7 +84,8 @@ rules_expression.rules_or:
       type: sequence
       label: 'Conditions'
       sequence:
-        - type: rules_expression.[id]
+        type: rules_expression.[id]
+        label: "Rules Expression"
 
 rules_expression.rules_action_set:
   type: rules_expression
@@ -93,7 +95,8 @@ rules_expression.rules_action_set:
       type: sequence
       label: 'Actions'
       sequence:
-        - type: rules_expression.[id]
+        type: rules_expression.[id]
+        label: "Rules Expression"
 
 rules_expression.rules_rule:
   type: rules_expression

@@ -2,8 +2,13 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Drupal\rules\Exception\InvalidArgumentException;
+use Drupal\rules\TypedData\Options\ConvertTypeOptions;
+use Drupal\rules\TypedData\Options\RoundingOptions;
 
 /**
  * Provides an action to convert data from one type to another.
@@ -43,6 +48,40 @@ use Drupal\rules\Exception\InvalidArgumentException;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_data_convert",
+  label: new TranslatableMarkup("Convert data"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "value" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Value"),
+      description: new TranslatableMarkup("The first input value for the calculation."),
+      assignment_restriction: "selector"
+    ),
+    "target_type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Target type"),
+      description: new TranslatableMarkup("The data type to convert a value to."),
+      options_provider: ConvertTypeOptions::class,
+      assignment_restriction: "input"
+    ),
+    "rounding_behavior" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Rounding behavior"),
+      description: new TranslatableMarkup("For integer target types, specify how the conversion result should be rounded."),
+      options_provider: RoundingOptions::class,
+      default_value: NULL,
+      required: FALSE
+    ),
+  ],
+  provides: [
+    "conversion_result" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Conversion result")
+    ),
+  ]
+)]
 class DataConvert extends RulesActionBase {
 
   /**

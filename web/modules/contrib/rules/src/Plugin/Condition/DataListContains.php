@@ -2,8 +2,11 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
-use Drupal\rules\Core\RulesConditionBase;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
+use Drupal\rules\Core\RulesConditionBase;
 
 /**
  * Provides a 'List contains' condition.
@@ -29,6 +32,24 @@ use Drupal\Core\Entity\EntityInterface;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_list_contains",
+  label: new TranslatableMarkup("List contains item"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "list" => new ContextDefinition(
+      data_type: "list",
+      label: new TranslatableMarkup("List"),
+      description: new TranslatableMarkup("The list to be checked."),
+      assignment_restriction: "selector"
+    ),
+    "item" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Item"),
+      description: new TranslatableMarkup("Item to check for.")
+    ),
+  ]
+)]
 class DataListContains extends RulesConditionBase {
 
   /**

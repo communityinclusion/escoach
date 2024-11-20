@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\Core\Messenger\MessengerInterface;
@@ -17,7 +19,7 @@ class DataProcessorTest extends RulesKernelTestBase {
   /**
    * Tests that the numeric offset plugin works.
    */
-  public function testNumericOffset() {
+  public function testNumericOffset(): void {
     // Configure a simple rule with one action.
     $action = $this->expressionManager->createInstance('rules_action',
       // @todo Actually the data processor plugin only applies to numbers, so is

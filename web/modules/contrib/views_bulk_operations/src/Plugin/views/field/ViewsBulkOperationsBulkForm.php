@@ -2,6 +2,7 @@
 
 namespace Drupal\views_bulk_operations\Plugin\views\field;
 
+use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -9,6 +10,7 @@ use Drupal\Core\Routing\RedirectDestinationTrait;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
+use Drupal\views\Attribute\ViewsField;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\Plugin\views\field\UncacheableFieldHandlerTrait;
@@ -26,44 +28,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * Defines the Views Bulk Operations field plugin.
  *
  * @ingroup views_field_handlers
- *
- * @ViewsField("views_bulk_operations_bulk_form")
  */
+#[ViewsField("views_bulk_operations_bulk_form")]
 class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDependencyInterface, ContainerFactoryPluginInterface {
 
   use RedirectDestinationTrait;
   use UncacheableFieldHandlerTrait;
   use ViewsBulkOperationsFormTrait;
-
-  /**
-   * Object that gets the current view data.
-   */
-  protected ViewsbulkOperationsViewDataInterface $viewData;
-
-  /**
-   * Views Bulk Operations action manager.
-   */
-  protected ViewsBulkOperationsActionManager $actionManager;
-
-  /**
-   * Views Bulk Operations action processor.
-   */
-  protected ViewsBulkOperationsActionProcessorInterface $actionProcessor;
-
-  /**
-   * The tempstore service.
-   */
-  protected PrivateTempStoreFactory $tempStoreFactory;
-
-  /**
-   * The current user object.
-   */
-  protected AccountInterface $currentUser;
-
-  /**
-   * The request stack.
-   */
-  protected RequestStack $requestStack;
 
   /**
    * An array of actions that can be executed.
@@ -115,22 +86,14 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    ViewsbulkOperationsViewDataInterface $viewData,
-    ViewsBulkOperationsActionManager $actionManager,
-    ViewsBulkOperationsActionProcessorInterface $actionProcessor,
-    PrivateTempStoreFactory $tempStoreFactory,
-    AccountInterface $currentUser,
-    RequestStack $requestStack
+    protected readonly ViewsbulkOperationsViewDataInterface $viewData,
+    protected readonly ViewsBulkOperationsActionManager $actionManager,
+    protected readonly ViewsBulkOperationsActionProcessorInterface $actionProcessor,
+    protected readonly PrivateTempStoreFactory $tempStoreFactory,
+    protected readonly AccountInterface $currentUser,
+    protected readonly RequestStack $requestStack
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->viewData = $viewData;
-    $this->actionManager = $actionManager;
-    $this->actionProcessor = $actionProcessor;
-    $this->tempStoreFactory = $tempStoreFactory;
-    $this->currentUser = $currentUser;
-    $this->requestStack = $requestStack;
-
   }
 
   /**
@@ -492,46 +455,98 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
       $selected_actions_data = $form_values;
     }
 
+    $table = [
+      '#type' => 'table',
+      '#header' => [
+        '',
+        $this->t('Weight'),
+        $this->t('Title'),
+      ],
+      '#attributes' => [
+        'id' => 'my-module-table',
+      ],
+      '#tabledrag' => [
+        [
+          'action' => 'order',
+          'relationship' => 'sibling',
+          'group' => 'draggable-weight',
+        ],
+      ],
+    ];
+
+    // Set weights on actions - selected ones will always be first.
+    $weight = -1000;
+    foreach ($selected_actions_data as $id => $item) {
+      if (!array_key_exists($id, $this->actions)) {
+        continue;
+      }
+      $this->actions[$id]['weight'] = $weight++;
+    }
+    uasort($this->actions, [SortArray::class, 'sortByWeightElement']);
+
     $delta = 0;
     foreach ($this->actions as $id => $action) {
-      $form['selected_actions'][$delta]['action_id'] = [
+      $table[$delta] = [
+        'data' => [],
+      ];
+      $table[$delta]['#attributes']['class'] = ['draggable'];
+      $table[$delta]['weight'] = [
+        '#type' => 'weight',
+        '#title' => $this->t('Weight'),
+        '#title_display' => 'invisible',
+        '#default_value' => $action['weight'] ?? 0,
+        '#attributes' => [
+          'class' => [
+            'draggable-weight',
+          ],
+        ],
+      ];
+
+      $table[$delta]['container'] = [
+        '#type' => 'container',
+      ];
+
+      $table[$delta]['container']['action_id'] = [
         '#type' => 'value',
         '#value' => $id,
       ];
-      $form['selected_actions'][$delta]['state'] = [
+      $table[$delta]['container']['state'] = [
         '#type' => 'checkbox',
         '#title' => $action['label'],
         '#default_value' => empty($selected_actions_data[$id]) ? 0 : 1,
         '#attributes' => ['class' => ['vbo-action-state']],
       ];
 
-      // There are problems with AJAX on this form when adding
-      // new elements (Views issue), a workaround is to render
-      // all elements and show/hide them when needed.
-      $form['selected_actions'][$delta]['preconfiguration'] = [
-        '#type' => 'fieldset',
+      $table[$delta]['container']['preconfiguration'] = [
+        '#type' => 'details',
         '#title' => $this->t('Preconfiguration for "@action"', [
           '@action' => $action['label'],
         ]),
         '#states' => [
           'visible' => [
-            \sprintf('[name="options[selected_actions][%d][state]"]', $delta) => ['checked' => TRUE],
+            \sprintf('[name="options[selected_actions][table][%d][container][state]"]', $delta) => ['checked' => TRUE],
           ],
         ],
       ];
 
-      // Default label_override element.
-      $form['selected_actions'][$delta]['preconfiguration']['label_override'] = [
+      // Default label and action processing message overrides.
+      $table[$delta]['container']['preconfiguration']['label_override'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Override label'),
         '#description' => $this->t('Leave empty for the default label.'),
         '#default_value' => $selected_actions_data[$id]['preconfiguration']['label_override'] ?? '',
       ];
+      $table[$delta]['container']['preconfiguration']['message_override'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Override processing message'),
+        '#description' => $this->t('Use the "@count" placeholder for number of processed items. Leave empty for the default message.'),
+        '#default_value' => $selected_actions_data[$id]['preconfiguration']['message_override'] ?? '',
+      ];
 
       // Also allow to force a default confirmation step for actoins that don't
       // have it implemented.
       if (empty($action['confirm_form_route_name'])) {
-        $form['selected_actions'][$delta]['preconfiguration']['add_confirmation'] = [
+        $table[$delta]['container']['preconfiguration']['add_confirmation'] = [
           '#type' => 'checkbox',
           '#title' => $this->t('Add confirmation step'),
           '#default_value' => $selected_actions_data[$id]['preconfiguration']['add_confirmation'] ?? FALSE,
@@ -552,11 +567,12 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
           }
           $actionObject->setView($this->view);
         }
-        $form['selected_actions'][$delta]['preconfiguration'] = $actionObject->buildPreConfigurationForm($form['selected_actions'][$delta]['preconfiguration'], $selected_actions_data[$id]['preconfiguration'], $form_state);
+        $table[$delta]['container']['preconfiguration'] = $actionObject->buildPreConfigurationForm($table[$delta]['container']['preconfiguration'], $selected_actions_data[$id]['preconfiguration'], $form_state);
       }
 
       $delta++;
     }
+    $form['selected_actions']['table'] = $table;
 
     parent::buildOptionsForm($form, $form_state);
   }
@@ -569,9 +585,14 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
     if ($selected_actions === NULL) {
       return;
     }
-    $selected_actions = \array_filter($selected_actions, static fn ($action_data) => !empty($action_data['state']));
+    $selected_actions = $selected_actions['table'];
+    $selected_actions = \array_filter($selected_actions, static fn ($action_data) => !empty($action_data['container']['state']));
+
     foreach ($selected_actions as &$item) {
+      unset($item['weight']);
+      $item = array_merge($item, $item['container']);
       unset($item['state']);
+      unset($item['container']);
       if (empty($item['preconfiguration']['label_override'])) {
         unset($item['preconfiguration']['label_override']);
       }
@@ -579,6 +600,7 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
         unset($item['preconfiguration']);
       }
     }
+    $selected_actions = array_values($selected_actions);
     parent::submitOptionsForm($form, $form_state);
   }
 
@@ -865,16 +887,6 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
         }
 
         $definition = $this->actions[$selected_action_data['action_id']];
-
-        // Check access permission, if defined.
-        if (!empty($definition['requirements']['_permission']) && !$this->currentUser->hasPermission($definition['requirements']['_permission'])) {
-          continue;
-        }
-
-        // Check custom access, if defined.
-        if (!empty($definition['requirements']['_custom_access']) && !$definition['class']::customAccess($this->currentUser, $this->view)) {
-          continue;
-        }
 
         // Override label if applicable.
         if (!empty($selected_action_data['preconfiguration']['label_override'])) {

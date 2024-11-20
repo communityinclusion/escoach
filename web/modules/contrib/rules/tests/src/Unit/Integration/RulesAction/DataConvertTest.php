@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
+use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 use Drupal\rules\Exception\InvalidArgumentException;
 
@@ -32,7 +35,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testConvertToInteger() {
+  public function testConvertToInteger(): void {
     $value = 1.5;
 
     // Test the conversion to integer.
@@ -69,7 +72,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testConvertToFloat() {
+  public function testConvertToFloat(): void {
     $value = '1.5';
 
     $converted = $this->executeAction($value, 'float');
@@ -88,7 +91,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testConvertToString() {
+  public function testConvertToString(): void {
     // Test the conversion to test/string.
     $value = 1.5;
 
@@ -103,7 +106,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testInvalidValueException() {
+  public function testInvalidValueException(): void {
     // Set the expected exception class and message.
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Only scalar values are supported.');
@@ -116,7 +119,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testInvalidRoundingBehavior() {
+  public function testInvalidRoundingBehavior(): void {
     // Set the expected exception class and message.
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('A rounding behavior only makes sense with an integer target type.');
@@ -131,7 +134,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testInvalidRoundingBehaviorException() {
+  public function testInvalidRoundingBehaviorException(): void {
     // Set the expected exception class and message.
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Unknown rounding behavior: invalid rounding');
@@ -146,7 +149,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testInvalidTargetTypeException() {
+  public function testInvalidTargetTypeException(): void {
     // Set the expected exception class and message.
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Unknown target type: invalid type');
@@ -160,7 +163,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    *
    * @covers ::refineContextDefinitions
    */
-  public function testRefiningContextDefinitions() {
+  public function testRefiningContextDefinitions(): void {
     // Before context refinement, conversion_result data type defaults to 'any'.
     $this->assertEquals(
       'any',
@@ -188,7 +191,7 @@ class DataConvertTest extends RulesIntegrationTestBase {
    * @return \Drupal\Core\TypedData\TypedDataInterface
    *   The raw conversion result as a typed data object.
    */
-  protected function executeAction($value, $target_type, $rounding_behavior = NULL) {
+  protected function executeAction($value, $target_type, $rounding_behavior = NULL): TypedDataInterface {
 
     $this->action->setContextValue('value', $value);
     $this->action->setContextValue('target_type', $target_type);

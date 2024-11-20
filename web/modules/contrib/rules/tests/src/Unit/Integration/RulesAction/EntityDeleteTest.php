@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -32,7 +34,7 @@ class EntityDeleteTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Delete entity', $this->action->summary());
   }
 
@@ -41,7 +43,7 @@ class EntityDeleteTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecution() {
+  public function testActionExecution(): void {
     $entity = $this->prophesizeEntity(EntityInterface::class);
     $entity->delete()->shouldBeCalledTimes(1);
 

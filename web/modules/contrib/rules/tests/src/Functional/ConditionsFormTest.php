@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional;
 
 /**
@@ -67,7 +69,7 @@ class ConditionsFormTest extends RulesBrowserTestBase {
    *
    * @dataProvider dataConditionsFormWidgets
    */
-  public function testConditionsFormWidgets($id, $required = [], $defaulted = [], $widgets = [], $selectors = []) {
+  public function testConditionsFormWidgets(string $id, array $required = [], array $defaulted = [], array $widgets = [], array $selectors = []): void {
     $expressionManager = $this->container->get('plugin.manager.rules_expression');
     $storage = $this->container->get('entity_type.manager')->getStorage('rules_reaction_rule');
 
@@ -146,7 +148,7 @@ class ConditionsFormTest extends RulesBrowserTestBase {
   }
 
   /**
-   * Provides data for testConditionsFormWidgets().
+   * Data provider - provides data for testConditionsFormWidgets().
    *
    * @return array
    *   The test data array. The top level keys are free text but should be short
@@ -166,7 +168,7 @@ class ConditionsFormTest extends RulesBrowserTestBase {
    *   - (optional) Names of fields for which the selector/direct input button
    *     needs pressing to 'data selection' before the field value is entered.
    */
-  public function dataConditionsFormWidgets() {
+  public static function dataConditionsFormWidgets(): array {
     // Instead of directly returning the full set of test data, create variable
     // $data to hold it. This allows for manipulation before the final return.
     $data = [
@@ -205,7 +207,7 @@ class ConditionsFormTest extends RulesBrowserTestBase {
         'rules_list_count_is',
         [
           'list' => 'node.uid.entity.roles',
-          'value' => 2,
+          'value' => '2',
         ],
         ['operator' => '<='],
       ],

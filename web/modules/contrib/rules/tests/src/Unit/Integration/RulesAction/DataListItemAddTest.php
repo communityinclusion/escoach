@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -31,7 +33,7 @@ class DataListItemAddTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Add list item', $this->action->summary());
   }
 
@@ -40,7 +42,7 @@ class DataListItemAddTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithDefaults() {
+  public function testActionExecutionWithDefaults(): void {
     // Test adding a value at the end (default position).
     $list = ['One', 'Two', 'Three'];
 
@@ -64,7 +66,7 @@ class DataListItemAddTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionItemAppend() {
+  public function testActionExecutionItemAppend(): void {
     // Test adding a value at the end.
     $list = ['One', 'Two', 'Three'];
 
@@ -89,7 +91,7 @@ class DataListItemAddTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionItemPrepend() {
+  public function testActionExecutionItemPrepend(): void {
     // Test adding a value at the start.
     $list = ['One', 'Two', 'Three'];
 
@@ -114,7 +116,7 @@ class DataListItemAddTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionEnforceUnique() {
+  public function testActionExecutionEnforceUnique(): void {
     // Test unique.
     $list = ['One', 'Two', 'Three', 'Four'];
 
@@ -139,7 +141,7 @@ class DataListItemAddTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionNonUnique() {
+  public function testActionExecutionNonUnique(): void {
     // Test non-unique.
     $list = ['One', 'Two', 'Three', 'Four'];
 

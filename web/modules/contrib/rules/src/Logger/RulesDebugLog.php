@@ -9,6 +9,8 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
+// cspell:ignore thisline
+
 /**
  * Logger that stores Rules debug logs with the session service.
  *
@@ -105,7 +107,7 @@ class RulesDebugLog implements LoggerInterface {
    */
   public function render() {
     $build = $this->build();
-    return \Drupal::service('renderer')->renderPlain($build);
+    return \Drupal::service('renderer')->renderInIsolation($build);
   }
 
   /**

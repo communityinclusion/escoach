@@ -5,9 +5,9 @@
  * hook_post_update_NAME functions for entity_usage module.
  */
 
+use Drupal\Core\Entity\RevisionableStorageInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Site\Settings;
-use Drupal\entity_usage\Controller\ListUsageController;
 
 /**
  * Implements hook_post_update_NAME().
@@ -81,6 +81,8 @@ function entity_usage_post_update_regenerate_2x(&$sandbox) {
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = $entity_storage->load($entity_id);
       if ($entity->getEntityType()->isRevisionable()) {
+        assert($entity_storage instanceof RevisionableStorageInterface);
+
         // Track all revisions and translations of the source entity. Sources
         // are tracked as if they were new entities.
         $result = $entity_storage->getQuery()

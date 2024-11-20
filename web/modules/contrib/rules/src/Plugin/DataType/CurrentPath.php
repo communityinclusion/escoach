@@ -2,7 +2,10 @@
 
 namespace Drupal\rules\Plugin\DataType;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\Attribute\DataType;
 use Drupal\Core\TypedData\Plugin\DataType\Map;
+use Drupal\rules\TypedData\Type\CurrentPathDataDefinition;
 
 /**
  * The "current_path" data type.
@@ -16,14 +19,13 @@ use Drupal\Core\TypedData\Plugin\DataType\Map;
  * it.
  *
  * @ingroup typed_data
- *
- * @DataType(
- *   id = "current_path",
- *   label = @Translation("Current path"),
- *   description = @Translation("Current path"),
- *   definition_class = "\Drupal\rules\TypedData\Type\CurrentPathDataDefinition"
- * )
  */
+#[DataType(
+  id: "current_path",
+  label: new TranslatableMarkup("Current path"),
+  description: new TranslatableMarkup("Current path"),
+  definition_class: CurrentPathDataDefinition::class
+)]
 class CurrentPath extends Map {
 
   /**

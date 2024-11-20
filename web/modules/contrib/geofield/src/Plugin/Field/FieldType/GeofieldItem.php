@@ -24,6 +24,13 @@ use Drupal\Core\TypedData\DataDefinition;
 class GeofieldItem extends FieldItemBase {
 
   /**
+   * The Geofield Geometry.
+   *
+   * @var \Geometry|null
+   */
+  private ?\Geometry $geometry;
+
+  /**
    * {@inheritdoc}
    */
   public static function defaultStorageSettings() {
@@ -196,9 +203,8 @@ class GeofieldItem extends FieldItemBase {
       // Note: Geofield FieldType doesn't support Dependency Injection yet
       // (https://www.drupal.org/node/2053415).
       $geo_php_wrapper = \Drupal::service('geofield.geophp');
-      /** @var \Geometry|null $geometry */
-      $geometry = $geo_php_wrapper->load($value);
-      return $geometry instanceof \Geometry ? $geometry->isEmpty() : FALSE;
+      $this->geometry = $geo_php_wrapper->load($value);
+      return $this->geometry instanceof \Geometry ? $this->geometry->isEmpty() : TRUE;
     }
     return TRUE;
   }
@@ -220,24 +226,19 @@ class GeofieldItem extends FieldItemBase {
     // As passing null to parameter #2 ($data) of type string is deprecated in
     // fwrite() of geoPHP::detectFormat()
     // @see https://php.watch/versions/8.1/internal-func-non-nullable-null-deprecation
-    if ($this->value !== NULL) {
-      /** @var \Geometry $geom */
-      $geom = \Drupal::service('geofield.geophp')->load($this->value);
-    }
-
-    if (!empty($geom) && !$geom->isEmpty()) {
+    if (!$this->isEmpty()) {
       /** @var \Point $centroid */
-      $centroid = $geom->getCentroid();
-      $bounding = $geom->getBBox();
+      $centroid = $this->geometry->getCentroid();
+      $bounding = $this->geometry->getBBox();
 
-      $this->geo_type = $geom->geometryType();
+      $this->geo_type = $this->geometry->geometryType();
       $this->lon = $centroid->getX();
       $this->lat = $centroid->getY();
       $this->left = $bounding['minx'];
       $this->top = $bounding['maxy'];
       $this->right = $bounding['maxx'];
       $this->bottom = $bounding['miny'];
-      $this->geohash = substr($geom->out('geohash'), 0, GEOFIELD_GEOHASH_LENGTH);
+      $this->geohash = substr($this->geometry->out('geohash'), 0, GEOFIELD_GEOHASH_LENGTH);
       $this->latlon = $centroid->getY() . ',' . $centroid->getX();
     }
   }

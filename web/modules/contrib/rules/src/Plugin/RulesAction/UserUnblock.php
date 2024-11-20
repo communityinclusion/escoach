@@ -2,6 +2,9 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Drupal\user\UserInterface;
 
@@ -22,6 +25,18 @@ use Drupal\user\UserInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_user_unblock",
+  label: new TranslatableMarkup("Unblock a user"),
+  category: new TranslatableMarkup("User"),
+  context_definitions: [
+    "user" => new ContextDefinition(
+      data_type: "entity:user",
+      label: new TranslatableMarkup("User"),
+      description: new TranslatableMarkup("Specifies the user that should be unblocked.")
+    ),
+  ]
+)]
 class UserUnblock extends RulesActionBase {
   /**
    * Flag that indicates if the entity should be auto-saved later.

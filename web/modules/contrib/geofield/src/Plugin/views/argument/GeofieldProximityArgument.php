@@ -123,7 +123,7 @@ class GeofieldProximityArgument extends Formula implements ContainerFactoryPlugi
     $plugin_id,
     $plugin_definition,
     WktGenerator $wkt_generator,
-    GeofieldProximitySourceManager $proximity_source_manager
+    GeofieldProximitySourceManager $proximity_source_manager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->wktGenerator = $wkt_generator;

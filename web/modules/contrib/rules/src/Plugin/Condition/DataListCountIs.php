@@ -2,7 +2,11 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\ComparisonOperatorNumericOptions;
 
 /**
  * Provides a 'List count comparison' condition.
@@ -34,6 +38,33 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_list_count_is",
+  label: new TranslatableMarkup("List count comparison"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "list" => new ContextDefinition(
+      data_type: "list",
+      label: new TranslatableMarkup("List"),
+      description: new TranslatableMarkup("A multi-valued data element to have its count compared, specified by using a data selector, eg 'node.uid.entity.roles'."),
+      assignment_restriction: "selector"
+    ),
+    "operator" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Operator"),
+      description: new TranslatableMarkup("The comparison operator."),
+      options_provider: ComparisonOperatorNumericOptions::class,
+      assignment_restriction: "input",
+      default_value: "==",
+      required: FALSE
+    ),
+    "value" => new ContextDefinition(
+      data_type: "integer",
+      label: new TranslatableMarkup("Count"),
+      description: new TranslatableMarkup("The count to compare the data count with.")
+    ),
+  ]
+)]
 class DataListCountIs extends RulesConditionBase {
 
   /**

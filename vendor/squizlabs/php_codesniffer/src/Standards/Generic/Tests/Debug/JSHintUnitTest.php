@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Config;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\Debug\JSHintSniff
  */
-class JSHintUnitTest extends AbstractSniffUnitTest
+final class JSHintUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -28,7 +28,6 @@ class JSHintUnitTest extends AbstractSniffUnitTest
      */
     protected function shouldSkipTest()
     {
-        $rhinoPath  = Config::getExecutablePath('rhino');
         $jshintPath = Config::getExecutablePath('jshint');
         if ($jshintPath === null) {
             return true;

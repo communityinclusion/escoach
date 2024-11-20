@@ -2,8 +2,13 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
 use Drupal\rules\Exception\InvalidArgumentException;
+use Drupal\rules\TypedData\Options\AndOrOptions;
+use Drupal\rules\TypedData\Options\RolesOptions;
 use Drupal\user\UserInterface;
 
 /**
@@ -37,6 +42,34 @@ use Drupal\user\UserInterface;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_user_has_role",
+  label: new TranslatableMarkup("User has role"),
+  category: new TranslatableMarkup("User"),
+  context_definitions: [
+    "user" => new ContextDefinition(
+      data_type: "entity:user",
+      label: new TranslatableMarkup("User"),
+      description: new TranslatableMarkup("Specifies the user account to check.")
+    ),
+    "roles" => new ContextDefinition(
+      data_type: "entity:user_role",
+      label: new TranslatableMarkup("Roles"),
+      description: new TranslatableMarkup("Specifies the roles to check for."),
+      multiple: TRUE,
+      options_provider: RolesOptions::class
+    ),
+    "operation" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Matching multiple roles"),
+      description: new TranslatableMarkup("Specify if the user must have <em>all</em> the roles selected or <em>any</em> of the roles selected."),
+      assignment_restriction: "input",
+      default_value: "AND",
+      options_provider: AndOrOptions::class,
+      required: FALSE
+    ),
+  ]
+)]
 class UserHasRole extends RulesConditionBase {
 
   /**

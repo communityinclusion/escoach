@@ -10,6 +10,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\workflow\Entity\WorkflowManager;
 use Drupal\workflow\Entity\WorkflowState;
+use Drupal\workflow\Form\WorkflowTransitionForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,10 +19,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @FieldFormatter(
  *   id = "workflow_default",
  *   module = "workflow",
- *   label = @Translation("Workflow form"),
- *   field_types = {
- *     "workflow"
- *   },
+ *   label = @Translation("Workflow Transition form"),
+ *   field_types = {"workflow"},
  *   quickedit = {
  *     "editor" = "disabled"
  *   }
@@ -114,7 +113,7 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
 
     $field_name = $this->fieldDefinition->getName();
     $entity = $items->getEntity();
-    $entity_type = $entity->getEntityTypeId();
+    $entity_type_id = $entity->getEntityTypeId();
 
     // @todo Perhaps global user is not always the correct user.
     // E.g., on ScheduledTransition->execute()? But this function is mostly used in UI.
@@ -145,7 +144,7 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
       return $elements;
     }
 
-    if ($entity_type == 'comment') {
+    if ($entity_type_id == 'comment') {
       // No Workflow form allowed on a comment display.
       // (Also, this avoids a lot of error messages.)
       return $elements;
@@ -162,7 +161,7 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
     // BEGIN Copy from CommentDefaultFormatter.
     $elements['#cache']['contexts'][] = 'user.permissions';
     // Add the WorkflowTransitionForm to the page.
-    $output['workflows'] = WorkflowManager::getWorkflowTransitionForm($entity, $field_name, []);
+    $output['workflows'] = WorkflowTransitionForm::createInstance($entity, $field_name, []);
 
     // Only show the add workflow form if the user has permission.
     $elements['#cache']['contexts'][] = 'user.roles';

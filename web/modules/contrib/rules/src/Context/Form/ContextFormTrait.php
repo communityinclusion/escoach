@@ -174,7 +174,7 @@ trait ContextFormTrait {
   }
 
   /**
-   * Submit callback: switch a context to data selecor or direct input mode.
+   * Submit callback: switch a context to data selector or direct input mode.
    */
   public static function switchContextMode(array &$form, FormStateInterface $form_state) {
     $element_name = $form_state->getTriggeringElement()['#name'];

@@ -2,7 +2,10 @@
 
 namespace Drupal\rules\Plugin\DataType;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\Attribute\DataType;
 use Drupal\Core\TypedData\Plugin\DataType\Map;
+use Drupal\rules\TypedData\Type\SiteDataDefinition;
 use Drupal\rules\TypedData\Type\SiteInterface;
 
 /**
@@ -17,14 +20,13 @@ use Drupal\rules\TypedData\Type\SiteInterface;
  * it.
  *
  * @ingroup typed_data
- *
- * @DataType(
- *   id = "site",
- *   label = @Translation("Site information"),
- *   description = @Translation("Site information"),
- *   definition_class = "\Drupal\rules\TypedData\Type\SiteDataDefinition"
- * )
  */
+#[DataType(
+  id: "site",
+  label: new TranslatableMarkup("Site information"),
+  description: new TranslatableMarkup("Site information"),
+  definition_class: SiteDataDefinition::class
+)]
 class Site extends Map implements SiteInterface {
 
   /**

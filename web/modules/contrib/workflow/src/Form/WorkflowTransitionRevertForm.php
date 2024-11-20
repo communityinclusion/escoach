@@ -79,13 +79,9 @@ class WorkflowTransitionRevertForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    // If Rules is available, signal the reversion.
-    // @todo Move this Rules_invoke_event to hook outside this module.
-    if (\Drupal::moduleHandler()->moduleExists('rules')) {
-      rules_invoke_event('workflow_state_reverted', $this->entity);
-    }
-
-    $transition = $this->prepareRevertedTransition($this->entity);
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $entity */
+    $entity = $this->entity;
+    $transition = $this->createRevertedTransition($entity);
 
     // The entity will be updated when the transition is executed. Keep the
     // original one for the confirmation message.
@@ -98,7 +94,7 @@ class WorkflowTransitionRevertForm extends EntityConfirmFormBase {
     $comment = ($previous_sid == $new_sid)
       ? $this->t('State is reverted.')
       : $this->t('State could not be reverted.');
-    $this->messenger()->addWarning($comment);
+    $this->messenger()->addMessage($comment);
 
     $form_state->setRedirectUrl($this->getUrl($transition));
   }
@@ -112,7 +108,7 @@ class WorkflowTransitionRevertForm extends EntityConfirmFormBase {
    * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
    *   The prepared transition ready to be stored.
    */
-  protected function prepareRevertedTransition(WorkflowTransitionInterface $transition) {
+  protected function createRevertedTransition(WorkflowTransitionInterface $transition) {
     $user = \Drupal::currentUser();
 
     $entity = $transition->getTargetEntity();
@@ -120,10 +116,10 @@ class WorkflowTransitionRevertForm extends EntityConfirmFormBase {
     $current_sid = workflow_node_current_state($entity, $field_name);
     $previous_sid = $transition->getFromSid();
     $comment = $this->t('State reverted.');
+    $time = \Drupal::time()->getRequestTime();
 
     $transition = WorkflowTransition::create([$current_sid, 'field_name' => $field_name]);
     $transition->setTargetEntity($entity);
-    $time = \Drupal::time()->getRequestTime();
     $transition->setValues($previous_sid, $user->id(), $time, $comment);
 
     return $transition;

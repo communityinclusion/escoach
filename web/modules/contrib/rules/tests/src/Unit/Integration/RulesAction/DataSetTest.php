@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -30,7 +32,7 @@ class DataSetTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Set a data value', $this->action->summary());
   }
 
@@ -39,7 +41,7 @@ class DataSetTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testPrimitiveValues() {
+  public function testPrimitiveValues(): void {
     $this->action->setContextValue('data', 'original')
       ->setContextValue('value', 'replacement');
     $this->action->execute();
@@ -51,7 +53,7 @@ class DataSetTest extends RulesIntegrationTestBase {
   /**
    * Tests that a variable can be set to NULL.
    */
-  public function testSetToNull() {
+  public function testSetToNull(): void {
     // We don't need to set the 'value' context, it is NULL by default.
     $this->action->setContextValue('data', 'original');
     $this->action->execute();

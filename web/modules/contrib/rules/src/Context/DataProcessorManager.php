@@ -2,9 +2,10 @@
 
 namespace Drupal\rules\Context;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
-use Drupal\rules\Annotation\RulesDataProcessor;
+use Drupal\rules\Attribute\RulesDataProcessor;
 
 /**
  * Plugin manager for Rules data processors.
@@ -16,9 +17,10 @@ class DataProcessorManager extends DefaultPluginManager {
   /**
    * {@inheritdoc}
    */
-  public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler, $plugin_definition_annotation_name = RulesDataProcessor::class) {
+  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+    parent::__construct('Plugin/RulesDataProcessor', $namespaces, $module_handler, DataProcessorInterface::class, RulesDataProcessor::class, '\Drupal\rules\Annotation\RulesDataProcessor');
     $this->alterInfo('rules_data_processor_info');
-    parent::__construct('Plugin/RulesDataProcessor', $namespaces, $module_handler, DataProcessorInterface::class, $plugin_definition_annotation_name);
+    $this->setCacheBackend($cache_backend, 'rules_data_processor_plugins');
   }
 
 }

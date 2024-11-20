@@ -2,7 +2,7 @@
 
 namespace Drupal\rules\Context;
 
-use Drupal\Core\Plugin\Context\EntityContextDefinition as EntityContextDefinitionCore;
+use Drupal\Core\Plugin\Context\EntityContextDefinition as CoreEntityContextDefinition;
 use Drupal\Component\Plugin\Exception\ContextException;
 
 /**
@@ -18,47 +18,16 @@ use Drupal\Component\Plugin\Exception\ContextException;
  *
  * @internal
  */
-class EntityContextDefinition extends EntityContextDefinitionCore implements ContextDefinitionInterface {
-
-  /**
-   * The mapping of config export keys to internal properties.
-   *
-   * @var array
-   */
-  public static $nameMap = [
-    'type' => 'dataType',
-    'label' => 'label',
-    'description' => 'description',
-    'multiple' => 'isMultiple',
-    'required' => 'isRequired',
-    'default_value' => 'defaultValue',
-    'constraints' => 'constraints',
-    'allow_null' => 'allowNull',
-    'assignment_restriction' => 'assignmentRestriction',
-  ];
-
-  /**
-   * Whether the context value is allowed to be NULL or not.
-   *
-   * @var bool
-   */
-  public $allowNull = FALSE;
-
-  /**
-   * The assignment restriction of this context.
-   *
-   * @var string|null
-   *
-   * @see \Drupal\rules\Context\ContextDefinitionInterface::getAssignmentRestriction()
-   */
-  public $assignmentRestriction = NULL;
+class EntityContextDefinition extends CoreEntityContextDefinition implements ContextDefinitionInterface {
+  use RulesContextDefinitionTrait;
 
   /**
    * {@inheritdoc}
    */
-  public function toArray() {
+  public function toArray(): array {
     $values = [];
     $defaults = get_class_vars(__CLASS__);
+    // This is \Drupal\rules\Context\ContextDefinition.
     foreach (static::$nameMap as $key => $property_name) {
       // Only export values for non-default properties.
       if ($this->$property_name !== $defaults[$property_name]) {
@@ -91,40 +60,11 @@ class EntityContextDefinition extends EntityContextDefinitionCore implements Con
     }
 
     $definition = $values['class']::create($values['value']);
+    // This is \Drupal\rules\Context\ContextDefinition.
     foreach (array_intersect_key(static::$nameMap, $values) as $key => $name) {
       $definition->$name = $values[$key];
     }
     return $definition;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isAllowedNull() {
-    return $this->allowNull;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAllowNull($null_allowed) {
-    $this->allowNull = $null_allowed;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAssignmentRestriction() {
-    return $this->assignmentRestriction;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAssignmentRestriction($restriction) {
-    $this->assignmentRestriction = $restriction;
-    return $this;
   }
 
 }

@@ -70,7 +70,7 @@ abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactory
     array $third_party_settings,
     GeoPHPInterface $geophp_wrapper,
     WktGeneratorInterface $wkt_generator,
-    GeofieldBackendManager $geofield_backend_manager = NULL
+    GeofieldBackendManager $geofield_backend_manager = NULL,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
     try {

@@ -2,6 +2,9 @@
 
 namespace Drupal\rules_test\Plugin\Condition;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
 
 /**
@@ -18,6 +21,17 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_test_provider",
+  label: new TranslatableMarkup("Test condition provider"),
+  category: new TranslatableMarkup("Tests"),
+  provides: [
+    "provided_text" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Provided text")
+    ),
+  ]
+)]
 class TestConditionProvider extends RulesConditionBase {
 
   /**

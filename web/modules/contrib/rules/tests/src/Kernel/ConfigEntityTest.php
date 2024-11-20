@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextDefinition;
@@ -32,7 +34,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
   /**
    * Tests that an empty rule configuration can be saved.
    */
-  public function testSavingEmptyRule() {
+  public function testSavingEmptyRule(): void {
     // This test does not perform assertions, and the @doesNotPerformAssertions
     // annotation does not work properly in DrupalCI for PHP 7.4.
     // @see https://www.drupal.org/project/rules/issues/3179763
@@ -48,7 +50,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
   /**
    * Tests saving the configuration of an action and then loading it again.
    */
-  public function testConfigAction() {
+  public function testConfigAction(): void {
     $action = $this->expressionManager->createAction('rules_test_debug_log');
     $config_entity = $this->storage->create([
       'id' => 'test_rule',
@@ -73,7 +75,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
   /**
    * Tests saving the nested config of a rule and then loading it again.
    */
-  public function testConfigRule() {
+  public function testConfigRule(): void {
     // Create a simple rule with one action and one condition.
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
@@ -96,7 +98,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
   /**
    * Make sure that expressions using context definitions can be exported.
    */
-  public function testContextDefinitionExport() {
+  public function testContextDefinitionExport(): void {
     $component = RulesComponent::create($this->expressionManager->createRule())
       ->addContextDefinition('test', ContextDefinition::create('string')
         ->setLabel('Test string')
@@ -119,7 +121,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
   /**
    * Tests that a reaction rule config entity can be saved.
    */
-  public function testReactionRuleSaving() {
+  public function testReactionRuleSaving(): void {
     // This test does not perform assertions, and the @doesNotPerformAssertions
     // annotation does not work properly in DrupalCI for PHP 7.4.
     // @see https://www.drupal.org/project/rules/issues/3179763

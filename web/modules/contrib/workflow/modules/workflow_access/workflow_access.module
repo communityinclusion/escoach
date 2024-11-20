@@ -12,6 +12,8 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\user\Entity\Role;
+use Drupal\workflow\Entity\WorkflowInterface;
+use Drupal\workflow\Entity\WorkflowState;
 use Drupal\workflow\Entity\WorkflowTransition;
 
 /**
@@ -61,16 +63,42 @@ function workflow_access_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * @inheritdoc
+ * {@inheritdoc}
  */
 function workflow_access_workflow_operations($op, EntityInterface $entity = NULL) {
   // @todo Create action link for AccessRoleForm on WorkflowListBuilder.
   $operations = [];
+
+  switch (TRUE) {
+    case $entity instanceof WorkflowInterface:
+      /** @var \Drupal\workflow\Entity\WorkflowInterface $entity */
+      $label = $entity->label();
+      $wid = $entity->id();
+      break;
+
+    case $entity instanceof WorkflowState:
+      /** @var \Drupal\workflow\Entity\WorkflowState $entity */
+      $label = $entity->getWorkflowId();
+      $wid = $entity->getWorkflowId();
+      break;
+  }
+
+  // $alt = t('Control content access for @wf', ['@wf' => $label]);
+  // $attributes = ['alt' => $alt, 'title' => $alt];
+  $operations['workflow_access'] = [
+    'title' => t('Access'),
+    'weight' => 50,
+    // @todo use toUrl, using linkTemplates or RouteSubscriber::AlterRoutes().
+    //'url' => $entity->getWorkflow()->toUrl('access_form'),
+    'url' => Url::fromRoute('entity.workflow_type.access_form', ['workflow_type' => $wid]),
+    'query' => \Drupal::destination()->getAsArray(),
+  ];
+
   return $operations;
 }
 
 /**
- * Implements hook_ENTITY_TYPE_insert().
+ * Implements hook_ENTITY_TYPE_insert() for 'user_role'.
  *
  * We use the Role weight as an id.
  * In contrary to content_access module, that uses a 'content_access_roles_gids'
@@ -87,7 +115,7 @@ function workflow_access_user_role_insert(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_access_ENTITY_TYPE_update().
+ * Implements hook_ENTITY_TYPE_update() for 'user_role'.
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  */
@@ -166,25 +194,22 @@ function workflow_access_node_access_records(NodeInterface $node) {
 
     // Get 'author' of this entity. Some entities (e.g., taxonomy_term)
     // do not have a uid. But then again: node_access is only for nodes...
-    $uid = ($translation->getOwnerId()) ? (int) $translation->getOwnerId() : 0;
+    /** @var \Drupal\node\NodeInterface $translation */
+    $uid = (int) $translation->getOwnerId() ?? 0;
 
-    $workflow_transitions = [];
-    if (isset($translation->workflow_transitions)) {
-      $workflow_transitions = $translation->workflow_transitions;
-    }
-    else {
+    $workflow_transitions = $translation->workflow_transitions ?? [];
+    if (!$workflow_transitions) {
       // Sometimes, a node is saved without going through workflow_transition_form.
       // E.g.,
       // - when saving a node with workflow_node programmatically with node_save();
       // - when changing a state on a node view page/history tab;
-      // - when rebuilding permissions via batch for Workflow Fields.
+      // - when rebuilding permissions via batch for Workflow fields.
       // In that case, we need to create the workflow_transitions ourselves to
       // calculate the grants.
       foreach ($workflow_field_names as $field_name) {
         // Create a dummy transition, just to set $workflow_transitions.
         $old_sid = $new_sid = $translation->{$field_name}->value;
         if ($old_sid) {
-          /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
           $transition = WorkflowTransition::create([$old_sid, 'field_name' => $field_name]);
           $transition->setTargetEntity($translation);
           $transition->setValues($new_sid, $translation->getOwnerId(), \Drupal::time()->getRequestTime(), '');
@@ -247,7 +272,14 @@ function workflow_access_node_access_explain($row) {
       break;
 
     case 'workflow_access':
-      $roles = user_roles();
+      if (version_compare(\Drupal::VERSION, '10.2', '>=')) {
+        $roles = Role::loadMultiple();
+      }
+      else {
+        // @phpstan-ignore-next-line
+        $roles = user_roles();
+      }
+
       $interpretations[$row->gid] = t(
         'Workflow access: %role may access', ['%role' => $roles[$row->gid]]
       );
@@ -285,8 +317,7 @@ function workflow_access_delete_workflow_access_by_sid($sid) {
  * Given data, insert into workflow access - we never update.
  */
 function workflow_access_insert_workflow_access_by_sid($sid, &$data, Config $config = NULL) {
-  $config = \Drupal::configFactory()->getEditable('workflow_access.role');
-  $config
+  \Drupal::configFactory()->getEditable('workflow_access.role')
     ->set($sid, $data)
     ->save();
 }

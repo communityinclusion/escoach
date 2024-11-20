@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Language\LanguageInterface;
@@ -52,7 +54,7 @@ class PathAliasExistsTest extends RulesIntegrationTestBase {
    *
    * @covers ::__construct
    */
-  public function testConstructor() {
+  public function testConstructor(): void {
     $property = new \ReflectionProperty($this->condition, 'aliasManager');
     $property->setAccessible(TRUE);
 
@@ -64,7 +66,7 @@ class PathAliasExistsTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationAliasWithPath() {
+  public function testConditionEvaluationAliasWithPath(): void {
     // If the path exists, getPathByAlias() should return the path.
     $this->aliasManager->getPathByAlias('/alias-for-path', NULL)
       ->willReturn('/path-with-alias')
@@ -92,7 +94,7 @@ class PathAliasExistsTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationAliasWithoutPath() {
+  public function testConditionEvaluationAliasWithoutPath(): void {
     // If the path does not exist, getPathByAlias() should return the alias.
     $this->aliasManager->getPathByAlias('/alias-for-path-that-does-not-exist', NULL)
       ->willReturn('/alias-for-path-that-does-not-exist')

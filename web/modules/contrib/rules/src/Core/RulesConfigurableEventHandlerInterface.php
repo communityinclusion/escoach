@@ -4,6 +4,7 @@ namespace Drupal\rules\Core;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Interface for handling configurable rules events.
@@ -28,13 +29,8 @@ interface RulesConfigurableEventHandlerInterface extends RulesEventHandlerInterf
   /**
    * Determines the qualified event names for the dispatched event.
    *
-   * @todo The 'object' type hint should be replaced with the appropriate
-   * class once Symfony 4 is no longer supported.
-   *
-   * @param object $event
+   * @param \Symfony\Contracts\EventDispatcher\Event $event
    *   The event data of the event being dispatched.
-   *   In Drupal 9 this will be a \Symfony\Component\EventDispatcher\Event,
-   *   In Drupal 10 this will be a \Symfony\Contracts\EventDispatcher\Event.
    * @param string $event_name
    *   The event base name.
    * @param array $event_definition
@@ -46,7 +42,7 @@ interface RulesConfigurableEventHandlerInterface extends RulesEventHandlerInterf
    *   the fully-qualified event "rules_entity_view:node--article" should be
    *   triggered in addition to base event "rules_entity_view:node".
    */
-  public static function determineQualifiedEvents(object $event, $event_name, array &$event_definition);
+  public static function determineQualifiedEvents(Event $event, $event_name, array &$event_definition);
 
   /**
    * Provides a human readable summary of the event's configuration.

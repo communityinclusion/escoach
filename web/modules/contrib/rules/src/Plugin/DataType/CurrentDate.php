@@ -2,7 +2,10 @@
 
 namespace Drupal\rules\Plugin\DataType;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TypedData\Attribute\DataType;
 use Drupal\Core\TypedData\Plugin\DataType\Map;
+use Drupal\rules\TypedData\Type\CurrentDateDataDefinition;
 
 /**
  * The "current_date" data type.
@@ -16,14 +19,13 @@ use Drupal\Core\TypedData\Plugin\DataType\Map;
  * it.
  *
  * @ingroup typed_data
- *
- * @DataType(
- *   id = "current_date",
- *   label = @Translation("Current date"),
- *   description = @Translation("Current date"),
- *   definition_class = "\Drupal\rules\TypedData\Type\CurrentDateDataDefinition"
- * )
  */
+#[DataType(
+  id: "current_date",
+  label: new TranslatableMarkup("Current date"),
+  description: new TranslatableMarkup("Current date"),
+  definition_class: CurrentDateDataDefinition::class
+)]
 class CurrentDate extends Map {
 
   /**

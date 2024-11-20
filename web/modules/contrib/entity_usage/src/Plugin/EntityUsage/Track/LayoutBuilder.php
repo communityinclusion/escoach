@@ -104,16 +104,25 @@ class LayoutBuilder extends EntityUsageTrackBase {
         $configuration = $component->toArray()['configuration'];
         try {
           $def = $this->blockManager->getDefinition($component->getPluginId());
+          ['id' => $pluginId] = $def;
         }
         catch (PluginNotFoundException $e) {
           // Block has since been removed, continue.
           continue;
         }
-        if ($def['id'] === 'inline_block') {
+        if ($pluginId === 'inline_block') {
           $blockContentRevisionIds[] = $configuration['block_revision_id'];
         }
-        elseif ($def['id'] === 'entity_browser_block' && !empty($configuration['entity_ids'])) {
+        elseif ($pluginId === 'entity_browser_block' && !empty($configuration['entity_ids'])) {
           $ebbContentIds = array_unique(array_merge($ebbContentIds, (array) $configuration['entity_ids']));
+        }
+        elseif ($pluginId === 'block_content') {
+          [1 => $uuid] = explode(':', $configuration['id']);
+          /** @var \Drupal\block_content\BlockContentInterface|null $blockContent */
+          $blockContent = $this->entityRepository->loadEntityByUuid('block_content', $uuid);
+          if ($blockContent) {
+            $blockContentRevisionIds[] = $blockContent->getRevisionId();
+          }
         }
 
         // Check the block plugin's content dependencies.

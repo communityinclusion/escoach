@@ -132,13 +132,13 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    * - create/revert/rebuild Workflow with Features; @see workflow.features.inc
    * - save Workflow programmatically;
    *
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function save() {
     $status = parent::save();
     // Make sure a Creation state exists, when saving a Workflow.
     if ($status == SAVED_NEW) {
-      $this->getCreationState();
+      $this->createCreationState();
     }
 
     return $status;
@@ -148,12 +148,11 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    * {@inheritdoc}
    */
   public static function postLoad(EntityStorageInterface $storage, array &$entities) {
-    /** @var \Drupal\workflow\Entity\Workflow $workflow */
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
     foreach ($entities as &$workflow) {
       // Better performance, together with Annotation static_cache = TRUE.
       // Load the states, and set the creation state.
       $workflow->getStates();
-      $workflow->getCreationState();
     }
   }
 
@@ -242,10 +241,25 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
   /**
    * {@inheritdoc}
    */
+  public function createCreationState() {
+    if (\Drupal::isConfigSyncing()) {
+      // Do not create the default state while configuration are importing.
+    }
+    elseif (!$this->creation_state) {
+      $state = $this->createState(WORKFLOW_CREATION_STATE_NAME);
+      $this->creation_state = $state;
+      $this->creation_sid = $state->id();
+    }
+    return $this->creation_state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function createState($sid, $save = TRUE) {
-    $wid = $this->id();
     /** @var \Drupal\workflow\Entity\WorkflowState $state */
     $state = WorkflowState::load($sid);
+    $wid = $this->id();
     if (!$state || $wid != $state->getWorkflowId()) {
       $values = ['id' => $sid, 'wid' => $wid];
       $state = WorkflowState::create($values);
@@ -274,17 +288,8 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
         }
       }
     }
-
-    // Then, create it.
-    if (\Drupal::isConfigSyncing()) {
-      // Do not create the default state while configuration are importing.
-    }
-    elseif (!$this->creation_state) {
-      $state = $this->createState(WORKFLOW_CREATION_STATE_NAME);
-      $this->creation_state = $state;
-      $this->creation_sid = $state->id();
-    }
-
+    // If not found, create it.
+    $this->createCreationState();
     return $this->creation_state;
   }
 
@@ -293,8 +298,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
    */
   public function getCreationSid() {
     if (!$this->creation_sid) {
-      $state = $this->getCreationState();
-      return $state->id();
+      $this->getCreationState();
     }
     return $this->creation_sid;
   }
@@ -432,8 +436,8 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
     $config_transitions = [];
 
     // Get filters on 'from' states, 'to' states, roles.
-    $from_sid = isset($conditions['from_sid']) ? $conditions['from_sid'] : FALSE;
-    $to_sid = isset($conditions['to_sid']) ? $conditions['to_sid'] : FALSE;
+    $from_sid = $conditions['from_sid'] ?? FALSE;
+    $to_sid = $conditions['to_sid'] ?? FALSE;
 
     // Get valid states + creation state.
     $states = $this->getStates('CREATION');
@@ -444,7 +448,6 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
       $this->sortTransitions();
     }
 
-    /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $config_transition */
     foreach ($this->transitions as &$config_transition) {
       if (!isset($states[$config_transition->getFromSid()])) {
         // Not a valid transition for this workflow. @todo Delete them.
@@ -527,7 +530,7 @@ class Workflow extends ConfigEntityBase implements WorkflowInterface {
     if (!$this->defaultSettingsMerged && !array_key_exists($key, $this->options)) {
       $this->mergeDefaults();
     }
-    return isset($this->options[$key]) ? $this->options[$key] : NULL;
+    return $this->options[$key] ?? NULL;
   }
 
   /**

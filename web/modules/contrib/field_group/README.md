@@ -72,11 +72,6 @@ chosen.
                  element. You can configure attributes and label element.
                  The following two groupings works differently because you must
                  associate them with another grouping.
-- Accordions : This group of fields makes the child groups as a jQuery
-               accordion. As a first step you must create an Accordions
-               group. You can set a label and choose an effect. Then you
-               can create an Accordion Item as a child. This group can
-               contain fields.
 - Tabs : This fieldgroup renders child groups in its own tabs wrapper.
          As a first step you must create an Tabs group. You can set
          choose if you want that your tabs are show horizontally or
@@ -95,5 +90,5 @@ chosen.
 - zuuperman - [zuuperman](http://drupal.org/user/361625)
 - swentel - [swentel](http://drupal.org/user/107403)
 
-Inspirators:
+Inspirers:
 - yched - [yched](http://drupal.org/user/39567)

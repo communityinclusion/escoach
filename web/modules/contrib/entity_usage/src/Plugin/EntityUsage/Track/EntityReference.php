@@ -15,6 +15,7 @@ use Drupal\entity_usage\EntityUsageTrackBase;
  *   field_types = {
  *     "entity_reference",
  *     "entity_reference_revisions",
+ *     "entity_reference_entity_modify",
  *     "file",
  *     "image",
  *     "webform",

@@ -2,7 +2,12 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\ListPositionOptions;
+use Drupal\rules\TypedData\Options\YesNoOptions;
 
 /**
  * Provides an 'Add list item' action.
@@ -40,6 +45,40 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_list_item_add",
+  label: new TranslatableMarkup("Add list item"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "list" => new ContextDefinition(
+      data_type: "list",
+      label: new TranslatableMarkup("List"),
+      description: new TranslatableMarkup("The data list from which an item is to be removed."),
+      assignment_restriction: "selector"
+    ),
+    "item" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Item"),
+      description: new TranslatableMarkup("Item to remove.")
+    ),
+    "unique" => new ContextDefinition(
+      data_type: "boolean",
+      label: new TranslatableMarkup("Enforce uniqueness"),
+      description: new TranslatableMarkup("Only add the item to the list if it is not yet contained."),
+      options_provider: YesNoOptions::class,
+      default_value: FALSE,
+      required: FALSE
+    ),
+    "position" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Insert position"),
+      description: new TranslatableMarkup("Position to insert the item."),
+      options_provider: ListPositionOptions::class,
+      default_value: "end",
+      required: FALSE
+    ),
+  ]
+)]
 class DataListItemAdd extends RulesActionBase {
 
   /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional;
 
 /**
@@ -24,7 +26,7 @@ class TempStorageTest extends RulesBrowserTestBase {
   /**
    * Tests that editing a rule locks it for another user.
    */
-  public function testLocking() {
+  public function testLocking(): void {
     // Create a rule with the first user.
     $account_1 = $this->drupalCreateUser(['administer rules']);
     $this->drupalLogin($account_1);

@@ -6,7 +6,12 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\LanguageOptions;
+use Drupal\rules\TypedData\Options\RolesOptions;
 use Drupal\user\UserStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -50,6 +55,45 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_email_to_users_of_role",
+  label: new TranslatableMarkup("Send email to all users of a role"),
+  category: new TranslatableMarkup("System"),
+  context_definitions: [
+    "roles" => new ContextDefinition(
+      data_type: "entity:user_role",
+      label: new TranslatableMarkup("Roles"),
+      description: new TranslatableMarkup("The roles to which to send the email."),
+      options_provider: RolesOptions::class,
+      multiple: TRUE
+    ),
+    "subject" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Subject"),
+      description: new TranslatableMarkup("The email's subject.")
+    ),
+    "message" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Message"),
+      description: new TranslatableMarkup("The email's message body. Drupal will by default remove all HTML tags. If you want to use HTML you must override this behavior by installing a contributed module such as Mime Mail.")
+    ),
+    "reply" => new ContextDefinition(
+      data_type: "email",
+      label: new TranslatableMarkup("Reply to"),
+      description: new TranslatableMarkup("The email's reply-to address. Leave it empty to use the site-wide configured address."),
+      default_value: NULL,
+      required: FALSE
+    ),
+    "language" => new ContextDefinition(
+      data_type: "language",
+      label: new TranslatableMarkup("Language"),
+      description: new TranslatableMarkup("If specified, the language object (not language code) used for getting the email message and subject."),
+      options_provider: LanguageOptions::class,
+      default_value: NULL,
+      required: FALSE
+    ),
+  ]
+)]
 class SystemEmailToUsersOfRole extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

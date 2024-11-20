@@ -9,8 +9,8 @@ use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
  * Defines a workflow status field mapper.
  *
  * @FeedsTarget(
- * id = "workflow_feeds_target",
- * field_types = {"workflow"}
+ *   id = "workflow_feeds_target",
+ *   field_types = {"workflow"},
  * )
  */
 class Workflow extends FieldTargetBase {

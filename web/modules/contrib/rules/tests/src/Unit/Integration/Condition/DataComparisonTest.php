@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\TypedData\DataDefinition;
@@ -32,7 +34,7 @@ class DataComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorEquals() {
+  public function testConditionEvaluationOperatorEquals(): void {
     // Test that when a boolean data does not equal a boolean value
     // and the operator is not set - should fallback to '=='.
     $this->condition
@@ -85,7 +87,7 @@ class DataComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorContains() {
+  public function testConditionEvaluationOperatorContains(): void {
     // Test that when the data string contains the value string, and the
     // operation is 'CONTAINS', TRUE is returned.
     $this->condition
@@ -124,7 +126,7 @@ class DataComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorIn() {
+  public function testConditionEvaluationOperatorIn(): void {
     // Test that when the data string is 'IN' the value array, TRUE is returned.
     $this->condition
       ->setContextValue('data', 'Llama')
@@ -146,7 +148,7 @@ class DataComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorLessThan() {
+  public function testConditionEvaluationOperatorLessThan(): void {
     // Test that when data is less than value and operation is '<',
     // TRUE is returned.
     $this->condition
@@ -169,7 +171,7 @@ class DataComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorGreaterThan() {
+  public function testConditionEvaluationOperatorGreaterThan(): void {
     // Test that when data is greater than value and operation is '>',
     // TRUE is returned.
     $this->condition
@@ -192,14 +194,14 @@ class DataComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Data comparison', $this->condition->summary());
   }
 
   /**
    * @covers ::refineContextDefinitions
    */
-  public function testRefineContextDefinitions() {
+  public function testRefineContextDefinitions(): void {
     // When a string is selected for comparison, the value must be string also.
     $this->condition->refineContextDefinitions([
       'data' => DataDefinition::create('string'),

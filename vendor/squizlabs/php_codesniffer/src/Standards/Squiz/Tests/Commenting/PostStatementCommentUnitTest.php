@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\PostStatementCommentSniff
  */
-class PostStatementCommentUnitTest extends AbstractSniffUnitTest
+final class PostStatementCommentUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -40,6 +40,12 @@ class PostStatementCommentUnitTest extends AbstractSniffUnitTest
                 18 => 1,
                 35 => 1,
                 53 => 1,
+                57 => 1,
+                58 => 1,
+                59 => 1,
+                60 => 1,
+                63 => 1,
+                64 => 1,
             ];
 
         case 'PostStatementCommentUnitTest.1.js':

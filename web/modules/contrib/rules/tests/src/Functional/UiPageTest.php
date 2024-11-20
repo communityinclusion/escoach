@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional;
 
 use Drupal\node\Entity\NodeType;
@@ -49,7 +51,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that the reaction rule listing page is reachable.
    */
-  public function testReactionRulePage() {
+  public function testReactionRulePage(): void {
     $account = $this->drupalCreateUser(['administer rules']);
     $this->drupalLogin($account);
 
@@ -66,7 +68,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that creating a reaction rule works.
    */
-  public function testCreateReactionRule() {
+  public function testCreateReactionRule(): void {
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/workflow/rules');
@@ -101,7 +103,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that enabling and disabling a rule works.
    */
-  public function testRuleStatusOperations() {
+  public function testRuleStatusOperations(): void {
     // Setup an active rule.
     $this->testCreateReactionRule();
     $this->drupalGet('admin/config/workflow/rules');
@@ -121,7 +123,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that an event can be added.
    */
-  public function testAddEvent() {
+  public function testAddEvent(): void {
     // Setup an active rule.
     $this->testCreateReactionRule();
 
@@ -153,7 +155,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that an event with type restriction can be added.
    */
-  public function testAddEventWithRestrictByType() {
+  public function testAddEventWithRestrictByType(): void {
     // Add a content type called 'article'.
     $node_type = NodeType::create([
       'type' => 'article',
@@ -196,7 +198,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that an event can be deleted.
    */
-  public function testDeleteEvent() {
+  public function testDeleteEvent(): void {
     // Create a rule with two events.
     $rule = $this->storage->create([
       'id' => 'test_rule',
@@ -240,7 +242,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that events cannot be deleted when there is only one event.
    */
-  public function testNoDeleteEventWhenRulesHasSingleEvent() {
+  public function testNoDeleteEventWhenRulesHasSingleEvent(): void {
     // Create a rule.
     $rule = $this->storage->create([
       'id' => 'test_rule',
@@ -271,7 +273,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that cancelling an expression from a rule works.
    */
-  public function testCancelExpressionInRule() {
+  public function testCancelExpressionInRule(): void {
     // Setup a rule with one condition.
     $this->testCreateReactionRule();
 
@@ -297,7 +299,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that deleting an expression from a rule works.
    */
-  public function testDeleteExpressionInRule() {
+  public function testDeleteExpressionInRule(): void {
     // Setup a rule with one condition.
     $this->testCreateReactionRule();
 
@@ -317,7 +319,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that a condition with no context can be configured.
    */
-  public function testNoContextCondition() {
+  public function testNoContextCondition(): void {
     // Setup a rule with one condition.
     $this->testCreateReactionRule();
 
@@ -334,7 +336,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that a negated condition has NOT prefixed to its label.
    */
-  public function testNegatedCondition() {
+  public function testNegatedCondition(): void {
     // Setup a rule with one condition.
     $this->testCreateReactionRule();
 
@@ -345,7 +347,7 @@ class UiPageTest extends RulesBrowserTestBase {
 
     // Edit the condition, negate it, then check the label again.
     $this->clickLink('Edit');
-    $this->fillField('Negate', 1);
+    $this->checkField('Negate', TRUE);
     $this->pressButton('Save');
     $assert->pageTextContains('NOT Node is promoted');
   }
@@ -353,7 +355,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that an action with a 'multiple' context can be configured.
    */
-  public function testMultipleContextAction() {
+  public function testMultipleContextAction(): void {
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/workflow/rules');

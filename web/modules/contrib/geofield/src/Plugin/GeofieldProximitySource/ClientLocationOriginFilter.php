@@ -27,20 +27,25 @@ class ClientLocationOriginFilter extends ManualOriginDefault {
    */
   public function buildOptionsForm(array &$form, FormStateInterface $form_state, array $options_parents, $is_exposed = FALSE) {
 
-    $form['#attributes'] = [
-      'class' => ['proximity-origin-client'],
-    ];
+    // For the Client Location Origin Filter. Lat and Lon are being set only on
+    // the Client Front end, thus we set them as initially null.
+    $lat = NULL;
+    $lon = NULL;
+
+    if ($is_exposed) {
+      $form['#attributes']['class'][] = 'proximity-origin-client';
+    }
 
     $form["origin"] = [
       '#title' => $this->t('Client Coordinates'),
       '#type' => 'geofield_latlon',
       '#description' => $this->t('Value in decimal degrees. Use dot (.) as decimal separator.'),
       '#default_value' => [
-        'lat' => '',
-        'lon' => '',
+        'lat' => $lat,
+        'lon' => $lon,
       ],
       '#attributes' => [
-        'class' => ['visually-hidden'],
+        'class' => ['proximity-origin-input visually-hidden'],
       ],
     ];
 
@@ -72,7 +77,11 @@ class ClientLocationOriginFilter extends ManualOriginDefault {
               '@lon' => $this->t('undefined'),
             ]),
           ]),
+          '#attributes' => [
+            'class' => ['proximity-origin-summary'],
+          ],
         ];
+        $form['origin_summary']['#attached']['library'][] = 'geofield/proximity_origin_summary_update';
       }
     }
   }

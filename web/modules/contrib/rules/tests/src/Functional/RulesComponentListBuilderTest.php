@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional;
 
 /**
@@ -47,7 +49,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
   /**
    * Tests that the rule component listing page is reachable.
    */
-  public function testRuleComponentPage() {
+  public function testRuleComponentPage(): void {
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/workflow/rules/components');
@@ -63,7 +65,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
   /**
    * Tests that creating a rules component works.
    */
-  public function testCreateRulesComponent() {
+  public function testCreateRulesComponent(): void {
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/workflow/rules/components');
@@ -96,7 +98,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
   /**
    * Tests that cancelling an expression from a component works.
    */
-  public function testCancelExpressionInComponent() {
+  public function testCancelExpressionInComponent(): void {
     // Setup a rule with one condition.
     $this->testCreateRulesComponent();
 
@@ -122,7 +124,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
   /**
    * Tests that deleting an expression from a rule works.
    */
-  public function testDeleteExpressionInComponent() {
+  public function testDeleteExpressionInComponent(): void {
     // Setup a rule with one condition.
     $this->testCreateRulesComponent();
 
@@ -142,7 +144,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
   /**
    * Tests that a condition with no context can be configured.
    */
-  public function testNoContextCondition() {
+  public function testNoContextCondition(): void {
     // Setup a rule with one condition.
     $this->testCreateRulesComponent();
 
@@ -159,7 +161,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
   /**
    * Tests that a negated condition has NOT prefixed to its label.
    */
-  public function testNegatedCondition() {
+  public function testNegatedCondition(): void {
     // Setup a rule with one condition.
     $this->testCreateRulesComponent();
 
@@ -170,7 +172,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
 
     // Edit the condition, negate it, then check the label again.
     $this->clickLink('Edit');
-    $this->fillField('Negate', 1);
+    $this->checkField('Negate', TRUE);
     $this->pressButton('Save');
     $assert->pageTextContains('NOT User is blocked');
   }
@@ -178,7 +180,7 @@ class RulesComponentListBuilderTest extends RulesBrowserTestBase {
   /**
    * Tests that an action with a 'multiple' context can be configured.
    */
-  public function testMultipleContextAction() {
+  public function testMultipleContextAction(): void {
     $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/workflow/rules/components');

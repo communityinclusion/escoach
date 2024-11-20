@@ -1,19 +1,18 @@
 langcode: en
-status: true
+status: false
 dependencies:
   module:
-    - workflow:workflow
-  theme:
-    - bartik
+    - workflow
+_core:
+  default_config_hash: EkPFj8uba5YsGtMNWXPTQ40UIzmW-MwIOhkdBgx2reI
 id: workflowtransitionform
-theme: bartik
-region: sidebar_second
+region: ''
 weight: -7
-provider: null
+provider: workflow
 plugin: workflow_transition_form_block
 settings:
   id: workflow_transition_form_block
   label: 'Workflow Transition form'
-  provider: workflow
   label_display: visible
+  provider: workflow
 visibility: {  }

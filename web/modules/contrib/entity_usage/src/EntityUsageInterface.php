@@ -160,7 +160,7 @@ interface EntityUsageInterface {
    * @param \Drupal\Core\Entity\EntityInterface $source_entity
    *   The source entity to check for references.
    * @param int $vid
-   *   The revision id to return the references for. Defaults to all revisions.
+   *   (optional) The revision id to return the references for. Defaults to all revisions.
    *
    * @return array<string, array<int, array<array{method: string, field_name: string, count: string}>>>
    *   A nested array with usage data. The first level is keyed by the type of

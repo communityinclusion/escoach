@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
@@ -20,7 +22,7 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a rule can be used as action.
    */
-  public function testActionAvailable() {
+  public function testActionAvailable(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $rules_config = new RulesComponentConfig([
@@ -39,7 +41,7 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the execution of the action invokes the Rules component.
    */
-  public function testExecute() {
+  public function testExecute(): void {
     // Set up a rules component that will just save an entity.
     $nested_rule = $this->rulesExpressionManager->createRule();
     $nested_rule->addAction('rules_entity_save', ContextConfig::create()
@@ -74,7 +76,7 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that context definitions are available on the derived action.
    */
-  public function testContextDefinitions() {
+  public function testContextDefinitions(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $rule
       ->addAction('rules_entity_save', ContextConfig::create()
@@ -105,7 +107,7 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a rules component in an action can also provide variables.
    */
-  public function testExecutionProvidedVariables() {
+  public function testExecutionProvidedVariables(): void {
     // Create a rule that produces a provided string variable.
     $nested_rule = $this->rulesExpressionManager->createRule();
     $nested_rule->addAction('rules_test_string', ContextConfig::create()
@@ -135,7 +137,7 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that auto saving is only triggered once with nested components.
    */
-  public function testAutosaveOnlyOnce() {
+  public function testAutosaveOnlyOnce(): void {
     $entity = $this->prophesizeEntity(EntityInterface::class);
 
     $nested_rule = $this->rulesExpressionManager->createRule();

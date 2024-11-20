@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\Core\Plugin\ContextAwarePluginInterface;
@@ -8,6 +10,8 @@ use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\rules\Context\ContextHandlerTrait;
 use Drupal\rules\Context\ExecutionStateInterface;
 use Drupal\rules\Exception\EvaluationException;
+
+// cspell:ignore testplugin
 
 /**
  * @coversDefaultClass \Drupal\rules\Context\ContextHandlerTrait
@@ -20,7 +24,7 @@ class ContextHandlerTraitTest extends RulesUnitTestBase {
    *
    * @covers ::prepareContext
    */
-  public function testMissingContext() {
+  public function testMissingContext(): void {
     // Set the expected exception class and message.
     $this->expectException(EvaluationException::class);
     $this->expectExceptionMessage("Required context 'test' is missing for plugin 'testplugin'");

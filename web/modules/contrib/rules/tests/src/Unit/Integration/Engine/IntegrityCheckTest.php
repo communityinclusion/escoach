@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
+
+// cspell:ignore näme
 
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\rules\Context\ContextConfig;
@@ -18,7 +22,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the integrity check can be invoked.
    */
-  public function testIntegrityCheck() {
+  public function testIntegrityCheck(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $rule->addAction('rules_entity_save', ContextConfig::create()
       ->map('entity', 'entity')
@@ -33,7 +37,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a wrongly configured variable name triggers a violation.
    */
-  public function testUnknownVariable() {
+  public function testUnknownVariable(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $action = $this->rulesExpressionManager->createAction('rules_entity_save', ContextConfig::create()
       ->map('entity', 'unknown_variable')
@@ -55,7 +59,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the integrity check with UUID works.
    */
-  public function testCheckUuid() {
+  public function testCheckUuid(): void {
     $rule = $this->rulesExpressionManager->createRule();
     // Just use a rule with 2 dummy actions.
     $rule->addAction('rules_entity_save', ContextConfig::create()
@@ -85,7 +89,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that an invalid condition plugin ID results in a violation.
    */
-  public function testInvalidCondition() {
+  public function testInvalidCondition(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $condition = $this->rulesExpressionManager->createCondition('invalid_condition_id');
     $rule->addExpressionObject($condition);
@@ -99,7 +103,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a missing condition plugin ID results in a violation.
    */
-  public function testMissingCondition() {
+  public function testMissingCondition(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $condition = $this->rulesExpressionManager->createCondition('');
     $rule->addExpressionObject($condition);
@@ -113,7 +117,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that an invalid action plugin ID results in a violation.
    */
-  public function testInvalidAction() {
+  public function testInvalidAction(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $action = $this->rulesExpressionManager->createAction('invalid_action_id');
     $rule->addExpressionObject($action);
@@ -127,7 +131,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a missing action plugin ID results in a violation.
    */
-  public function testMissingAction() {
+  public function testMissingAction(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $action = $this->rulesExpressionManager->createAction('');
     $rule->addExpressionObject($action);
@@ -141,7 +145,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests invalid characters in provided variables.
    */
-  public function testInvalidProvidedName() {
+  public function testInvalidProvidedName(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     // The condition provides a "provided_text" variable.
@@ -163,7 +167,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests the input restriction on contexts.
    */
-  public function testInputRestriction() {
+  public function testInputRestriction(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $action = $this->rulesExpressionManager->createAction('rules_entity_fetch_by_id', ContextConfig::create()
@@ -188,7 +192,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests the data selector restriction on contexts.
    */
-  public function testSelectorRestriction() {
+  public function testSelectorRestriction(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $action = $this->rulesExpressionManager->createAction('rules_data_set', ContextConfig::create()
@@ -212,7 +216,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a primitive context is assigned something that matches.
    */
-  public function testPrimitiveTypeViolation() {
+  public function testPrimitiveTypeViolation(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     // The condition expects a string but we pass a list, which will trigger the
@@ -236,7 +240,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a list context is assigned something that matches.
    */
-  public function testListTypeViolation() {
+  public function testListTypeViolation(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     // The condition expects a list for the type context but we pass a node
@@ -261,7 +265,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a complex data context is assigned something that matches.
    */
-  public function testComplexTypeViolation() {
+  public function testComplexTypeViolation(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     // The condition expects a node context but gets a list instead which cause
@@ -286,7 +290,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that an absent required context triggers a violation.
    */
-  public function testMissingRequiredContext() {
+  public function testMissingRequiredContext(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     // The condition is completely un-configured, missing 2 required contexts.
@@ -311,7 +315,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Make sure that nested expression violations have the correct UUID.
    */
-  public function testNestedExpressionUuids() {
+  public function testNestedExpressionUuids(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $action_set = $this->rulesExpressionManager->createInstance('rules_action_set');
     // The most inner action will trigger a violation for an unknown variable.
@@ -331,7 +335,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests using provided variables in sub-sequent actions passes checks.
    */
-  public function testUsingProvidedVariables() {
+  public function testUsingProvidedVariables(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $rule->addAction('rules_variable_add', ContextConfig::create()
@@ -351,7 +355,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that refined context is respected when checking context.
    */
-  public function testRefinedContextViolation() {
+  public function testRefinedContextViolation(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $rule->addAction('rules_variable_add', ContextConfig::create()
       ->setValue('type', 'integer')
@@ -367,8 +371,8 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests context can be refined based upon mapped context.
    */
-  public function testRefiningContextBasedonMappedContext() {
-    // DataComparision condition refines context based on selected data. Thus
+  public function testRefiningContextBasedOnMappedContext(): void {
+    // DataComparison condition refines context based on selected data. Thus
     // it for the test and ensure checking integrity passes when the comparison
     // value is of a compatible type and fails else.
     $rule = $this->rulesExpressionManager->createRule();
@@ -393,7 +397,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests using provided variables with refined context.
    */
-  public function testUsingRefinedProvidedVariables() {
+  public function testUsingRefinedProvidedVariables(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $rule->addAction('rules_variable_add', ContextConfig::create()

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional;
 
 use Drupal\rules\Context\ContextConfig;
@@ -107,7 +109,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests creation of a rule and then triggering its execution.
    */
-  public function testConfigureAndExecute() {
+  public function testConfigureAndExecute(): void {
     // Set up a rule that will show a system message if the title of a node
     // matches "Test title".
     $this->createRule('Test rule', 'test_rule', 'rules_entity_presave:node');
@@ -184,7 +186,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests adding an event and then triggering its execution.
    */
-  public function testAddEventAndExecute() {
+  public function testAddEventAndExecute(): void {
     // Create an article.
     $node = $this->drupalCreateNode([
       'type' => 'article',
@@ -239,7 +241,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests deleting an event and then triggering its execution.
    */
-  public function testDeleteEventAndExecute() {
+  public function testDeleteEventAndExecute(): void {
     // Create a rule with two events and an action.
     $message = 'Rule is triggered';
     $rule = $this->expressionManager->createRule();
@@ -297,7 +299,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests creating and altering two rules reacting on the same event.
    */
-  public function testTwoRulesSameEvent() {
+  public function testTwoRulesSameEvent(): void {
     /** @var \Drupal\Tests\WebAssert $assert */
     $assert = $this->assertSession();
 
@@ -427,7 +429,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests user input in context form for 'multiple' valued context variables.
    */
-  public function testMultipleInputContext() {
+  public function testMultipleInputContext(): void {
     // Set up a rule. The event is not relevant, we just want a rule to use.
     // Calling $rule = $this->createRule('Test Multiple Input via UI',
     // 'test_rule', 'rules_entity_insert:node') works locally but fails
@@ -501,7 +503,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     ];
     // Need to get the $rule again, as the existing $rule does not have the
     // changes added above and $rule->get('expression.actions...) is empty.
-    // @todo Is there a way to refersh $rule and not have to get it again?
+    // @todo Is there a way to refresh $rule and not have to get it again?
     $config_factory = $this->container->get('config.factory');
     $config_factory->clearStaticCache();
     $rule = $config_factory->get('rules.reaction.test_rule');
@@ -513,7 +515,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests the implementation of assignment restriction in context form.
    */
-  public function testAssignmentRestriction() {
+  public function testAssignmentRestriction(): void {
     // Create a rule.
     $rule = $this->expressionManager->createRule();
 
@@ -573,7 +575,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests upcasting in a condition.
    */
-  public function testUpcastInCondition() {
+  public function testUpcastInCondition(): void {
 
     /** @var \Drupal\Tests\WebAssert $assert */
     $assert = $this->assertSession();
@@ -628,7 +630,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
   /**
    * Tests upcasting in an action.
    */
-  public function testUpcastInAction() {
+  public function testUpcastInAction(): void {
 
     // Log in.
     $this->drupalLogin($this->account);

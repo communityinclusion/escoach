@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Language\LanguageInterface;
@@ -90,7 +92,7 @@ class SystemEmailToUsersOfRoleTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Send email to all users of a role', $this->action->summary());
   }
 
@@ -99,7 +101,7 @@ class SystemEmailToUsersOfRoleTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testSendMailToOneRoles() {
+  public function testSendMailToOneRoles(): void {
     // Mock the 'recipient' user role.
     $recipient = $this->prophesize(RoleInterface::class);
     $recipient->id()->willReturn('recipient');
@@ -142,7 +144,7 @@ class SystemEmailToUsersOfRoleTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testSendMailToTwoRoles() {
+  public function testSendMailToTwoRoles(): void {
     // Mock the 'recipient' and 'moderator' roles.
     $recipient = $this->prophesize(RoleInterface::class);
     $recipient->id()->willReturn('recipient');

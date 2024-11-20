@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\node\NodeInterface;
@@ -33,7 +35,7 @@ class NodeIsPublishedTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     $published_node = $this->prophesizeEntity(NodeInterface::class);
 
     $published_node->isPublished()->willReturn(TRUE)->shouldBeCalledTimes(1);

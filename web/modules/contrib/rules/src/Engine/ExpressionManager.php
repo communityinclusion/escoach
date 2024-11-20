@@ -3,9 +3,10 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Component\Uuid\UuidInterface;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
-use Drupal\rules\Annotation\RulesExpression;
+use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\ContextConfig;
 
 /**
@@ -25,10 +26,11 @@ class ExpressionManager extends DefaultPluginManager implements ExpressionManage
   /**
    * Constructor.
    */
-  public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler, UuidInterface $uuid_service, $plugin_definition_annotation_name = RulesExpression::class) {
-    $this->alterInfo('rules_expression_info');
-    parent::__construct('Plugin/RulesExpression', $namespaces, $module_handler, ExpressionInterface::class, $plugin_definition_annotation_name);
+  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, UuidInterface $uuid_service) {
+    parent::__construct('Plugin/RulesExpression', $namespaces, $module_handler, ExpressionInterface::class, RulesExpression::class, '\Drupal\rules\Annotation\RulesExpression');
     $this->uuidService = $uuid_service;
+    $this->alterInfo('rules_expression_info');
+    $this->setCacheBackend($cache_backend, 'rules_expression_plugins');
   }
 
   /**

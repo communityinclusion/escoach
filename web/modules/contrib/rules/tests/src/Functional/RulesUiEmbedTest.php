@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional;
 
 /**
@@ -17,7 +19,7 @@ class RulesUiEmbedTest extends RulesBrowserTestBase {
   /**
    * @covers \Drupal\rules_test_ui_embed\Form\SettingsForm
    */
-  public function testExampleUi() {
+  public function testExampleUi(): void {
     $account = $this->drupalCreateUser([
       'administer rules',
       'access administration pages',

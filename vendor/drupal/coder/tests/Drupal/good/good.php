@@ -1468,14 +1468,16 @@ function test17($arg) {
 }
 
 /**
- * Ignore indentation of multi-line function declarations.
+ * Indentation of multi-line function declarations is standardized.
  */
-function test18(ConfigFactoryInterface $config_factory,
-                EntityTypeManagerInterface $entity_type_manager,
-                CacheTagsInvalidatorInterface $cache_invalidator,
-                ModuleHandlerInterface $module_handler,
-                EntityFieldManagerInterface $entity_field_manager,
-                EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+function test18(
+  ConfigFactoryInterface $config_factory,
+  EntityTypeManagerInterface $entity_type_manager,
+  CacheTagsInvalidatorInterface $cache_invalidator,
+  ModuleHandlerInterface $module_handler,
+  EntityFieldManagerInterface $entity_field_manager,
+  EntityTypeBundleInfoInterface $entity_type_bundle_info,
+) {
   return 0;
 }
 
@@ -1810,6 +1812,12 @@ interface Test5Interface {
  * Test PHP attributes.
  */
 class TestPhpAttributes {
+
+  /**
+   * Bar property.
+   */
+  #[NotBlank]
+  private bool $bar;
 
   /**
    * Tests method with PHP attribute and docblock.

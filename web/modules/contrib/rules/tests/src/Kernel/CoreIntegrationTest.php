@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\Core\Messenger\MessengerInterface;
@@ -9,6 +11,8 @@ use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\rules\Entity\RulesComponentConfig;
 use Drupal\user\Entity\User;
+
+// cspell:ignore klausi
 
 /**
  * Test using Drupal core integration of Rules API.
@@ -28,7 +32,6 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installSchema('system', ['sequences']);
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
   }
@@ -36,7 +39,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that a complex data selector can be applied to entities.
    */
-  public function testEntityPropertyPath() {
+  public function testEntityPropertyPath(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -82,7 +85,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that an entity is automatically saved after being changed.
    */
-  public function testEntityAutoSave() {
+  public function testEntityAutoSave(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -116,7 +119,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that tokens in action parameters get replaced.
    */
-  public function testTokenReplacements() {
+  public function testTokenReplacements(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -165,7 +168,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that tokens used to format entity fields get replaced.
    */
-  public function testTokenFormattingReplacements() {
+  public function testTokenFormattingReplacements(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -208,7 +211,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that the data set action works on entities.
    */
-  public function testDataSetEntities() {
+  public function testDataSetEntities(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -246,7 +249,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that auto saving in a component executed as action works.
    */
-  public function testComponentActionAutoSave() {
+  public function testComponentActionAutoSave(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -285,7 +288,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests using global context.
    */
-  public function testGlobalContext() {
+  public function testGlobalContext(): void {
     $account = User::create([
       'name' => 'hubert',
     ]);

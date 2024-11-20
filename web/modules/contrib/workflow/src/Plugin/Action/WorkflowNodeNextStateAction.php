@@ -12,8 +12,8 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @Action(
  *   id = "workflow_node_next_state_action",
- *   label = @Translation("Change a node to next Workflow state"),
- *   type = "node"
+ *   label = @Translation("Change entity to next Workflow state"),
+ *   type = "node",
  * )
  */
 class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
@@ -23,7 +23,7 @@ class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
    */
   public function calculateDependencies() {
     return [
-      'module' => ['workflow', 'node'],
+      'module' => ['workflow'],
     ];
   }
 
@@ -34,7 +34,14 @@ class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
     $form = parent::buildConfigurationForm($form, $form_state);
 
     // Remove to_sid. User can't set it, since we want a dynamic 'next' state.
-    unset($form['to_sid']);
+    unset($form['workflow_transition_action_config']['to_sid']);
+    $form['workflow_transition_action_config']['field_name']['#access'] = TRUE;
+    // Allow any workflow, for multiple entity types.
+    $form['workflow_transition_action_config']['field_name']['#required'] = FALSE;
+    $form['workflow_transition_action_config']['field_name']['#options']
+      += ['' => '-- Any --'];
+    $form['workflow_transition_action_config']['field_name']['#description']
+      = $this->t('Choose the field name. May be left empty.');
 
     return $form;
   }
@@ -45,7 +52,22 @@ class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
   public function execute($object = NULL) {
 
     if (!$transition = $this->getTransitionForExecution($object)) {
-      $this->messenger()->addWarning('The object is not valid for this action.');
+      $this->messenger()->addWarning(
+        $this->t('The entity %label is not valid for this action.',
+          ['%label' => $object ? $object->label() : ''])
+      );
+      return;
+    }
+
+    $field_name = $this->configuration['field_name'];
+    $comment = $this->configuration['comment'];
+    $force = $this->configuration['force'];
+
+    if ($field_name && ($field_name <> $transition->getFieldName())) {
+      $this->messenger()->addWarning(
+        $this->t('The entity %label is not valid for this action. Wrong field name.',
+          ['%label' => $object ? $object->label() : ''])
+      );
       return;
     }
 
@@ -53,19 +75,16 @@ class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
      * Set the new next state.
      */
     $entity = $transition->getTargetEntity();
-    $field_name = $transition->getFieldName();
     $user = $transition->getOwner();
-    // $comment = $transition->getComment();
-    $force = $this->configuration['force'];
-
-    // Get the node's new State Id (which is the next available state).
     $to_sid = $transition->getWorkflow()->getNextSid($entity, $field_name, $user, $force);
 
     // Add actual data.
     $transition->to_sid = $to_sid;
+    $transition->setComment($comment);
+    $transition->force($force);
 
     // Fire the transition.
-    workflow_execute_transition($transition, $force);
+    $transition->executeAndUpdateEntity($force);
   }
 
 }

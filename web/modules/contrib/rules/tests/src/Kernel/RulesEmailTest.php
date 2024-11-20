@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 /**
@@ -40,7 +42,7 @@ class RulesEmailTest extends RulesKernelTestBase {
   /**
    * Checks the From: and Reply-to: headers.
    */
-  public function testSubjectAndBody() {
+  public function testSubjectAndBody(): void {
     // Create action to send email.
     $action = $this->actionManager->createInstance('rules_send_email');
 

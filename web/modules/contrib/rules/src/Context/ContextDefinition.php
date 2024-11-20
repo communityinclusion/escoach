@@ -2,14 +2,14 @@
 
 namespace Drupal\rules\Context;
 
-use Drupal\Core\Plugin\Context\ContextDefinition as ContextDefinitionCore;
+use Drupal\Core\Plugin\Context\ContextDefinition as CoreContextDefinition;
 use Drupal\Component\Plugin\Exception\ContextException;
 
 /**
  * Extends the core context definition class with useful methods.
  *
  * This class overrides the core ContextDefinition to provide Rules-specific
- * functionality, but also to preserve the Drupal 8 behavior of
+ * functionality, but also to preserve the core Drupal behavior of
  * ContextDefinition without triggering deprecated code. Specifically, in Rules
  * we need to be able to create a ContextDefinition for ANY typed data object,
  * without prior knowledge of what that type is; we need to be able to say
@@ -49,79 +49,85 @@ use Drupal\Component\Plugin\Exception\ContextException;
  * @see https://www.drupal.org/project/rules/issues/3161582
  * @see https://www.drupal.org/project/drupal/issues/3126747
  */
-class ContextDefinition extends ContextDefinitionCore implements ContextDefinitionInterface {
+class ContextDefinition extends CoreContextDefinition implements ContextDefinitionInterface {
+  use RulesContextDefinitionTrait;
 
   /**
-   * {@inheritdoc}
+   * Constructs a new Rules context definition object.
+   *
+   * @param string $data_type
+   *   The required data type.
+   * @param string|null $label
+   *   The label of this context definition for the UI.
+   * @param bool $required
+   *   Whether the context definition is required.
+   * @param bool $multiple
+   *   Whether the context definition is multivalue.
+   * @param string|null $description
+   *   The description of this context definition for the UI.
+   * @param mixed $default_value
+   *   The default value of this definition.
+   * @param array $constraints
+   *   An array of constraints keyed by the constraint name and a value of an
+   *   array constraint options or a NULL.
+   * @param bool $allow_null
+   *   Whether the context value is allowed to be NULL or not.
+   * @param string|null $assignment_restriction
+   *   The assignment restriction of this context.
+   * @param class-string|null $options_provider
+   *   The options provider for this context.
    */
-  public function __construct($data_type = 'any', $label = NULL, $required = TRUE, $multiple = FALSE, $description = NULL, $default_value = NULL) {
+  public function __construct($data_type = 'any', $label = NULL, $required = TRUE, $multiple = FALSE, $description = NULL, $default_value = NULL, array $constraints = [], $allow_null = FALSE, $assignment_restriction = NULL, $options_provider = NULL) {
+    // These lines are copied from the parent constructor.
     $this->dataType = $data_type;
     $this->label = $label;
     $this->isRequired = $required;
     $this->isMultiple = $multiple;
     $this->description = $description;
     $this->defaultValue = $default_value;
+    foreach ($constraints as $constraint_name => $options) {
+      $this->addConstraint($constraint_name, $options);
+    }
+    // These lines are added by Rules.
+    $this->allowNull = $allow_null;
+    $this->assignmentRestriction = $assignment_restriction;
+    $this->optionsProvider = $options_provider;
+
+    /*
+     * This line was removed from the parent constructor:
+     * phpcs:ignore Drupal.Files.LineLength.TooLong
+     * assert(!str_starts_with($data_type, 'entity:') || $this instanceof EntityContextDefinition);
+     */
+
   }
 
   /**
-   * The created context definition object.
+   * Creates a new Rules context definition object.
+   *
+   * @param string $data_type
+   *   The data type for which to create the context definition. Defaults to
+   *   'any'.
+   *
+   * @return static
+   *   The created context definition object.
    */
   public static function create($data_type = 'any') {
-    if (strpos($data_type, 'entity:') === 0) {
+    // This method differs from the parent create() only in that it returns the
+    // Rules version of the context definition rather than the core version.
+    if (str_starts_with($data_type, 'entity:')) {
+      // This returns \Drupal\rules\Context\EntityContextDefinition.
       return new EntityContextDefinition($data_type);
     }
+    // This returns \Drupal\rules\Context\ContextDefinition.
     return new static(
       $data_type
     );
   }
 
   /**
-   * The mapping of config export keys to internal properties.
-   *
-   * @var array
-   */
-  protected static $nameMap = [
-    'type' => 'dataType',
-    'label' => 'label',
-    'description' => 'description',
-    'multiple' => 'isMultiple',
-    'required' => 'isRequired',
-    'default_value' => 'defaultValue',
-    'constraints' => 'constraints',
-    'getter' => 'getter',
-    'allow_null' => 'allowNull',
-    'assignment_restriction' => 'assignmentRestriction',
-  ];
-
-  /**
-   * Name of getter function for this context variable.
-   *
-   * Only applicable for events.
-   *
-   * @var string
-   */
-  protected $getter = NULL;
-
-  /**
-   * Whether the context value is allowed to be NULL or not.
-   *
-   * @var bool
-   */
-  protected $allowNull = FALSE;
-
-  /**
-   * The assignment restriction of this context.
-   *
-   * @var string|null
-   *
-   * @see \Drupal\rules\Context\ContextDefinitionInterface::getAssignmentRestriction()
-   */
-  protected $assignmentRestriction = NULL;
-
-  /**
    * {@inheritdoc}
    */
-  public function toArray() {
+  public function toArray(): array {
     $values = [];
     $defaults = get_class_vars(__CLASS__);
     foreach (static::$nameMap as $key => $property_name) {
@@ -160,50 +166,6 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
       $definition->$name = $values[$key];
     }
     return $definition;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function hasGetter() {
-    return !is_null($this->getter);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getGetter() {
-    return $this->getter;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isAllowedNull() {
-    return $this->allowNull;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAllowNull($null_allowed) {
-    $this->allowNull = $null_allowed;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAssignmentRestriction() {
-    return $this->assignmentRestriction;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAssignmentRestriction($restriction) {
-    $this->assignmentRestriction = $restriction;
-    return $this;
   }
 
 }

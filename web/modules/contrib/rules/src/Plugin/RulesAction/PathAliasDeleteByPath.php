@@ -4,6 +4,9 @@ namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,6 +28,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_path_alias_delete_by_path",
+  label: new TranslatableMarkup("Delete all aliases for a path"),
+  category: new TranslatableMarkup("Path"),
+  provider: "path_alias",
+  context_definitions: [
+    "path" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Existing system path"),
+      description: new TranslatableMarkup("Specifies the existing path for which you wish to delete the alias. For example, '/node/1'. Use an absolute path and do not add a trailing slash.")
+    ),
+  ]
+)]
 class PathAliasDeleteByPath extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

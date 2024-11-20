@@ -2,7 +2,9 @@
 
 namespace Drupal\rules\Plugin\RulesExpression;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\ListDataDefinitionInterface;
+use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\ExecutionMetadataStateInterface;
 use Drupal\rules\Context\ExecutionStateInterface;
 use Drupal\rules\Engine\ActionExpressionContainer;
@@ -17,6 +19,10 @@ use Drupal\rules\Exception\IntegrityException;
  *   label = @Translation("Loop")
  * )
  */
+#[RulesExpression(
+  id: "rules_loop",
+  label: new TranslatableMarkup("Loop")
+)]
 class LoopExpression extends ActionExpressionContainer {
 
   /**

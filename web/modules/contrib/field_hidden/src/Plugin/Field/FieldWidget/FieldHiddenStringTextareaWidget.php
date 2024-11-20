@@ -1,14 +1,10 @@
 <?php
-/**
- * @file
- * Contains \Drupal\field_hidden\Plugin\Field\FieldWidget\FieldHiddenStringTextareaWidget.
- */
 
 namespace Drupal\field_hidden\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'field_hidden_string_textarea' widget.

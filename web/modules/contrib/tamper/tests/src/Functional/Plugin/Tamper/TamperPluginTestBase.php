@@ -3,8 +3,8 @@
 namespace Drupal\Tests\tamper\Functional\Plugin\Tamper;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\entity_test\Entity\EntityTestBundle;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\entity_test\Entity\EntityTestBundle;
 
 /**
  * Tests configuring Tamper plugins in the UI.
@@ -22,6 +22,13 @@ abstract class TamperPluginTestBase extends BrowserTestBase {
    * @var array
    */
   protected static $modules = ['entity_test', 'tamper', 'tamper_test'];
+
+  /**
+   * The ID of the plugin to test.
+   *
+   * @var string
+   */
+  protected static $pluginId;
 
   /**
    * The config entity to add third party settings to.
@@ -98,7 +105,7 @@ abstract class TamperPluginTestBase extends BrowserTestBase {
   /**
    * Data provider for ::testForm().
    */
-  public function formDataProvider(): array {
+  public static function formDataProvider(): array {
     // Some plugins don't have special configuration.
     return [
       'no values' => [

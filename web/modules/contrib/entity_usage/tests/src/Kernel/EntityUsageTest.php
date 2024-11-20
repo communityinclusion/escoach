@@ -324,7 +324,7 @@ class EntityUsageTest extends EntityKernelTestBase {
       ->execute()
       ->fetchField();
 
-    $this->assertSame(FALSE, $real_usage);
+    $this->assertFalse($real_usage);
 
     // Test that config settings are respected.
     $this->container->get('config.factory')
@@ -342,7 +342,7 @@ class EntityUsageTest extends EntityKernelTestBase {
       ->execute()
       ->fetchField();
 
-    $this->assertSame(FALSE, $real_usage);
+    $this->assertFalse($real_usage);
 
     // Clean back the environment.
     $this->injectedDatabase->truncate($this->tableName);
@@ -428,7 +428,7 @@ class EntityUsageTest extends EntityKernelTestBase {
       ->condition('e.target_type', $entity_type)
       ->execute()
       ->fetchField();
-    $this->assertSame(FALSE, $count);
+    $this->assertFalse($count);
 
     // Clean back the environment.
     $this->injectedDatabase->truncate($this->tableName);
@@ -483,7 +483,7 @@ class EntityUsageTest extends EntityKernelTestBase {
       ->condition('e.source_type', $entity_type)
       ->execute()
       ->fetchField();
-    $this->assertSame(FALSE, $count);
+    $this->assertFalse($count);
 
     // Clean back the environment.
     $this->injectedDatabase->truncate($this->tableName);
@@ -688,70 +688,6 @@ class EntityUsageTest extends EntityKernelTestBase {
     // The affected record is gone.
     $real_source_list = $entity_usage->listSources($this->testEntities[0]);
     $this->assertEquals([], $real_source_list);
-
-    // Clean back the environment.
-    $this->injectedDatabase->truncate($this->tableName);
-  }
-
-  /**
-   * Tests the legacy listUsage() and listReferencedEntities() methods.
-   *
-   * @covers \Drupal\entity_usage\EntityUsage::listUsage
-   * @covers \Drupal\entity_usage\EntityUsage::listReferencedEntities
-   */
-  public function testEntityUsageLegacyMethods() {
-    /** @var \Drupal\Core\Entity\EntityInterface $target_entity */
-    $target_entity = $this->testEntities[0];
-    /** @var \Drupal\Core\Entity\EntityInterface $source_entity */
-    $source_entity = $this->testEntities[1];
-    $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
-    $field_name = 'body';
-    // Create two records in the database, so we correctly ensure the counts are
-    // being summed.
-    $this->injectedDatabase->insert($this->tableName)
-      ->fields([
-        'target_id' => $target_entity->id(),
-        'target_type' => $target_entity->getEntityTypeId(),
-        'source_id' => $source_entity->id(),
-        'source_type' => $source_entity->getEntityTypeId(),
-        'source_langcode' => $source_entity->language()->getId(),
-        'source_vid' => $source_vid,
-        'method' => 'entity_reference',
-        'field_name' => $field_name,
-        'count' => 2,
-      ])
-      ->execute();
-    $this->injectedDatabase->insert($this->tableName)
-      ->fields([
-        'target_id' => $target_entity->id(),
-        'target_type' => $target_entity->getEntityTypeId(),
-        'source_id' => $source_entity->id(),
-        'source_type' => $source_entity->getEntityTypeId(),
-        'source_langcode' => $source_entity->language()->getId(),
-        'source_vid' => $source_vid + 1,
-        'method' => 'entity_reference',
-        'field_name' => $field_name,
-        'count' => 3,
-      ])
-      ->execute();
-
-    /** @var \Drupal\entity_usage\EntityUsage $entity_usage */
-    $entity_usage = $this->container->get('entity_usage.usage');
-    $real_usage_list = $entity_usage->listUsage($target_entity);
-    $expected_usage_list = [
-      $source_entity->getEntityTypeId() => [
-        (string) $source_entity->id() => 5,
-      ],
-    ];
-    $this->assertEquals($expected_usage_list, $real_usage_list);
-
-    $real_target_list = $entity_usage->listReferencedEntities($source_entity);
-    $expected_target_list = [
-      $target_entity->getEntityTypeId() => [
-        (string) $target_entity->id() => 5,
-      ],
-    ];
-    $this->assertEquals($expected_target_list, $real_target_list);
 
     // Clean back the environment.
     $this->injectedDatabase->truncate($this->tableName);

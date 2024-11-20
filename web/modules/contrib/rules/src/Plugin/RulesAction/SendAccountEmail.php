@@ -4,7 +4,11 @@ namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\EmailTypeOptions;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -30,6 +34,24 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_send_account_email",
+  label: new TranslatableMarkup("Send account email"),
+  category: new TranslatableMarkup("User"),
+  context_definitions: [
+    "user" => new ContextDefinition(
+      data_type: "entity:user",
+      label: new TranslatableMarkup("User"),
+      description: new TranslatableMarkup("The user to whom we send the email.")
+    ),
+    "email_type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Email type"),
+      description: new TranslatableMarkup("The type of the email to send."),
+      options_provider: EmailTypeOptions::class
+    ),
+  ]
+)]
 class SendAccountEmail extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -78,14 +100,15 @@ class SendAccountEmail extends RulesActionBase implements ContainerFactoryPlugin
     $message = _user_mail_notify($email_type, $user);
 
     // Log the success or failure.
-    if (!$message['result']) {
-      $this->logger->notice('%type email sent to %recipient.', [
+    if ($message === NULL) {
+      // _user_mail_notify() reported a failure.
+      $this->logger->error('Failed to send %type email to %recipient.', [
         '%type' => $email_type,
         '%recipient' => $user->mail,
       ]);
     }
     else {
-      $this->logger->error('Failed to send %type email to %recipient.', [
+      $this->logger->notice('%type email sent to %recipient.', [
         '%type' => $email_type,
         '%recipient' => $user->mail,
       ]);

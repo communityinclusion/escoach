@@ -5,7 +5,6 @@ namespace Drupal\menu_block\Plugin\Block;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\system\Entity\Menu;
@@ -52,6 +51,13 @@ class MenuBlock extends SystemMenuBlock {
   protected $menuParentFormSelector;
 
   /**
+   * Memory cache.
+   *
+   * @var array
+   */
+  protected $buildCache;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -82,7 +88,7 @@ class MenuBlock extends SystemMenuBlock {
       '#type' => 'details',
       '#title' => $this->t('Advanced options'),
       '#open' => FALSE,
-      '#process' => [[get_class(), 'processMenuBlockFieldSets']],
+      '#process' => [[self::class, 'processMenuBlockFieldSets']],
     ];
 
     $menu_name = $this->getDerivativeId();
@@ -94,6 +100,26 @@ class MenuBlock extends SystemMenuBlock {
     $form['advanced']['parent'] += [
       '#title' => $this->t('Fixed parent item'),
       '#description' => $this->t('Alter the options in “Menu levels” to be relative to the fixed parent item. The block will only contain children of the selected menu link.'),
+    ];
+
+    $form['advanced']['render_parent'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('<strong>Render parent item</strong>'),
+      '#default_value' => $config['render_parent'],
+      '#description' => $this->t('If the <strong>Initial visibility level</strong> is greater than 1, or a <strong>Fixed parent item</strong> is chosen, only the children of that item will be displayed by default. Enable this option to <strong>always</strong> render the parent item in the menu.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="settings[follow]"]' => ['unchecked' => TRUE],
+          [
+            [':input[name="settings[level]"]' => ['!value' => 1]],
+            'or',
+            [':input[name="settings[parent]"]' => ['!value' => $this->getDerivativeId() . ':']],
+          ],
+        ],
+        // Ideally, we would uncheck the setting when it's not visible, but that
+        // won't work until https://www.drupal.org/project/drupal/issues/994360
+        // lands.
+      ],
     ];
 
     $form['advanced']['label_type'] = [
@@ -133,11 +159,18 @@ class MenuBlock extends SystemMenuBlock {
       ],
     ];
 
+    $form['advanced']['hide_on_nonactive'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('<strong>Hide on pages not included in menu</strong>'),
+      '#default_value' => $config['hide_on_nonactive'],
+      '#description' => $this->t('If checked, this block will not appear on any pages that are not linked in the menu. If unchecked, this block will appear on all pages. This option is also affected by visibility settings below.'),
+    ];
+
     $form['style'] = [
       '#type' => 'details',
       '#title' => $this->t('HTML and style options'),
       '#open' => FALSE,
-      '#process' => [[get_class(), 'processMenuBlockFieldSets']],
+      '#process' => [[self::class, 'processMenuBlockFieldSets']],
     ];
 
     $form['advanced']['follow'] = [
@@ -212,17 +245,29 @@ class MenuBlock extends SystemMenuBlock {
       unset($this->configuration['expand']);
     }
     $this->configuration['parent'] = $form_state->getValue('parent');
+    $this->configuration['render_parent'] = $form_state->getValue('render_parent');
     $this->configuration['suggestion'] = $form_state->getValue('suggestion');
     $this->configuration['label_type'] = $form_state->getValue('label_type');
     $this->configuration['label_link'] = $form_state->getValue('label_link');
+    $this->configuration['hide_on_nonactive'] = $form_state->getValue('hide_on_nonactive');
   }
 
   /**
    * {@inheritdoc}
    */
   public function build() {
+    if (isset($this->buildCache)) {
+      return $this->buildCache;
+    }
+
     $menu_name = $this->getDerivativeId();
     $parameters = $this->menuTree->getCurrentRouteMenuTreeParameters($menu_name);
+    $config = $this->configuration;
+
+    // Check if the active trail is empty.
+    if ($config['hide_on_nonactive'] && !$this->menuActiveTrail->getActiveLink($menu_name)) {
+      return [];
+    }
 
     // Adjust the menu tree parameters based on the block's configuration.
     $level = $this->configuration['level'];
@@ -232,11 +277,17 @@ class MenuBlock extends SystemMenuBlock {
     // yet been updated.
     $expand_all_items = $this->configuration['expand'] ?? $this->configuration['expand_all_items'];
     $parent = $this->configuration['parent'] ?? '';
+    $render_parent = $this->configuration['render_parent'];
     $follow = $this->configuration['follow'];
     $follow_parent = $this->configuration['follow_parent'];
     $following = FALSE;
 
-    $parameters->setMinDepth($level);
+    // If render parent is true, we'll avoid setting a minimum depth. A
+    // NULL minimum depth will cause the parent item to be included in the
+    // tree by default.
+    if (!$render_parent) {
+      $parameters->setMinDepth($level);
+    }
 
     // If we're following the active trail and the active trail is deeper than
     // the initial starting level, we update the level to match the active menu
@@ -267,13 +318,16 @@ class MenuBlock extends SystemMenuBlock {
         $menu_trail_ids = array_reverse(array_values($parameters->activeTrail));
         $offset = ($following && $follow_parent == 'active') ? 2 : 1;
         $menu_root = $menu_trail_ids[$level - $offset];
-        $parameters->setRoot($menu_root)->setMinDepth(1);
+        $parameters->setRoot($menu_root);
+        if ($following || !$render_parent) {
+          $parameters->setMinDepth(1);
+        }
         if ($depth > 0) {
           $parameters->setMaxDepth(min($depth, $this->menuTree->maxDepth()));
         }
       }
       else {
-        return [];
+        return ($this->buildCache = []);
       }
     }
 
@@ -301,7 +355,9 @@ class MenuBlock extends SystemMenuBlock {
           // Change the request to expand all children and limit the depth to
           // the immediate children of the root.
           $fixed_parameters->expandedParents = [];
-          $fixed_parameters->setMinDepth(1);
+          if (!$render_parent) {
+            $fixed_parameters->setMinDepth(1);
+          }
           $fixed_parameters->setMaxDepth(1);
           // Re-load the tree.
           $tree = $this->menuTree->load($menu_name, $fixed_parameters);
@@ -313,6 +369,17 @@ class MenuBlock extends SystemMenuBlock {
         // the tree we made and just let the active menu parameters from before
         // do their thing.
         unset($tree);
+      }
+
+      // If render parent is true, we avoid setting min depth. When a fixed
+      // parent has also been chosen, this could result in a menu tree even
+      // though the current item is not in the active trail.
+      if ($render_parent) {
+        // If the fixed parent item isn't in the active trail and starting level
+        // isn't 1 (which means ALWAYS show the menu), don't render anything.
+        if (!in_array($fixed_parent_menu_link_id, $parameters->activeTrail) && (int) $this->configuration['level'] <> 1) {
+          return [];
+        }
       }
     }
 
@@ -349,7 +416,18 @@ class MenuBlock extends SystemMenuBlock {
 
     $build['#cache']['contexts'][] = 'route.menu_active_trails:' . $menu_name;
 
-    return $build;
+    return ($this->buildCache = $build);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function blockAccess(AccountInterface $account) {
+    $build = $this->build();
+    if (empty($build['#items'])) {
+      return AccessResult::forbidden();
+    }
+    return parent::blockAccess($account);
   }
 
   /**
@@ -363,9 +441,11 @@ class MenuBlock extends SystemMenuBlock {
       'depth' => 0,
       'expand_all_items' => FALSE,
       'parent' => $this->getDerivativeId() . ':',
+      'render_parent' => FALSE,
       'suggestion' => strtr($this->getDerivativeId(), '-', '_'),
       'label_type' => self::LABEL_BLOCK,
       'label_link' => FALSE,
+      'hide_on_nonactive' => FALSE,
     ];
   }
 
@@ -418,7 +498,7 @@ class MenuBlock extends SystemMenuBlock {
       $menu = $this->entityTypeManager->getStorage('menu')
         ->load($this->getDerivativeId());
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       return NULL;
     }
 
@@ -512,12 +592,27 @@ class MenuBlock extends SystemMenuBlock {
    *   The menu item title or NULL if the given menu item can't be found.
    */
   protected function getLinkTitleFromLink(string $link_id) {
-    $parameters = new MenuTreeParameters();
-    $menu = $this->menuTree->load($this->getDerivativeId(), $parameters);
+    // Get the actual parameters so we have the active trail.
+    $menu_name = $this->getDerivativeId();
+    $parameters = $this->menuTree->getCurrentRouteMenuTreeParameters($menu_name);
+    $menu = $this->menuTree->load($menu_name, $parameters);
     $link = $this->findLinkInTree($menu, $link_id);
     if ($link) {
       if ($this->configuration['label_link']) {
-        $block_link = Link::fromTextAndUrl($link->link->getTitle(), $link->link->getUrlObject())->toString();
+        /** @var \Drupal\Core\Url $url */
+        $url = $link->link->getUrlObject();
+
+        // Trigger drupal.active-link to set the is_active class.
+        $url->setOption('set_active_class', TRUE);
+
+        // Set the active trail class.
+        if (in_array($link_id, $parameters->activeTrail)) {
+          $attributes = $url->getOption('attributes');
+          $attributes['class'][] = 'menu-item--active-trail';
+          $url->setOption('attributes', $attributes);
+        }
+
+        $block_link = Link::fromTextAndUrl($link->link->getTitle(), $url)->toString();
         return Markup::create($block_link);
       }
       return $link->link->getTitle();

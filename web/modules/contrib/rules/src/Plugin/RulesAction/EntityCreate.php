@@ -4,6 +4,7 @@ namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -17,6 +18,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   deriver = "Drupal\rules\Plugin\RulesAction\EntityCreateDeriver"
  * )
  */
+#[RulesAction(
+  id: "rules_entity_create",
+  deriver: EntityCreateDeriver::class
+)]
 class EntityCreate extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

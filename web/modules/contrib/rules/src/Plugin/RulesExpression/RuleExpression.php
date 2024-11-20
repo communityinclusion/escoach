@@ -4,6 +4,8 @@ namespace Drupal\rules\Plugin\RulesExpression;
 
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ExecutionMetadataStateInterface;
 use Drupal\rules\Context\ExecutionStateInterface;
@@ -16,6 +18,7 @@ use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RuleExpressionInterface;
 use Drupal\rules\Exception\InvalidExpressionException;
+use Drupal\rules\Form\Expression\RuleExpressionForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -31,6 +34,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   form_class = "\Drupal\rules\Form\Expression\RuleExpressionForm"
  * )
  */
+#[RulesExpression(
+  id: "rules_rule",
+  label: new TranslatableMarkup("Rule"),
+  form_class: RuleExpressionForm::class
+)]
 class RuleExpression extends ExpressionBase implements RuleExpressionInterface, ContainerFactoryPluginInterface {
 
   /**

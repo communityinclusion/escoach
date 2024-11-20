@@ -3,7 +3,11 @@
 namespace Drupal\rules\Plugin\Condition;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\EntityTypeOptions;
 
 /**
  * Provides an 'Entity is of type' condition.
@@ -29,6 +33,26 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_entity_is_of_type",
+  label: new TranslatableMarkup("Entity is of type"),
+  category: new TranslatableMarkup("Entity"),
+  context_definitions: [
+    "entity" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Entity"),
+      description: new TranslatableMarkup("Specifies the entity for which to evaluate the condition."),
+      assignment_restriction: "selector"
+    ),
+    "type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Type"),
+      description: new TranslatableMarkup("The entity type specified by the condition."),
+      options_provider: EntityTypeOptions::class,
+      assignment_restriction: "input"
+    ),
+  ]
+)]
 class EntityIsOfType extends RulesConditionBase {
 
   /**

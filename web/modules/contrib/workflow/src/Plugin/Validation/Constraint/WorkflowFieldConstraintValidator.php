@@ -62,9 +62,13 @@ class WorkflowFieldConstraintValidator extends ConstraintValidator implements Co
   }
 
   /**
+   * Checks if the proposed field name is valid.
+   *
    * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage
+   *   The field definition.
    *
    * @return bool
+   *   TRUE if the field name is OK, else FALSE.
    */
   protected function isValidFieldname(FieldStorageDefinitionInterface $field_storage) {
     if ($field_storage->getTargetEntityTypeId() !== 'comment') {
@@ -72,7 +76,7 @@ class WorkflowFieldConstraintValidator extends ConstraintValidator implements Co
     }
 
     $field_name = $field_storage->getName();
-    // Check if the 'comment' field name exists on the 'commented' entity type.
+    // A 'comment' field name MUST be equal to content field name.
     // @todo Fix field on a non-relevant entity_type.
     $comment_field_name_ok = FALSE;
     foreach (_workflow_info_fields() as $info) {

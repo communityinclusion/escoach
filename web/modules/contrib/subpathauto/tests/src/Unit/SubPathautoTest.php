@@ -4,10 +4,10 @@ namespace Drupal\Tests\subpathauto\Unit;
 
 use Drupal\Core\Language\Language;
 use Drupal\Core\Url;
-use Drupal\language\Plugin\LanguageNegotiation\LanguageNegotiationUrl;
 use Drupal\Tests\UnitTestCase;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\language\Plugin\LanguageNegotiation\LanguageNegotiationUrl;
 use Drupal\subpathauto\PathProcessor;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @coversDefaultClass \Drupal\subpathauto\PathProcessor
@@ -60,7 +60,7 @@ class SubPathautoTest extends UnitTestCase {
   /**
    * Language negotiation settings.
    *
-   * @var array.
+   * @var array
    */
   protected $languageNegotiationSettings = [
     'source' => LanguageNegotiationUrl::CONFIG_PATH_PREFIX,
@@ -115,7 +115,7 @@ class SubPathautoTest extends UnitTestCase {
         $this->equalTo('subpathauto.settings'),
         $this->equalTo('language.negotiation')
       ))
-      ->will($this->returnCallback(
+      ->willReturnCallback(
         function ($param) {
           $config = func_get_arg(0);
           if ($config == 'subpathauto.settings') {
@@ -127,7 +127,7 @@ class SubPathautoTest extends UnitTestCase {
 
           return NULL;
         }
-      ));
+      );
 
     $this->languageNegotiation->expects($this->any())
       ->method('get')

@@ -5,7 +5,11 @@ namespace Drupal\rules\Plugin\RulesAction;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\LanguageOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,6 +41,32 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_path_alias_create",
+  label: new TranslatableMarkup("Create any path alias"),
+  category: new TranslatableMarkup("Path"),
+  provider: "path_alias",
+  context_definitions: [
+    "source" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Existing system path"),
+      description: new TranslatableMarkup("Specifies the existing path you wish to alias. For example, '/node/28' or '/forum/1'.")
+    ),
+    "alias" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Path alias"),
+      description: new TranslatableMarkup("Specify an alternative path by which this data can be accessed. For example, '/about' for an about page. Use an absolute path and do not add a trailing slash.")
+    ),
+    "language" => new ContextDefinition(
+      data_type: "language",
+      label: new TranslatableMarkup("Language"),
+      description: new TranslatableMarkup("If specified, the language for which the path alias applies."),
+      options_provider: LanguageOptions::class,
+      default_value: NULL,
+      required: FALSE
+    ),
+  ]
+)]
 class PathAliasCreate extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

@@ -6,7 +6,12 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\FieldListOptions;
+use Drupal\rules\TypedData\Options\ViewEditOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -47,6 +52,42 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_entity_field_access",
+  label: new TranslatableMarkup("User has entity field access"),
+  category: new TranslatableMarkup("User"),
+  context_definitions: [
+    "user" => new ContextDefinition(
+      data_type: "entity:user",
+      label: new TranslatableMarkup("User"),
+      description: new TranslatableMarkup("Specifies the user account for which to check access. If left empty, the currently logged in user will be used."),
+      assignment_restriction: "selector",
+      required: FALSE
+    ),
+    "entity" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Entity"),
+      description: new TranslatableMarkup("Specifies the entity for which to evaluate the condition."),
+      assignment_restriction: "selector"
+    ),
+    "field" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Field"),
+      description: new TranslatableMarkup("The name of the field to check for."),
+      assignment_restriction: "input",
+      options_provider: FieldListOptions::class
+    ),
+    "operation" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Access operation"),
+      description: new TranslatableMarkup("The access type to check."),
+      assignment_restriction: "input",
+      default_value: "view",
+      required: FALSE,
+      options_provider: ViewEditOptions::class
+    ),
+  ]
+)]
 class UserHasEntityFieldAccess extends RulesConditionBase implements ContainerFactoryPluginInterface {
 
   /**

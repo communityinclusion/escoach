@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
 
   use Drupal\Core\Logger\LoggerChannelInterface;
@@ -48,7 +50,7 @@ namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
      *
      * @covers ::summary
      */
-    public function testSummary() {
+    public function testSummary(): void {
       $this->assertEquals('Send account email', $this->action->summary());
     }
 
@@ -57,7 +59,7 @@ namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
      *
      * @covers ::execute
      */
-    public function testActionExecution() {
+    public function testActionExecution(): void {
       $account = $this->prophesizeEntity(UserInterface::class);
       $account->mail = 'klausi@example.com';
       $mail_type = 'test_mail_type';
@@ -88,7 +90,7 @@ namespace {
      * Dummy replacement for testing.
      */
     function _user_mail_notify($op = NULL, $account = NULL, $langcode = NULL) {
-      static $notifications_sent;
+      static $notifications_sent = [];
       if (!empty($op)) {
         if (!isset($notifications_sent[$op])) {
           $notifications_sent[$op] = 0;

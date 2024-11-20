@@ -3,7 +3,12 @@
 namespace Drupal\rules\Plugin\Condition;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\EntityBundleOptions;
+use Drupal\rules\TypedData\Options\EntityTypeOptions;
 
 /**
  * Provides an 'Entity is of bundle' condition.
@@ -35,6 +40,33 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_entity_is_of_bundle",
+  label: new TranslatableMarkup("Entity is of bundle"),
+  category: new TranslatableMarkup("Entity"),
+  context_definitions: [
+    "entity" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Entity"),
+      description: new TranslatableMarkup("Specifies the entity for which to evaluate the condition."),
+      assignment_restriction: "selector"
+    ),
+    "type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Type"),
+      description: new TranslatableMarkup("The type of the evaluated entity."),
+      options_provider: EntityTypeOptions::class,
+      assignment_restriction: "input"
+    ),
+    "bundle" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Bundle"),
+      description: new TranslatableMarkup("The bundle of the evaluated entity."),
+      options_provider: EntityBundleOptions::class,
+      assignment_restriction: "input"
+    ),
+  ]
+)]
 class EntityIsOfBundle extends RulesConditionBase {
 
   /**

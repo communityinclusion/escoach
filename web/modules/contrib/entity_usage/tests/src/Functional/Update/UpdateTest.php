@@ -15,6 +15,11 @@ use Drupal\FunctionalTests\Update\UpdatePathTestBase;
 class UpdateTest extends UpdatePathTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * The database connection.
    */
   protected Connection $connection;
@@ -49,10 +54,17 @@ class UpdateTest extends UpdatePathTestBase {
    * {@inheritdoc}
    */
   protected function setDatabaseDumpFiles(): void {
-    $this->databaseDumpFiles = [
-      DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-9.4.0.bare.standard.php.gz',
-      __DIR__ . '/../../../fixtures/update/update_8206.php',
-    ];
+    if (file_exists(DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-10.3.0.bare.standard.php.gz')) {
+      $this->databaseDumpFiles = [
+        DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-10.3.0.bare.standard.php.gz',
+      ];
+    }
+    else {
+      $this->databaseDumpFiles = [
+        DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-9.4.0.bare.standard.php.gz',
+      ];
+    }
+    $this->databaseDumpFiles[] = __DIR__ . '/../../../fixtures/update/update_8206.php';
   }
 
   /**

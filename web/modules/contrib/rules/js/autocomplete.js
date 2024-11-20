@@ -54,7 +54,7 @@
   }
 
   /**
-   * Handles an autocompletefocus event.
+   * Handles an autocomplete focus event.
    *
    * @return {boolean}
    *   Always returns false.
@@ -64,10 +64,10 @@
   }
 
   /**
-   * Handles an autocompleteselect event.
+   * Handles an autocomplete select event.
    *
-   * Restarts autocompleting when the selection ends in a dot, for nested data
-   * selectors.
+   * Restarts autocomplete process when the selection ends in a dot, for nested
+   * data selectors.
    *
    * @param {jQuery.Event} event
    *   The event triggered.

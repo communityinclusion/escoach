@@ -3,8 +3,11 @@
 namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\rules\Core\RulesActionBase;
 use Drupal\Core\Session\SessionManagerInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
+use Drupal\rules\Core\RulesActionBase;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,6 +28,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_user_block",
+  label: new TranslatableMarkup("Block a user"),
+  category: new TranslatableMarkup("User"),
+  context_definitions: [
+    "user" => new ContextDefinition(
+      data_type: "entity:user",
+      label: new TranslatableMarkup("User"),
+      description: new TranslatableMarkup("Specifies the user that should be blocked.")
+    ),
+  ]
+)]
 class UserBlock extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

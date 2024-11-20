@@ -38,21 +38,15 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "bundle" = "wid",
  *     "langcode" = "langcode",
  *   },
- *   links = {
- *     "canonical" = "/workflow_transition/{workflow_transition}",
- *     "delete-form" = "/workflow_transition/{workflow_transition}/delete",
- *     "edit-form" = "/workflow_transition/{workflow_transition}/edit",
- *   },
  * )
  */
 class WorkflowScheduledTransition extends WorkflowTransition {
 
   /**
-   * @inheritdoc.
+   * {@inheritdoc}
    */
-  public function __construct(array $values = [], $entityType = 'workflow_scheduled_transition', $bundle = FALSE, $translations = []) {
-    // Please be aware that $entity_type and $entityType are different things!
-    parent::__construct($values, $entityType, $bundle, $translations);
+  public function __construct(array $values = [], $entity_type_id = 'workflow_scheduled_transition', $bundle = FALSE, $translations = []) {
+    parent::__construct($values, $entity_type_id, $bundle, $translations);
 
     // This transition is scheduled.
     $this->isScheduled = TRUE;
@@ -64,7 +58,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
    * {@inheritdoc}
    */
   public function setValues($to_sid, $uid = NULL, $scheduled = NULL, $comment = '', $force_create = FALSE) {
-    parent::setValues($to_sid, $uid, $scheduled, $comment, $force_create);
+    return parent::setValues($to_sid, $uid, $scheduled, $comment, $force_create);
   }
 
   /**
@@ -98,36 +92,13 @@ class WorkflowScheduledTransition extends WorkflowTransition {
    * Saves a scheduled transition. If the transition is executed, save in history.
    */
   public function save() {
-    // If executed, save in history.
-    if ($this->isExecuted) {
-      // Be careful, we are not a WorkflowScheduleTransition anymore!
-      // No fuzzing around, just copy the ScheduledTransition to a normal one.
-      $current_sid = $this->getFromSid();
-      $field_name = $this->getFieldName();
-      $executed_transition = WorkflowTransition::create([$current_sid, 'field_name' => $field_name]);
-      $executed_transition->setTargetEntity($this->getTargetEntity());
-      $executed_transition->setValues($this->getToSid(), $this->getOwnerId(), \Drupal::time()->getRequestTime(), $this->getComment());
-      return $executed_transition->save();  // <-- exit !!
-    }
-
-    $hid = $this->id();
-    if (!$hid) {
-      // Insert the transition. Make sure it hasn't already been inserted.
-      // @todo Allow a scheduled transition per revision.
-      $entity = $this->getTargetEntity();
-      $found_transition = self::loadByProperties($entity->getEntityTypeId(), $entity->id(), [], $this->getFieldName(), $this->getLangcode());
-      if ($found_transition) {
-        // Avoid duplicate entries.
-        $found_transition->delete();
-        $result = parent::save();
-      }
-      else {
-        $result = parent::save();
-      }
+    $entity = $this->getTargetEntity();
+    if ($this->isExecuted()) {
+      $transition = $this->createDuplicate(WorkflowTransition::class);
+      $transition->setTimestamp(\Drupal::time()->getRequestTime());
+      $result = $transition->save();
     }
     else {
-      workflow_debug(__FILE__, __FUNCTION__, __LINE__); // @todo D8-port: still test this snippet.
-      // Update the transition.
       $result = parent::save();
     }
 
@@ -151,17 +122,17 @@ class WorkflowScheduledTransition extends WorkflowTransition {
   /**
    * {@inheritdoc}
    */
-  public static function loadByProperties($entity_type, $entity_id, array $revision_ids = [], $field_name = '', $langcode = '', $sort = 'ASC', $transition_type = 'workflow_scheduled_transition') {
+  public static function loadByProperties($entity_type_id, $entity_id, array $revision_ids = [], $field_name = '', $langcode = '', $sort = 'ASC', $transition_type = 'workflow_scheduled_transition') {
     // N.B. $transition_type is set as parameter default.
-    return parent::loadByProperties($entity_type, $entity_id, $revision_ids, $field_name, $langcode, $sort, $transition_type);
+    return parent::loadByProperties($entity_type_id, $entity_id, $revision_ids, $field_name, $langcode, $sort, $transition_type);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function loadMultipleByProperties($entity_type, array $entity_ids, array $revision_ids = [], $field_name = '', $langcode = '', $limit = NULL, $sort = 'ASC', $transition_type = 'workflow_scheduled_transition') {
+  public static function loadMultipleByProperties($entity_type_id, array $entity_ids, array $revision_ids = [], $field_name = '', $langcode = '', $limit = NULL, $sort = 'ASC', $transition_type = 'workflow_scheduled_transition') {
     // N.B. $transition_type is set as parameter default.
-    return parent::loadMultipleByProperties($entity_type, $entity_ids, $revision_ids, $field_name, $langcode, $limit, $sort, $transition_type);
+    return parent::loadMultipleByProperties($entity_type_id, $entity_ids, $revision_ids, $field_name, $langcode, $limit, $sort, $transition_type);
   }
 
   /**
@@ -197,7 +168,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     }
 
     $ids = $query->execute();
-    $transitions = self::loadMultiple($ids);
+    $transitions = $ids ? self::loadMultiple($ids) : [];
     return $transitions;
   }
 
@@ -220,7 +191,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = [];
 
-    // Add the specific ID-field : tid vs. hid.
+    // Add the specific ID-field on top (tid vs. hid).
     $fields['tid'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Transition ID'))
       ->setDescription(t('The transition ID.'))
@@ -231,26 +202,9 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     $fields += parent::baseFieldDefinitions($entity_type);
 
     // The timestamp has a different description.
-    $fields['timestamp'] = []; // Reset old value.
-    $fields['timestamp'] = BaseFieldDefinition::create('created')
+    $fields['timestamp']
       ->setLabel(t('Scheduled'))
-      ->setDescription(t('The date+time this transition is scheduled for.'))
-    /*
-      ->setQueryable(FALSE)
-      ->setCustomStorage(FALSE)
-      ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
-        'label' => 'hidden',
-        'type' => 'timestamp',
-        'weight' => 0,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'datetime_timestamp',
-        'weight' => 10,
-      ))
-      ->setDisplayConfigurable('form', TRUE);
-     */
-      ->setRevisionable(TRUE);
+      ->setDescription(t('The date+time this transition is scheduled for.'));
 
     // Remove the specific ID-field : tid vs. hid.
     unset($fields['hid']);

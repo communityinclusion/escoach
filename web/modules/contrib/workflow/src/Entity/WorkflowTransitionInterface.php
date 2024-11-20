@@ -16,45 +16,59 @@ use Drupal\user\EntityOwnerInterface;
 interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface, FieldableEntityInterface, EntityOwnerInterface {
 
   /**
-   * Helper function for __construct. Used for all children of WorkflowTransition (aka WorkflowScheduledTransition)
+   * Creates a WorkflowTransition or WorkflowScheduledTransition object.
    *
-   * Usage:
-   *   $transition = WorkflowTransition::create([$current_sid, 'field_name' => $field_name]);
-   *   $transition->setTargetEntity($entity);
-   *   $transition->setValues($new_sid, $user->id(), REQUEST_TIME, $comment);
+   * @param array $values
+   *   Keyed list of values.
+   *   $values[0] may contain a State object or State ID.
    *
-   * @param string $to_sid
-   * @param int $uid
-   * @param int $timestamp
-   * @param string $comment
-   * @param bool $force_create
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface|null
+   *   The Transition object.
    */
-  public function setValues($to_sid, $uid = NULL, $timestamp = NULL, $comment = '', $force_create = FALSE);
+  public static function create(array $values = []);
 
+  /**
+   * Creates a duplicate of the Transition, of the given type.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
+   *   A clone of $this with all identifiers unset, so saving it inserts a new
+   *   entity into the storage system.
+   */
+ public function createDuplicate($new_class_name = WorkflowTransition::class);
   /**
    * Load (Scheduled) WorkflowTransitions, most recent first.
    *
-   * @param string $entity_type
+   * @param string $entity_type_id
+   *   The entity type ID.
    * @param int $entity_id
-   * @param array $revision_ids
+   *   An entity ID.
+   * @param int[] $revision_ids
+   *   Optional. A list of entity revision ID's.
    * @param string $field_name
+   *   Optional. Can be NULL, if you want to load any field.
    * @param string $langcode
+   *   Optional. Can be empty, if you want to load any language.
    * @param string $sort
+   *   Optional sort order {'ASC'|'DESC'}.
    * @param string $transition_type
+   *   The type of the transition to be fetched.
    *
    * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
    *   Object representing one row from the {workflow_transition_history} table.
    */
-  public static function loadByProperties($entity_type, $entity_id, array $revision_ids = [], $field_name = '', $langcode = '', $sort = 'ASC', $transition_type = '');
+  public static function loadByProperties($entity_type_id, $entity_id, array $revision_ids = [], $field_name = '', $langcode = '', $sort = 'ASC', $transition_type = '');
 
   /**
    * Given an entity, get all transitions for it.
    *
    * Since this may return a lot of data, a limit is included to allow for only one result.
    *
-   * @param string $entity_type
+   * @param string $entity_type_id
+   *   The entity type ID.
    * @param int[] $entity_ids
+   *   A (possibly empty) list of entity ID's.
    * @param int[] $revision_ids
+   *   Optional. A list of entity revision ID's.
    * @param string $field_name
    *   Optional. Can be NULL, if you want to load any field.
    * @param string $langcode
@@ -69,7 +83,151 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    * @return WorkflowTransitionInterface[]
    *   An array of transitions.
    */
-  public static function loadMultipleByProperties($entity_type, array $entity_ids, array $revision_ids = [], $field_name = '', $langcode = '', $limit = NULL, $sort = 'ASC', $transition_type = '');
+  public static function loadMultipleByProperties($entity_type_id, array $entity_ids, array $revision_ids = [], $field_name = '', $langcode = '', $limit = NULL, $sort = 'ASC', $transition_type = '');
+
+  /**
+   * Helper function for __construct.
+   *
+   * Usage:
+   *   $transition = WorkflowTransition::create([$current_sid, 'field_name' => $field_name]);
+   *   $transition->setTargetEntity($entity);
+   *   $transition->setValues($new_sid, $user->id(), REQUEST_TIME, $comment);
+   *
+   * @param string $to_sid
+   *   The new State ID.
+   * @param int $uid
+   *   The user ID.
+   * @param int $timestamp
+   *   The unix timestamp.
+   * @param string $comment
+   *   The comment.
+   * @param bool $force_create
+   *   An indicator, to force the execution of the Transition.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
+   *   The Transition itself.
+   */
+  public function setValues($to_sid, $uid = NULL, $timestamp = NULL, $comment = '', $force_create = FALSE);
+
+  /**
+   * Sets the Entity, that is added to the Transition.
+   *
+   * Also sets all dependent fields, that will be saved in tables {workflow_transition_*}.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Entity ID or the Entity object, to add to the Transition.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
+   *   The Transition itself.
+   */
+  public function setTargetEntity(EntityInterface $entity);
+
+  /**
+   * Returns the entity to which the workflow is attached.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The entity to which the workflow is attached.
+   */
+  public function getTargetEntity();
+  /**
+   * Returns the ID of the entity to which the workflow is attached.
+   *
+   * @return int
+   *   The ID of the entity to which the workflow is attached.
+   */
+  public function getTargetEntityId();
+
+  /**
+   * Returns the type of the entity to which the workflow is attached.
+   *
+   * @return string
+   *   An entity type.
+   */
+  public function getTargetEntityTypeId();
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFromState();
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getToState();
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFromSid();
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getToSid();
+
+  /**
+   * Get the comment of the Transition.
+   *
+   * @return string
+   *   The comment.
+   */
+  public function getComment();
+
+  /**
+   * Sets the comment of the Transition.
+   *
+   * @param string $value
+   *   The new comment.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
+   *   The Transition itself.
+   */
+  public function setComment($value);
+
+  /**
+   * Get the field_name for which the Transition is valid.
+   *
+   * @return string
+   *   The field_name, that is added to the Transition.
+   */
+  public function getFieldName();
+
+  /**
+   * Get the language code for which the Transition is valid.
+   *
+   * @return string
+   *   $langcode
+   *
+   * @todo OK?? Shouldn't we use entity's language() method for langcode?
+   */
+  public function getLangcode();
+
+  /**
+   * Returns the time on which the transitions was or will be executed.
+   *
+   * @return int
+   *   The unix timestamp.
+   */
+  public function getTimestamp();
+
+  /**
+   * Returns the human-readable time.
+   *
+   * @return string
+   *   The formatted timestamp.
+   */
+  public function getTimestampFormatted();
+
+  /**
+   * Returns the time on which the transitions was or will be executed.
+   *
+   * @param int $value
+   *   The new timestamp.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
+   *   The Transition itself.
+   */
+  public function setTimestamp($value);
 
   /**
    * Execute a transition (change state of an entity).
@@ -118,122 +276,34 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
   public function executeAndUpdateEntity($force = FALSE);
 
   /**
-   * Invokes 'transition post'.
-   *
-   * Adds the possibility to invoke the hook from elsewhere.
-   *
-   * @param bool $force
+   * Updates the entity's workflow field with value and transition.
    */
-  public function post_execute($force = FALSE);
+  public function updateEntity();
 
   /**
-   * Sets the Entity, that is added to the Transition.
-   *
-   * Also sets all dependent fields, that will be saved in tables {workflow_transition_*}.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The Entity ID or the Entity object, to add to the Transition.
-   *
-   * @return object
-   *   The Entity, that is added to the Transition.
-   */
-  public function setTargetEntity(EntityInterface $entity);
-
-  /**
-   * Returns the entity to which the workflow is attached.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface
-   *   The entity to which the workflow is attached.
-   */
-  public function getTargetEntity();
-
-  /**
-   * Returns the ID of the entity to which the workflow is attached.
-   *
-   * @return int
-   *   The ID of the entity to which the workflow is attached.
-   */
-  public function getTargetEntityId();
-
-  /**
-   * Returns the type of the entity to which the workflow is attached.
-   *
-   * @return string
-   *   An entity type.
-   */
-  public function getTargetEntityTypeId();
-
-  /**
-   * Get the field_name for which the Transition is valid.
-   *
-   * @return string
-   *   The field_name, that is added to the Transition.
-   */
-  public function getFieldName();
-
-  /**
-   * Get the language code for which the Transition is valid.
-   *
-   * @return string
-   *   $langcode
-   *
-   * @todo OK?? Shouldn't we use entity's language() method for langcode?
-   */
-  public function getLangcode();
-
-  /**
-   * Get the comment of the Transition.
-   *
-   * @return
-   *   The comment
-   */
-  public function getComment();
-
-  /**
-   * Get the comment of the Transition.
-   *
-   * @param $value
-   *   The new comment.
-   *
-   * @return WorkflowTransitionInterface
-   */
-  public function setComment($value);
-
-  /**
-   * Returns the time on which the transitions was or will be executed.
-   *
-   * @return
-   */
-  public function getTimestamp();
-
-  /**
-   * Returns the human-readable time.
-   *
-   * @return string
-   */
-  public function getTimestampFormatted();
-
-  /**
-   * Returns the time on which the transitions was or will be executed.
-   *
-   * @param $value
-   *   The new timestamp.
-   *
-   * @return WorkflowTransitionInterface
-   */
-  public function setTimestamp($value);
-
-  /**
-   * Returns if this is a Scheduled Transition.
+   * Returns if this is an Executed Transition.
    *
    * @return bool
+   *   TRUE if the execution may be prohibited, somehow.
    */
-  public function isScheduled();
+  public function isExecuted();
+
+  /**
+   * Set the 'isExecuted' property.
+   *
+   * @param bool $isExecuted
+   *   TRUE if the Transition is already executed, else FALSE.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
+   *   The Transition itself.
+   */
+  public function setExecuted($isExecuted = TRUE);
 
   /**
    * Returns if this is a revertable Transition on the History tab.
    *
    * @return bool
+   *   TRUE or FALSE.
    */
   public function isRevertable();
 
@@ -241,39 +311,36 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    * Sets the Transition to be scheduled or not.
    *
    * @param bool $schedule
+   *   TRUE if scheduled, else FALSE.
    *
-   * @return WorkflowTransitionInterface
+   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
+   *   The Transition itself.
    */
   public function schedule($schedule = TRUE);
 
   /**
-   * Set the 'isExecuted' property.
-   *
-   * @param bool $isExecuted
-   *
-   * @return WorkflowTransitionInterface
-   */
-  public function setExecuted($isExecuted = TRUE);
-
-  /**
-   * Returns if this is an Executed Transition.
+   * Returns if this is a Scheduled Transition.
    *
    * @return bool
+   *   TRUE if scheduled, else FALSE.
    */
-  public function isExecuted();
+  public function isScheduled();
 
   /**
    * A transition may be forced skipping checks.
    *
    * @return bool
-   *   If the transition is forced. (Allow not-configured transitions).
+   *   TRUE if the transition is forced. (Allow not-configured transitions).
    */
   public function isForced();
 
   /**
-   * Set if a transition must be executed, even if transition is invalid or user not authorized.
+   * Set if a transition must be executed.
+   *
+   * Even if transition is invalid or user not authorized.
    *
    * @param bool $force
+   *   TRUE if the execution may be prohibited, somehow.
    *
    * @return object
    *   The transition itself.
@@ -284,6 +351,7 @@ interface WorkflowTransitionInterface extends WorkflowConfigTransitionInterface,
    * Helper/debugging function. Shows simple contents of Transition.
    *
    * @param string $function
+   *   Optional, the name of the calling function.
    */
   public function dpm($function = '');
 
