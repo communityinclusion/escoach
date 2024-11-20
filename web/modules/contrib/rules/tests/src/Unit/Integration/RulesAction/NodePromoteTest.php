@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\node\NodeInterface;
@@ -32,7 +34,7 @@ class NodePromoteTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Promote selected content to front page', $this->action->summary());
   }
 
@@ -41,7 +43,7 @@ class NodePromoteTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecution() {
+  public function testActionExecution(): void {
     $node = $this->prophesizeEntity(NodeInterface::class);
     $node->setPromoted(NodeInterface::PROMOTED)->shouldBeCalledTimes(1);
 

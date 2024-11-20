@@ -4,8 +4,9 @@ namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\rules\Core\RulesActionBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\rules\Core\Attribute\RulesAction;
+use Drupal\rules\Core\RulesActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,6 +19,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   deriver = "Drupal\rules\Plugin\RulesAction\EntityPathAliasCreateDeriver"
  * )
  */
+#[RulesAction(
+  id: "rules_entity_path_alias_create",
+  deriver: EntityPathAliasCreateDeriver::class
+)]
 class EntityPathAliasCreate extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

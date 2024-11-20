@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\rules\Context\ContextDefinitionInterface;
@@ -16,7 +18,7 @@ class ConditionManagerTest extends RulesIntegrationTestBase {
   /**
    * @covers ::getDiscovery
    */
-  public function testContextDefinitionAnnotations() {
+  public function testContextDefinitionAnnotations(): void {
     $definitions = $this->conditionManager->getDefinitions();
     // Make sure all context definitions are using the class provided by Rules.
     foreach ($definitions as $definition) {

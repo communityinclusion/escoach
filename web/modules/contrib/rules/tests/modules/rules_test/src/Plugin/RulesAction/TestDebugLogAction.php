@@ -3,6 +3,9 @@
 namespace Drupal\rules_test\Plugin\RulesAction;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Drupal\rules\Logger\RulesDebugLoggerChannel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,6 +25,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_test_debug_log",
+  label: new TranslatableMarkup("Test action debug logging"),
+  category: new TranslatableMarkup("Tests"),
+  context_definitions: [
+    "message" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Message to log"),
+      required: FALSE
+    ),
+  ]
+)]
 class TestDebugLogAction extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Core\ConditionManager;
@@ -7,6 +9,8 @@ use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Context\ExecutionState;
 use Drupal\rules\Engine\RulesComponent;
+
+// cspell:ignore valuetest
 
 /**
  * Test using the Rules API to create and evaluate rules.
@@ -32,7 +36,7 @@ class RulesEngineTest extends RulesKernelTestBase {
   /**
    * Tests creating a rule and iterating over the rule elements.
    */
-  public function testRuleCreation() {
+  public function testRuleCreation(): void {
     // Create an 'and' condition container and add conditions to it.
     $and = $this->expressionManager->createAnd()
       ->addCondition('rules_test_false')
@@ -73,7 +77,7 @@ class RulesEngineTest extends RulesKernelTestBase {
   /**
    * Tests passing a string context to a condition.
    */
-  public function testContextPassing() {
+  public function testContextPassing(): void {
     $rule = $this->expressionManager->createRule();
 
     $rule->addCondition('rules_test_string_condition', ContextConfig::create()
@@ -93,7 +97,7 @@ class RulesEngineTest extends RulesKernelTestBase {
   /**
    * Tests that a condition can provide a value and another one can consume it.
    */
-  public function testProvidedVariables() {
+  public function testProvidedVariables(): void {
     $rule = $this->expressionManager->createRule();
 
     // The first condition provides a "provided_text" variable.
@@ -118,7 +122,7 @@ class RulesEngineTest extends RulesKernelTestBase {
   /**
    * Tests that provided variables can be renamed with configuration.
    */
-  public function testRenamingOfProvidedVariables() {
+  public function testRenamingOfProvidedVariables(): void {
     $rule = $this->expressionManager->createRule();
 
     // The condition provides a "provided_text" variable.
@@ -137,7 +141,7 @@ class RulesEngineTest extends RulesKernelTestBase {
   /**
    * Tests that multiple actions can consume and provide context variables.
    */
-  public function testActionProvidedContext() {
+  public function testActionProvidedContext(): void {
     // @todo Convert the test to make use of actions instead of conditions.
     $rule = $this->expressionManager->createRule();
 
@@ -169,7 +173,7 @@ class RulesEngineTest extends RulesKernelTestBase {
   /**
    * Verifies swapping out core services works.
    */
-  public function testSwappedCoreServices() {
+  public function testSwappedCoreServices(): void {
     $condition_manager = $this->container->get('plugin.manager.condition');
     $this->assertInstanceOf(ConditionManager::class, $condition_manager);
   }

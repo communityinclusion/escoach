@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\rules\Context\ExecutionStateInterface;
@@ -34,7 +36,7 @@ class ActionSetExpressionTest extends RulesUnitTestBase {
   /**
    * Tests that an action in the set fires.
    */
-  public function testActionExecution() {
+  public function testActionExecution(): void {
     // The execute method on the test action must be called once.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
@@ -45,7 +47,7 @@ class ActionSetExpressionTest extends RulesUnitTestBase {
   /**
    * Tests that two actions in the set fire both.
    */
-  public function testTwoActionExecution() {
+  public function testTwoActionExecution(): void {
     // The execute method on the test action must be called once.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
@@ -65,7 +67,7 @@ class ActionSetExpressionTest extends RulesUnitTestBase {
   /**
    * Tests that nested action sets work.
    */
-  public function testNestedActionExecution() {
+  public function testNestedActionExecution(): void {
     // The execute method on the test action must be called twice.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(2);
@@ -81,7 +83,7 @@ class ActionSetExpressionTest extends RulesUnitTestBase {
   /**
    * Tests that a nested action can be retrieved by UUID.
    */
-  public function testLookupAction() {
+  public function testLookupAction(): void {
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal());
     $uuid = $this->testActionExpression->reveal()->getUuid();
     $lookup_action = $this->actionSet->getExpression($uuid);
@@ -92,7 +94,7 @@ class ActionSetExpressionTest extends RulesUnitTestBase {
   /**
    * Tests deleting an action from the container.
    */
-  public function testDeletingAction() {
+  public function testDeletingAction(): void {
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal());
     $second_action = $this->prophesize(ActionExpression::class);
     $this->actionSet->addExpressionObject($second_action->reveal());
@@ -110,7 +112,7 @@ class ActionSetExpressionTest extends RulesUnitTestBase {
   /**
    * Tests evaluation order with two actions.
    */
-  public function testEvaluationOrder() {
+  public function testEvaluationOrder(): void {
     // The execute method on the second action must be called once.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
@@ -147,7 +149,7 @@ class TestActionSetExpression extends ActionSetExpression {
   /**
    * {@inheritdoc}
    */
-  public function executeWithState(ExecutionStateInterface $state) {
+  public function executeWithState(ExecutionStateInterface $state): array {
     $uuids = [];
     // Use the iterator to ensure the actions are sorted.
     foreach ($this as $action) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -31,7 +33,7 @@ class EntityIsNewTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     $entity = $this->prophesizeEntity(EntityInterface::class);
     $entity->isNew()->willReturn(TRUE)->shouldBeCalledTimes(1);
 

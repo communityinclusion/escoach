@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MemberVarScopeSniff
  */
-class MemberVarScopeUnitTest extends AbstractSniffUnitTest
+final class MemberVarScopeUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -54,6 +54,7 @@ class MemberVarScopeUnitTest extends AbstractSniffUnitTest
      */
     public function getWarningList()
     {
+        // Warning from getMemberProperties() about parse error.
         return [71 => 1];
 
     }//end getWarningList()

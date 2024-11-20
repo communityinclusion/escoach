@@ -2,11 +2,14 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\ListInterface;
 use Drupal\Core\TypedData\Type\BooleanInterface;
 use Drupal\Core\TypedData\Type\IntegerInterface;
 use Drupal\Core\TypedData\Type\StringInterface;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
 
 /**
@@ -27,6 +30,19 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_data_is_empty",
+  label: new TranslatableMarkup("Data value is empty"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "data" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Data to check"),
+      description: new TranslatableMarkup("The data to be checked to be empty, specified by using a data selector, e.g. 'node.uid.entity.name.value'."),
+      assignment_restriction: "selector"
+    ),
+  ]
+)]
 class DataIsEmpty extends RulesConditionBase {
 
   /**

@@ -4,6 +4,8 @@ namespace Drupal\rules\Plugin\RulesExpression;
 
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\DataProcessorManager;
 use Drupal\rules\Context\ExecutionMetadataStateInterface;
 use Drupal\rules\Context\ExecutionStateInterface;
@@ -11,6 +13,7 @@ use Drupal\rules\Core\RulesActionManagerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionInterface;
+use Drupal\rules\Form\Expression\ActionForm;
 use Drupal\rules\Context\ContextHandlerIntegrityTrait;
 use Drupal\rules\Engine\IntegrityViolationList;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,6 +30,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   form_class = "\Drupal\rules\Form\Expression\ActionForm"
  * )
  */
+#[RulesExpression(
+  id: "rules_action",
+  label: new TranslatableMarkup("Action"),
+  form_class: ActionForm::class
+)]
 class ActionExpression extends ExpressionBase implements ContainerFactoryPluginInterface, ActionExpressionInterface {
   use ContextHandlerIntegrityTrait;
 

@@ -2,6 +2,9 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
@@ -29,6 +32,27 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_data_set",
+  label: new TranslatableMarkup("Set a data value"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "data" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Data"),
+      description: new TranslatableMarkup("Specifies the data to be modified using a data selector, e.g. 'node.author.name'."),
+      allow_null: TRUE,
+      assignment_restriction: "selector"
+    ),
+    "value" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Value"),
+      description: new TranslatableMarkup("The new value to set for the specified data."),
+      default_value: NULL,
+      required: FALSE
+    ),
+  ]
+)]
 class DataSet extends RulesActionBase {
 
   /**

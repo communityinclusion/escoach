@@ -348,7 +348,7 @@ class RulesComponent {
    *   A list of autocomplete suggestions - valid property paths for one of the
    *   provided data definitions. Each entry is an array with the following
    *   keys:
-   *   - value: the data selecor property path.
+   *   - value: the data selector property path.
    *   - label: the human readable label suggestion.
    */
   public function autocomplete($partial_selector, ExpressionInterface $until = NULL) {

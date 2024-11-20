@@ -14,7 +14,7 @@ function workflow_install() {
   $url = Url::fromRoute('user.admin_permissions', [],
     ['fragment' => 'module-workflow']);
   $message = t("Thanks for using Workflow module.
-    To start using a Workflow, add a Workflow Field to your entity.
+    To start using a Workflow, add a Workflow State field to your entity.
     Please review which roles may 'participate in workflows'
     <a href=':url'>on the Permissions page</a>.",
     [':url' => $url->toString()]);
@@ -106,4 +106,11 @@ function workflow_update_8001(&$sandbox) {
  */
 function workflow_update_8002(&$sandbox) {
   \Drupal::messenger()->addStatus("Please check Workflow permissions 'Revert own/any state transition and 'Edit own/any comments' before continuing.");
+}
+
+/**
+ * This will install a Transition Block, a History View and an Action.
+ */
+function workflow_update_8003(&$sandbox) {
+  \Drupal::service('config.installer')->installOptionalConfig();
 }

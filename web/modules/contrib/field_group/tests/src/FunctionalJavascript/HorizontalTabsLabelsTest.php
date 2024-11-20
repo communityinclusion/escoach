@@ -235,6 +235,7 @@ class HorizontalTabsLabelsTest extends WebDriverTestBase {
     $this->assertNotNull($tab2 = $this->page->find('css', '.field-group-tabs-wrapper a[href="#edit-group-tab2"]'));
     $tab2->click();
     $this->assertSession->waitForElementVisible('css', '[name="body[0][value]"]');
+    // cspell:disable-next-line
     $this->page->fillField('body[0][value]', 'Donec laoreet imperdiet.');
     $this->page->findButton('edit-submit')->click();
     $this->assertSession->waitForElement('css', 'html.js [data-drupal-messages]');

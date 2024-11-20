@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Session\SessionManagerInterface;
@@ -63,7 +65,7 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Block a user', $this->action->summary());
   }
 
@@ -72,7 +74,7 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testBlockUserWithValidUser() {
+  public function testBlockUserWithValidUser(): void {
     $user = $this->getUserMock(self::ACTIVE, self::AUTHENTICATED);
 
     $user->block()->shouldBeCalledTimes(1);
@@ -93,7 +95,7 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testBlockUserWithActiveAnonymousUser() {
+  public function testBlockUserWithActiveAnonymousUser(): void {
     $user = $this->getUserMock(self::ACTIVE, self::ANONYMOUS);
 
     $user->block()->shouldNotBeCalled();
@@ -112,7 +114,7 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testBlockUserWithBlockedAuthenticatedUser() {
+  public function testBlockUserWithBlockedAuthenticatedUser(): void {
     $user = $this->getUserMock(self::BLOCKED, self::AUTHENTICATED);
 
     $user->block()->shouldNotBeCalled();
@@ -131,7 +133,7 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testBlockUserWithBlockedAnonymousUser() {
+  public function testBlockUserWithBlockedAnonymousUser(): void {
     $user = $this->getUserMock(self::BLOCKED, self::ANONYMOUS);
 
     $user->block()->shouldNotBeCalled();

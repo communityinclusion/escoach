@@ -4,6 +4,8 @@ namespace Drupal\rules\Plugin\RulesDataProcessor;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Attribute\RulesDataProcessor;
 use Drupal\rules\Context\DataProcessorInterface;
 use Drupal\rules\Context\ExecutionStateInterface;
 use Drupal\typed_data\PlaceholderResolverInterface;
@@ -17,6 +19,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Placeholder token replacements")
  * )
  */
+#[RulesDataProcessor(
+  id: "rules_tokens",
+  label: new TranslatableMarkup("Placeholder token replacements")
+)]
 class TokenProcessor extends PluginBase implements DataProcessorInterface, ContainerFactoryPluginInterface {
 
   /**

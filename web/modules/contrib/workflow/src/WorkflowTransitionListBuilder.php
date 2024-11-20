@@ -22,7 +22,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
    *
    * @var \Drupal\Core\Entity\EntityInterface
    */
-  public $workflow_entity;
+  protected $workflowEntity;
 
   /**
    * {@inheritdoc}
@@ -34,21 +34,21 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
    *
    * @var bool
    */
-  protected $show_column_fieldname = NULL;
+  protected $showColumnFieldname = NULL;
 
   /**
    * Indicates if a footer must be generated.
    *
    * @var bool
    */
-  protected $footer_needed = FALSE;
+  protected $footerNeeded = FALSE;
 
   /**
    * {@inheritdoc}
    */
   public function load() {
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
-    $entity = $this->workflow_entity; // N.B. This is a custom variable.
+    $entity = $this->getTargetEntity();
     $entity_type = $entity->getEntityTypeId();
     $entity_id = $entity->id();
     $field_name = workflow_url_get_field_name();
@@ -65,14 +65,14 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    *
-   * Building the header and content lines for the contact list.
+   * Builds the header column definitions.
    *
    * Calling the parent::buildHeader() adds a column for the possible actions
    * and inserts the 'edit' and 'delete' links as defined for the entity type.
    */
   public function buildHeader() {
 
-    $entity = $this->workflow_entity; // N.B. This is a custom variable.
+    $entity = $this->getTargetEntity();
 
     $header['timestamp'] = $this->t('Date');
     if ($this->showColumnFieldname($entity)) {
@@ -101,7 +101,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
       // This is an invalid/deleted state.
       $to_label = self::WORKFLOW_MARK_STATE_IS_DELETED;
       // Add a footer to explain the addition.
-      $this->footer_needed = TRUE;
+      $this->footerNeeded = TRUE;
     }
     else {
       $label = Html::escape($this->t($to_state->label()));
@@ -115,7 +115,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
       elseif (!$to_state->isActive()) {
         $to_label = $label . self::WORKFLOW_MARK_STATE_IS_DELETED;
         // Add a footer to explain the addition.
-        $this->footer_needed = TRUE;
+        $this->footerNeeded = TRUE;
       }
       else {
         // Regular state.
@@ -129,14 +129,14 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
       // This is an invalid/deleted state.
       $from_label = self::WORKFLOW_MARK_STATE_IS_DELETED;
       // Add a footer to explain the addition.
-      $this->footer_needed = TRUE;
+      $this->footerNeeded = TRUE;
     }
     else {
       $label = Html::escape($this->t($from_state->label()));
       if (!$from_state->isActive()) {
         $from_label = $label . self::WORKFLOW_MARK_STATE_IS_DELETED;
         // Add a footer to explain the addition.
-        $this->footer_needed = TRUE;
+        $this->footerNeeded = TRUE;
       }
       else {
         // Regular state.
@@ -186,7 +186,7 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
     $build += parent::render();
 
     // Add a footer. This is not yet added in EntityListBuilder::render()
-    if ($this->footer_needed) {
+    if ($this->footerNeeded) {
       // @todo D8-port: test this.
       // Two variants. First variant is official, but I like 2nd better.
       /*
@@ -195,7 +195,8 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
           'class' => ['footer-class'],
           'data' => [
             [
-              'data' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' ' . $this->t('State is no longer available.'),
+              'data' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' '
+                . $this->t('State is no longer available.'),
               'colspan' => count($build['table']['#header']),
             ],
           ],
@@ -203,7 +204,8 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
       ];
        */
       $build['workflow_footer'] = [
-        '#markup' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' ' . $this->t('State is no longer available.'),
+        '#markup' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' '
+          . $this->t('State is no longer available.'),
         '#weight' => 500, // @todo Make this better.
       ];
     }
@@ -236,20 +238,43 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
   }
 
   /**
+   * Sets the target entity.
+   *
+   * @return \Drupal\workflow\WorkflowTransitionListBuilder
+   *   The object itself.
+   */
+  public function setTargetEntity(EntityInterface $entity) {
+    $this->workflowEntity = $entity;
+    return $this;
+  }
+
+  /**
+   * Gets the target entity.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The entity.
+   */
+  public function getTargetEntity() {
+    return $this->workflowEntity;
+  }
+
+  /**
    * Determines if the column 'Field name' must be shown.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    *
    * @return bool
+   *   The requested result.
    */
   protected function showColumnFieldname(EntityInterface $entity) {
-    if (is_null($this->show_column_fieldname)) {
+    if (is_null($this->showColumnFieldname)) {
       // @todo Also remove when field_name is set in route??
       if (count(_workflow_info_fields($entity)) > 1) {
-        $this->show_column_fieldname = TRUE;
+        $this->showColumnFieldname = TRUE;
       }
     }
-    return $this->show_column_fieldname;
+    return $this->showColumnFieldname;
   }
 
 }

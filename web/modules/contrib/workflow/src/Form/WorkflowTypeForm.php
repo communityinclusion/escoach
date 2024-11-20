@@ -3,6 +3,7 @@
 namespace Drupal\workflow\Form;
 
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -14,7 +15,7 @@ class WorkflowTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\workflow\Entity\Workflow $workflow */
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
     $workflow = $this->entity;
 
     $form['label'] = [
@@ -30,14 +31,19 @@ class WorkflowTypeForm extends EntityForm {
 
     $form['id'] = [
       '#type' => 'machine_name',
+      '#default_value' => $this->entity->id(),
+      '#disabled' => !$this->entity->isNew(),
+      '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
+      '#size' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
+      '#required' => TRUE,
       '#description' => $this->t(
         'A unique machine-readable name. Can only contain lowercase letters,
          numbers, and underscores.'
       ),
-      '#disabled' => !$this->entity->isNew(),
-      '#default_value' => $this->entity->id(),
       '#machine_name' => [
-        'exists' => [$this, 'exists'],
+        // Add local helper function 'exists' at the bottom of this class.
+         'exists' => [$this, 'exists'],
+        'source' => ['label'],
         'replace_pattern' => '([^a-z0-9_]+)|(^custom$)',
         'error' => $this->t(
           'The machine-readable name must be unique, and can only contain
@@ -214,13 +220,13 @@ class WorkflowTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\workflow\Entity\Workflow $entity */
-    $entity = $this->entity;
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
+    $workflow = $this->entity;
 
     // Prevent leading and trailing spaces.
-    $entity->set('label', trim($entity->label()));
+    $workflow->set('label', trim($workflow->label()));
 
-    $entity->set('options', [
+    $workflow->set('options', [
       'name_as_title' => $form_state->getValue('name_as_title'),
       'fieldset' => $form_state->getValue('fieldset'),
       'options' => $form_state->getValue('options'),
@@ -232,25 +238,24 @@ class WorkflowTypeForm extends EntityForm {
     ]);
 
     $status = parent::save($form, $form_state);
-    $action = $status == SAVED_UPDATED ? 'updated' : 'added';
+    if ($status == SAVED_NEW) {
+      $form_state->setRedirect('entity.workflow_type.edit_form', ['workflow_type' => $workflow->id()]);
+    }
 
     // Tell the user we've updated the data.
     $args = [
-      '%label' => $entity->label(),
-      '%action' => $action,
+      '%label' => $workflow->label(),
+      '%action' => ($status == SAVED_UPDATED) ? 'updated' : 'added',
     ];
     $this->messenger()->addStatus($this->t(
       'Workflow %label has been %action. Please maintain the permissions,
        states and transitions.', $args));
     $args += [
-      'link' => $entity->toLink($this->t('Edit'))->toString(),
+      'link' => $workflow->toLink($this->t('Edit'))->toString(),
     ];
     $this->logger('workflow')->notice('Workflow %label has been %action.', $args);
 
-    if ($status == SAVED_NEW) {
-      $form_state->setRedirect('entity.workflow_type.edit_form', ['workflow_type' => $entity->id()]);
-    }
-
+    return $status;
   }
 
   /**

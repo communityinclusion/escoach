@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
 
   use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -96,7 +98,7 @@ namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
      *
      * @covers ::execute
      */
-    public function testRedirect() {
+    public function testRedirect(): void {
       $this->currentPathStack->getPath()->willReturn('some/random/test/path');
 
       $this->action->setContextValue('url', '/test/url');
@@ -110,7 +112,7 @@ namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
      *
      * @covers ::execute
      */
-    public function testRedirectBatch() {
+    public function testRedirectBatch(): void {
       $this->currentPathStack->getPath()->willReturn('some/random/test/path');
       batch_set('Test batch!');
 
@@ -125,7 +127,7 @@ namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
      *
      * @covers ::execute
      */
-    public function testRedirectRulesAdminPage() {
+    public function testRedirectRulesAdminPage(): void {
       $this->currentPathStack->getPath()->willReturn('admin/config/workflow/rules');
 
       $this->action->setContextValue('url', '/test/url');

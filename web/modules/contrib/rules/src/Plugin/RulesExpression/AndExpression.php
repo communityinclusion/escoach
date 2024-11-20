@@ -2,8 +2,11 @@
 
 namespace Drupal\rules\Plugin\RulesExpression;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\ExecutionStateInterface;
 use Drupal\rules\Engine\ConditionExpressionContainer;
+use Drupal\rules\Form\Expression\ConditionContainerForm;
 
 /**
  * Evaluates a group of conditions with a logical AND.
@@ -14,6 +17,11 @@ use Drupal\rules\Engine\ConditionExpressionContainer;
  *   form_class = "\Drupal\rules\Form\Expression\ConditionContainerForm"
  * )
  */
+#[RulesExpression(
+  id: "rules_and",
+  label: new TranslatableMarkup("Condition set (AND)"),
+  form_class: ConditionContainerForm::class
+)]
 class AndExpression extends ConditionExpressionContainer {
 
   /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -33,7 +35,7 @@ class EntityFetchByIdTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Fetch entity by id', $this->action->summary());
   }
 
@@ -42,7 +44,7 @@ class EntityFetchByIdTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecution() {
+  public function testActionExecution(): void {
     $entity_type = 'entity_test';
 
     // Prepare entity storage to return dummy entity on the 'load' execution.
@@ -67,7 +69,7 @@ class EntityFetchByIdTest extends RulesEntityIntegrationTestBase {
   /**
    * @covers ::refineContextDefinitions
    */
-  public function testRefiningContextDefinitions() {
+  public function testRefiningContextDefinitions(): void {
     $this->action->setContextValue('type', 'entity_test');
     $this->action->refineContextDefinitions([]);
     $this->assertEquals(

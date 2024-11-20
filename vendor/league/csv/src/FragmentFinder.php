@@ -25,7 +25,11 @@ use function range;
 use const FILTER_VALIDATE_INT;
 
 /**
+ * EXPERIMENTAL WARNING! This class implementation will change in the next major point release.
+ *
  * @phpstan-type selection array{selection:string, start:int<-1, max>, end:?int, length:int, columns:array<int>}
+ *
+ * @experimental
  */
 class FragmentFinder
 {
@@ -42,8 +46,13 @@ class FragmentFinder
     }
 
     /**
-     * @throws SyntaxError
+     * EXPERIMENTAL WARNING! This method implementation will change in the next major point release.
      *
+     * Extract all found fragment identifiers for the specifield tabular data
+     *
+     * @experimental since version 9.12.0
+     *
+     * @throws SyntaxError
      * @return iterable<int, TabularDataReader>
      */
     public function findAll(string $expression, TabularDataReader $tabularDataReader): iterable
@@ -52,6 +61,12 @@ class FragmentFinder
     }
 
     /**
+     * EXPERIMENTAL WARNING! This method implementation will change in the next major point release.
+     *
+     * Extract the first found fragment identifier of the tabular data or returns null
+     *
+     * @experimental since version 9.12.0
+     *
      * @throws SyntaxError
      */
     public function findFirst(string $expression, TabularDataReader $tabularDataReader): ?TabularDataReader
@@ -65,6 +80,12 @@ class FragmentFinder
     }
 
     /**
+     * EXPERIMENTAL WARNING! This method implementation will change in the next major point release.
+     *
+     * Extract the first found fragment identifier of the tabular data or fail
+     *
+     * @experimental since version 9.12.0
+     *
      * @throws SyntaxError
      * @throws FragmentNotFound if the expression can not be parsed
      */
@@ -107,22 +128,32 @@ class FragmentFinder
                         (null === $selection['end'] || $offset <= $selection['end'])
             );
 
-            return [$tabularDataReader->filter($rowFilter)];
+            return [
+                Statement::create()
+                    ->where($rowFilter)
+                    ->process($tabularDataReader),
+            ];
         }
 
         if (self::TYPE_COLUMN === $type) {
-            $columns = array_reduce($selections, fn (array $columns, array $selection) => [...$columns, ...$selection['columns']], []);
+            $columns = array_reduce(
+                $selections,
+                fn (array $columns, array $selection) => [...$columns, ...$selection['columns']],
+                []
+            );
 
             return [match ([]) {
                 $columns => ResultSet::createFromRecords(),
-                default => $tabularDataReader->select(...$columns),
+                default => Statement::create()->select(...$columns)->process($tabularDataReader),
             }];
         }
 
         return array_map(
-            fn (array $selection) => $tabularDataReader
-                ->slice($selection['start'], $selection['length'])
-                ->select(...$selection['columns']),
+            fn (array $selection) => Statement::create()
+                ->offset($selection['start'])
+                ->limit($selection['length'])
+                ->select(...$selection['columns'])
+                ->process($tabularDataReader),
             $selections
         );
     }
@@ -176,11 +207,11 @@ class FragmentFinder
         return match (true) {
             -1 === $start,
             null === $end => [
-                'selection' => $selection,
-                'start' => $start,
-                'end' => $start,
-                'length' => 1,
-                'columns' => [],
+            'selection' => $selection,
+            'start' => $start,
+            'end' => $start,
+            'length' => 1,
+            'columns' => [],
             ],
             '*' === $end => [
                 'selection' => $selection,
@@ -215,11 +246,11 @@ class FragmentFinder
         return match (true) {
             -1 === $start,
             $start >= $nbColumns => [
-                'selection' => $selection,
-                'start' => -1,
-                'end' => null,
-                'length' => -1,
-                'columns' => [],
+            'selection' => $selection,
+            'start' => -1,
+            'end' => null,
+            'length' => -1,
+            'columns' => [],
             ],
             null === $end => [
                 'selection' => $selection,
@@ -230,11 +261,11 @@ class FragmentFinder
             ],
             '*' === $end,
             $end > ($nbColumns - 1) => [
-                'selection' => $selection,
-                'start' => 0,
-                'end' => null,
-                'length' => -1,
-                'columns' => range($start, $nbColumns - 1),
+            'selection' => $selection,
+            'start' => 0,
+            'end' => null,
+            'length' => -1,
+            'columns' => range($start, $nbColumns - 1),
             ],
             default => [
                 'selection' => $selection,
@@ -348,8 +379,8 @@ class FragmentFinder
             ];
         }
 
-        $cellEndRow = filter_var($found['cer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        $cellEndCol = filter_var($found['cec'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $cellEndRow = filter_var($found['cer'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $cellEndCol = filter_var($found['cec'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
         if (false === $cellEndRow || false === $cellEndCol) {
             return [

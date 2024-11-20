@@ -5,6 +5,10 @@ namespace Drupal\rules\Plugin\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
+use Drupal\rules\TypedData\Options\EntityTypeOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -36,6 +40,31 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_entity_fetch_by_id",
+  label: new TranslatableMarkup("Fetch entity by id"),
+  category: new TranslatableMarkup("Entity"),
+  context_definitions: [
+    "type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Entity type"),
+      description: new TranslatableMarkup("Specify the type of the entity that should be fetched."),
+      options_provider: EntityTypeOptions::class,
+      assignment_restriction: "input"
+    ),
+    "entity_id" => new ContextDefinition(
+      data_type: "integer",
+      label: new TranslatableMarkup("Identifier"),
+      description: new TranslatableMarkup("The id of the entity that should be fetched.")
+    ),
+  ],
+  provides: [
+    "entity_fetched" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Fetched entity")
+    ),
+  ]
+)]
 class EntityFetchById extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

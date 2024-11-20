@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Language\LanguageInterface;
@@ -47,7 +49,7 @@ class PathAliasCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Create any path alias', $this->action->summary());
   }
 
@@ -56,7 +58,7 @@ class PathAliasCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithoutLanguage() {
+  public function testActionExecutionWithoutLanguage(): void {
     $path_alias = $this->prophesizeEntity(PathAliasInterface::class);
     $path_alias->save()->shouldBeCalledTimes(1);
 
@@ -78,7 +80,7 @@ class PathAliasCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithLanguage() {
+  public function testActionExecutionWithLanguage(): void {
     $path_alias = $this->prophesizeEntity(PathAliasInterface::class);
     $path_alias->save()->shouldBeCalledTimes(1);
 

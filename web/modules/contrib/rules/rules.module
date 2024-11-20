@@ -73,6 +73,7 @@ function rules_help($route_name, RouteMatchInterface $route_match) {
     case 'help.page.rules':
       $output = '<h3>' . t('About') . '</h3>';
       $output .= '<p>';
+      // cspell:ignore gitbooks
       $output .= t('The Rules module allows site administrators to define conditionally executed actions based on occurring events (ECA-rules). For more information, see the <a href=":url1" target="_blank">online documentation for the Rules module</a> and the current <a href=":url2" target="_blank">Rules documentation for Drupal 8 on Gitbooks</a>.', [
         ':url1' => 'https://www.drupal.org/project/rules',
         ':url2' => 'https://thefubhy.gitbooks.io/rules/content/',

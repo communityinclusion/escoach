@@ -49,6 +49,19 @@ include:
 # variables:
 #   SKIP_ESLINT: '1'
 variables:
+  SKIP_ESLINT: '0'
   SKIP_PHPCS: '0'
   SKIP_PHPSTAN: '0'
-  SKIP_ESLINT: '0'
+  _CSPELL_IGNORE_PATHS: 'README.md, ludwig.json'
+  OPT_IN_TEST_PREVIOUS_MAJOR: '1'
+  OPT_IN_TEST_PREVIOUS_MINOR: '1'
+  OPT_IN_TEST_NEXT_MINOR: '1'
+  OPT_IN_TEST_NEXT_MAJOR: '1'
+ # Use PHP 8.1 for Drupal Core 9.5.x
+  CORE_PREVIOUS_PHP_MIN: 8.1
+
+# todo: Remove after Drupal 11 compatible feeds module is released.
+composer (next major):
+  variables:
+    _LENIENT_ALLOW_LIST: feeds
+

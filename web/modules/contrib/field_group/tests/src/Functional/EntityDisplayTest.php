@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\field_group\Functional;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\BrowserTestBase;
@@ -14,6 +15,7 @@ use Drupal\Tests\BrowserTestBase;
 class EntityDisplayTest extends BrowserTestBase {
 
   use FieldGroupTestTrait;
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -132,7 +134,7 @@ class EntityDisplayTest extends BrowserTestBase {
     $this->drupalGet('node/' . $this->node->id());
 
     // Test if group is not shown.
-    $this->assertEmpty($this->xpath("//div[contains(@id, 'wrapper-id')]"), t('Div that contains fields with no access is not shown.'));
+    $this->assertEmpty($this->xpath("//div[contains(@id, 'wrapper-id')]"), $this->t('Div that contains fields with no access is not shown.'));
   }
 
   /**
@@ -408,7 +410,7 @@ class EntityDisplayTest extends BrowserTestBase {
    * as the HTML is escaped in the core definition of the vertical tab. For more
    * information see: https://www.drupal.org/project/field_group/issues/3363890.
    */
-  public function todotestVerticalTabsLabelHtml() {
+  public function todoTestVerticalTabsLabelHtml() {
     $session = $this->assertSession();
     $data = [
       'label' => '<em>Tab 1</em>',
@@ -472,7 +474,7 @@ class EntityDisplayTest extends BrowserTestBase {
    * as the HTML is escaped in the core definition of the vertical tab. For more
    * information see: https://www.drupal.org/project/field_group/issues/3363890.
    */
-  public function todotestVerticalTabsLabelNoHtml() {
+  public function todoTestVerticalTabsLabelNoHtml() {
     $session = $this->assertSession();
     $data = [
       'label' => '<em>Tab 1</em>',
@@ -527,70 +529,6 @@ class EntityDisplayTest extends BrowserTestBase {
     $this->drupalGet('node/' . $this->node->id());
     $session->elementContains('css', 'div.test-class-wrapper li.vertical-tabs__menu-item.first > a > strong', '&lt;em&gt;Tab 1&lt;/em&gt');
     $session->elementContains('css', 'div.test-class-wrapper li.vertical-tabs__menu-item.last > a > strong', '&lt;em&gt;Tab 2&lt;/em&gt');
-  }
-
-  /**
-   * Test the accordion formatter.
-   */
-  public function testAccordion() {
-    $data = [
-      'label' => 'Accordion item 1',
-      'weight' => '1',
-      'children' => [
-        0 => 'field_test',
-      ],
-      'format_type' => 'accordion_item',
-      'format_settings' => [
-        'label' => 'Accordion item 1',
-        'classes' => 'test-class',
-        'formatter' => 'closed',
-      ],
-    ];
-    $first_item = $this->createGroup('node', $this->type, 'view', 'default', $data);
-
-    $data = [
-      'label' => 'Accordion item 2',
-      'weight' => '1',
-      'children' => [
-        0 => 'field_test_2',
-      ],
-      'format_type' => 'accordion_item',
-      'format_settings' => [
-        'label' => 'Tab 2',
-        'classes' => 'test-class-2',
-        'formatter' => 'open',
-      ],
-    ];
-    $second_item = $this->createGroup('node', $this->type, 'view', 'default', $data);
-
-    $data = [
-      'label' => 'Accordion',
-      'weight' => '1',
-      'children' => [
-        0 => $first_item->group_name,
-        1 => $second_item->group_name,
-      ],
-      'format_type' => 'accordion',
-      'format_settings' => [
-        'label' => 'Tab 1',
-        'classes' => 'test-class-wrapper',
-        'effect' => 'bounceslide',
-      ],
-    ];
-    $this->createGroup('node', $this->type, 'view', 'default', $data);
-
-    $this->drupalGet('node/' . $this->node->id());
-
-    // Test properties.
-    $this->assertCount(1, $this->xpath("//div[contains(@class, 'test-class-wrapper')]"), 'Test class set on tabs wrapper');
-    $this->assertCount(1, $this->xpath("//div[contains(@class, 'effect-bounceslide')]"), 'Correct effect is set on the accordion');
-    $this->assertCount(3, $this->xpath("//div[contains(@class, 'test-class')]"), 'Accordion item with test-class is shown');
-    $this->assertCount(1, $this->xpath("//div[contains(@class, 'test-class-2')]"), 'Accordion item with test-class-2 is shown');
-    $this->assertCount(1, $this->xpath("//h3[contains(@class, 'field-group-accordion-active')]"), 'Accordion item 2 was set active');
-
-    // Test if correctly nested.
-    $this->assertCount(2, $this->xpath("//div[contains(@class, 'test-class-wrapper')]//div[contains(@class, 'test-class')]"), 'First item is displayed as child of the wrapper.');
-    $this->assertCount(1, $this->xpath("//div[contains(@class, 'test-class-wrapper')]//div[contains(@class, 'test-class-2')]"), 'Second item is displayed as child of the wrapper.');
   }
 
 }

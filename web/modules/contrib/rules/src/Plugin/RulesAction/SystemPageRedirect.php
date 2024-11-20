@@ -5,6 +5,9 @@ namespace Drupal\rules\Plugin\RulesAction;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -24,6 +27,18 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_page_redirect",
+  label: new TranslatableMarkup("Page redirect"),
+  category: new TranslatableMarkup("System"),
+  context_definitions: [
+    "url" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("URL"),
+      description: new TranslatableMarkup("A Drupal path, path alias, or external URL to redirect to. Enter (optional) queries after ? and (optional) anchor after #.")
+    ),
+  ]
+)]
 class SystemPageRedirect extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

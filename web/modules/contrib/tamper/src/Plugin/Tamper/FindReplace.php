@@ -4,8 +4,8 @@ namespace Drupal\tamper\Plugin\Tamper;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\tamper\Exception\TamperException;
-use Drupal\tamper\TamperableItemInterface;
 use Drupal\tamper\TamperBase;
+use Drupal\tamper\TamperableItemInterface;
 
 /**
  * Plugin implementation of the find_replace plugin.
@@ -95,7 +95,7 @@ class FindReplace extends TamperBase {
   /**
    * {@inheritdoc}
    */
-  public function tamper($data, TamperableItemInterface $item = NULL) {
+  public function tamper($data, ?TamperableItemInterface $item = NULL) {
     if (!is_string($data) && !is_numeric($data)) {
       throw new TamperException('Input should be a string or numeric.');
     }
@@ -146,7 +146,7 @@ class FindReplace extends TamperBase {
   protected function getRegexPattern() {
     $regex = $this->getSetting(self::SETTING_WHOLE) ?
       '/^' . preg_quote($this->getSetting(self::SETTING_FIND), '/') . '$/u' :
-      '/\b' . preg_quote($this->getSetting(self::SETTING_FIND), '/') . '\b/u';;
+      '/\b' . preg_quote($this->getSetting(self::SETTING_FIND), '/') . '\b/u';
 
     if (!$this->getSetting(self::SETTING_CASE_SENSITIVE)) {
       $regex .= 'i';

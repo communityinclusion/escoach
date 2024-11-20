@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Event;
 
 /**
@@ -12,7 +14,7 @@ class SystemLoggerEventTest extends EventTestBase {
   /**
    * Tests the event metadata.
    */
-  public function testSystemLoggerEvent() {
+  public function testSystemLoggerEvent(): void {
     $event = $this->eventManager->createInstance('rules_system_logger_event');
     $logger_entry = $event->getContextDefinition('logger_entry');
 

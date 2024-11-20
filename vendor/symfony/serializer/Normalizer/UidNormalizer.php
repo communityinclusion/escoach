@@ -24,7 +24,7 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
     public const NORMALIZATION_FORMAT_CANONICAL = 'canonical';
     public const NORMALIZATION_FORMAT_BASE58 = 'base58';
     public const NORMALIZATION_FORMAT_BASE32 = 'base32';
-    public const NORMALIZATION_FORMAT_RFC4122 = 'rfc4122';
+    public const NORMALIZATION_FORMAT_RFC4122 = 'rfc4122'; // RFC 9562 obsoleted RFC 4122 but the format is the same
     public const NORMALIZATION_FORMATS = [
         self::NORMALIZATION_FORMAT_CANONICAL,
         self::NORMALIZATION_FORMAT_BASE58,
@@ -51,7 +51,7 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
     /**
      * @param AbstractUid $object
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
     {
         return match ($context[self::NORMALIZATION_FORMAT_KEY] ?? $this->defaultContext[self::NORMALIZATION_FORMAT_KEY]) {
             self::NORMALIZATION_FORMAT_CANONICAL => (string) $object,
@@ -62,12 +62,12 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
         };
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof AbstractUid;
     }
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         try {
             if (AbstractUid::class === $type) {
@@ -88,7 +88,7 @@ final class UidNormalizer implements NormalizerInterface, DenormalizerInterface,
         }
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         if (AbstractUid::class === $type) {
             trigger_deprecation('symfony/serializer', '6.1', 'Supporting denormalization for the "%s" type in "%s" is deprecated, use one of "%s" child class instead.', AbstractUid::class, __CLASS__, AbstractUid::class);

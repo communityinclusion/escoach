@@ -45,8 +45,8 @@ class WorkflowHistoryAccess implements AccessInterface {
       return $access[$uid][$entity_type][$entity_id][$field_name ? $field_name : 'no_field'];
     }
 
-    // When having multiple workflows per bundle, use Views display
-    // 'Workflow history per entity' instead!
+    // When having multiple workflows per bundle,
+    // use Views display 'Workflow history per entity' instead!
     $fields = _workflow_info_fields($entity, $entity_type, $entity_bundle, $field_name);
     if (!$fields) {
       return AccessResult::forbidden();
@@ -54,14 +54,14 @@ class WorkflowHistoryAccess implements AccessInterface {
 
     $access_result = AccessResult::forbidden();
 
-    // @todo Keep below code aligned between WorkflowState, ~Transition, ~HistoryAccess
+    // N.B. Keep aligned between WorkflowState, ~Transition, ~HistoryAccess.
     // Determine if user is owner of the entity.
     $is_owner = WorkflowManager::isOwner($account, $entity);
 
     /*
      * Determine if user has Access. Fill the cache.
      */
-    // @todo What to do with multiple workflow_fields per bundle? Use Views instead! Or introduce a setting.
+    // Note: for multiple workflow_fields per bundle, use Views instead!
     // @todo Use proper 'WORKFLOW_TYPE' permissions for workflow_tab_access.
     foreach ($fields as $definition) {
       $type_id = $definition->getSetting('workflow_type');

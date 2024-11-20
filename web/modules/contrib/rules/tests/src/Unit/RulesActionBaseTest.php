@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
@@ -13,11 +15,11 @@ use Drupal\rules\Core\RulesActionBase;
 class RulesActionBaseTest extends RulesUnitTestBase {
 
   /**
-   * Tests that a missing label throwa an exception.
+   * Tests that a missing label throws an exception.
    *
    * @covers ::summary
    */
-  public function testSummaryThrowingException() {
+  public function testSummaryThrowingException(): void {
     // Set the expected exception class. There is no message to check for.
     $this->expectException(InvalidPluginDefinitionException::class);
 
@@ -33,7 +35,7 @@ class RulesActionBaseTest extends RulesUnitTestBase {
    *
    * @covers ::summary
    */
-  public function testSummaryParsingTheLabelAnnotation() {
+  public function testSummaryParsingTheLabelAnnotation(): void {
     $rules_action_base = $this->getMockForAbstractClass(
       RulesActionBase::class,
       [[], '', ['label' => 'something']]
@@ -46,7 +48,7 @@ class RulesActionBaseTest extends RulesUnitTestBase {
    *
    * @covers ::summary
    */
-  public function testTranslatedLabel() {
+  public function testTranslatedLabel(): void {
     $translation_wrapper = $this->prophesize(TranslatableMarkup::class);
     $translation_wrapper->__toString()->willReturn('something');
     $rules_action_base = $this->getMockForAbstractClass(

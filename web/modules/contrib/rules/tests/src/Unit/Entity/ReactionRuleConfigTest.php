@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Entity;
 
 use Drupal\rules\Entity\ReactionRuleConfig;
@@ -17,7 +19,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
    * @param array $values
    *   (optional) An array of values to set, keyed by property name.
    */
-  protected function createRule(array $values = []) {
+  protected function createRule(array $values = []): ReactionRuleConfig {
     $values += [
       'id' => 'test_rule',
     ];
@@ -28,7 +30,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
   /**
    * @covers ::getEvents
    */
-  public function testGetEvents() {
+  public function testGetEvents(): void {
     // Create a rule with a few events.
     $rule = $this->createRule([
       'events' => [
@@ -47,7 +49,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
   /**
    * @covers ::getEventNames
    */
-  public function testGetEventNames() {
+  public function testGetEventNames(): void {
     // Create a rule with a few events.
     $rule = $this->createRule([
       'events' => [
@@ -66,7 +68,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
    *
    * @dataProvider addEventDataProvider
    */
-  public function testAddEvent(array $expected, array $events_init, array $event_add) {
+  public function testAddEvent(array $expected, array $events_init, array $event_add): void {
     $rule = $this->createRule([
       'events' => $events_init,
     ]);
@@ -82,7 +84,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
   /**
    * Data provider for ::testAddEvent().
    */
-  public function addEventDataProvider() {
+  public static function addEventDataProvider(): array {
     return [
       'no events' => [
         'expected' => [['event_name' => 'foo']],
@@ -119,7 +121,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
   /**
    * @covers ::hasEvent
    */
-  public function testHasEvent() {
+  public function testHasEvent(): void {
     // Create a rule with a few events.
     $rule = $this->createRule([
       'events' => [
@@ -138,7 +140,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
    * @covers ::removeEvent
    * @covers ::getEvents
    */
-  public function testRemoveEvent() {
+  public function testRemoveEvent(): void {
     // Create a rule with a few events.
     $rule = $this->createRule([
       'events' => [
@@ -154,7 +156,7 @@ class ReactionRuleConfigTest extends RulesUnitTestBase {
    * @covers ::removeEvent
    * @covers ::getEvents
    */
-  public function testRemoveEventWithKeyedIndex() {
+  public function testRemoveEventWithKeyedIndex(): void {
     // Create a rule with a few events that are numerically indexed.
     // This situation should not ever happen - the configuration entity
     // expects that events are numerically indexed and that the indices

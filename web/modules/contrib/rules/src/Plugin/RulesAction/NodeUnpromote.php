@@ -2,7 +2,10 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\NodeInterface;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
@@ -21,6 +24,19 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_node_unpromote",
+  label: new TranslatableMarkup("Demote selected content from front page"),
+  category: new TranslatableMarkup("Content"),
+  context_definitions: [
+    "node" => new ContextDefinition(
+      data_type: "entity:node",
+      label: new TranslatableMarkup("Node"),
+      description: new TranslatableMarkup("Specifies the content item to unpromote."),
+      assignment_restriction: "selector"
+    ),
+  ]
+)]
 class NodeUnpromote extends RulesActionBase {
 
   /**

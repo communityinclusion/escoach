@@ -2,6 +2,8 @@
 
 namespace Drupal\rules\Plugin\RulesExpression;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\ExecutionStateInterface;
 use Drupal\rules\Engine\ConditionExpressionContainer;
 
@@ -13,6 +15,10 @@ use Drupal\rules\Engine\ConditionExpressionContainer;
  *   label = @Translation("Condition set (OR)")
  * )
  */
+#[RulesExpression(
+  id: "rules_or",
+  label: new TranslatableMarkup("Condition set (OR)")
+)]
 class OrExpression extends ConditionExpressionContainer {
 
   /**

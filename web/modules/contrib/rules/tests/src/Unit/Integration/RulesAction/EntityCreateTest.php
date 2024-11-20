@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Entity\EntityStorageBase;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\TypedData\FieldItemDataDefinition;
 use Drupal\Core\TypedData\DataDefinitionInterface;
-use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 use Prophecy\Argument;
 
@@ -107,7 +109,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Create a new test entity', $this->action->summary());
   }
 
@@ -116,7 +118,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecution() {
+  public function testActionExecution(): void {
     $this->action->setContextValue('bundle', 'test');
     $this->action->execute();
     $entity = $this->action->getProvidedContext('test_created')->getContextValue();
@@ -128,12 +130,12 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers \Drupal\rules\Plugin\RulesAction\EntityCreateDeriver::getDerivativeDefinitions
    */
-  public function testRequiredContexts() {
+  public function testRequiredContexts(): void {
     $context_definitions = $this->action->getContextDefinitions();
     $this->assertCount(2, $context_definitions);
 
     $this->assertArrayHasKey('bundle', $context_definitions);
-    $this->assertEquals(ContextDefinition::ASSIGNMENT_RESTRICTION_INPUT, $context_definitions['bundle']->getAssignmentRestriction());
+    $this->assertEquals(ContextDefinitionInterface::ASSIGNMENT_RESTRICTION_INPUT, $context_definitions['bundle']->getAssignmentRestriction());
     $this->assertTrue($context_definitions['bundle']->isRequired());
 
     $this->assertArrayHasKey('field_required', $context_definitions);
@@ -146,7 +148,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::refineContextDefinitions
    */
-  public function testRefiningContextDefinitions() {
+  public function testRefiningContextDefinitions(): void {
     $this->action->setContextValue('bundle', 'bundle_test');
     $this->action->refineContextDefinitions([]);
     $this->assertEquals(

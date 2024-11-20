@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -32,7 +34,7 @@ class EntityIsOfTypeTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     $entity = $this->prophesizeEntity(EntityInterface::class);
     $entity->getEntityTypeId()->willReturn('node')->shouldBeCalledTimes(2);
 

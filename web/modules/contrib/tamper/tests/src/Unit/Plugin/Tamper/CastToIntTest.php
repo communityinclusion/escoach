@@ -30,7 +30,7 @@ class CastToIntTest extends TamperPluginTestBase {
    * Test converting alphabetic string to int.
    */
   public function testAlphabeticStringToInt() {
-    $this->assertEquals(0, $this->plugin->tamper('asdfsdf'));
+    $this->assertEquals(0, $this->plugin->tamper('word'));
   }
 
   /**

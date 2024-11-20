@@ -3,8 +3,8 @@
 namespace Drupal\Tests\tamper\Unit\Adapter;
 
 use Drupal\Core\TypedData\ComplexDataInterface;
-use Drupal\tamper\Adapter\TamperableComplexDataAdapter;
 use Drupal\Tests\UnitTestCase;
+use Drupal\tamper\Adapter\TamperableComplexDataAdapter;
 
 /**
  * @coversDefaultClass \Drupal\tamper\Adapter\TamperableComplexDataAdapter
@@ -30,6 +30,8 @@ class TamperableComplexDataAdapterTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    parent::setUp();
+
     $this->complexData = $this->createMock(ComplexDataInterface::class);
     $this->adapter = new TamperableComplexDataAdapter($this->complexData);
   }

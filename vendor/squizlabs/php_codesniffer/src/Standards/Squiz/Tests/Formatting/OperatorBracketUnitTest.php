@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Formatting\OperatorBracketSniff
  */
-class OperatorBracketUnitTest extends AbstractSniffUnitTest
+final class OperatorBracketUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -33,7 +33,7 @@ class OperatorBracketUnitTest extends AbstractSniffUnitTest
     public function getErrorList($testFile='')
     {
         switch ($testFile) {
-        case 'OperatorBracketUnitTest.inc':
+        case 'OperatorBracketUnitTest.1.inc':
             return [
                 3   => 1,
                 6   => 1,

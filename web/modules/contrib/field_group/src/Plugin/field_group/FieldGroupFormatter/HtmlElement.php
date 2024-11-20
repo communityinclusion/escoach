@@ -2,12 +2,12 @@
 
 namespace Drupal\field_group\Plugin\field_group\FieldGroupFormatter;
 
-use Drupal\Component\Utility\Xss;
-use Drupal\Core\Render\Markup;
-use Drupal\field_group\Element\HtmlElement as HtmlElementRenderElement;
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormState;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Template\Attribute;
+use Drupal\field_group\Element\HtmlElement as HtmlElementRenderElement;
 use Drupal\field_group\FieldGroupFormatterBase;
 
 /**
@@ -179,7 +179,6 @@ class HtmlElement extends FieldGroupFormatterBase {
       '#options' => [
         'none' => $this->t('None'),
         'collapsible' => $this->t('Collapsible'),
-        'blind' => $this->t('Blind'),
       ],
       '#default_value' => $this->getSetting('effect'),
       '#weight' => 6,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\Core\Messenger\MessengerInterface;
@@ -17,7 +19,7 @@ class TokenIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that date tokens are formatted correctly.
    */
-  public function testSystemDateToken() {
+  public function testSystemDateToken(): void {
     // Configure a simple rule with one action. and token replacements enabled.
     $action = $this->expressionManager->createInstance('rules_action',
       ContextConfig::create()
@@ -45,7 +47,7 @@ class TokenIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that global context variable tokens are replaced correctly.
    */
-  public function testGlobalContextVariableTokens() {
+  public function testGlobalContextVariableTokens(): void {
     // Configure a simple rule with one action and token replacements enabled.
     $action = $this->expressionManager->createInstance('rules_action',
       ContextConfig::create()

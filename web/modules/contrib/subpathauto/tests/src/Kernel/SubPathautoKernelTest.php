@@ -3,13 +3,13 @@
 namespace Drupal\Tests\subpathauto\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\TestFileCreationTrait;
+use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\language\Plugin\LanguageNegotiation\LanguageNegotiationUrl;
+use Drupal\node\Entity\NodeType;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
-use Drupal\Tests\node\Traits\NodeCreationTrait;
-use Drupal\Tests\TestFileCreationTrait;
-use Drupal\Tests\user\Traits\UserCreationTrait;
-use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -92,7 +92,7 @@ class SubPathautoKernelTest extends KernelTestBase {
     $this->config('language.negotiation')
       ->set('url.source', LanguageNegotiationUrl::CONFIG_PATH_PREFIX)
       ->set('url.prefixes', [
-        'en' => 'default_language'
+        'en' => 'default_language',
       ])->save();
   }
 
@@ -110,7 +110,6 @@ class SubPathautoKernelTest extends KernelTestBase {
     // Alias should be converted on a request with language prefix.
     $processed = $this->pathProcessor->processInbound('/kittens/edit', Request::create('/default_language/kittens/edit'));
     $this->assertSame('/node/1/edit', $processed);
-
 
     // Alias should be converted even when the user doesn't have permissions to
     // view the page.
@@ -256,7 +255,7 @@ class SubPathautoKernelTest extends KernelTestBase {
    * @param string $expected_result
    *   The expected result.
    *
-   * ::@dataProvider noRedirectSupportDataProvider
+   * @dataProvider noRedirectSupportDataProvider
    */
   public function testNoRedirectSupport(bool $redirect_support, string $expected_result) {
     $this->createNode();

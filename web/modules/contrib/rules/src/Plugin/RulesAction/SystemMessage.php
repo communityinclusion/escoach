@@ -6,7 +6,12 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\MessageTypeOptions;
+use Drupal\rules\TypedData\Options\YesNoOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -41,6 +46,35 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_system_message",
+  label: new TranslatableMarkup("Show a message on the site"),
+  category: new TranslatableMarkup("System"),
+  context_definitions: [
+    "message" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Message"),
+      description: new TranslatableMarkup("The text to display. HTML is allowed.")
+    ),
+    "type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Message type"),
+      description: new TranslatableMarkup("The message type: status, warning, or error."),
+      default_value: "status",
+      options_provider: MessageTypeOptions::class,
+      required: FALSE
+    ),
+    "repeat" => new ContextDefinition(
+      data_type: "boolean",
+      label: new TranslatableMarkup("Repeat message"),
+      description: new TranslatableMarkup("If set to No and the message has been already shown, then the message won't be repeated."),
+      assignment_restriction: "input",
+      default_value: TRUE,
+      options_provider: YesNoOptions::class,
+      required: FALSE
+    ),
+  ]
+)]
 class SystemMessage extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

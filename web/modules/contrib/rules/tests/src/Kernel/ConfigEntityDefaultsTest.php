@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 /**
@@ -54,7 +56,7 @@ class ConfigEntityDefaultsTest extends RulesKernelTestBase {
   /**
    * Tests Rules default components.
    */
-  public function testDefaultComponents() {
+  public function testDefaultComponents(): void {
     $config_entity = $this->storage->load('rules_test_default_component');
 
     $user = $this->entityTypeManager->getStorage('user')

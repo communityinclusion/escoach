@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\rules\Core\RulesConditionInterface;
 
 /**
  * Base class for Rules Drupal unit tests.
@@ -103,7 +106,7 @@ abstract class RulesKernelTestBase extends KernelTestBase {
    * @return \Drupal\rules\Core\RulesConditionInterface
    *   The created condition plugin.
    */
-  protected function createCondition($id) {
+  protected function createCondition(string $id): RulesConditionInterface {
     $condition = $this->expressionManager->createInstance('rules_condition', [
       'condition_id' => $id,
     ]);
@@ -118,7 +121,7 @@ abstract class RulesKernelTestBase extends KernelTestBase {
    * @param int $log_item_index
    *   Log item's index in log entries stack.
    */
-  protected function assertRulesDebugLogEntryExists($message, $log_item_index = 0) {
+  protected function assertRulesDebugLogEntryExists(string $message, int $log_item_index = 0): void {
     // Test that the action has logged something.
     $logs = $this->debugLog->getLogs();
     $this->assertEquals($logs[$log_item_index]['message'], $message);
@@ -130,7 +133,7 @@ abstract class RulesKernelTestBase extends KernelTestBase {
    * @param string $message
    *   Log message.
    */
-  protected function assertRulesDebugLogEntryNotExists($message) {
+  protected function assertRulesDebugLogEntryNotExists(string $message): void {
     // Check each log entry.
     $logs = $this->debugLog->getLogs();
     foreach ($logs as $log) {

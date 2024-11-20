@@ -12,7 +12,7 @@ use Drupal\Core\Session\AccountInterface;
  * @see \Drupal\workflow\Entity\WorkflowTransition
  * @see \Drupal\workflow\Entity\WorkflowScheduledTransition
  */
-interface WorkflowInterface {
+interface WorkflowInterface extends EntityInterface {
 
   /**
    * Returns the workflow id.
@@ -42,9 +42,18 @@ interface WorkflowInterface {
   public function isDeletable();
 
   /**
+   * Creates the initial state for a new Workflow.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowState
+   *   The initial state.
+   */
+  public function createCreationState();
+
+  /**
    * Create a new state for this workflow.
    *
    * @param string $sid
+   *   The new state ID.
    * @param bool $save
    *   Indicator if the new state must be saved. Normally, the new State is
    *   saved directly in the database. This is because you can use States only
@@ -58,11 +67,17 @@ interface WorkflowInterface {
 
   /**
    * Gets the initial state for a newly created entity.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowState
+   *   The initial state.
    */
   public function getCreationState();
 
   /**
    * Gets the ID of the initial state for a newly created entity.
+   *
+   * @return string
+   *   The ID of the state.
    */
   public function getCreationSid();
 
@@ -75,8 +90,11 @@ interface WorkflowInterface {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity at hand. May be NULL (E.g., on a Field settings page).
    * @param string $field_name
+   *   The field name.
    * @param \Drupal\Core\Session\AccountInterface $user
+   *   The user account.
    * @param bool $force
+   *   Indicator to force the transition.
    *
    * @return string
    *   A State ID.
@@ -89,8 +107,11 @@ interface WorkflowInterface {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity at hand.
    * @param string $field_name
+   *   The field name.
    * @param \Drupal\Core\Session\AccountInterface $user
+   *   The user account.
    * @param bool $force
+   *   Indicator to force the transition.
    *
    * @return string
    *   A State ID.
@@ -108,6 +129,7 @@ interface WorkflowInterface {
    *   - FALSE = only Active states, not Creation;
    *   - 'CREATION' = only Active states, including Creation.
    * @param bool $reset
+   *   An option to refresh all caches.
    *
    * @return \Drupal\workflow\Entity\WorkflowState[]
    *   An array of WorkflowState objects.
@@ -129,10 +151,14 @@ interface WorkflowInterface {
    * Creates a Transition for this workflow.
    *
    * @param string $from_sid
+   *   The From State ID.
    * @param string $to_sid
+   *   The To State ID.
    * @param array $values
+   *   The list of new values.
    *
    * @return \Drupal\workflow\Entity\WorkflowConfigTransitionInterface
+   *   The created Transition.
    */
   public function createTransition($from_sid, $to_sid, array $values = []);
 
@@ -147,24 +173,37 @@ interface WorkflowInterface {
    * Loads all allowed ConfigTransitions for this workflow.
    *
    * @param array|null $ids
-   *   Array of Transitions IDs. If NULL, show all transitions.
+   *   An array of Transition IDs. If NULL, show all transitions.
    * @param array $conditions
-   *   $conditions['from_sid'] : if provided, a 'from' State ID.
-   *   $conditions['to_sid'] : if provided, a 'to' state ID.
+   *   $conditions['from_sid']: if provided, a 'from' State ID.
+   *   $conditions['to_sid']: if provided, a 'to' state ID.
    *
    * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
+   *   A list of Config Transitions.
    */
   public function getTransitions(array $ids = NULL, array $conditions = []);
 
+  /**
+   * Loads all allowed ConfigTransitions for this workflow, filtered by ID.
+   *
+   * @param int $tid
+   *   Transition ID.
+   *
+   * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
+   *   A list of Config Transitions.
+   */
   public function getTransitionsById($tid);
 
   /**
    * Get a specific transition.
    *
    * @param string $from_sid
+   *   The From State ID.
    * @param string $to_sid
+   *   The To State ID.
    *
    * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
+   *   A list of Config Transitions.
    */
   public function getTransitionsByStateId($from_sid, $to_sid);
 

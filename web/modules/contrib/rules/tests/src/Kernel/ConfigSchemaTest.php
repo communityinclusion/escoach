@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
@@ -30,7 +32,7 @@ class ConfigSchemaTest extends RulesKernelTestBase {
   /**
    * Make sure the system send email config schema works on saving.
    */
-  public function testMailActionContextSchema() {
+  public function testMailActionContextSchema(): void {
     // This test does not perform assertions, and the @doesNotPerformAssertions
     // annotation does not work properly in DrupalCI for PHP 7.4.
     // @see https://www.drupal.org/project/rules/issues/3179763

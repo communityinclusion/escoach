@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Plugin\Context\Context;
@@ -33,7 +35,7 @@ class DataIsEmptyTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     // Test a ComplexDataInterface object.
     $entity_adapter_empty = $this->prophesize(ComplexDataInterface::class);
     $entity_adapter_empty->isEmpty()->willReturn(TRUE)->shouldBeCalledTimes(1);

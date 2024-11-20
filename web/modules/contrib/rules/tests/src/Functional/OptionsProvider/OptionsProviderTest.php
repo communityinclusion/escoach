@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional\OptionsProvider;
 
 use Drupal\Core\Form\OptGroup;
@@ -75,7 +77,7 @@ class OptionsProviderTest extends BrowserTestBase {
    *
    * @dataProvider provideOptionsProviders
    */
-  public function testOptionsProvider($definition, array $options) {
+  public function testOptionsProvider(string $definition, array $options): void {
     $provider = $this->classResolver->getInstanceFromDefinition($definition);
 
     $flatten_options = OptGroup::flattenOptions($options);
@@ -89,9 +91,9 @@ class OptionsProviderTest extends BrowserTestBase {
   }
 
   /**
-   * Provides test data for testOptionsProviders().
+   * Data provider - provides test data for testOptionsProviders().
    */
-  public function provideOptionsProviders() {
+  public static function provideOptionsProviders(): array {
     $output = [
       'Entity bundles' => [
         EntityBundleOptions::class, [
@@ -106,7 +108,7 @@ class OptionsProviderTest extends BrowserTestBase {
             'article' => 'Article',
             'page' => 'Basic page (page)',
           ],
-          'Custom block' => [
+          'Content block' => [
             'basic' => 'Basic block (basic)',
           ],
           'Custom menu link' => [
@@ -134,7 +136,7 @@ class OptionsProviderTest extends BrowserTestBase {
           'comment' => 'Comment',
           'contact_message' => 'Contact message',
           'node' => 'Content (node)',
-          'block_content' => 'Custom block (block_content)',
+          'block_content' => 'Content block (block_content)',
           'menu_link_content' => 'Custom menu link (menu_link_content)',
           'file' => 'File',
           'shortcut' => 'Shortcut link (shortcut)',
@@ -234,47 +236,6 @@ class OptionsProviderTest extends BrowserTestBase {
         ],
       ],
     ];
-
-    // @todo Remove this when Drupal 10.1 is the lowest-supported version.
-    if (version_compare(\Drupal::VERSION, '10.1') >= 0) {
-      // Some strings changed in Drupal 10.1.
-      // @see https://www.drupal.org/project/drupal/issues/3318549
-      $output['Entity bundles'][1] = [
-        'Comment' => [
-          'comment' => 'Default comments (comment)',
-        ],
-        'Contact message' => [
-          'feedback' => 'Website feedback (feedback)',
-          'personal' => 'Personal contact form (personal)',
-        ],
-        'Content' => [
-          'article' => 'Article',
-          'page' => 'Basic page (page)',
-        ],
-        'Content block' => [
-          'basic' => 'Basic block (basic)',
-        ],
-        'Custom menu link' => [
-          'menu_link_content' => 'Custom menu link (menu_link_content)',
-        ],
-        'File' => [
-          'file' => 'File',
-        ],
-        'Shortcut link' => [
-          'default' => 'Default',
-        ],
-        'Taxonomy term' => [
-          'tags' => 'Tags',
-        ],
-        'URL alias' => [
-          'path_alias' => 'URL alias (path_alias)',
-        ],
-        'User' => [
-          'user' => 'User',
-        ],
-      ];
-      $output['Entity types'][1]['block_content'] = 'Content block (block_content)';
-    }
 
     return $output;
   }

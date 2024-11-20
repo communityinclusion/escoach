@@ -2,6 +2,9 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
@@ -26,6 +29,24 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_list_item_remove",
+  label: new TranslatableMarkup("Remove item from list"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "list" => new ContextDefinition(
+      data_type: "list",
+      label: new TranslatableMarkup("List"),
+      description: new TranslatableMarkup("The data list from which an item is to be removed."),
+      assignment_restriction: "selector"
+    ),
+    "item" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Item"),
+      description: new TranslatableMarkup("Item to remove.")
+    ),
+  ]
+)]
 class DataListItemRemove extends RulesActionBase {
 
   /**

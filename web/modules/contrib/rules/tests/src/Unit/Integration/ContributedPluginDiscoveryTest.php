@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration;
 
 /**
@@ -38,7 +40,7 @@ class ContributedPluginDiscoveryTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testPluginDiscovery() {
+  public function testPluginDiscovery(): void {
     $this->assertTrue($this->condition->evaluate());
   }
 

@@ -91,10 +91,14 @@ class WorkflowState extends ConfigEntityBase {
   public $weight;
 
   /**
+   * The fixed System ID.
+   *
    * @var int
    */
   public $sysid = 0;
   /**
+   * Indocator if the State can be used or not.
+   *
    * @var int
    */
   public $status = 1;
@@ -111,21 +115,16 @@ class WorkflowState extends ConfigEntityBase {
    */
 
   /**
-   * Constructor.
+   * Constructs the object.
    *
    * @param array $values
-   * @param string $entityType
+   *   The lsit of values.
+   * @param string $entity_type_id
    *   The name of the new State. If '(creation)', a CreationState is generated.
    */
-  public function __construct(array $values = [], $entityType = 'workflow_state') {
-    // Please be aware that $entity_type_id and $entityType are different things!
-    $sid = isset($values['id']) ? $values['id'] : '';
-
-    // Keep official name and external name equal. Both are required.
-    // @todo Still needed? test import, manual creation, programmatic creation, etc.
-    if (!isset($values['label']) && $sid) {
-      $values['label'] = $sid;
-    }
+  public function __construct(array $values = [], $entity_type_id = 'workflow_state') {
+    $sid = $values['id'] ?? NULL;
+    $values['label'] ??= $sid ? $sid : '';
 
     // Set default values for '(creation)' state.
     if ($sid == WORKFLOW_CREATION_STATE_NAME) {
@@ -134,7 +133,7 @@ class WorkflowState extends ConfigEntityBase {
       // Do not translate the machine_name.
       $values['label'] = $this->t('Creation');
     }
-    parent::__construct($values, $entityType);
+    parent::__construct($values, $entity_type_id);
   }
 
   /**
@@ -152,10 +151,21 @@ class WorkflowState extends ConfigEntityBase {
 
   /**
    * {@inheritdoc}
+   *
+   * Avoids error on WorkflowStateListBuilder:
+   * "Cannot load the "workflow_state" entity with NULL ID."
+   */
+
+  public static function load($id) {
+    return $id ? parent::load($id): NULL;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function save($create_creation_state = TRUE) {
     // Create the machine_name for new states.
-    // N.B.: Keep machine_name in WorkflowState and ~ListBuilder aligned.
+    // N.B. Keep machine_name aligned in WorkflowState and ~ListBuilder.
     $sid = $this->id();
     $wid = $this->getWorkflowId();
     $label = $this->label();
@@ -210,7 +220,7 @@ class WorkflowState extends ConfigEntityBase {
     // Set the ID as array key.
     $result = [];
     foreach ($states as $state) {
-      /** @var  WorkflowState $state */
+      /** @var \Drupal\workflow\Entity\WorkflowState $state */
       if ((!$wid) || ($wid == $state->getWorkflowId())) {
         $result[$state->id()] = $state;
       }
@@ -348,9 +358,13 @@ class WorkflowState extends ConfigEntityBase {
    * If not, a formatter must be shown, since there are no valid options.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity at hand.
    * @param string $field_name
+   *   The field name.
    * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
    * @param bool $force
+   *   The force indicator.
    *
    * @return bool
    *   TRUE = a form (a.k.a. widget) must be shown; FALSE = no form, a formatter must be shown instead.
@@ -378,27 +392,31 @@ class WorkflowState extends ConfigEntityBase {
    * @param \Drupal\Core\Entity\EntityInterface|null $entity
    *   The entity at hand. May be NULL (E.g., on a Field settings page).
    * @param string $field_name
+   *   The field name.
    * @param \Drupal\Core\Session\AccountInterface|null $account
-   * @param bool|false $force
+   *   The user account.
+   * @param bool $force
+   *   The force indicator.
    *
    * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
    *   An array of id=>transition pairs with allowed transitions for State.
    */
   public function getTransitions(EntityInterface $entity = NULL, $field_name = '', AccountInterface $account = NULL, $force = FALSE) {
     $transitions = [];
+    $workflow = $this->getWorkflow();
 
-    /** @var \Drupal\workflow\Entity\Workflow $workflow */
-    if (!$workflow = $this->getWorkflow()) {
+    if (!$workflow) {
       // No workflow, no options ;-)
       return $transitions;
     }
+
     // Load a User object, since we cannot add Roles to AccountInterface.
     if (!$user = workflow_current_user($account)) {
       // In some edge cases, no user is provided.
       return $transitions;
     }
 
-    // @todo Keep below code aligned between WorkflowState, ~Transition, ~HistoryAccess
+    // N.B. Keep aligned between WorkflowState, ~Transition, ~HistoryAccess.
     /*
      * Get user's permissions.
      */
@@ -415,15 +433,9 @@ class WorkflowState extends ConfigEntityBase {
     }
 
     /*
-     * Get the object and its permissions.
+     * Determine if user has Access to each transition.
      */
-    /** @var \Drupal\workflow\Entity\WorkflowConfigTransition[] $transitions */
     $transitions = $workflow->getTransitionsByStateId($this->id(), '');
-
-    /*
-     * Determine if user has Access.
-     */
-    // Use default module permissions.
     foreach ($transitions as $key => $transition) {
       if (!$transition->isAllowed($user, $force)) {
         unset($transitions[$key]);
@@ -449,12 +461,16 @@ class WorkflowState extends ConfigEntityBase {
   /**
    * Returns the allowed values for the current state.
    *
-   * @param object $entity
+   * @param object|null $entity
    *   The entity at hand. May be NULL (E.g., on a Field settings page).
    * @param string $field_name
+   *   The field name.
    * @param \Drupal\Core\Session\AccountInterface|null $account
+   *   The user object.
    * @param bool $force
+   *   The forse indicator.
    * @param bool $use_cache
+   *   The indicator to use earlier, cached, results.
    *
    * @return array
    *   An array of sid=>label pairs.

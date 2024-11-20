@@ -78,9 +78,9 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
       $count = 0;
       foreach (workflow_access_get_workflow_access_by_sid($sid) as $rid => $access) {
         $count++;
-        $view[$rid] = ($access['grant_view']) ? $rid : 0;
-        $update[$rid] = ($access['grant_update']) ? $rid : 0;
-        $delete[$rid] = ($access['grant_delete']) ? $rid : 0;
+        $view[$rid] = $access['grant_view'] ? $rid : 0;
+        $update[$rid] = $access['grant_update'] ? $rid : 0;
+        $delete[$rid] = $access['grant_delete'] ? $rid : 0;
       }
       // Allow view grants by default for anonymous and authenticated users,
       // if no grants were set up earlier.

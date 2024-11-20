@@ -11,10 +11,15 @@
  * Helper function for D8-port: Get some info on screen.
  *
  * @param string $class_name
+ *   The class name.
  * @param string $function_name
+ *   The function name.
  * @param string $line_nr
+ *   The line number.
  * @param string $value1
+ *   The first value to be displayed.
  * @param string $value2
+ *   Another value to be displayed.
  *
  * @see workflow_devel-module
  *
@@ -22,8 +27,7 @@
  *   workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', '');
  */
 function workflow_debug($class_name, $function_name, $line_nr = '', $value1 = '', $value2 = '') {
-  $debug_switch = FALSE;
-  // $debug_switch = TRUE;
+  $debug_switch = (1 == 2);
 
   if (!$debug_switch) {
     return;

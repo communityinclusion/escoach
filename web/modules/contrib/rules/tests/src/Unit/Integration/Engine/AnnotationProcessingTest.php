@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
 use Drupal\Core\Annotation\Translation;
@@ -27,7 +29,7 @@ class AnnotationProcessingTest extends RulesIntegrationTestBase {
   /**
    * Make sure @ Translation annotations do not leak out into the wild.
    */
-  public function testTranslationSquelching() {
+  public function testTranslationSquelching(): void {
     // Get a sample Rules plugin.
     $plugin = $this->conditionManager->createInstance('rules_list_contains');
     $context = $plugin->getContext('list');
@@ -63,7 +65,7 @@ class AnnotationProcessingTest extends RulesIntegrationTestBase {
    *
    * @dataProvider provideRulesPlugins
    */
-  public function testCheckConfiguration($plugin_type, $plugin_id, $context_name, $expected) {
+  public function testCheckConfiguration(string $plugin_type, string $plugin_id, string $context_name, string $expected): void {
     $plugin = NULL;
 
     switch ($plugin_type) {
@@ -89,14 +91,14 @@ class AnnotationProcessingTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * Provider for plugins to test.
+   * Data provider for plugins to test.
    *
    * Passes $plugin_type, $plugin_id, $context_name, and $expected.
    *
    * @return array
    *   Array of array of values to be passed to our test.
    */
-  public function provideRulesPlugins() {
+  public static function provideRulesPlugins(): array {
     return [
       [
         'action',

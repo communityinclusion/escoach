@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Event;
 
 /**
@@ -14,7 +16,7 @@ class EntityDeleteTest extends EventTestBase {
   /**
    * Tests the event metadata.
    */
-  public function testEventMetadata() {
+  public function testEventMetadata(): void {
     $plugin_definition = $this->eventManager->getDefinition('rules_entity_delete:test');
     $this->assertSame('After deleting a test entity', (string) $plugin_definition['label']);
     $context_definition = $plugin_definition['context_definitions']['test'];

@@ -139,6 +139,10 @@ tr .form-item,
   margin-block: var(--sp0-5);
 }
 
+.form-actions > .form-wrapper {
+  margin-inline-end: var(--sp1);
+}
+
 .form-actions .ajax-progress--throbber {
   align-self: center;
 }
@@ -189,5 +193,11 @@ tr .form-item,
 
   & .form-actions {
     margin-top: var(--sp1-5);
+  }
+}
+
+.layout-builder-form {
+  & .form-actions {
+    align-items: center;
   }
 }

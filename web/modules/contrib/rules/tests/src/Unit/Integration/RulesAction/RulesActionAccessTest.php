@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -16,7 +18,7 @@ class RulesActionAccessTest extends RulesIntegrationTestBase {
   /**
    * Confirm that a condition plugin respects configure permission.
    */
-  public function testHasConfigurationAccessInfo() {
+  public function testHasConfigurationAccessInfo(): void {
     $plugin = $this->actionManager->createInstance('rules_test_string');
     $definition = $plugin->getPluginDefinition();
     $this->assertNotEmpty($definition['configure_permissions'], "Plugin has configuration permission info.");
@@ -53,7 +55,6 @@ class RulesActionAccessTest extends RulesIntegrationTestBase {
                        "User without permission does not have configuration access.");
     $object_result = $plugin->checkConfigurationAccess($user_without_perm->reveal(), TRUE);
     $this->assertTrue($object_result->isNeutral(), "an AccessResultNeutral object is returned on not allowed if an object is requested.");
-
   }
 
 }

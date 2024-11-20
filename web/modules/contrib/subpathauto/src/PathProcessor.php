@@ -80,13 +80,14 @@ class PathProcessor implements InboundPathProcessorInterface, OutboundPathProces
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
    */
-  public function __construct(InboundPathProcessorInterface $path_processor, LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler = NULL) {
+  public function __construct(InboundPathProcessorInterface $path_processor, LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, ?ModuleHandlerInterface $module_handler = NULL) {
     $this->pathProcessor = $path_processor;
     $this->languageManager = $language_manager;
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
     if (empty($this->moduleHandler)) {
-      @trigger_error('Calling PathProcessor::__construct() without the $module_handler argument is deprecated in subpathauto:8.x-1.2 and the $module_handler argument will be required in subpathauto:2.0. See https://www.drupal.org/project/subpathauto/issues/3175637', E_USER_DEPRECATED);
+      @trigger_error('Calling PathProcessor::__construct() without the $module_handler argument is deprecated in subpathauto:8.x-1.2 and the $module_handler argument will be required in subpathauto:2.0.0. See https://www.drupal.org/project/subpathauto/issues/3175637', E_USER_DEPRECATED);
+      // @phpstan-ignore-next-line
       $this->moduleHandler = \Drupal::service('module_handler');
     }
   }
@@ -142,7 +143,7 @@ class PathProcessor implements InboundPathProcessorInterface, OutboundPathProces
         // original path to give other path processors chance to make their
         // modifications for the path.
         if ($valid_path) {
-          return $path;
+          return $this->pathProcessor->processInbound($path, $request);
         }
         break;
       }
@@ -154,7 +155,7 @@ class PathProcessor implements InboundPathProcessorInterface, OutboundPathProces
   /**
    * {@inheritdoc}
    */
-  public function processOutbound($path, &$options = [], Request $request = NULL, BubbleableMetadata $bubbleableMetadata = NULL) {
+  public function processOutbound($path, &$options = [], ?Request $request = NULL, ?BubbleableMetadata $bubbleableMetadata = NULL) {
     $original_path = $path;
     $subpath = [];
     $max_depth = $this->getMaxDepth();
@@ -167,7 +168,7 @@ class PathProcessor implements InboundPathProcessorInterface, OutboundPathProces
       }
       $path = '/' . implode('/', $path_array);
       $processed_path = $this->pathProcessor->processOutbound($path, $options, $request);
-      if ($processed_path !== $path) {
+      if ($processed_path && $processed_path !== $path) {
         return $processed_path . '/' . implode('/', array_reverse($subpath));
       }
     }
@@ -217,6 +218,7 @@ class PathProcessor implements InboundPathProcessorInterface, OutboundPathProces
     }
     if ($this->hasRedirectModuleSupport) {
       // Loads and check if the current path has a redirect.
+      // @phpstan-ignore-next-line
       $redirects = \Drupal::service('redirect.repository')->findBySourcePath(ltrim($path, '/'));
 
       if (!empty($redirects)) {
@@ -265,6 +267,7 @@ class PathProcessor implements InboundPathProcessorInterface, OutboundPathProces
    */
   protected function getPathValidator() {
     if (!$this->pathValidator) {
+      // @phpstan-ignore-next-line
       $this->setPathValidator(\Drupal::service('path.validator'));
     }
 

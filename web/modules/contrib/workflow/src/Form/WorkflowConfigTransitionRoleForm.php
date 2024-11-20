@@ -66,11 +66,10 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
     $workflow = $this->workflow;
     if ($workflow) {
       // Each $entity is a from-state.
-      /** @var \Drupal\workflow\Entity\WorkflowState $entity */
+      /** @var \Drupal\workflow\Entity\WorkflowState $from_state */
       $from_state = $entity;
       $from_sid = $from_state->id();
 
-      /** @var \Drupal\workflow\Entity\WorkflowState[] $states */
       $states = $workflow->getStates($all = 'CREATION');
       if ($states) {
         // Only get the roles with proper permission + Author role.
@@ -80,14 +79,12 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
         // array_combine(array_keys($roles), array_keys($roles));
         $allow_all_roles = [];
 
-        /** @var \Drupal\workflow\Entity\WorkflowState $state */
         foreach ($states as $state) {
           $row['to'] = [
             '#type' => 'value',
             '#markup' => $this->t('@label', ['@label' => $from_state->label()]),
           ];
 
-          /** @var \Drupal\workflow\Entity\WorkflowState $to_state */
           foreach ($states as $to_state) {
             // Don't allow transition TO (creation).
             if ($to_state->isCreationState()) {
@@ -136,21 +133,20 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
     }
 
     // Make sure 'author' is checked for (creation) -> [something].
-    $creation_state_id = $this->workflow->getCreationState()->id();
+    $creation_state = $this->workflow->getCreationState();
     $author_has_permission = FALSE;
     foreach ($form_state->getValue($this->entitiesKey) as $from_sid => $to_data) {
       foreach ($to_data as $to_sid => $transition_data) {
         if (empty($transition_data['roles'][WORKFLOW_ROLE_AUTHOR_RID])) {
           continue;
         }
-        if ($from_sid == $creation_state_id && $from_sid != $to_sid) {
+        if ($from_sid == $creation_state->id() && $from_sid != $to_sid) {
           $author_has_permission = TRUE;
           break;
         }
       }
     }
     if (!$author_has_permission) {
-      $creation_state = $this->workflow->getCreationState();
       $form_state->setErrorByName('id', $this->t('Please give the author permission to go from %creation to at least one state!',
         ['%creation' => $creation_state->label()]));
     }
@@ -164,8 +160,8 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
 
     foreach ($form_state->getValue($this->entitiesKey) as $from_sid => $to_data) {
       foreach ($to_data as $transition_data) {
-        /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $config_transition */
         if (isset($transition_data['workflow_config_transition'])) {
+          /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $config_transition */
           $config_transition = $transition_data['workflow_config_transition'];
           $config_transition->roles = $transition_data['roles'];
           $config_transition->save();
@@ -177,6 +173,20 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
     }
 
     $this->messenger()->addStatus($this->t('The workflow was updated.'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    /** @var \Drupal\workflow\Entity\WorkflowConfigTransition[] $workflow_transitions */
+    $workflow_transitions = $this->workflow->getTransitions();
+
+    $config_names = [];
+    foreach ($workflow_transitions as $transition) {
+      $config_names[] = $transition->getConfigDependencyName();
+    }
+    return $config_names;
   }
 
 }

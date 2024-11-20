@@ -2,14 +2,16 @@
 
 namespace Drupal\workflow\Controller;
 
-use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\Controller\EntityListController;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Url;
 use Drupal\views\Views;
-use Drupal\workflow\Entity\WorkflowManager;
+use Drupal\workflow\Entity\WorkflowTransitionInterface;
+use Drupal\workflow\Form\WorkflowTransitionForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,7 +22,7 @@ class WorkflowTransitionListController extends EntityListController implements C
   /**
    * The date formatter service.
    *
-   * @var \Drupal\Core\Datetime\DateFormatter
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $dateFormatter;
 
@@ -41,14 +43,14 @@ class WorkflowTransitionListController extends EntityListController implements C
   /**
    * Constructs an object.
    *
-   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer service.
    */
-  public function __construct(DateFormatter $date_formatter, ModuleHandlerInterface $module_handler, RendererInterface $renderer) {
+  public function __construct(DateFormatterInterface $date_formatter, ModuleHandlerInterface $module_handler, RendererInterface $renderer) {
     // These parameters are taken from some random other controller.
     $this->dateFormatter = $date_formatter;
     $this->moduleHandler = $module_handler;
@@ -102,7 +104,7 @@ class WorkflowTransitionListController extends EntityListController implements C
      * Step 1: generate the Transition Form.
      */
     // Add the WorkflowTransitionForm to the page.
-    $form = WorkflowManager::getWorkflowTransitionForm($entity, $field_name, []);
+    $form = WorkflowTransitionForm::createInstance($entity, $field_name, []);
 
     /*
      * Step 2: generate the Transition History List.
@@ -112,7 +114,10 @@ class WorkflowTransitionListController extends EntityListController implements C
       $view = Views::getView('workflow_entity_history');
       if (is_object($view) && $view->storage->status()) {
         // Add the history list from configured Views display.
-        $args = [$entity->id()];
+        $args = [
+          $entity->getEntityTypeId(),
+          $entity->id(),
+        ];
         $view->setArguments($args);
         $view->setDisplay('workflow_history_tab');
         $view->preExecute();
@@ -123,10 +128,10 @@ class WorkflowTransitionListController extends EntityListController implements C
     if (!is_object($view)) {
       // @deprecated. Use the Views display above.
       // Add the history list from programmed WorkflowTransitionListController.
-      $entity_type = 'workflow_transition';
-      $list_builder = $this->entityTypeManager()->getListBuilder($entity_type);
+      $entity_type_id = 'workflow_transition';
+      $list_builder = $this->entityTypeManager()->getListBuilder($entity_type_id);
       // Add the Node explicitly, since $list_builder expects a Transition.
-      $list_builder->workflow_entity = $entity;
+      $list_builder->setTargetEntity($entity);
       $form += $list_builder->render();
     }
 
@@ -138,5 +143,86 @@ class WorkflowTransitionListController extends EntityListController implements C
 
     return $form;
   }
+
+  /**
+   * Gets the title of the page.
+   *
+   * @return string
+   *   A string title of the page.
+   */
+  public function getTitle() {
+    $title = $this->t('Workflow history');
+
+    // Copied from RevisionOverviewForm (diff module).
+    if ($entity = workflow_url_get_entity()) {
+      /** @var \Drupal\Core\Entity\EntityInterface $entity */
+      $langname = $entity->language()->getName();
+      $languages = $entity->getTranslationLanguages();
+      $has_translations = (count($languages) > 1);
+
+      $title = $has_translations
+        ? $this->t('@langname Workflow history for %title', [
+          '@langname' => $langname,
+          '%title' => $entity->label(),
+        ])
+        : $this->t('Workflow history for %title', [
+          '%title' => $entity->label(),
+        ]);
+    }
+
+    return $title;
+  }
+
+  /**
+   * Implements hook_entity_operation.
+   *
+   * Core hooks: Change the operations column in a Entity list.
+   * Adds a 'revert' operation.
+   *
+   * @see EntityListBuilder::getOperations()
+   */
+  public static function addRevertOperation(WorkflowTransitionInterface $transition) {
+    $operations = [];
+
+    $entity_type_id = $transition->getTargetEntityTypeId();
+    $entity_id = $transition->getTargetEntityId();
+    $field_name = $transition->getFieldName();
+
+    // Only add 'revert' to the first row. Skip all following records.
+    static $first;
+    if (!($first[$entity_type_id][$entity_id][$field_name] ?? TRUE)) {
+      return $operations;
+    }
+
+    if (!$transition->isRevertable()) {
+      // Some states are not fit to revert to.
+      // In each of these cases, prohibit to revert to an even older state.
+      $first[$entity_type_id][$entity_id][$field_name] = FALSE;
+      return $operations;
+    }
+
+    $user = workflow_current_user();
+    if ($transition->access('revert', $user, FALSE)) {
+      // User has access to revert to a previous state,
+      // and the operation is not vetoed by other module.
+      // Note: revert_form route is determined in WorkflowTransition Annotation.
+      $operations['revert'] = [
+        'title' => t('Revert to last state'),
+        'url' => Url::fromRoute(
+          'entity.workflow_transition.revert_form',
+          ['workflow_transition' => $transition->id()]
+        ),
+        'query' => \Drupal::destination()->getAsArray(),
+        'weight' => 50,
+      ];
+
+      // No need to read the following records.
+      $first[$entity_type_id][$entity_id][$field_name] = FALSE;
+      return $operations;
+    }
+
+    return $operations;
+  }
+
 
 }

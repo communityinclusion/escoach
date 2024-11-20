@@ -5,7 +5,7 @@ namespace Drupal\Tests\subpathauto\Functional;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- * Class SubPathautoSpecialCharacterTest.
+ * Tests for special character usage.
  *
  * @group subpathauto
  */

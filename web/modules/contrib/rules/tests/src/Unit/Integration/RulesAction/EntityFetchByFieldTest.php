@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Entity\EntityInterface;
@@ -34,7 +36,7 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Fetch entities by field', $this->action->summary());
   }
 
@@ -43,7 +45,7 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithNoLimit() {
+  public function testActionExecutionWithNoLimit(): void {
     // Create variables for action context values.
     $entity_type = 'entity_test';
     $field_name = 'test_field';
@@ -79,7 +81,7 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionWithLimit() {
+  public function testActionExecutionWithLimit(): void {
     $entity_type = 'entity_test';
     $field_name = 'test_field';
     $field_value = 'llama';
@@ -137,7 +139,7 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecutionProvidedContextEntityType() {
+  public function testActionExecutionProvidedContextEntityType(): void {
     // Create variables for action context values.
     $entity_type = 'entity_test';
     $field_name = 'test_field';
@@ -168,7 +170,7 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
   /**
    * @covers ::refineContextDefinitions
    */
-  public function testRefiningContextDefinitions() {
+  public function testRefiningContextDefinitions(): void {
     $this->action->setContextValue('type', 'entity_test');
     $this->action->refineContextDefinitions([]);
     $this->assertEquals(

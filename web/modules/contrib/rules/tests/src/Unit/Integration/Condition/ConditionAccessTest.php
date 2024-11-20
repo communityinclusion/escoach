@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -16,7 +18,7 @@ class ConditionAccessTest extends RulesIntegrationTestBase {
   /**
    * Confirm that a condition plugin respects configure_permissions.
    */
-  public function testHasConfigurationAccessInfo() {
+  public function testHasConfigurationAccessInfo(): void {
     $plugin = $this->conditionManager->createInstance('rules_test_string_condition');
     $this->assertNotNull($plugin, "The rules_test condition was found.");
     $definition = $plugin->getPluginDefinition();

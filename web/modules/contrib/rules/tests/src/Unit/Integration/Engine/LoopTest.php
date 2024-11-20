@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
 use Drupal\Core\Entity\TypedData\EntityDataDefinition;
@@ -29,7 +31,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that list items in the loop can be used during execution.
    */
-  public function testListItemUsage() {
+  public function testListItemUsage(): void {
     // The rule contains a list of strings that will be concatenated into one
     // variable.
     $rule = $this->rulesExpressionManager->createRule();
@@ -62,7 +64,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that list items can be renamed for usage in nested loops.
    */
-  public function testListItemRenaming() {
+  public function testListItemRenaming(): void {
     // The rule contains a list of strings that will be concatenated into one
     // variable.
     $rule = $this->rulesExpressionManager->createRule();
@@ -109,7 +111,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a list can be chosen with a property path selector.
    */
-  public function testPropertyPathList() {
+  public function testPropertyPathList(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $rule->addAction('rules_variable_add', ContextConfig::create()
       ->setValue('type', 'string')
@@ -160,7 +162,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Test the integrity check for loop item names that conflict with others.
    */
-  public function testItemNameConflict() {
+  public function testItemNameConflict(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', [
@@ -185,7 +187,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the specified list variable exists in the execution state.
    */
-  public function testListExists() {
+  public function testListExists(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', [
@@ -208,7 +210,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a loop must have a list configured.
    */
-  public function testMissingList() {
+  public function testMissingList(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     // Empty loop configuration, 'list' is missing.
@@ -228,7 +230,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that a variable used in an action within the loop exists.
    */
-  public function testWrongVariableInAction() {
+  public function testWrongVariableInAction(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
@@ -253,7 +255,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the data type used to loop over is a list.
    */
-  public function testInvalidListType() {
+  public function testInvalidListType(): void {
     $rule = $this->rulesExpressionManager->createRule();
 
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', [
@@ -276,7 +278,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the loop list item variable is not available after the loop.
    */
-  public function testOutOfScopeVariable() {
+  public function testOutOfScopeVariable(): void {
     $rule = $this->rulesExpressionManager->createRule();
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
 
@@ -300,7 +302,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests that the loop list item variable is not available after the loop.
    */
-  public function testOutOfScopeVariableExecution() {
+  public function testOutOfScopeVariableExecution(): void {
     // Set the expected exception class and message.
     $this->expectException(EvaluationException::class);
     $this->expectExceptionMessage("Unable to get variable 'list_item'; it is not defined.");

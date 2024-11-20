@@ -37,8 +37,8 @@ class RouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection) {
 
-    $field_list = workflow_get_workflow_fields_by_entity_type();
-    foreach ($field_list as $entityTypeId => $fields) {
+    $field_map = workflow_get_workflow_fields_by_entity_type();
+    foreach ($field_map as $entity_type_id => $fields) {
 
       /*
        * @todo For entities with multiple workflow fields, Create an
@@ -48,15 +48,15 @@ class RouteSubscriber extends RouteSubscriberBase {
        */
 
       // Generate route for default field. Redirect to workflow/{field_name}.
-      $path = "/$entityTypeId/{{$entityTypeId}}/workflow";
-      $route = $this->getEntityLoadRoute($entityTypeId, $path);
-      $collection->add("entity.$entityTypeId.workflow_history", $route);
+      $path = "/$entity_type_id/{{$entity_type_id}}/workflow";
+      $route = $this->getEntityLoadRoute($entity_type_id, $path);
+      $collection->add("entity.$entity_type_id.workflow_history", $route);
 
       // Generate one route for each workflow field.
       foreach ($fields as $field_name => $field) {
-        $path = "/$entityTypeId/{{$entityTypeId}}/workflow/$field_name";
-        $route = $this->getEntityLoadRoute($entityTypeId, $path);
-        $collection->add("entity.$entityTypeId.workflow_history.$field_name", $route);
+        $path = "/$entity_type_id/{{$entity_type_id}}/workflow/$field_name";
+        $route = $this->getEntityLoadRoute($entity_type_id, $path);
+        $collection->add("entity.$entity_type_id.workflow_history.$field_name", $route);
       }
     }
   }
@@ -64,7 +64,7 @@ class RouteSubscriber extends RouteSubscriberBase {
   /**
    * Gets the entity load route.
    *
-   * @param string $entityTypeId
+   * @param string $entity_type_id
    *   The entity type id.
    * @param string $path
    *   The Path of the route.
@@ -72,7 +72,7 @@ class RouteSubscriber extends RouteSubscriberBase {
    * @return \Symfony\Component\Routing\Route|null
    *   The generated route, if available.
    */
-  protected function getEntityLoadRoute($entityTypeId, $path) {
+  protected function getEntityLoadRoute($entity_type_id, $path) {
 
     /*
      * @todo Create the Route for taxonomy term like
@@ -83,16 +83,16 @@ class RouteSubscriber extends RouteSubscriberBase {
       $path,
       [
         '_controller' => '\Drupal\workflow\Controller\WorkflowTransitionListController::historyOverview',
-        '_title' => 'Workflow history',
+        '_title_callback' => '\Drupal\workflow\Controller\WorkflowTransitionListController::getTitle',
       ],
       [
         '_custom_access' => '\Drupal\workflow\Access\WorkflowHistoryAccess::access',
       ],
       [
         '_admin_route' => TRUE,
-        '_workflow_entity_type_id' => $entityTypeId, // @todo Remove this.
+        '_workflow_entity_type_id' => $entity_type_id, // @todo Remove this.
         'parameters' => [
-          $entityTypeId => ['type' => 'entity:' . $entityTypeId],
+          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
         ],
       ]
     );

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\rules\Context\ExecutionStateInterface;
@@ -68,7 +70,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    *
    * @covers ::__construct
    */
-  public function testContainersOnConstruct() {
+  public function testContainersOnConstruct(): void {
     $this->assertSame($this->conditions, $this->rule->getConditions());
     $this->assertSame($this->actions, $this->rule->getActions());
   }
@@ -79,7 +81,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    * @covers ::setConditions
    * @covers ::getConditions
    */
-  public function testSetConditionsGetConditions() {
+  public function testSetConditionsGetConditions(): void {
     $or = new OrExpression([], 'rules_or', ['label' => 'Condition set (OR)'], $this->expressionManager->reveal(), $this->rulesDebugLogger->reveal());
     $this->rule->setConditions($or);
     $this->assertSame($or, $this->rule->getConditions());
@@ -95,7 +97,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    * @covers ::setActions
    * @covers ::getActions
    */
-  public function testSetActionsGetActions() {
+  public function testSetActionsGetActions(): void {
     $action_set = new ActionSetExpression([], '', [], $this->expressionManager->reveal(), $this->rulesDebugLogger->reveal());
     $this->rule->setActions($action_set);
     $this->assertSame($action_set, $this->rule->getActions());
@@ -106,7 +108,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    *
    * @covers ::execute
    */
-  public function testActionExecution() {
+  public function testActionExecution(): void {
     // The method on the test action must be called once.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
@@ -122,7 +124,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    *
    * @covers ::execute
    */
-  public function testConditionFails() {
+  public function testConditionFails(): void {
     // The execute method on the action must never be called.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldNotBeCalled();
@@ -138,7 +140,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    *
    * @covers ::execute
    */
-  public function testTwoConditionsTrue() {
+  public function testTwoConditionsTrue(): void {
     // The method on the test action must be called once.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
@@ -164,7 +166,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    *
    * @covers ::execute
    */
-  public function testTwoConditionsFalse() {
+  public function testTwoConditionsFalse(): void {
     // The execute method on the action must never be called.
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldNotBeCalled();
@@ -185,7 +187,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
    *
    * @covers ::execute
    */
-  public function testNestedRules() {
+  public function testNestedRules(): void {
     $this->testActionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
 
@@ -207,7 +209,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
   /**
    * Tests that a nested expression can be retrieved by UUID.
    */
-  public function testLookupExpression() {
+  public function testLookupExpression(): void {
     // Test Conditions.
     $this->rule->addExpressionObject($this->trueConditionExpression->reveal());
     $uuid = $this->trueConditionExpression->reveal()->getUuid();
@@ -224,7 +226,7 @@ class RuleExpressionTest extends RulesUnitTestBase {
   /**
    * Tests that removing expressions by indices works.
    */
-  public function testDeletingExpressions() {
+  public function testDeletingExpressions(): void {
     // Create a rule with 2 conditions and 2 actions.
     $this->rule->addExpressionObject($this->trueConditionExpression->reveal());
     $this->rule->addExpressionObject($this->falseConditionExpression->reveal());

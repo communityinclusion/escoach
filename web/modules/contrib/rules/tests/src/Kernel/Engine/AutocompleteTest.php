@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel\Engine;
 
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -58,7 +60,7 @@ class AutocompleteTest extends RulesKernelTestBase {
   /**
    * Tests autocompletion works for a variable in the metadata state.
    */
-  public function testAutocomplete() {
+  public function testAutocomplete(): void {
     $rule = $this->expressionManager->createRule();
     $action = $this->expressionManager->createAction('rules_data_set');
     $rule->addExpressionObject($action);
@@ -82,7 +84,7 @@ class AutocompleteTest extends RulesKernelTestBase {
   /**
    * Test various node example data selectors.
    */
-  public function testNodeAutocomplete() {
+  public function testNodeAutocomplete(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addAction('rules_data_set');
 
@@ -286,27 +288,27 @@ class AutocompleteTest extends RulesKernelTestBase {
     $this->assertSame([
       [
         'value' => 'node.field_integer.0',
-        'label' => 'node.field_integer.0',
+        'label' => 'node.field_integer.0 (Number (integer))',
       ],
       [
         'value' => 'node.field_integer.0.',
-        'label' => 'node.field_integer.0...',
+        'label' => 'node.field_integer.0... (Number (integer))',
       ],
       [
         'value' => 'node.field_integer.1',
-        'label' => 'node.field_integer.1',
+        'label' => 'node.field_integer.1 (Number (integer))',
       ],
       [
         'value' => 'node.field_integer.1.',
-        'label' => 'node.field_integer.1...',
+        'label' => 'node.field_integer.1... (Number (integer))',
       ],
       [
         'value' => 'node.field_integer.2',
-        'label' => 'node.field_integer.2',
+        'label' => 'node.field_integer.2 (Number (integer))',
       ],
       [
         'value' => 'node.field_integer.2.',
-        'label' => 'node.field_integer.2...',
+        'label' => 'node.field_integer.2... (Number (integer))',
       ],
       [
         'value' => 'node.field_integer.value',
@@ -340,7 +342,7 @@ class AutocompleteTest extends RulesKernelTestBase {
   /**
    * Tests that autocomplete results for a flat list are correct.
    */
-  public function testListAutocomplete() {
+  public function testListAutocomplete(): void {
     $rule = $this->expressionManager->createRule();
     $rule->addAction('rules_data_set');
 

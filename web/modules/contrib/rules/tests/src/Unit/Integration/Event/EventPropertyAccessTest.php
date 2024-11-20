@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Event;
 
 use Drupal\rules\Core\RulesEventManager;
@@ -7,6 +9,7 @@ use Drupal\rules_test_event\Event\PlainEvent;
 use Drupal\rules_test_event\Event\GenericEvent;
 use Drupal\rules_test_event\Event\GetterEvent;
 use Symfony\Component\EventDispatcher\GenericEvent as SymfonyGenericEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Checks that the events defined in the rules_test_event module are correct.
@@ -43,14 +46,12 @@ class EventPropertyAccessTest extends EventTestBase {
    *
    * @param string $event_name
    *   The Plugin ID of the event being tested.
-   * @param object $event
+   * @param \Symfony\Contracts\EventDispatcher\Event $event
    *   The event object being tested.
-   *   In Drupal 9 this will be a \Symfony\Component\EventDispatcher\Event,
-   *   In Drupal 10 this will be a \Symfony\Contracts\EventDispatcher\Event.
    *
    * @dataProvider provideTestEvent
    */
-  public function testEventContextDefinition($event_name, object $event): void {
+  public function testEventContextDefinition($event_name, Event $event): void {
     $plugin = $this->eventManager->createInstance($event_name);
     $context_definitions = $plugin->getContextDefinitions();
     foreach ($context_definitions as $name => $definition) {
@@ -81,7 +82,7 @@ class EventPropertyAccessTest extends EventTestBase {
   }
 
   /**
-   * Provider for events to test.
+   * Data provider - provides events to test.
    *
    * Passes an event name and an event object for each test case.
    * Here we use all the events defined in the rules_test_event test module.
@@ -89,7 +90,7 @@ class EventPropertyAccessTest extends EventTestBase {
    * @return array
    *   Array of array of values to be passed to our test.
    */
-  public function provideTestEvent(): array {
+  public static function provideTestEvent(): array {
     return [
       'Plain event' => [
         'rules_test_event.plain_event',

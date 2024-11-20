@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\LowerCaseKeywordSniff
  */
-class LowerCaseKeywordUnitTest extends AbstractSniffUnitTest
+final class LowerCaseKeywordUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -48,6 +48,13 @@ class LowerCaseKeywordUnitTest extends AbstractSniffUnitTest
             39 => 2,
             42 => 1,
             44 => 1,
+            47 => 1,
+            48 => 1,
+            52 => 3,
+            54 => 1,
+            57 => 2,
+            58 => 1,
+            60 => 1,
         ];
 
     }//end getErrorList()

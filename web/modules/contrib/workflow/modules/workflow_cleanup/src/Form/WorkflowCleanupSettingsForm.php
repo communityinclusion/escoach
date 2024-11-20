@@ -15,14 +15,14 @@ use Drupal\workflow\Entity\WorkflowState;
 class WorkflowCleanupSettingsForm extends FormBase {
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function getFormId() {
     return 'workflow_cleanup_settings';
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = [];
@@ -30,10 +30,7 @@ class WorkflowCleanupSettingsForm extends FormBase {
     // Get all of the states, indexed by sid.
     $orphans = $inactive = [];
 
-    /** @var \Drupal\workflow\Entity\WorkflowState[] $states */
-    /** @var \Drupal\workflow\Entity\WorkflowState $state */
     $states = WorkflowState::loadMultiple();
-
     foreach ($states as $state) {
       // Does the associated workflow exist?
       if (!$state->getWorkflow()) {
@@ -93,7 +90,7 @@ class WorkflowCleanupSettingsForm extends FormBase {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $states = $form['#workflow_states'];
@@ -115,7 +112,6 @@ class WorkflowCleanupSettingsForm extends FormBase {
         // Delete any transitions this state is involved in.
         $count = 0;
         foreach (WorkflowConfigTransition::loadMultiple() as $config_transition) {
-          /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $config_transition */
           if ($config_transition->getFromSid() == $sid || $config_transition->getToSid() == $sid) {
             $config_transition->delete();
             $count++;

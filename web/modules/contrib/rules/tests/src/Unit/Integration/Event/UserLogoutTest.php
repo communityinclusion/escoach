@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Event;
 
 /**
@@ -12,7 +14,7 @@ class UserLogoutTest extends EventTestBase {
   /**
    * Tests the event metadata.
    */
-  public function testUserLogoutEvent() {
+  public function testUserLogoutEvent(): void {
     $event = $this->eventManager->createInstance('rules_user_logout');
     $user_context_definition = $event->getContextDefinition('account');
     $this->assertSame('entity:user', $user_context_definition->getDataType());

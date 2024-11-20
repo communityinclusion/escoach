@@ -2,7 +2,7 @@
 
 namespace Drupal\rules\Context;
 
-use Drupal\Core\Plugin\Context\ContextDefinitionInterface as ContextDefinitionInterfaceCore;
+use Drupal\Core\Plugin\Context\ContextDefinitionInterface as CoreContextDefinitionInterface;
 
 /**
  * Context definition information required by Rules.
@@ -10,7 +10,7 @@ use Drupal\Core\Plugin\Context\ContextDefinitionInterface as ContextDefinitionIn
  * The core interface is extended to add properties that are necessary for
  * Rules.
  */
-interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
+interface ContextDefinitionInterface extends CoreContextDefinitionInterface {
 
   /**
    * Constants for the context assignment restriction mode.
@@ -26,7 +26,7 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
    * @return bool
    *   TRUE if NULL values are allowed, FALSE otherwise.
    */
-  public function isAllowedNull();
+  public function isAllowedNull(): bool;
 
   /**
    * Sets the "allow NULL value" behavior.
@@ -36,7 +36,7 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
    *
    * @return $this
    */
-  public function setAllowNull($null_allowed);
+  public function setAllowNull(bool $null_allowed): static;
 
   /**
    * Determines if this context has an assignment restriction.
@@ -47,7 +47,7 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
    *   that must be provided as data selectors or NULL if there is no
    *   restriction for this context.
    */
-  public function getAssignmentRestriction();
+  public function getAssignmentRestriction(): ?string;
 
   /**
    * Sets the assignment restriction mode for this context.
@@ -60,7 +60,7 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
    *
    * @return $this
    */
-  public function setAssignmentRestriction($restriction);
+  public function setAssignmentRestriction(?string $restriction): static;
 
   /**
    * Exports the definition as an array.
@@ -68,6 +68,6 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
    * @return array
    *   An array with values for all definition keys.
    */
-  public function toArray();
+  public function toArray(): array;
 
 }

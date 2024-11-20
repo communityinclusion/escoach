@@ -26,7 +26,7 @@ function recaptcha_help($route_name, RouteMatchInterface $route_match) {
       $output .= '</dl>';
       $output .= '<h3>' . t('Configuration') . '</h3>';
       $output .= '<ol>';
-      $output .= '<li>' . t('Enable reCAPTCHA and CAPTCHA modules in Adminstration > Extend') . '</li>';
+      $output .= '<li>' . t('Enable reCAPTCHA and CAPTCHA modules in Administration > Extend') . '</li>';
       $output .= '<li>' . t('You will now find a reCAPTCHA tab in the CAPTCHA administration page available at: Administration > Configuration > People > CAPTCHA module settings > reCAPTCHA') . '</li>';
       $output .= '<li>' . t('Register your web site at <a href=":url">https://www.google.com/recaptcha/admin/create</a>', [':url' => 'https://www.google.com/recaptcha/admin/create']) . '</li>';
       $output .= '<li>' . t('Input the site and private keys into the reCAPTCHA settings.') . '</li>';
@@ -81,16 +81,14 @@ function recaptcha_captcha($op, $captcha_type = '') {
           // captcha type can be displayed on cached pages.
           $captcha['cacheable'] = TRUE;
 
-          // Check if reCAPTCHA use globally is enabled.
-          $recaptcha_src = 'https://www.google.com/recaptcha/api.js';
-          $recaptcha_src_fallback = 'https://www.google.com/recaptcha/api/fallback';
-          if ($recaptcha_use_globally) {
-            $recaptcha_src = 'https://www.recaptcha.net/recaptcha/api.js';
-            $recaptcha_src_fallback = 'https://www.recaptcha.net/recaptcha/api/fallback';
-          }
-
           $noscript = '';
           if ($config->get('widget.noscript')) {
+            // Check if reCAPTCHA use globally is enabled.
+            $recaptcha_src_fallback = 'https://www.google.com/recaptcha/api/fallback';
+            if ($recaptcha_use_globally) {
+              $recaptcha_src_fallback = 'https://www.recaptcha.net/recaptcha/api/fallback';
+            }
+
             $recaptcha_widget_noscript = [
               '#theme' => 'recaptcha_widget_noscript',
               '#widget' => [
@@ -116,27 +114,14 @@ function recaptcha_captcha($op, $captcha_type = '') {
             '#markup' => '<div' . new Attribute($attributes) . '></div>',
             '#suffix' => $noscript,
             '#attached' => [
-              'html_head' => [
-                [
-                  [
-                    '#tag' => 'script',
-                    '#attributes' => [
-                      'src' => Url::fromUri(
-                        $recaptcha_src,
-                        [
-                          'query' => [
-                            'hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
-                          ],
-                          'absolute' => TRUE,
-                        ]
-                      )->toString(),
-                      'async' => TRUE,
-                      'defer' => TRUE,
-                    ],
-                  ],
-                  'recaptcha_api',
-                ],
+              'library' => [
+                'recaptcha/recaptcha',
+                'recaptcha/google.recaptcha_' . \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
               ],
+            ],
+            '#cache' => [
+              'tags' => ['library_info'],
+              'contexts' => ['languages'],
             ],
           ];
         }
@@ -150,6 +135,46 @@ function recaptcha_captcha($op, $captcha_type = '') {
       }
       return $captcha;
   }
+}
+
+/**
+ * Implements hook_library_info_build().
+ */
+function recaptcha_library_info_build() {
+  $libraries = [];
+  $languages = \Drupal::service('language_manager')->getLanguages();
+  $config = \Drupal::config('recaptcha.settings');
+  $use_globally = $config->get('use_globally');
+  $recaptcha_src = 'https://www.google.com/recaptcha/api.js';
+  if ($use_globally) {
+    $recaptcha_src = 'https://www.recaptcha.net/recaptcha/api.js';
+  }
+
+  foreach ($languages as $lang => $language) {
+    $url = Url::fromUri($recaptcha_src, [
+      'query' => [
+        'hl' => $lang,
+        'render' => 'explicit',
+        'onload' => 'drupalRecaptchaOnload',
+      ],
+      'absolute' => TRUE,
+    ])->toString();
+    $libraries['google.recaptcha_' . $lang] = [
+      'version' => '1.x',
+      'header' => TRUE,
+      'js' => [
+        $url => [
+          'type' => 'external',
+          'minified' => TRUE,
+          'attributes' => [
+            'async' => TRUE,
+            'defer' => TRUE,
+          ],
+        ],
+      ],
+    ];
+  }
+  return $libraries;
 }
 
 /**
@@ -228,12 +253,11 @@ function recaptcha_captcha_validation($solution, $response, $element, $form_stat
 function template_preprocess_recaptcha_widget_noscript(&$variables) {
   $variables['sitekey'] = $variables['widget']['sitekey'];
   $variables['language'] = $variables['widget']['language'];
-  $options = [
+  $variables['url'] = Url::fromUri($variables['widget']['recaptcha_src_fallback'], [
     'query' => [
       'k' => $variables['widget']['sitekey'],
       'hl' => $variables['widget']['language'],
     ],
     'absolute' => TRUE,
-  ];
-  $variables['url'] = Url::fromUri($variables['widget']['recaptcha_src_fallback'], $options)->toString();
+  ])->toString();
 }

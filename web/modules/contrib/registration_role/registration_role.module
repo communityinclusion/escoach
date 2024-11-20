@@ -48,7 +48,11 @@ function registration_role_user_presave(UserInterface $user) {
     $config = \Drupal::config('registration_role.setting');
 
     foreach ($config->get('role_to_select') as $key => $value) {
-      $user->addRole($key);
+      // This check for value protects against old-style configuration, in case
+      // update hook registration_role_update_8008 did not run or got reverted.
+      if ($value) {
+        $user->addRole($key);
+      }
     }
   }
 }

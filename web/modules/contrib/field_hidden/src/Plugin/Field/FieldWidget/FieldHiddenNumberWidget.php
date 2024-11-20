@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\field_hidden\Plugin\Field\FieldWidget\FieldHiddenNumberWidget.
- */
 
 namespace Drupal\field_hidden\Plugin\Field\FieldWidget;
 

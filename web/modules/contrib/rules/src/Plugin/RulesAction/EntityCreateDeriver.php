@@ -11,6 +11,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Context\ContextDefinitionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -78,7 +79,7 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
         ]),
         'category' => $entity_type->getLabel(),
         'entity_type_id' => $entity_type_id,
-        'context_defintions' => [],
+        'context_definitions' => [],
         'provides' => [
           $entity_type->id() . '_created' => ContextDefinition::create("entity:$entity_type_id")
             ->setLabel($this->t('Created @entity_type entity', ['@entity_type' => $entity_type->getSingularLabel()]))
@@ -132,7 +133,7 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
           ->setDescription($definition->getDescription());
 
         if ($is_bundle) {
-          $context_definition->setAssignmentRestriction(ContextDefinition::ASSIGNMENT_RESTRICTION_INPUT);
+          $context_definition->setAssignmentRestriction(ContextDefinitionInterface::ASSIGNMENT_RESTRICTION_INPUT);
         }
 
         $this->derivatives[$entity_type_id]['context_definitions'][$field_name] = $context_definition;

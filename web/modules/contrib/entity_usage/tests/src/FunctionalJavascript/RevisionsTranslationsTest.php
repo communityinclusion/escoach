@@ -322,6 +322,7 @@ class RevisionsTranslationsTest extends EntityUsageJavascriptTestBase {
     // Set our content type as translatable.
     $this->drupalGet('/admin/config/regional/content-language');
     $page->checkField('entity_types[node]');
+    $assert_session->elementExists('css', '#edit-settings-node')->click();
     $page->checkField('settings[node][eu_test_ct][translatable]');
     $page->pressButton('Save configuration');
     $session->wait(500);

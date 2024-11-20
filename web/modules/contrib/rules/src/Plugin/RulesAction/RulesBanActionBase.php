@@ -2,9 +2,9 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\ban\BanIpManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\ban\BanIpManagerInterface;
 use Drupal\rules\Core\RulesActionBase;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;

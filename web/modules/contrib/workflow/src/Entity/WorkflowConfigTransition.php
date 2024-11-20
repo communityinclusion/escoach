@@ -4,6 +4,7 @@ namespace Drupal\workflow\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\user\UserInterface;
 use Drupal\workflow\WorkflowTypeAttributeTrait;
 use Drupal\workflow\WorkflowURLRouteParametersTrait;
@@ -59,9 +60,33 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
   /**
    * Transition data.
    */
+
+  /**
+   * The Transition ID.
+   *
+   * @var string
+   */
   public $id;
+
+  /**
+   * The From State ID.
+   *
+   * @var string
+   */
   public $from_sid;
+
+  /**
+   * The To State ID.
+   *
+   * @var string
+   */
   public $to_sid;
+
+  /**
+   * The list of roles that are allowed to use this Transition.
+   *
+   * @var array
+   */
   public $roles = [];
 
   /**
@@ -78,9 +103,9 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $values = [], $entityType = NULL) {
+  public function __construct(array $values = [], $entity_type_id = NULL) {
     // Please be aware that $entity_type and $entityType are different things!
-    parent::__construct($values, $entity_type = 'workflow_config_transition');
+    parent::__construct($values, $entity_type_id = 'workflow_config_transition');
     $state = WorkflowState::load($this->to_sid ? $this->to_sid : $this->from_sid);
     if ($state) {
       $this->setWorkflow($state->getWorkflow());
@@ -115,37 +140,37 @@ class WorkflowConfigTransition extends ConfigEntityBase implements WorkflowConfi
   public function save() {
     $workflow = $this->getWorkflow();
 
-    // To avoid double posting, check if this (new) transition already exist.
-    if (empty($this->id())) {
-      if ($workflow) {
-        $config_transitions = $workflow->getTransitionsByStateId($this->from_sid, $this->to_sid);
-        $config_transition = reset($config_transitions);
-        if ($config_transition) {
-          $this->set('id', $config_transition->id());
-        }
-      }
+    if (!$workflow) {
+      return parent::save();
     }
 
-    // Create the machine_name.
-    // This can be used to rebuild/revert the Feature in a target system.
-    if (empty($this->id())) {
-      $wid = $workflow->id();
-      $this->set('id', implode('', [
-        $wid,
-        substr($this->from_sid, strlen($wid)),
-        substr($this->to_sid, strlen($wid)),
-      ]));
+    // To avoid double posting, check if this (new) transition already exist.
+    if ($this->isNew()) {
+      $config_transitions = $workflow->getTransitionsByStateId($this->from_sid, $this->to_sid);
+      $config_transition = reset($config_transitions);
+      if ($config_transition) {
+        // Copy the machine_name.
+        $tid = $config_transition->id();
+      }
+      else {
+        // Create the machine_name.
+        $wid = $workflow->id();
+        $tid = implode('', [
+          $wid,
+          substr($this->from_sid, strlen($wid)),
+          substr($this->to_sid, strlen($wid)),
+        ]);
+        $tid = substr($tid, 0, ConfigEntityStorage::MAX_ID_LENGTH);
+      }
+      $this->set('id', $tid);
+
     }
 
     $status = parent::save();
-
     if ($status) {
       // Save in current workflow for the remainder of this page request.
       // Keep in sync with Workflow::getTransitions() !
-      if ($workflow) {
-        $workflow->transitions[$this->id()] = $this;
-        // $workflow->sortTransitions();
-      }
+      $workflow->transitions[$this->id()] = $this;
     }
 
     return $status;

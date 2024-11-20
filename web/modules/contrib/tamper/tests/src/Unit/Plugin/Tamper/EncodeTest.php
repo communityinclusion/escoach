@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\tamper\Unit\Plugin\Tamper;
 
-use Drupal\tamper\Exception\TamperException;
 use Drupal\tamper\Plugin\Tamper\Encode;
 
 /**
@@ -42,7 +41,6 @@ class EncodeTest extends TamperPluginTestBase {
     $plugin = new Encode($config, 'encode', [], $this->getMockSourceDefinition());
     $this->assertEquals([], $plugin->tamper('a:0:{}'));
   }
-
 
   /**
    * Test serialize on complex string.
@@ -86,6 +84,28 @@ class EncodeTest extends TamperPluginTestBase {
     ];
     $plugin = new Encode($config, 'encode', [], $this->getMockSourceDefinition());
     $this->assertEquals('abcdef 123 @#`|\\"$%&/()=?\'^*', $plugin->tamper('YWJjZGVmIDEyMyBAI2B8XCIkJSYvKCk9PydeKg=='));
+  }
+
+  /**
+   * Test yaml_encode.
+   */
+  public function testYamlEncode() {
+    $config = [
+      Encode::SETTING_MODE => 'yaml_encode',
+    ];
+    $plugin = new Encode($config, 'encode', [], $this->getMockSourceDefinition());
+    $this->assertEquals("x: 'y'\n'y': x\n", $plugin->tamper(['x' => 'y', 'y' => 'x']));
+  }
+
+  /**
+   * Test yaml_decode.
+   */
+  public function testYamlDecode() {
+    $config = [
+      Encode::SETTING_MODE => 'yaml_decode',
+    ];
+    $plugin = new Encode($config, 'encode', [], $this->getMockSourceDefinition());
+    $this->assertEquals(['x' => 'y', 'y' => 'x'], $plugin->tamper("x: y\ny: x"));
   }
 
 }

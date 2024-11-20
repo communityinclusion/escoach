@@ -3,7 +3,11 @@
 namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\YesNoOptions;
 
 /**
  * Provides a 'Save entity' action.
@@ -31,6 +35,28 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_entity_save",
+  label: new TranslatableMarkup("Save entity"),
+  category: new TranslatableMarkup("Entity"),
+  context_definitions: [
+    "entity" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Entity"),
+      description: new TranslatableMarkup("Specifies the entity, which should be saved permanently."),
+      assignment_restriction: "selector"
+    ),
+    "immediate" => new ContextDefinition(
+      data_type: "boolean",
+      label: new TranslatableMarkup("Force saving immediately"),
+      description: new TranslatableMarkup("Usually saving is postponed till the end of the evaluation, so that multiple saves can be fold into one. If this set, saving is forced to happen immediately."),
+      assignment_restriction: "input",
+      options_provider: YesNoOptions::class,
+      default_value: FALSE,
+      required: FALSE
+    ),
+  ]
+)]
 class EntitySave extends RulesActionBase {
 
   /**

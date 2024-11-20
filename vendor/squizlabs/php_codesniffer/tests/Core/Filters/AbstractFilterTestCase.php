@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the \PHP_CodeSniffer\Filters\GitModified class.
+ * Abstract Testcase class for testing Filters.
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2023 PHPCSStandards Contributors
@@ -9,9 +9,9 @@
 
 namespace PHP_CodeSniffer\Tests\Core\Filters;
 
-use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Filters\Filter;
 use PHP_CodeSniffer\Ruleset;
+use PHP_CodeSniffer\Tests\ConfigDouble;
 use PHPUnit\Framework\TestCase;
 use RecursiveIteratorIterator;
 
@@ -45,10 +45,33 @@ abstract class AbstractFilterTestCase extends TestCase
      */
     public static function initializeConfigAndRuleset()
     {
-        self::$config  = new Config(['--standard=PSR1', '--extensions=php,inc/php,js,css', '--report-width=80']);
+        self::$config  = new ConfigDouble(['--extensions=php,inc/php,js,css']);
         self::$ruleset = new Ruleset(self::$config);
 
     }//end initializeConfigAndRuleset()
+
+
+    /**
+     * Clean up after finished test by resetting all static properties on the Config class to their default values.
+     *
+     * Note: This is a PHPUnit cross-version compatible {@see \PHPUnit\Framework\TestCase::tearDownAfterClass()}
+     * method.
+     *
+     * @afterClass
+     *
+     * @return void
+     */
+    public static function reset()
+    {
+        // Explicitly trigger __destruct() on the ConfigDouble to reset the Config statics.
+        // The explicit method call prevents potential stray test-local references to the $config object
+        // preventing the destructor from running the clean up (which without stray references would be
+        // automagically triggered when `self::$phpcsFile` is reset, but we can't definitively rely on that).
+        if (isset(self::$config) === true) {
+            self::$config->__destruct();
+        }
+
+    }//end reset()
 
 
     /**
@@ -73,7 +96,7 @@ abstract class AbstractFilterTestCase extends TestCase
     {
         $mockedObj = $this->getMockBuilder($className);
 
-        if (\method_exists($mockedObj, 'onlyMethods') === true) {
+        if (method_exists($mockedObj, 'onlyMethods') === true) {
             // PHPUnit 8+.
             if (is_array($methodsToMock) === true) {
                 return $mockedObj
@@ -184,8 +207,8 @@ abstract class AbstractFilterTestCase extends TestCase
             $basedir.'/src/Standards/Squiz/Sniffs/WhiteSpace/OperatorSpacingSniff.php',
             $basedir.'/src/Standards/Squiz/Tests',
             $basedir.'/src/Standards/Squiz/Tests/WhiteSpace',
-            $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.inc',
-            $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.inc.fixed',
+            $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.1.inc',
+            $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.1.inc.fixed',
             $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.js',
             $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.js.fixed',
             $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.php',

@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
+
+// cspell:ignore texx
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\Condition\TextComparison
@@ -31,7 +35,7 @@ class TextComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorStarts() {
+  public function testConditionEvaluationOperatorStarts(): void {
     // Test that when the text string starts with the match string and
     // the operator is 'starts', TRUE is returned.
     $this->condition
@@ -54,7 +58,7 @@ class TextComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorEnds() {
+  public function testConditionEvaluationOperatorEnds(): void {
     // Test that when the text string ends with the match string and
     // the operator is 'ends', TRUE is returned.
     $this->condition
@@ -77,7 +81,7 @@ class TextComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorContains() {
+  public function testConditionEvaluationOperatorContains(): void {
     // Test that when the text string contains the match string and
     // the operator is 'contains', TRUE is returned.
     $this->condition
@@ -100,7 +104,7 @@ class TextComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluationOperatorRegex() {
+  public function testConditionEvaluationOperatorRegex(): void {
     // Test that when the operator is 'regex' and the regular expression in
     // the match string matches the text string, TRUE is returned.
     $this->condition
@@ -110,7 +114,7 @@ class TextComparisonTest extends RulesIntegrationTestBase {
     $this->assertTrue($this->condition->evaluate());
 
     // Test that when the operator is 'regex' and the regular expression in
-    // the match string does not matche the text string, TRUE is returned.
+    // the match string does not match the text string, TRUE is returned.
     $this->condition
       ->setContextValue('text', 'my-text')
       ->setContextValue('operator', 'regex')
@@ -123,7 +127,7 @@ class TextComparisonTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Text comparison', $this->condition->summary());
   }
 

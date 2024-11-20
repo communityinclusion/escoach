@@ -2,8 +2,12 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 use Drupal\rules\Exception\InvalidArgumentException;
+use Drupal\rules\TypedData\Options\RolesOptions;
 use Drupal\user\UserInterface;
 
 /**
@@ -30,6 +34,25 @@ use Drupal\user\UserInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_user_role_add",
+  label: new TranslatableMarkup("Add user role"),
+  category: new TranslatableMarkup("User"),
+  context_definitions: [
+    "user" => new ContextDefinition(
+      data_type: "entity:user",
+      label: new TranslatableMarkup("User"),
+      description: new TranslatableMarkup("The user whose roles should be changed.")
+    ),
+    "roles" => new ContextDefinition(
+      data_type: "entity:user_role",
+      label: new TranslatableMarkup("Roles"),
+      description: new TranslatableMarkup("The user role(s) to add."),
+      options_provider: RolesOptions::class,
+      multiple: TRUE
+    ),
+  ]
+)]
 class UserRoleAdd extends RulesActionBase {
 
   /**

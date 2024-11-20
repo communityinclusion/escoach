@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
@@ -7,6 +9,7 @@ use Drupal\rules_test_event\Event\PlainEvent;
 use Drupal\rules_test_event\Event\GenericEvent;
 use Drupal\rules_test_event\Event\GetterEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Tests that Rules can use and access the properties of any Events.
@@ -47,14 +50,12 @@ class EventPropertyAccessTest extends RulesKernelTestBase {
    *
    * @param string $event_name
    *   The Plugin ID of the event being tested.
-   * @param object $event
+   * @param \Symfony\Contracts\EventDispatcher\Event $event
    *   The event object being tested.
-   *   In Drupal 9 this will be a \Symfony\Component\EventDispatcher\Event,
-   *   In Drupal 10 this will be a \Symfony\Contracts\EventDispatcher\Event.
    *
    * @dataProvider provideTestEvent
    */
-  public function testEventProperties($event_name, object $event): void {
+  public function testEventProperties($event_name, Event $event): void {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
     $rule->addAction('rules_test_debug_log',
@@ -100,7 +101,7 @@ class EventPropertyAccessTest extends RulesKernelTestBase {
   }
 
   /**
-   * Provider for events to test.
+   * Data provider for events to test.
    *
    * Passes an event name and an event object for each test case.
    * Here we use all the events defined in the rules_test_event test module.
@@ -108,7 +109,7 @@ class EventPropertyAccessTest extends RulesKernelTestBase {
    * @return array
    *   Array of array of values to be passed to our test.
    */
-  public function provideTestEvent(): array {
+  public static function provideTestEvent(): array {
     return [
       'Plain event' => [
         'rules_test_event.plain_event',

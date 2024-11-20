@@ -3,6 +3,7 @@
 namespace Drupal\subpathauto\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -26,11 +27,13 @@ class SettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfigManager
+   *   The typed config service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, ModuleHandlerInterface $module_handler) {
+    parent::__construct($config_factory, $typedConfigManager);
     $this->moduleHandler = $module_handler;
   }
 
@@ -40,6 +43,7 @@ class SettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('module_handler')
     );
   }
@@ -65,8 +69,8 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $is_redirect_installed ? $config->get('redirect_support') : FALSE,
       '#disabled' => !$is_redirect_installed,
       '#description' => $is_redirect_installed ?
-        $this->t('If checked, redirects will be taken into account when resolving sub aliases.'):
-        $this->t('If checked, redirects will be taken into account when resolving sub aliases. The redirect module should be installed for this setting.'),
+      $this->t('If checked, redirects will be taken into account when resolving sub aliases.') :
+      $this->t('If checked, redirects will be taken into account when resolving sub aliases. The redirect module should be installed for this setting.'),
     ];
 
     return parent::buildForm($form, $form_state);

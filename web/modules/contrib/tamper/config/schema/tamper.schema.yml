@@ -141,6 +141,12 @@ tamper.keyword_filter:
     words:
       type: string
       label: 'Words or phrases to filter on'
+    words_list:
+      type: sequence
+      label: 'Word list'
+      sequence:
+        type: string
+        label: 'Word'
     word_boundaries:
       type: boolean
       label: 'Respect word boundaries'
@@ -153,18 +159,6 @@ tamper.keyword_filter:
     invert:
       type: boolean
       label: 'Invert filter'
-    word_list:
-      type: sequence
-      label: 'Word list'
-      sequence:
-        type: string
-        label: 'Word'
-    regex:
-      type: boolean
-      label: 'Use regex'
-    function:
-      type: string
-      label: 'Keyword filtering function'
 
 tamper.math:
   mapping:

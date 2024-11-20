@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\Arrays\DisallowLongArraySyntaxSniff
  */
-class DisallowLongArraySyntaxUnitTest extends AbstractSniffUnitTest
+final class DisallowLongArraySyntaxUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -45,6 +45,10 @@ class DisallowLongArraySyntaxUnitTest extends AbstractSniffUnitTest
             return [
                 2 => 1,
                 9 => 1,
+            ];
+        case 'DisallowLongArraySyntaxUnitTest.3.inc':
+            return [
+                7 => 1,
             ];
         default:
             return [];

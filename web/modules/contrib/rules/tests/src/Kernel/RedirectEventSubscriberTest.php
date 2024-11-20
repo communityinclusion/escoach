@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,7 +21,7 @@ class RedirectEventSubscriberTest extends RulesKernelTestBase {
    *
    * @covers ::checkRedirectIssued
    */
-  public function testCheckRedirectIssued() {
+  public function testCheckRedirectIssued(): void {
     /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $http_kernel */
     $http_kernel = $this->container->get('http_kernel');
 

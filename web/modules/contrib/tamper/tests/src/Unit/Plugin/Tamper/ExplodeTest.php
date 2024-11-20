@@ -75,7 +75,7 @@ class ExplodeTest extends TamperPluginTestBase {
   /**
    * Data provider for testExplodeSeparators.
    */
-  public function explodeSeparatorsProvider() {
+  public static function explodeSeparatorsProvider() {
     return [
       [
         "a,b c\td\ne\rf",

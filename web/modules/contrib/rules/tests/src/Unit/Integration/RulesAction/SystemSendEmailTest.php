@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Core\Language\LanguageInterface;
@@ -54,7 +56,7 @@ class SystemSendEmailTest extends RulesIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Send email', $this->action->summary());
   }
 
@@ -63,7 +65,7 @@ class SystemSendEmailTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testSendMailToOneRecipient() {
+  public function testSendMailToOneRecipient(): void {
     $to = ['mail@example.com'];
     $this->action->setContextValue('to', $to)
       ->setContextValue('subject', 'subject')
@@ -96,7 +98,7 @@ class SystemSendEmailTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testSendMailToTwoRecipients() {
+  public function testSendMailToTwoRecipients(): void {
     $to = ['mail@example.com', 'mail2@example.com'];
 
     // Use a language other than the site default.

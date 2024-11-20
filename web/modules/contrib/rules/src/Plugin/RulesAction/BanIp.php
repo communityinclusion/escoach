@@ -2,6 +2,10 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
+
 /**
  * Provides the 'Ban IP' action.
  *
@@ -24,6 +28,21 @@ namespace Drupal\rules\Plugin\RulesAction;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_ban_ip",
+  label: new TranslatableMarkup("Ban an IP address"),
+  category: new TranslatableMarkup("Ban"),
+  provider: "ban",
+  context_definitions: [
+    "ip" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("IP address"),
+      description: new TranslatableMarkup("Ban an IP address using the Ban Module. If no IP is provided, the current user IP is used."),
+      default_value: NULL,
+      required: FALSE
+    ),
+  ]
+)]
 class BanIp extends RulesBanActionBase {
 
   /**

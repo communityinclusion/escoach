@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Plugin\Context\Context;
@@ -65,7 +67,7 @@ class IpIsBannedTest extends RulesIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     // Test an IPv4 address that has not been banned; should return FALSE.
     // TEST-NET-1 IPv4.
     $ipv4 = '192.0.2.0';

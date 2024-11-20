@@ -2,6 +2,9 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
 use Drupal\user\UserInterface;
 
@@ -22,6 +25,18 @@ use Drupal\user\UserInterface;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_user_is_blocked",
+  label: new TranslatableMarkup("User is blocked"),
+  category: new TranslatableMarkup("User"),
+  context_definitions: [
+    "user" => new ContextDefinition(
+      data_type: "entity:user",
+      label: new TranslatableMarkup("User"),
+      description: new TranslatableMarkup("Specifies the user account to check.")
+    ),
+  ]
+)]
 class UserIsBlocked extends RulesConditionBase {
 
   /**

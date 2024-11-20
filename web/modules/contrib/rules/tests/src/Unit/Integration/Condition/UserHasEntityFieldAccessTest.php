@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -36,7 +38,7 @@ class UserHasEntityFieldAccessTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     $account = $this->prophesizeEntity(UserInterface::class);
     $entity = $this->prophesizeEntity(ContentEntityInterface::class);
     $items = $this->prophesize(FieldItemListInterface::class);

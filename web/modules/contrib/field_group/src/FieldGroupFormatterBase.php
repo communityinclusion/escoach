@@ -156,7 +156,7 @@ abstract class FieldGroupFormatterBase extends PluginSettingsBase implements Fie
     }
 
     if ($this->getSetting('classes')) {
-      $summary[] = \Drupal::translation()->translate('Extra CSS classes: @classes', ['@classes' => $this->getSetting('classes')]);
+      $summary[] = $this->t('Extra CSS classes: @classes', ['@classes' => $this->getSetting('classes')]);
     }
 
     return $summary;

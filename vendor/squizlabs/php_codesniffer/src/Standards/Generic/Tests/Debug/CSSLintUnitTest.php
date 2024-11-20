@@ -16,8 +16,10 @@ use PHP_CodeSniffer\Config;
  * Unit test class for the CSSLint sniff.
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\Debug\CSSLintSniff
+ * @covers \PHP_CodeSniffer\Config::getExecutablePath
+ * @group  Windows
  */
-class CSSLintUnitTest extends AbstractSniffUnitTest
+final class CSSLintUnitTest extends AbstractSniffUnitTest
 {
 
 

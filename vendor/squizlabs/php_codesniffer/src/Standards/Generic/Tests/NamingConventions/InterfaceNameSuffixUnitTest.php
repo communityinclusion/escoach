@@ -15,7 +15,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\InterfaceNameSuffixSniff
  */
-class InterfaceNameSuffixUnitTest extends AbstractSniffUnitTest
+final class InterfaceNameSuffixUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -25,11 +25,21 @@ class InterfaceNameSuffixUnitTest extends AbstractSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the test file.
+     *
      * @return array<int, int>
      */
-    public function getErrorList()
+    public function getErrorList($testFile='')
     {
-        return [8 => 1];
+        switch ($testFile) {
+        case 'InterfaceNameSuffixUnitTest.1.inc':
+            return [
+                5 => 1,
+                9 => 1,
+            ];
+        default:
+            return [];
+        }
 
     }//end getErrorList()
 

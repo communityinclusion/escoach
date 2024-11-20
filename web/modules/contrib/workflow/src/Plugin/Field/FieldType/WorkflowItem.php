@@ -64,47 +64,27 @@ class WorkflowItem extends ListItemBase {
      * @var array
      */
     static $propertyDefinitions;
-
-    $definition['settings']['target_type'] = 'workflow_transition';
+    // Use underscore to avoid confusion with EntityTypeId.
+    // @todo Better use 'target_transition'.
+    $definition['settings']['target_type'] = '_workflow_transition';
     // Definitions vary by entity type and bundle, so key them accordingly.
     $key = $definition['settings']['target_type'] . ':';
-    $key .= isset($definition['settings']['target_bundle']) ? $definition['settings']['target_bundle'] : '';
+    $key .= $definition['settings']['target_bundle'] ?? '';
 
     if (!isset($propertyDefinitions[$key])) {
-
-      $propertyDefinitions[$key]['value'] = DataDefinition::create('string') // @todo D8-port: or 'any'
+      $propertyDefinitions[$key]['value'] = DataDefinition::create('string')
         ->setLabel(t('Workflow state'))
         ->addConstraint('Length', ['max' => 128])
         ->setRequired(TRUE);
-
-      //workflow_debug(__FILE__, __FUNCTION__, __LINE__);  // @todo D8: test this snippet.
-      /*
-      $propertyDefinitions[$key]['workflow_transition'] = DataDefinition::create('any')
+    /*
+        $propertyDefinitions[$key]['workflow_transition'] = DataDefinition::create('any')
         //    $properties['workflow_transition'] = DataDefinition::create('WorkflowTransition')
         ->setLabel(t('Transition'))
         ->setDescription(t('The computed WorkflowItem object.'))
         ->setComputed(TRUE)
-        ->setClass('\Drupal\workflow\Entity\WorkflowTransition')
-        ->setSetting('date source', 'value');
-
-      $propertyDefinitions[$key]['display'] = array(
-        'type' => 'boolean',
-        'label' => t('Flag to control whether this file should be displayed when viewing content.'),
-      );
-      $propertyDefinitions[$key]['description'] = array(
-        'type' => 'string',
-        'label' => t('A description of the file.'),
-      );
-
-      $propertyDefinitions[$key]['display'] = array(
-        'type' => 'boolean',
-        'label' => t('Flag to control whether this file should be displayed when viewing content.'),
-      );
-      $propertyDefinitions[$key]['description'] = array(
-        'type' => 'string',
-        'label' => t('A description of the file.'),
-      );
-       */
+        ->setClass('\Drupal\workflow\Entity\WorkflowTransition');
+        // ->setSetting('date source', 'value');
+    */
     }
     return $propertyDefinitions[$key];
   }
@@ -136,13 +116,13 @@ class WorkflowItem extends ListItemBase {
    * {@inheritdoc}
    */
   public function onChange($property_name, $notify = TRUE) {
-    //workflow_debug(__FILE__, __FUNCTION__, __LINE__);  // @todo D8: test this snippet.
+    // workflow_debug(__FILE__, __FUNCTION__, __LINE__);  // @todo D8: test this snippet.
 
     // @todo D8: use this function onChange for adding a line in table workflow_transition_*
     // Enforce that the computed date is recalculated.
-    //if ($property_name == 'value') {
-    //  $this->date = NULL;
-    //}
+    // if ($property_name == 'value') {
+    //   $this->date = NULL;
+    // }
     parent::onChange($property_name, $notify);
   }
 
@@ -150,33 +130,95 @@ class WorkflowItem extends ListItemBase {
    * {@inheritdoc}
    */
   public static function defaultStorageSettings() {
-
-    return [
+    $settings = [
       'workflow_type' => '',
+      'allowed_values_function' => 'workflow_state_allowed_values',
     ] + parent::defaultStorageSettings();
+    return $settings;
   }
 
   /**
    * Implements hook_field_settings_form() -> ConfigFieldItemInterface::settingsForm().
    */
   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
-    $element = [];
+    $element = parent::storageSettingsForm($form, $form_state, $has_data);
 
+    $this->validateStorageSettingsForm($form, $form_state, $has_data);
     // Create list of all Workflow types. Include an initial empty value.
-    // Validate each workflow, and generate a message if not complete.
     $workflows = workflow_get_workflow_names(FALSE);
+    $field_storage = $this->getFieldDefinition()->getFieldStorageDefinition();
+    $wid = $this->getSetting('workflow_type');
 
+    // Set the required workflow_type on 'comment' fields.
+    /** @var \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage */
+    if (!$wid && $field_storage->getTargetEntityTypeId() == 'comment') {
+      $field_name = $field_storage->get('field_name');
+      $workflows = [];
+      foreach (_workflow_info_fields($entity = NULL, $entity_type = '', $entity_bundle = '', $field_name) as $key => $info) {
+        if ($info->getName() == $field_name && ($info->getTargetEntityTypeId() !== 'comment')) {
+          $wid = $info->getSetting('workflow_type');
+          $workflow = Workflow::load($wid);
+          $workflows[$wid] = $workflow->label();
+        }
+      }
+    }
+
+    // Let the user choose between the available workflow types.
+    $url = Url::fromRoute('entity.workflow_type.collection')->toString();
+    $element['workflow_type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Workflow type'),
+      '#options' => $workflows,
+      '#default_value' => $wid,
+      '#required' => TRUE,
+      '#disabled' => $has_data,
+      '#description' => $this->t('Choose the Workflow type. Maintain workflows
+         <a href=":url">here</a>.', [':url' => $url]),
+    ];
+
+    // Overwrite ListItemBase::storageSettingsForm().
+    $allowed_values_function = 'workflow_state_allowed_values';
+    // Remove list of 'allowed values', due to restructured form in D10.2.
+    unset($element['allowed_values']);
+    // @todo Set 'allowed_values_function' properly in storage,
+    // so default parent code can be used.
+    $allowed_values_function = 'workflow_state_allowed_values';
+    $element['allowed_values_function'] = [
+      '#type' => 'item',
+      '#title' => $this->t('Allowed values list'),
+      '#markup' => $this->t('The value of this field is being determined by the %function function and may not be changed.', ['%function' => $allowed_values_function]),
+      '#access' => !empty($allowed_values_function),
+      '#value' => $allowed_values_function,
+    ];
+
+    $form['cardinality_container']['cardinality']['#default_value'] = 'number';
+    $form['cardinality_container']['cardinality']['#disabled'] = TRUE;
+    $form['cardinality_container']['cardinality_number']['#default_value'] = 1;
+    $form['cardinality_container']['cardinality_number']['#disabled'] = TRUE;
+    $form['cardinality_container']['cardinality_number']['#states'] = [];
+
+    return $element;
+  }
+
+  /**
+   * Generate messages on ConfigFieldItemInterface::settingsForm().
+   */
+  protected function validateStorageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
+    // Validate each workflow, and generate a message if not complete.
+    // Create list of all Workflow types. Include an initial empty value.
+    $workflows = workflow_get_workflow_names(FALSE);
     // @todo D8: add this to WorkflowFieldConstraintValidator.
     // Set message, if no 'validated' workflows exist.
     if (count($workflows) == 1) {
       $this->messenger()->addWarning(
         $this->t('You must <a href=":create">create at least one workflow</a>
           before content can be assigned to a workflow.',
-        [':create' => Url::fromRoute('entity.workflow_type.collection')->toString()]
-      ));
+          [':create' => Url::fromRoute('entity.workflow_type.collection')->toString()]
+        ));
     }
 
-    // Validate via annotation WorkflowFieldConstraint. Show a message for each error.
+    // Validate via annotation WorkflowFieldConstraint.
+    // Show a message for each error.
     $violation_list = $this->validate();
     /** @var \Symfony\Component\Validator\ConstraintViolation $violation */
     foreach ($violation_list->getIterator() as $violation) {
@@ -193,65 +235,6 @@ class WorkflowItem extends ListItemBase {
           break;
       }
     }
-
-    // @todo D8: CommentForm & constraints on storageSettingsForm.
-    // Set the required workflow_type on 'comment' fields.
-    // N.B. the following must BELOW the (count($workflows) == 1) snippet.
-    /** @var \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage */
-    $field_storage = $this->getFieldDefinition()->getFieldStorageDefinition();
-    if (!$this->getSetting('workflow_type') && $field_storage->getTargetEntityTypeId() == 'comment') {
-      $field_name = $field_storage->get('field_name');
-      $workflows = [];
-      foreach (_workflow_info_fields($entity = NULL, $entity_type = '', $entity_bundle = '', $field_name) as $key => $info) {
-        if ($info->getName() == $field_name && ($info->getTargetEntityTypeId() !== 'comment')) {
-          $wid = $info->getSetting('workflow_type');
-          $workflow = Workflow::load($wid);
-          $workflows[$wid] = $workflow->label();
-        }
-      }
-    }
-
-    // Let the user choose between the available workflow types.
-    $wid = $this->getSetting('workflow_type');
-    $url = Url::fromRoute('entity.workflow_type.collection')->toString();
-    $element['workflow_type'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Workflow type'),
-      '#options' => $workflows,
-      '#default_value' => $wid,
-      '#required' => TRUE,
-      '#disabled' => $has_data,
-      '#description' => $this->t('Choose the Workflow type. Maintain workflows
-         <a href=":url">here</a>.', [':url' => $url]),
-    ];
-
-    // Get a string representation to show all options.
-
-    /*
-     * Overwrite ListItemBase::storageSettingsForm().
-     */
-    if ($wid) {
-      $allowed_values = WorkflowState::loadMultiple([], $wid);
-      // $allowed_values_function = $this->getSetting('allowed_values_function');
-
-      $element['allowed_values'] = [
-        '#type' => 'textarea',
-        '#title' => $this->t('Allowed values for the selected Workflow type'),
-        '#default_value' => ($wid) ? $this->allowedValuesString($allowed_values) : [],
-        '#rows' => count($allowed_values),
-        '#access' => ($wid) ? TRUE : FALSE, // User can see the data,
-        '#disabled' => TRUE, // .. but cannot change them.
-        '#element_validate' => [[get_class($this), 'validateAllowedValues']],
-
-        '#field_has_data' => $has_data,
-        '#field_name' => $this->getFieldDefinition()->getName(),
-        '#entity_type' => ($this->getEntity()) ? $this->getEntity()->getEntityTypeId() : '',
-        '#allowed_values' => $allowed_values,
-        '#description' => $this->allowedValuesDescription(),
-      ];
-    }
-
-    return $element;
   }
 
   /**
@@ -269,6 +252,8 @@ class WorkflowItem extends ListItemBase {
    * @param \Drupal\Core\Entity\EntityInterface[] $states
    *   An array of WorkflowStates, where array keys are values and array values are
    *   labels.
+   * @param string $wid
+   *   The requested Workflow ID.
    *
    * @return string
    *   The string representation of the $states array:

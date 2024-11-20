@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Functional;
 
 /**
@@ -44,7 +46,7 @@ class RulesDebugLogTest extends RulesBrowserTestBase {
   /**
    * Tests that entity CRUD events get fired only once.
    */
-  public function testEventDebugLogMessage() {
+  public function testEventDebugLogMessage(): void {
     // Create a user who can see the rules debug logs.
     $account = $this->createUser([
       'administer rules',

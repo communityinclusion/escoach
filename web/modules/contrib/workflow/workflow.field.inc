@@ -6,53 +6,60 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\workflow\Entity\WorkflowState;
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for 'field_storage_config_edit_form'.
  *
  * Changes the hook_field_settings_form.
- * Fixes some Field settings and Field Instance settings, and makes sure users cannot change it.
+ * Fixes some Field settings and Field Instance settings,
+ * and makes sure users cannot change it.
  *
- * @todo Perhaps this is core functionality, but these values are only saved
- *       when the site builder explicitly save the instance settings. :-(
+ * @deprecated version 8.x-1.7, to be removed in 8.x-2.0
+ * @see https://www.drupal.org/project/workflow/issues/3425370
  */
 function workflow_form_field_storage_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $field_name = $form_state->getFormObject()->getEntity()->getType();
-
-  if ($field_name == 'workflow') {
-    // Make sure only 1 value can be entered in the Workflow field.
-    $form['cardinality_container']['cardinality']['#default_value'] = 'number';
-    $form['cardinality_container']['cardinality']['#disabled'] = TRUE;
-    $form['cardinality_container']['cardinality_number']['#default_value'] = 1;
-    $form['cardinality_container']['cardinality_number']['#disabled'] = TRUE;
-    $form['cardinality_container']['cardinality_number']['#states'] = [];
+  if (version_compare(\Drupal::VERSION, '10.2', '>=')) {
+    // This is now done in WorkflowItem::storageSettingsForm
+    // And in workflow_form_field_config_edit_form_alter.
   }
+  else {
+    $field_type = $form_state->getFormObject()->getEntity()->getType();
+    if ($field_type == 'workflow') {
+      // Make sure only 1 value can be entered in the Workflow field.
+      $form['cardinality_container']['cardinality']['#default_value'] = 'number';
+      $form['cardinality_container']['cardinality']['#disabled'] = TRUE;
+      $form['cardinality_container']['cardinality_number']['#default_value'] = 1;
+      $form['cardinality_container']['cardinality_number']['#disabled'] = TRUE;
+      $form['cardinality_container']['cardinality_number']['#states'] = [];
+    }
+  }
+
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter() for 'field_config_edit_form'.
  */
 function workflow_form_field_config_edit_form_alter(&$form,
                                                     FormStateInterface $form_state,
   /* @noinspection PhpUnusedParameterInspection */  $form_id) {
   /* @noinspection PhpUndefinedMethodInspection */
-  $field_name = $form_state->getFormObject()->getEntity()->getType();
-
-  if ($field_name == 'workflow') {
+  $field_type = $form_state->getFormObject()->getEntity()->getType();
+  if ($field_type == 'workflow') {
     // The Workflow field must have a value, so set to required.
     $form['required']['#default_value'] = 1;
     $form['required']['#disabled'] = TRUE;
-
-    // There are alterations on the widget, too.
-    // @see WorkflowDefaultWidget::formElement();
+    $form['set_default_value']['#default_value'] = FALSE;
+    $form['set_default_value']['#disabled'] = TRUE;
+    $form['default_value']['#access'] = FALSE;
   }
 }
 
 /**
- * We will be using some default formatters and widgets from the List and Options modules.
+ * Using some default formatters and widgets from the List and Options modules.
  */
 
 /**
@@ -112,16 +119,15 @@ function workflow_state_formatter(EntityInterface $entity, $field_name, $current
     $entity = clone $entity;
     $entity->{$field_name}->value = $current_sid;
   }
-  // Generate a renderable array for the field. Use default language determination ($langcode = NULL).
+  // Generate a renderable array for the field.
+  // Use default language determination ($langcode = NULL).
   // First, add the 'current value' formatter for this field.
-  // $list_display = $instance['display']['default'];
+  // $list_display = $instance['display']['default']; .
   $list_display['type'] = 'list_default';
   $element = $entity->{$field_name}->view($list_display);
 
-  // @todo D8: Make weight better (even better: hook_field_extra_fields).
   // Make sure the current value is before the form. (which has weight = 0.005)
-  // $element['#weight'] = 0;
-
+  $element['#weight'] = -0.005;
   return $element;
 }
 
@@ -134,10 +140,14 @@ function workflow_state_formatter(EntityInterface $entity, $field_name, $current
  * So, we copy code from options_allowed_values().
  *
  * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $definition
+ *   The field definition.
  *
  * @return mixed
+ *   The allowed values.
  */
-function workflow_state_allowed_values(FieldStorageDefinitionInterface $definition) {
-  $values = $definition->getSetting('allowed_values');
-  return $values;
+function workflow_state_allowed_values(FieldStorageDefinitionInterface $definition, FieldableEntityInterface $entity = NULL, &$cacheable = TRUE) {
+  $wid = $definition->getSetting('workflow_type');
+  $allowed_values = WorkflowState::loadMultiple([], $wid);
+
+  return $allowed_values;
 }

@@ -3,6 +3,7 @@
 namespace Drupal\workflow;
 
 use Drupal\workflow\Entity\Workflow;
+use Drupal\workflow\Entity\WorkflowInterface;
 
 /**
  * Wrapper methods for Workflow* objects.
@@ -32,9 +33,12 @@ trait WorkflowTypeAttributeTrait {
   protected $workflow = NULL;
 
   /**
-   * @param \Drupal\workflow\Entity\Workflow $workflow
+   * Sets the Workflow.
+   *
+   * @param \Drupal\workflow\Entity\WorkflowInterface $workflow
+   *   The Workflow object.
    */
-  public function setWorkflow(Workflow $workflow = NULL) {
+  public function setWorkflow(WorkflowInterface $workflow = NULL) {
     $this->wid = '';
     $this->workflow = NULL;
     if ($workflow) {
@@ -65,9 +69,10 @@ trait WorkflowTypeAttributeTrait {
    * Sets the Workflow ID of this object.
    *
    * @param string $wid
-   *   Workflow ID
+   *   The Workflow ID.
    *
    * @return object
+   *   The Workflow object.
    */
   public function setWorkflowId($wid) {
     $this->wid = $wid;
@@ -79,7 +84,7 @@ trait WorkflowTypeAttributeTrait {
    * Returns the Workflow ID of this object.
    *
    * @return string
-   *   Workflow Id.
+   *   Workflow ID.
    */
   public function getWorkflowId() {
     /** @var \Drupal\Core\Entity\ContentEntityBase $this */
@@ -93,7 +98,7 @@ trait WorkflowTypeAttributeTrait {
     }
     elseif (is_object($value)) {
       // In WorkflowTransition.
-      $wid = isset($value->getValue()[0]['target_id']) ? $value->getValue()[0]['target_id'] : '';
+      $wid = $value->getValue()[0]['target_id'] ?? '';
       $this->wid = $wid;
     }
     else {

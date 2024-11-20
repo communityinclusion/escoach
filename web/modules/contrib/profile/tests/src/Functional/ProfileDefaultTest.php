@@ -78,13 +78,13 @@ class ProfileDefaultTest extends ProfileTestBase {
     $id = $this->type->id();
     $this->drupalLogin($this->rootUser);
 
-    // Check that profile field is configurable on user diplay mode.
+    // Check that profile field is configurable on user display mode.
     $this->drupalGet('admin/config/people/accounts/display');
     $field_label = $this->type->label() . ' profiles';
     $this->assertSession()->pageTextContains($field_label);
     $edit = ["fields[{$id}_profiles][label]" => 'inline'];
     $edit = ["fields[{$id}_profiles][type]" => 'entity_reference_entity_view'];
-    $this->submitForm($edit, t('Save'));
+    $this->submitForm($edit, 'Save');
   }
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
@@ -15,7 +17,7 @@ class VariableAddTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testExecute() {
+  public function testExecute(): void {
     $variable = 'test string';
 
     /** @var \Drupal\rules\Plugin\RulesAction\VariableAdd $action */

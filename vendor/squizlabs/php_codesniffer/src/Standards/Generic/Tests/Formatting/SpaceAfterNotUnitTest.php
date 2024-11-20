@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterNotSniff
  */
-class SpaceAfterNotUnitTest extends AbstractSniffUnitTest
+final class SpaceAfterNotUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -33,7 +33,7 @@ class SpaceAfterNotUnitTest extends AbstractSniffUnitTest
     public function getErrorList($testFile='')
     {
         switch ($testFile) {
-        case 'SpaceAfterNotUnitTest.inc':
+        case 'SpaceAfterNotUnitTest.1.inc':
             return [
                 3  => 2,
                 4  => 2,

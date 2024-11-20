@@ -44,7 +44,7 @@ class WorkflowConfigTransitionLabelForm extends WorkflowConfigTransitionFormBase
 
     $workflow = $this->workflow;
     if ($workflow) {
-      /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $entity */
+      /** @var \Drupal\workflow\Entity\WorkflowConfigTransition $config_transition */
       $config_transition = $entity;
 
       static $previous_from_sid = -1;
@@ -98,6 +98,20 @@ class WorkflowConfigTransitionLabelForm extends WorkflowConfigTransitionFormBase
     }
 
     $this->messenger()->addStatus($this->t('The transition labels have been saved.'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    /** @var \Drupal\workflow\Entity\WorkflowConfigTransition[] $workflow_transitions */
+    $workflow_transitions = $this->workflow->getStates();
+
+    $config_names = [];
+    foreach ($workflow_transitions as $transition) {
+      $config_names[] = $transition->getConfigDependencyName();
+    }
+    return $config_names;
   }
 
 }

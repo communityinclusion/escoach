@@ -2,7 +2,11 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\CalculationOperatorOptions;
 
 /**
  * Provides a 'numeric calculation' action.
@@ -38,6 +42,36 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_data_calculate_value",
+  label: new TranslatableMarkup("Calculate a numeric value"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "input_1" => new ContextDefinition(
+      data_type: "float",
+      label: new TranslatableMarkup("Input value 1"),
+      description: new TranslatableMarkup("The first input value for the calculation.")
+    ),
+    "operator" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Operator"),
+      description: new TranslatableMarkup("The calculation operator."),
+      options_provider: CalculationOperatorOptions::class,
+      assignment_restriction: "input"
+    ),
+    "input_2" => new ContextDefinition(
+      data_type: "float",
+      label: new TranslatableMarkup("Input value 2"),
+      description: new TranslatableMarkup("The second input value for the calculation.")
+    ),
+  ],
+  provides: [
+    "result" => new ContextDefinition(
+      data_type: "float",
+      label: new TranslatableMarkup("Calculated result")
+    ),
+  ]
+)]
 class DataCalculateValue extends RulesActionBase {
 
   /**

@@ -2,8 +2,9 @@
 
 namespace Drupal\workflow;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of Workflow entities.
@@ -31,36 +32,51 @@ class WorkflowListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function buildRow(EntityInterface $entity) {
-    /** @var \Drupal\workflow\Entity\Workflow $entity */
-    $row['id'] = $entity->id();
-    $row['label'] = $entity->label();
-    $row['status'] = ''; // @todo $entity->getStatus();
+  public function buildRow(EntityInterface $workflow) {
+    $row['id'] = $workflow->id();
+    $row['label'] = $workflow->label();
+    // @todo $workflow->getStatus();
+    $row['status'] = '';
 
-    return $row + parent::buildRow($entity);
+    return $row + parent::buildRow($workflow);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDefaultOperations(EntityInterface $entity) {
-    $operations = parent::getDefaultOperations($entity);
+  public function getDefaultOperations(EntityInterface $workflow) {
+    $operations = parent::getDefaultOperations($workflow);
 
-    /** @var \Drupal\workflow\Entity\Workflow $workflow */
-    $workflow = $entity;
-
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
     // Do not delete a Workflow if it contains content.
-    if (isset($operations['delete']) && !$workflow->isDeletable()) {
+    if (!$workflow->isDeletable()) {
       unset($operations['delete']);
     }
+
+    $wid = $workflow->id();
+    $operations['states'] = [
+      'title' => t('Manage workflow states'),
+      'weight' => 40,
+      'url' => Url::fromRoute('entity.workflow_state.collection', ['workflow_type' => $wid]),
+    ];
+    $operations['transitions'] = [
+      'title' => t('Manage workflow transitions'),
+      'weight' => 40,
+      'url' => Url::fromRoute('entity.workflow_transition.collection', ['workflow_type' => $wid]),
+    ];
+    $operations['transition labels'] = [
+      'title' => t('Manage workflow transition labels'),
+      'weight' => 40,
+      'url' => Url::fromRoute('entity.workflow_transition_label.collection', ['workflow_type' => $wid]),
+    ];
 
     /*
      * Allow modules to insert their own workflow operations to the list.
      */
     // This is what EntityListBuilder::getOperations() does:
-    // $operations = $this->getDefaultOperations($entity);
-    // $operations += $this->moduleHandler()->invokeAll('entity_operation', [$entity]);
-    // $this->moduleHandler->alter('entity_operation', $operations, $entity);
+    // $operations = $this->getDefaultOperations($workflow);
+    // $operations += $this->moduleHandler()->invokeAll('entity_operation', [$workflow]);
+    // $this->moduleHandler->alter('entity_operation', $operations, $workflow);
 
     // In D8, the interface of below hook_workflow_operations has changed a bit.
     // @see EntityListBuilder::getOperations, workflow_operations, workflow.api.php.
@@ -84,12 +100,11 @@ class WorkflowListBuilder extends ConfigEntityListBuilder {
      *   @see workflow.api.php under 'hook_workflow_operations'.
      */
     // $top_actions = \Drupal::moduleHandler()
-    //   ->invokeAll('workflow_operations', ['top_actions', NULL]);
+    // ->invokeAll('workflow_operations', ['top_actions', NULL]);
     // $top_actions_args = [
     //   'links' => $top_actions,
     //   'attributes' => ['class' => ['inline', 'action-links']],
     // ];
-
     return $build;
   }
 

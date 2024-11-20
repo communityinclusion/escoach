@@ -852,4 +852,20 @@ class ScopeKeyword {
 
 }
 
+/**
+ * Multi-line function declaration brace should be on a new line.
+ */
+function test29(
+  int $a,
+  string $b) {
+  echo "Hello";
+}
+
+/**
+ * Nullable types should be annotated.
+ */
+function test30(TestType $a = NULL) {
+  echo "Hello";
+}
+
 ?>

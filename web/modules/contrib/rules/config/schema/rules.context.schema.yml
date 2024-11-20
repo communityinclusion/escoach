@@ -16,7 +16,8 @@ rules.context.mapping:
   type: sequence
   label: 'Context mapping'
   sequence:
-    - type: string
+    type: string
+    label: "Entity"
 
 rules.context.values:
   type: mapping

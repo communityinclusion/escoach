@@ -3,6 +3,7 @@
 namespace Drupal\workflow\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Psr\Log\LoggerInterface;
@@ -80,13 +81,6 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
-   */
-  protected function getEditableConfigNames() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * Create an $entity for every ConfigTransition.
    */
@@ -142,6 +136,25 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
   }
 
   /**
+   * Builds the table header of the table on this form.
+   *
+   * @return array
+   *   The table header.
+   */
+  abstract public function buildHeader();
+
+  /**
+   * Builds a row for the table.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to be displayed.
+   *
+   * @return array
+   *   The row render array.
+   */
+  abstract public function buildRow(EntityInterface $entity);
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
@@ -158,11 +171,14 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
       '#header' => $this->buildHeader(),
       '#sticky' => TRUE,
       '#empty' => $this->t('There is no @label yet.', ['@label' => 'Transition']),
-      '#tabledrag' => [[
-        'action' => 'order',
-        'relationship' => 'sibling',
-        'group' => 'weight',
-      ]],
+      '#tabledrag' => [
+        [
+          'action' => 'order',
+          'relationship' => 'sibling',
+          'group' => 'weight',
+
+        ],
+      ],
     ];
 
     $this->entities = $this->load();

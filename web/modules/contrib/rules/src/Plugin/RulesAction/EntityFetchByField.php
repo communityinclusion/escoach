@@ -4,7 +4,12 @@ namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\TypedData\Options\EntityTypeOptions;
+use Drupal\rules\TypedData\Options\FieldListOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -46,6 +51,44 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_entity_fetch_by_field",
+  label: new TranslatableMarkup("Fetch entities by field"),
+  category: new TranslatableMarkup("Entity"),
+  context_definitions: [
+    "type" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Entity type"),
+      description: new TranslatableMarkup("Specify the type of the entity that should be fetched."),
+      options_provider: EntityTypeOptions::class
+    ),
+    "field_name" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Field name"),
+      description: new TranslatableMarkup("Name of the field by which the entity is to be selected."),
+      options_provider: FieldListOptions::class
+    ),
+    "field_value" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Field value"),
+      description: new TranslatableMarkup("The field value of the entity to be fetched.")
+    ),
+    "limit" => new ContextDefinition(
+      data_type: "integer",
+      label: new TranslatableMarkup("Limit"),
+      description: new TranslatableMarkup("Limit the maximum number of fetched entities. Leave blank for all matching entities."),
+      default_value: NULL,
+      required: FALSE
+    ),
+  ],
+  provides: [
+    "entity_fetched" => new ContextDefinition(
+      data_type: "entity",
+      label: new TranslatableMarkup("Fetched entity"),
+      multiple: TRUE
+    ),
+  ]
+)]
 class EntityFetchByField extends RulesActionBase implements ContainerFactoryPluginInterface {
 
   /**

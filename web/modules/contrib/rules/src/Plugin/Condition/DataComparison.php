@@ -2,7 +2,11 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
+use Drupal\rules\TypedData\Options\ComparisonOperatorOptions;
 
 /**
  * Provides a 'Data comparison' condition.
@@ -35,6 +39,33 @@ use Drupal\rules\Core\RulesConditionBase;
  *   }
  * )
  */
+#[Condition(
+  id: "rules_data_comparison",
+  label: new TranslatableMarkup("Data comparison"),
+  category: new TranslatableMarkup("Data"),
+  context_definitions: [
+    "data" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Data to compare"),
+      description: new TranslatableMarkup("The data to be compared, specified by using a data selector, e.g. 'node.uid.entity.name.value'."),
+      assignment_restriction: "selector"
+    ),
+    "operation" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Operator"),
+      description: new TranslatableMarkup("The comparison operator. Valid values are == (default), <, >, CONTAINS (for strings or arrays) and IN (for arrays or lists)."),
+      assignment_restriction: "input",
+      default_value: "==",
+      options_provider: ComparisonOperatorOptions::class,
+      required: FALSE
+    ),
+    "value" => new ContextDefinition(
+      data_type: "any",
+      label: new TranslatableMarkup("Data value"),
+      description: new TranslatableMarkup("The value to compare the data with.")
+    ),
+  ]
+)]
 class DataComparison extends RulesConditionBase {
 
   /**

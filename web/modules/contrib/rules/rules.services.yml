@@ -7,7 +7,8 @@ services:
       - { name: cache.bin }
   plugin.manager.rules_expression:
     class: Drupal\rules\Engine\ExpressionManager
-    arguments: ['@container.namespaces', '@module_handler', '@uuid']
+    parent: default_plugin_manager
+    arguments: ['@uuid']
   plugin.manager.rules_action:
     class: Drupal\rules\Core\RulesActionManager
     parent: default_plugin_manager
@@ -16,7 +17,7 @@ services:
     arguments: ['@module_handler', '@entity_type.bundle.info']
   plugin.manager.rules_data_processor:
     class: Drupal\rules\Context\DataProcessorManager
-    arguments: ['@container.namespaces', '@module_handler']
+    parent: default_plugin_manager
   plugin.manager.rules_ui:
     class: Drupal\rules\Ui\RulesUiManager
     arguments: ['@module_handler']
@@ -29,6 +30,7 @@ services:
   logger.rules_debug_log:
     class: Drupal\rules\Logger\RulesDebugLog
     arguments: ['@session']
+  # cspell:ignore ruleslog
   logger.ruleslog:
     class: Drupal\rules\Logger\RulesLog
     arguments: ['@event_dispatcher', '@logger.log_message_parser']

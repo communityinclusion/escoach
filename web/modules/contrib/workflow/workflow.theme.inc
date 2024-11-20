@@ -22,11 +22,11 @@ function template_preprocess_workflow_transition(array &$variables) {
   /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $workflowTransition */
   $workflowTransition = $variables['elements']['#workflow_transition'];
 
-  $variables['from_state'] = $workflowTransition->getFromState();
-  $variables['to_state'] = $workflowTransition->getToState();
-  $variables['time'] = $workflowTransition->getTimestampFormatted();
-  $variables['user'] = $workflowTransition->getOwner();
-  $variables['comment'] = $workflowTransition->getComment();
+  $variables['from_state'] = $workflowTransition->getFromState() ?? '';
+  $variables['to_state'] = $workflowTransition->getToState() ?? '';
+  $variables['time'] = $workflowTransition->getTimestampFormatted() ?? '';
+  $variables['user'] = $workflowTransition->getOwner() ?? '';
+  $variables['comment'] = $workflowTransition->getComment() ?? '';
 
   $variables['field_attributes'] = new Attribute();
   $variables['label_attributes'] = new Attribute();

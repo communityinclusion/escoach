@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\rules\Exception\EvaluationException;
 
@@ -17,7 +20,7 @@ class ContextIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that a required context mapping that is NULL throws an exception.
    */
-  public function testRequiredNullMapping() {
+  public function testRequiredNullMapping(): void {
     // Configure a simple rule with one action.
     $action = $this->expressionManager->createInstance('rules_action',
       ContextConfig::create()
@@ -45,7 +48,7 @@ class ContextIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that a required context value that is NULL throws an exception.
    */
-  public function testRequiredNullValue() {
+  public function testRequiredNullValue(): void {
     // Configure a simple rule with one action. The required 'text' context is
     // set to be NULL.
     $action = $this->expressionManager->createInstance('rules_action',
@@ -69,7 +72,7 @@ class ContextIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests that NULL values for contexts are allowed if specified.
    */
-  public function testAllowNullValue() {
+  public function testAllowNullValue(): void {
     // Configure a simple rule with the data set action which allows NULL
     // values.
     $action = $this->expressionManager->createInstance('rules_action',
@@ -97,18 +100,18 @@ class ContextIntegrationTest extends RulesKernelTestBase {
   /**
    * Tests the assignment restriction on context definitions.
    */
-  public function testAssignmentRestriction() {
+  public function testAssignmentRestriction(): void {
     $action_manager = $this->container->get('plugin.manager.rules_action');
 
     // Test the assignment restriction on the entity fetch action as an example.
     $entity_fetch_action = $action_manager->createInstance('rules_entity_fetch_by_id');
     $context_definition = $entity_fetch_action->getContextDefinition('type');
-    $this->assertEquals(ContextDefinition::ASSIGNMENT_RESTRICTION_INPUT, $context_definition->getAssignmentRestriction());
+    $this->assertEquals(ContextDefinitionInterface::ASSIGNMENT_RESTRICTION_INPUT, $context_definition->getAssignmentRestriction());
 
     // Test the assignment restriction on the entity delete action.
     $entity_delete_action = $action_manager->createInstance('rules_entity_delete');
     $context_definition = $entity_delete_action->getContextDefinition('entity');
-    $this->assertEquals(ContextDefinition::ASSIGNMENT_RESTRICTION_SELECTOR, $context_definition->getAssignmentRestriction());
+    $this->assertEquals(ContextDefinitionInterface::ASSIGNMENT_RESTRICTION_SELECTOR, $context_definition->getAssignmentRestriction());
   }
 
 }

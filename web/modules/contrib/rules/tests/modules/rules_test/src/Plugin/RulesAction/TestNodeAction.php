@@ -2,7 +2,10 @@
 
 namespace Drupal\rules_test\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\NodeInterface;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
@@ -22,12 +25,27 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_test_node",
+  label: new TranslatableMarkup("Test node title action"),
+  category: new TranslatableMarkup("Tests"),
+  context_definitions: [
+    "node" => new ContextDefinition(
+      data_type: "entity:node",
+      label: new TranslatableMarkup("Node to set the title on")
+    ),
+    "title" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("New title that should be set")
+    ),
+  ]
+)]
 class TestNodeAction extends RulesActionBase {
 
   /**
    * Sets the node title.
    *
-   * @param \Drupa\node\NodeInterface $node
+   * @param \Drupal\node\NodeInterface $node
    *   The node.
    * @param string $title
    *   The title.

@@ -2,11 +2,11 @@
 
 namespace Drupal\Tests\subpathauto\Functional;
 
-use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\language\Entity\ConfigurableLanguage;
 
 /**
- * Class SubPathautoFunctionalTest.
+ * Basic functional tests.
  *
  * @group subpathauto
  */
@@ -75,6 +75,17 @@ class SubPathautoFunctionalTest extends BrowserTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->linkByHrefExists('/kittens', 0, 'Local task link with alias lead to correct URL.');
     $this->assertSession()->linkByHrefExists('/kittens/delete', 0, 'Local task link path that is subpath for an alias lead to correct URL.');
+
+    // Confirm that multiple aliases work together.
+    $this->drupalCreateNode();
+    \Drupal::entityTypeManager()
+      ->getStorage('path_alias')
+      ->create([
+        'path' => '/node/2',
+        'alias' => '/node/1/are-playing',
+      ])->save();
+    $this->drupalGet('/kittens/are-playing');
+    $this->assertSession()->statusCodeEquals(200);
   }
 
   /**
@@ -94,7 +105,7 @@ class SubPathautoFunctionalTest extends BrowserTestBase {
    * Ensures that non-existing paths are returning 404 page.
    */
   public function testNonExistingPath(): void {
-    $this->drupalGet('/kittens/are-faken');
+    $this->drupalGet('/kittens/are-fake');
     $this->assertSession()->statusCodeEquals(404);
   }
 

@@ -18,14 +18,16 @@ interface WorkflowManagerInterface {
    * Implements hook_cron().
    *
    * @param int $start
+   *   The start time in unix timestamp.
    * @param int $end
+   *   The end time in unix timestamp.
    */
   public static function executeScheduledTransitionsBetween($start = 0, $end = 0);
 
   /**
    * Execute a single transition for the given entity.
    *
-   * Implements hook_entity insert(), hook_entity_update().
+   * Called by hook_entity insert(), hook_entity_update().
    *
    * When inserting an entity with workflow field, the initial Transition is
    * saved without reference to the proper entity, since Id is not yet known.
@@ -35,6 +37,7 @@ interface WorkflowManagerInterface {
    * This is referenced in from WorkflowDefaultWidget::massageFormValues().
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    */
   public static function executeTransitionsOfEntity(EntityInterface $entity);
 
@@ -43,18 +46,10 @@ interface WorkflowManagerInterface {
    */
 
   /**
-   * Implements hook_WORKFLOW_insert().
-   *
-   * Make sure some roles are allowed to participate in a Workflow by default.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $workflow
-   */
-  public static function participateUserRoles(EntityInterface $workflow);
-
-  /**
    * Implements hook_user_delete().
    *
    * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
    */
   public static function deleteUser(AccountInterface $account);
 
@@ -71,8 +66,11 @@ interface WorkflowManagerInterface {
    * "This action cannot be undone.
    *
    * @param $edit
+   *   Not used.
    * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
    * @param string $method
+   *   The cancellation method.
    */
   public static function cancelUser($edit, AccountInterface $account, $method);
 
@@ -82,7 +80,6 @@ interface WorkflowManagerInterface {
 
   /**
    * Utility function to return an array of workflow fields.
-   * Call \Drupal::service('workflow.manager')->getFieldMap($entity_type_id);
    *
    * @param string $entity_type_id
    *   The content entity type to which the workflow fields are attached.
@@ -99,28 +96,6 @@ interface WorkflowManagerInterface {
    * @see \Drupal\Core\Entity\EntityManagerInterface::getFieldMap()
    */
   public function getFieldMap($entity_type_id = '');
-
-  /**
-   * Gets the TransitionWidget in a form (for e.g., Workflow History Tab)
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   * @param string $field_name
-   * @param array $form_state_additions
-   *
-   * @return array
-   *   The form.
-   */
-  public static function getWorkflowTransitionForm(EntityInterface $entity, $field_name, array $form_state_additions = []);
-
-  /**
-   * Returns the attached fields (via Field UI)
-   *
-   * @param string $entity_type_id
-   * @param string $bundle
-   *
-   * @return array
-   */
-  public static function getAttachedFields($entity_type_id, $bundle);
 
   /**
    * Gets the current state ID of a given entity.
@@ -145,7 +120,9 @@ interface WorkflowManagerInterface {
    * Gets the previous state ID of a given entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    * @param string $field_name
+   *   The field name.
    *
    * @return string
    *   The ID of the previous state.
@@ -156,9 +133,12 @@ interface WorkflowManagerInterface {
    * Determine if User is owner/author of the entity.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
    * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    *
    * @return bool
+   *   TRUE is user is owner of the entity.
    */
   public static function isOwner(AccountInterface $account, EntityInterface $entity = NULL);
 
@@ -166,8 +146,10 @@ interface WorkflowManagerInterface {
    * Determine if the entity is Workflow* entity type.
    *
    * @param string $entity_type_id
+   *   The entity type ID.
    *
    * @return bool
+   *   TRUE, if the entity is defined by workflow module.
    *
    * @usage Use it when a function should not operate on Workflow objects.
    */

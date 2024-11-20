@@ -2,6 +2,9 @@
 
 namespace Drupal\rules_test\Plugin\RulesAction;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Core\Attribute\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
@@ -25,6 +28,27 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
+#[RulesAction(
+  id: "rules_test_string",
+  label: new TranslatableMarkup("Test concatenate action"),
+  category: new TranslatableMarkup("Tests"),
+  context_definitions: [
+    "text" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Text to concatenate")
+    ),
+  ],
+  configure_permissions: [
+    "access test configuration",
+  ],
+  provides: [
+    "concatenated" => new ContextDefinition(
+      data_type: "string",
+      label: new TranslatableMarkup("Concatenated result"),
+      description: new TranslatableMarkup("The concatenated text.")
+    ),
+  ]
+)]
 class TestStringAction extends RulesActionBase {
 
   /**

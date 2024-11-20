@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions\ValidDefaultValueSniff
  */
-class ValidDefaultValueUnitTest extends AbstractSniffUnitTest
+final class ValidDefaultValueUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -26,23 +26,31 @@ class ValidDefaultValueUnitTest extends AbstractSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array<int, int>
      */
-    public function getErrorList()
+    public function getErrorList($testFile='')
     {
-        return [
-            29  => 1,
-            34  => 1,
-            39  => 1,
-            71  => 1,
-            76  => 1,
-            81  => 1,
-            91  => 1,
-            99  => 1,
-            101 => 1,
-            106 => 1,
-            114 => 1,
-        ];
+        switch ($testFile) {
+        case 'ValidDefaultValueUnitTest.1.inc':
+            return [
+                29  => 1,
+                34  => 1,
+                39  => 1,
+                71  => 1,
+                76  => 1,
+                81  => 1,
+                91  => 1,
+                99  => 1,
+                101 => 1,
+                106 => 1,
+                114 => 1,
+            ];
+
+        default:
+            return [];
+        }
 
     }//end getErrorList()
 

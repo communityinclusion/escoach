@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Kernel\Engine;
 
 use Drupal\field\Entity\FieldConfig;
@@ -34,7 +36,6 @@ class MetadataAssertionTest extends RulesKernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installSchema('system', ['sequences']);
     $this->installEntitySchema('user');
 
     // The global CurrentUserContext doesn't work properly without a
@@ -67,7 +68,7 @@ class MetadataAssertionTest extends RulesKernelTestBase {
   /**
    * Tests asserting metadata using the EntityIfOfBundle condition.
    */
-  public function testAssertingEntityBundle() {
+  public function testAssertingEntityBundle(): void {
     // When trying to use the field_text field without knowledge of the bundle,
     // the field is not available.
     $rule = $this->expressionManager->createRule();
@@ -99,7 +100,7 @@ class MetadataAssertionTest extends RulesKernelTestBase {
   /**
    * Tests asserted metadata is handled correctly in OR and AND containers.
    */
-  public function testAssertingWithLogicalOperations() {
+  public function testAssertingWithLogicalOperations(): void {
     // Add an nested AND and make sure it keeps working.
     $rule = $this->expressionManager->createRule();
     $and = $this->expressionManager->createAnd();
@@ -140,7 +141,7 @@ class MetadataAssertionTest extends RulesKernelTestBase {
   /**
    * Tests asserted metadata of negated conditions is ignored.
    */
-  public function testAssertingOfNegatedConditions() {
+  public function testAssertingOfNegatedConditions(): void {
     // Negate the condition only and make sure it is ignored.
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_entity_is_of_bundle', ContextConfig::create()

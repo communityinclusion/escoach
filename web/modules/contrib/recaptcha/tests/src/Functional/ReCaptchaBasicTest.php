@@ -115,20 +115,22 @@ class ReCaptchaBasicTest extends BrowserTestBase {
   public function testReCaptchaOnLoginForm() {
     $site_key = $this->randomMachineName(40);
     $secret_key = $this->randomMachineName(40);
-    $grecaptcha = '<div class="g-recaptcha" data-sitekey="' . $site_key . '" data-theme="light" data-type="image"></div>';
+    $grecaptchaSelector = "div.g-recaptcha[data-sitekey=$site_key][data-theme=light][data-type=image]";
 
     // Test if login works.
     $this->drupalLogin($this->normalUser);
     $this->drupalLogout();
 
     $this->drupalGet('user/login');
-    $this->assertSession()->responseNotContains($grecaptcha);
+    // reCAPTCHA is not shown on form.
+    $this->assertSession()->elementNotExists('css', $grecaptchaSelector);
 
     // Enable 'captcha/Math' CAPTCHA on login form.
     captcha_set_form_id_setting('user_login_form', 'captcha/Math');
 
     $this->drupalGet('user/login');
-    $this->assertSession()->responseNotContains($grecaptcha);
+    // reCAPTCHA is not shown on form.
+    $this->assertSession()->elementNotExists('css', $grecaptchaSelector);
 
     // Enable 'recaptcha/reCAPTCHA' on login form.
     captcha_set_form_id_setting('user_login_form', 'recaptcha/reCAPTCHA');
@@ -148,21 +150,26 @@ class ReCaptchaBasicTest extends BrowserTestBase {
 
     // Check if there is a reCAPTCHA on the login form.
     $this->drupalGet('user/login');
-    $this->assertSession()->responseContains($grecaptcha);
-    $options_2 = [
+    // reCAPTCHA is shown on form.
+    $this->assertSession()->elementExists('css', $grecaptchaSelector);
+    $options = [
       'query' => [
         'hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
+        'render' => 'explicit',
+        'onload' => 'drupalRecaptchaOnload',
       ],
       'absolute' => TRUE,
     ];
-    $this->assertSession()->responseContains('<script src="' . Url::fromUri('https://www.google.com/recaptcha/api.js', $options_2)->toString() . '" async defer></script>');
-    $this->assertSession()->responseNotContains($grecaptcha . '<noscript>');
+    $this->assertSession()->responseContains(Html::escape(Url::fromUri('https://www.google.com/recaptcha/api.js', $options)->toString()));
+    // NoScript code is not enabled for the reCAPTCHA.
+    $this->assertSession()->elementNotExists('css', "$grecaptchaSelector + noscript");
 
     // Test if the fall back url is properly build and noscript code added.
     $this->config('recaptcha.settings')->set('widget.noscript', 1)->save();
 
     $this->drupalGet('user/login');
-    $this->assertSession()->responseContains($grecaptcha . "\n" . '<noscript>');
+    // NoScript for reCAPTCHA is shown on form.
+    $this->assertSession()->elementExists('css', "$grecaptchaSelector + noscript");
     $options = [
       'query' => [
         'k' => $site_key,
@@ -175,13 +182,22 @@ class ReCaptchaBasicTest extends BrowserTestBase {
     // Check if there is a reCAPTCHA with global url on the login form.
     $this->config('recaptcha.settings')->set('use_globally', TRUE)->save();
     $this->drupalGet('user/login');
-    $options_2 = [
+    $options = [
       'query' => [
+        'hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
+        'render' => 'explicit',
+        'onload' => 'drupalRecaptchaOnload',
+      ],
+      'absolute' => TRUE,
+    ];
+    $this->assertSession()->responseContains(Html::escape(Url::fromUri('https://www.recaptcha.net/recaptcha/api.js', $options)->toString()), '[testReCaptchaOnLoginForm]: Global reCAPTCHA is shown on form.');
+    $options = [
+      'query' => [
+        'k' => $site_key,
         'hl' => \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
       ],
       'absolute' => TRUE,
     ];
-    $this->assertSession()->responseContains('<script src="' . Url::fromUri('https://www.recaptcha.net/recaptcha/api.js', $options_2)->toString() . '" async defer></script>');
     $this->assertSession()->responseContains(Html::escape(Url::fromUri('https://www.recaptcha.net/recaptcha/api/fallback', $options)->toString()));
 
     // Check that data-size attribute does not exists.

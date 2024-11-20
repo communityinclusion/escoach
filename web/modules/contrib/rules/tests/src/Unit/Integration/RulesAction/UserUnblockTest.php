@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
 use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
@@ -52,7 +54,7 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::summary
    */
-  public function testSummary() {
+  public function testSummary(): void {
     $this->assertEquals('Unblock a user', $this->action->summary());
   }
 
@@ -63,7 +65,7 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testUnblockUser($active, $authenticated, $expects, $autosave_names) {
+  public function testUnblockUser(bool $active, bool $authenticated, int $expects, array $autosave_names): void {
     // Set-up a mock user.
     $account = $this->prophesizeEntity(UserInterface::class);
     // Mock isBlocked.
@@ -86,7 +88,7 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
   /**
    * Data provider for ::testUnblockUser.
    */
-  public function userProvider() {
+  public static function userProvider(): array {
     return [
       // Test blocked authenticated user.
       [self::BLOCKED, self::AUTHENTICATED, 1, ['user']],

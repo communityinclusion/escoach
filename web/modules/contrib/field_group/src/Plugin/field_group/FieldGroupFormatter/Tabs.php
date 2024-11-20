@@ -34,7 +34,7 @@ class Tabs extends FieldGroupFormatterBase {
     parent::preRender($element, $processed_object);
 
     $element += [
-      '#prefix' => '<div class=" ' . implode(' ', $this->getClasses()) . '">',
+      '#prefix' => '<div class="' . implode(' ', $this->getClasses()) . '">',
       '#suffix' => '</div>',
       '#tree' => TRUE,
       '#parents' => [$this->group->group_name],

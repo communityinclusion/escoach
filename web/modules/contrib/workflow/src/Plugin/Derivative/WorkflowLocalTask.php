@@ -54,8 +54,8 @@ class WorkflowLocalTask extends DeriverBase implements ContainerDeriverInterface
   public function getDerivativeDefinitions($base_plugin_definition) {
     $this->derivatives = [];
 
-    $field_list = workflow_get_workflow_fields_by_entity_type();
-    foreach ($field_list as $entity_type_id => $fields) {
+    $field_map = workflow_get_workflow_fields_by_entity_type();
+    foreach ($field_map as $entity_type_id => $fields) {
       $this->derivatives["entity.$entity_type_id.workflow_history"] = [
         'route_name' => "entity.$entity_type_id.workflow_history",
         'title' => $this->t('Workflow'),

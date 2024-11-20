@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
@@ -35,7 +37,7 @@ class UserHasRoleTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::evaluate
    */
-  public function testConditionEvaluation() {
+  public function testConditionEvaluation(): void {
     // Set-up a mock object with roles 'authenticated' and 'editor', but not
     // 'administrator'.
     $account = $this->prophesizeEntity(UserInterface::class);
@@ -89,7 +91,7 @@ class UserHasRoleTest extends RulesEntityIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testInvalidOperationException() {
+  public function testInvalidOperationException(): void {
     // Set the expected exception class and message.
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Either use "AND" or "OR". Leave empty for default "AND" behavior.');

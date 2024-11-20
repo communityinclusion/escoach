@@ -106,7 +106,7 @@ class GeofieldFormatterTest extends EntityKernelTestBase {
   /**
    * Provides test data for testLatLonFormatter().
    */
-  public function latLonFormatterProvider() {
+  public static function latLonFormatterProvider(): array {
     return [
       'DMS Value' => [
         'POINT (40 -3)',

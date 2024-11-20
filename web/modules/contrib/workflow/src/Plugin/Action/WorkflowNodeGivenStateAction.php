@@ -13,7 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @Action(
  *   id = "workflow_node_given_state_action",
  *   label = @Translation("Change a node to new Workflow state"),
- *   type = "node"
+ *   type = "node",
  * )
  */
 class WorkflowNodeGivenStateAction extends WorkflowStateActionBase {
@@ -23,7 +23,7 @@ class WorkflowNodeGivenStateAction extends WorkflowStateActionBase {
    */
   public function calculateDependencies() {
     return [
-      'module' => ['workflow', 'node'],
+      'module' => ['workflow'],
     ];
   }
 
@@ -32,6 +32,17 @@ class WorkflowNodeGivenStateAction extends WorkflowStateActionBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
+
+    $config = $this->configuration;
+    $field_name = $config['field_name'];
+    $wids = workflow_get_workflow_names();
+    if (empty($field_name) && count($wids) > 1) {
+      $this->messenger()->addWarning('You have multiple workflows in the system.
+        Please first select the field name and save the form.
+        Then, revisit the form to set the correct state value.'
+      );
+    }
+
     return $form;
   }
 
@@ -68,12 +79,15 @@ class WorkflowNodeGivenStateAction extends WorkflowStateActionBase {
      */
 
     if (!$transition = $this->getTransitionForExecution($object)) {
-      $this->messenger()->addStatus('The entity is not valid for this action.');
+      $this->messenger()->addWarning(
+        $this->t('The entity %label is not valid for this action.',
+          ['%label' => $object ? $object->label() : ''])
+      );
       return;
     }
 
     // Fire the transition.
-    workflow_execute_transition($transition, $force = FALSE);
+    $transition->executeAndUpdateEntity();
   }
 
 }

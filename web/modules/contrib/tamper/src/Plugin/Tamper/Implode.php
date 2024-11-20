@@ -4,8 +4,8 @@ namespace Drupal\tamper\Plugin\Tamper;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\tamper\Exception\TamperException;
-use Drupal\tamper\TamperableItemInterface;
 use Drupal\tamper\TamperBase;
+use Drupal\tamper\TamperableItemInterface;
 
 /**
  * Plugin implementation of the implode plugin.
@@ -58,7 +58,7 @@ class Implode extends TamperBase {
   /**
    * {@inheritdoc}
    */
-  public function tamper($data, TamperableItemInterface $item = NULL) {
+  public function tamper($data, ?TamperableItemInterface $item = NULL) {
     if (!is_array($data) && !is_string($data)) {
       throw new TamperException('Input should be an array or a string.');
     }

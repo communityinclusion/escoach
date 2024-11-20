@@ -133,7 +133,7 @@ class GeofieldProximityFilter extends NumericFilter {
     $plugin_definition,
     RendererInterface $renderer,
     GeofieldProximitySourceManager $proximity_source_manager,
-    RequestStack $request_stack
+    RequestStack $request_stack,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->renderer = $renderer;

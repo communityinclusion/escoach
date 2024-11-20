@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\rules\Context\ExecutionStateInterface;
@@ -32,7 +34,7 @@ class OrExpressionTest extends RulesUnitTestBase {
   /**
    * Tests one condition.
    */
-  public function testOneCondition() {
+  public function testOneCondition(): void {
     // The method on the test condition must be called once.
     $this->trueConditionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
@@ -44,7 +46,7 @@ class OrExpressionTest extends RulesUnitTestBase {
   /**
    * Tests an empty OR.
    */
-  public function testEmptyOr() {
+  public function testEmptyOr(): void {
     $property = new \ReflectionProperty($this->or, 'conditions');
     $property->setAccessible(TRUE);
 
@@ -55,7 +57,7 @@ class OrExpressionTest extends RulesUnitTestBase {
   /**
    * Tests two true conditions.
    */
-  public function testTwoConditions() {
+  public function testTwoConditions(): void {
     // The method on the test condition must be called once.
     $this->trueConditionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
@@ -78,7 +80,7 @@ class OrExpressionTest extends RulesUnitTestBase {
   /**
    * Tests two false conditions.
    */
-  public function testTwoFalseConditions() {
+  public function testTwoFalseConditions(): void {
     // The method on the test condition must be called once.
     $this->falseConditionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);

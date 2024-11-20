@@ -9,8 +9,8 @@
         "source": "https://git.drupalcode.org/project/rules"
     },
     "require": {
-        "drupal/core": "^9.1 || ^10",
-        "drupal/typed_data": "^1.0"
+        "drupal/core": "^10.3 || ^11",
+        "drupal/typed_data": "^2.1"
     },
     "minimum-stability": "dev",
     "extra": {

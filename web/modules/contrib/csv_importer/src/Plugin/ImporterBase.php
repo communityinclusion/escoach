@@ -2,15 +2,15 @@
 
 namespace Drupal\csv_importer\Plugin;
 
-use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Plugin\PluginBase;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\FileRepositoryInterface;
-use Drupal\Component\Utility\Unicode;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -80,7 +80,7 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config, FileRepositoryInterface $file_repository, ModuleHandlerInterface $module_handler, LoggerChannelFactoryInterface $logger_factory) {
+  final public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config, FileRepositoryInterface $file_repository, ModuleHandlerInterface $module_handler, LoggerChannelFactoryInterface $logger_factory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->config = $config;
@@ -223,6 +223,7 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
     if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
       $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
     }
+    return $context;
   }
 
   /**
@@ -239,6 +240,7 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
     }
 
     $this->messenger()->addMessage($message);
+    return $message;
   }
 
   /**
