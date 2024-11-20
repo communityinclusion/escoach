@@ -52,7 +52,7 @@ class SettingsManager {
     $description = '';
     if (\Drupal::moduleHandler()
       ->moduleExists('twbstools')) {
-      $styleguidePath = base_path().'styleguide';
+      $styleguidePath = '/admin/appearance/styleguide';
       $description = $this->t("Style guide demonstrates abilities of bootstrap framework. Open <a target='_blank' href='@sglink'>style guide</a> in a new window.", [
         '@sglink' => $styleguidePath,
       ]);
