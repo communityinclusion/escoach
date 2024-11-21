@@ -2200,18 +2200,18 @@
         },
         {
             "name": "drupal/bootstrap5",
-            "version": "3.0.14",
-            "version_normalized": "3.0.14.0",
+            "version": "3.0.10",
+            "version_normalized": "3.0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/bootstrap5.git",
-                "reference": "3.0.14"
+                "reference": "3.0.10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/bootstrap5-3.0.14.zip",
-                "reference": "3.0.14",
-                "shasum": "a595afb1f983e96b4719f47592f08349792ef058"
+                "url": "https://ftp.drupal.org/files/projects/bootstrap5-3.0.10.zip",
+                "reference": "3.0.10",
+                "shasum": "8345e29e23439ed25037ede4e2221b3b12ae958a"
             },
             "require": {
                 "drupal/core": "^9.4 || ^10"
@@ -2219,8 +2219,8 @@
             "type": "drupal-theme",
             "extra": {
                 "drupal": {
-                    "version": "3.0.14",
-                    "datestamp": "1723049842",
+                    "version": "3.0.10",
+                    "datestamp": "1694747986",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2356,68 +2356,6 @@
                 "source": "https://git.drupalcode.org/project/bootstrap_library"
             },
             "install-path": "../../web/modules/contrib/bootstrap_library"
-        },
-        {
-            "name": "drupal/bootstrap_paragraphs",
-            "version": "5.0.2",
-            "version_normalized": "5.0.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/bootstrap_paragraphs.git",
-                "reference": "5.0.2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/bootstrap_paragraphs-5.0.2.zip",
-                "reference": "5.0.2",
-                "shasum": "288e325940f1250b2399b6858a7723868d4e1fc0"
-            },
-            "require": {
-                "drupal/core": "*",
-                "drupal/entity_reference_revisions": "*",
-                "drupal/field_group": "*",
-                "drupal/paragraphs": "*",
-                "drupal/viewsreference": "*"
-            },
-            "require-dev": {
-                "drupal/contact_formatter": "*",
-                "drupal/link_attributes": "*",
-                "drupal/paragraphs": "*",
-                "drupal/webform": "*"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "5.0.2",
-                    "datestamp": "1726498913",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "kerrymick",
-                    "homepage": "https://www.drupal.org/user/1420364"
-                },
-                {
-                    "name": "thejimbirch",
-                    "homepage": "https://www.drupal.org/user/2507260"
-                }
-            ],
-            "description": "The Bootstrap Paragraphs module provides a suite of content and layout Paragraph bundles made with the Bootstrap front-end framework.",
-            "homepage": "https://drupal.org/project/bootstrap_paragraphs",
-            "support": {
-                "source": "https://git.drupalcode.org/project/bootstrap_paragraphs",
-                "issues": "https://drupal.org/project/issues/bootstrap_paragraphs"
-            },
-            "install-path": "../../web/modules/contrib/bootstrap_paragraphs"
         },
         {
             "name": "drupal/captcha",
@@ -4083,135 +4021,6 @@
             "install-path": "../../web/modules/contrib/field_hidden"
         },
         {
-            "name": "drupal/fontawesome",
-            "version": "2.26.0",
-            "version_normalized": "2.26.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/fontawesome.git",
-                "reference": "8.x-2.26"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/fontawesome-8.x-2.26.zip",
-                "reference": "8.x-2.26",
-                "shasum": "22e67458e1ebc274c3a8b494ce2c4056a3d2af29"
-            },
-            "require": {
-                "drupal/core": "^9.4 || ^10"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-2.26",
-                    "datestamp": "1688063477",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "drush": {
-                    "services": {
-                        "drush.services.yml": "^9 || ^10 || ^11"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Daniel.Moberly",
-                    "homepage": "https://www.drupal.org/user/1160788"
-                },
-                {
-                    "name": "truls1502",
-                    "homepage": "https://www.drupal.org/user/325866"
-                }
-            ],
-            "description": "The web's most popular icon set and toolkit.",
-            "homepage": "https://www.drupal.org/project/fontawesome",
-            "support": {
-                "source": "https://git.drupalcode.org/project/fontawesome",
-                "issues": "https://drupal.org/project/issues/fontawesome"
-            },
-            "install-path": "../../web/modules/contrib/fontawesome"
-        },
-        {
-            "name": "drupal/fontyourface",
-            "version": "4.0.0",
-            "version_normalized": "4.0.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/fontyourface.git",
-                "reference": "4.0.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/fontyourface-4.0.0.zip",
-                "reference": "4.0.0",
-                "shasum": "415a8af33d6260925bd0076fc8d9a33b9ce669ed"
-            },
-            "require": {
-                "drupal/core": "^9.4 || ^10.0"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "4.0.0",
-                    "datestamp": "1694523475",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Neslee Canil Pinto",
-                    "homepage": "https://www.drupal.org/u/neslee-canil-pinto",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "BTMash",
-                    "homepage": "https://www.drupal.org/user/60422"
-                },
-                {
-                    "name": "Drave Robber",
-                    "homepage": "https://www.drupal.org/user/984338"
-                },
-                {
-                    "name": "hmendes",
-                    "homepage": "https://www.drupal.org/user/3673677"
-                },
-                {
-                    "name": "Neslee Canil Pinto",
-                    "homepage": "https://www.drupal.org/user/3580850"
-                },
-                {
-                    "name": "sreynen",
-                    "homepage": "https://www.drupal.org/user/109890"
-                }
-            ],
-            "description": "Web font management tools.",
-            "homepage": "https://www.drupal.org/project/fontyourface",
-            "keywords": [
-                "Drupal"
-            ],
-            "support": {
-                "source": "https://git.drupalcode.org/project/fontyourface",
-                "issues": "https://drupal.org/project/issues/fontyourface"
-            },
-            "install-path": "../../web/modules/contrib/fontyourface"
-        },
-        {
             "name": "drupal/form_options_attributes",
             "version": "2.1.0",
             "version_normalized": "2.1.0.0",
@@ -5345,7 +5154,7 @@
             ],
             "authors": [
                 {
-                    "name": "Berdir",
+                    "name": "berdir",
                     "homepage": "https://www.drupal.org/user/214652"
                 },
                 {
@@ -5365,7 +5174,7 @@
                     "homepage": "https://www.drupal.org/user/227761"
                 },
                 {
-                    "name": "Primsi",
+                    "name": "primsi",
                     "homepage": "https://www.drupal.org/user/282629"
                 }
             ],
@@ -5375,129 +5184,6 @@
                 "source": "https://git.drupalcode.org/project/paragraphs"
             },
             "install-path": "../../web/modules/contrib/paragraphs"
-        },
-        {
-            "name": "drupal/paragraphs_features",
-            "version": "2.0.0",
-            "version_normalized": "2.0.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/paragraphs_features.git",
-                "reference": "2.0.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/paragraphs_features-2.0.0.zip",
-                "reference": "2.0.0",
-                "shasum": "3f4856f2c6ade242855f5311ff26e8951b8a53a7"
-            },
-            "require": {
-                "drupal/core": "^9.2 || ^10",
-                "drupal/paragraphs": "^1.13"
-            },
-            "require-dev": {
-                "drupal/gin": "^3.0"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "2.0.0",
-                    "datestamp": "1713956979",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Mladen Todorovic",
-                    "homepage": "https://www.drupal.org/user/2103716",
-                    "email": "mladen.todorovic@burda.com"
-                },
-                {
-                    "name": "Daniel Bosen",
-                    "homepage": "https://www.drupal.org/user/404865",
-                    "email": "daniel.bosen@burda.com"
-                },
-                {
-                    "name": "Christian Fritsch",
-                    "homepage": "https://www.drupal.org/user/3511180",
-                    "email": "christian.fritsch@burda.com"
-                },
-                {
-                    "name": "Volker Killesreiter",
-                    "homepage": "https://www.drupal.org/user/57527",
-                    "email": "volker.killesreiter@burda.com"
-                },
-                {
-                    "name": "Alex Pott",
-                    "email": "alex.a.pott@gmail.com"
-                }
-            ],
-            "description": "Paragraphs features for extending paragraphs widget functionality.",
-            "homepage": "https://www.drupal.org/project/paragraphs_features",
-            "support": {
-                "source": "https://git.drupalcode.org/project/paragraphs_features"
-            },
-            "install-path": "../../web/modules/contrib/paragraphs_features"
-        },
-        {
-            "name": "drupal/paragraphs_grid",
-            "version": "1.6.0",
-            "version_normalized": "1.6.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/paragraphs_grid.git",
-                "reference": "8.x-1.6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/paragraphs_grid-8.x-1.6.zip",
-                "reference": "8.x-1.6",
-                "shasum": "5c3fa365596abb7f5ad70162f90e62fbbcd7bc6b"
-            },
-            "require": {
-                "drupal/core": "^9.3 || ^10",
-                "drupal/paragraphs": "*"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1706363873",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "JFeltkamp",
-                    "homepage": "https://www.drupal.org/user/2471686"
-                }
-            ],
-            "description": "Provides possibillity to render paragraphs components in a grid with bootstrap grid classes.",
-            "homepage": "https://www.drupal.org/project/paragraphs_grid",
-            "keywords": [
-                "Drupal"
-            ],
-            "support": {
-                "source": "http://cgit.drupalcode.org/paragraphs_grid",
-                "issues": "https://www.drupal.org/project/issues/paragraphs_grid"
-            },
-            "install-path": "../../web/modules/contrib/paragraphs_grid"
         },
         {
             "name": "drupal/pathauto",
@@ -6363,11 +6049,11 @@
             ],
             "authors": [
                 {
-                    "name": "Berdir",
+                    "name": "berdir",
                     "homepage": "https://www.drupal.org/user/214652"
                 },
                 {
-                    "name": "Dave Reid",
+                    "name": "dave reid",
                     "homepage": "https://www.drupal.org/user/53892"
                 },
                 {
@@ -6847,75 +6533,6 @@
                 "source": "https://git.drupalcode.org/project/views_data_export"
             },
             "install-path": "../../web/modules/contrib/views_data_export"
-        },
-        {
-            "name": "drupal/viewsreference",
-            "version": "2.0.0-beta10",
-            "version_normalized": "2.0.0.0-beta10",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/viewsreference.git",
-                "reference": "8.x-2.0-beta10"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/viewsreference-8.x-2.0-beta10.zip",
-                "reference": "8.x-2.0-beta10",
-                "shasum": "699c3f790d3dbe6ebcd890916409c66562a04eb4"
-            },
-            "require": {
-                "drupal/core": "^10 || ^11"
-            },
-            "conflict": {
-                "drupal/viewsreferennce": "*"
-            },
-            "require-dev": {
-                "drupal/views_ajax_history": "1.x-dev"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-2.0-beta10",
-                    "datestamp": "1725510905",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "installation-source": "dist",
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "joekers",
-                    "homepage": "https://www.drupal.org/user/2229066"
-                },
-                {
-                    "name": "NewZeal",
-                    "homepage": "https://www.drupal.org/user/93571"
-                },
-                {
-                    "name": "scott_euser",
-                    "homepage": "https://www.drupal.org/user/3267594"
-                },
-                {
-                    "name": "seanB",
-                    "homepage": "https://www.drupal.org/user/545912"
-                }
-            ],
-            "description": "Views reference",
-            "homepage": "http://drupal.org/project/viewsreference",
-            "keywords": [
-                "Drupal"
-            ],
-            "support": {
-                "source": "https://git.drupalcode.org/project/viewsreference",
-                "issues": "https://www.drupal.org/project/issues/viewsreference"
-            },
-            "install-path": "../../web/modules/contrib/viewsreference"
         },
         {
             "name": "drupal/workflow",
@@ -13306,48 +12923,6 @@
                 "source": "https://github.com/twbs/bootstrap/tree/v5.3.3"
             },
             "install-path": "../twbs/bootstrap"
-        },
-        {
-            "name": "twbs/bootstrap-icons",
-            "version": "v1.11.3",
-            "version_normalized": "1.11.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/twbs/icons.git",
-                "reference": "8d88686c03c3768a2d82ba4f20c3c4e1b100fa29"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/twbs/icons/zipball/8d88686c03c3768a2d82ba4f20c3c4e1b100fa29",
-                "reference": "8d88686c03c3768a2d82ba4f20c3c4e1b100fa29",
-                "shasum": ""
-            },
-            "time": "2024-01-03T15:44:45+00:00",
-            "type": "library",
-            "installation-source": "dist",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mark Otto",
-                    "email": "markdotto@gmail.com"
-                }
-            ],
-            "description": "Official open source SVG icon library for Bootstrap",
-            "homepage": "https://icons.getbootstrap.com/",
-            "keywords": [
-                "bootstrap",
-                "icon font",
-                "icons",
-                "svg"
-            ],
-            "support": {
-                "issues": "https://github.com/twbs/icons/issues",
-                "source": "https://github.com/twbs/icons/tree/v1.11.3"
-            },
-            "install-path": "../twbs/bootstrap-icons"
         },
         {
             "name": "twig/twig",

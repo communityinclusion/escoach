@@ -3,7 +3,7 @@
         'name' => 'drupal/recommended-project',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '7fa09e7cb6b6cfe56af4c84649ece747729e892e',
+        'reference' => '4c76dcbdc7eadf107bc161ee43d4f631db605774',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -283,9 +283,9 @@
             'dev_requirement' => false,
         ),
         'drupal/bootstrap5' => array(
-            'pretty_version' => '3.0.14',
-            'version' => '3.0.14.0',
-            'reference' => '3.0.14',
+            'pretty_version' => '3.0.10',
+            'version' => '3.0.10.0',
+            'reference' => '3.0.10',
             'type' => 'drupal-theme',
             'install_path' => __DIR__ . '/../../web/themes/contrib/bootstrap5',
             'aliases' => array(),
@@ -306,15 +306,6 @@
             'reference' => '2.0.2',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/bootstrap_library',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'drupal/bootstrap_paragraphs' => array(
-            'pretty_version' => '5.0.2',
-            'version' => '5.0.2.0',
-            'reference' => '5.0.2',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/bootstrap_paragraphs',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -666,24 +657,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'drupal/fontawesome' => array(
-            'pretty_version' => '2.26.0',
-            'version' => '2.26.0.0',
-            'reference' => '8.x-2.26',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/fontawesome',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'drupal/fontyourface' => array(
-            'pretty_version' => '4.0.0',
-            'version' => '4.0.0.0',
-            'reference' => '4.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/fontyourface',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'drupal/form_options_attributes' => array(
             'pretty_version' => '2.1.0',
             'version' => '2.1.0.0',
@@ -839,24 +812,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'drupal/paragraphs_features' => array(
-            'pretty_version' => '2.0.0',
-            'version' => '2.0.0.0',
-            'reference' => '2.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/paragraphs_features',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'drupal/paragraphs_grid' => array(
-            'pretty_version' => '1.6.0',
-            'version' => '1.6.0.0',
-            'reference' => '8.x-1.6',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/paragraphs_grid',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'drupal/pathauto' => array(
             'pretty_version' => '1.13.0',
             'version' => '1.13.0.0',
@@ -889,7 +844,7 @@
         'drupal/recommended-project' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '7fa09e7cb6b6cfe56af4c84649ece747729e892e',
+            'reference' => '4c76dcbdc7eadf107bc161ee43d4f631db605774',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1047,15 +1002,6 @@
             'reference' => '8.x-1.4',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/views_data_export',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'drupal/viewsreference' => array(
-            'pretty_version' => '2.0.0-beta10',
-            'version' => '2.0.0.0-beta10',
-            'reference' => '8.x-2.0-beta10',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/viewsreference',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -1446,8 +1392,8 @@
         'psr/container-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.1|2.0',
-                1 => '^1.0',
+                0 => '^1.0',
+                1 => '1.1|2.0',
             ),
         ),
         'psr/event-dispatcher' => array(
@@ -1477,8 +1423,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(
@@ -1493,8 +1439,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
@@ -1509,8 +1455,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/log' => array(
@@ -1933,15 +1879,6 @@
             'reference' => '6e1f75f420f68e1d52733b8e407fc7c3766c9dba',
             'type' => 'library',
             'install_path' => __DIR__ . '/../twbs/bootstrap',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'twbs/bootstrap-icons' => array(
-            'pretty_version' => 'v1.11.3',
-            'version' => '1.11.3.0',
-            'reference' => '8d88686c03c3768a2d82ba4f20c3c4e1b100fa29',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../twbs/bootstrap-icons',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
