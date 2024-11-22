@@ -28,7 +28,7 @@
         "drupal/captcha": "^2.0",
         "drupal/coder": "^8.3.2",
         "drupal/conditional_fields": "^4.0@alpha",
-        "drupal/core": "^10.3.9",
+        "drupal/core": "10.3.10",
         "drupal/core-composer-scaffold": "^8.9.1",
         "drupal/core-project-message": "^8.8",
         "drupal/core-recommended": "^10.1.6",
