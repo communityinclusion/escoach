@@ -24,7 +24,68 @@
   /* rtl:begin:remove */
   /* rtl:end:remove */
   /*--- Home and About page styles --*/
-  /* Homepage */
+  /*
+
+  .about .icon-boxes h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0177ae;
+    margin-bottom: 15px;
+  }
+
+  .about .icon-box {
+    margin-top: 40px;
+  }
+
+  .about .icon-box .icon {
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border: 2px solid #0177ae;
+    border-radius: 50px;
+    transition: 0.5s;
+  }
+
+  .about .icon-box .icon i {
+    color: #0177ae;
+    font-size: 32px;
+  }
+
+  .about .icon-box:hover .icon {
+    background: #0177ae;
+    border-color: #0177ae;
+  }
+
+  .about .icon-box:hover .icon i {
+    color: #fff;
+  }
+
+  .about .icon-box .title {
+    margin-left: 85px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+
+  .about .icon-box .title a {
+    color: #343a40;
+    transition: 0.3s;
+  }
+
+  .about .icon-box .title a:hover {
+    color: #0177ae;
+  }
+
+  .about .icon-box .description {
+    margin-left: 85px;
+    line-height: 24px;
+    font-size: 14px;
+  }
+  */
+  /* How can es-coach help block para id 76 */
 }
 .ck-content :root,
 .ck-content [data-bs-theme=light] {
@@ -93,7 +154,7 @@
   --bs-dark-border-subtle: #adb5bd;
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
-  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-sans-serif: "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -12047,10 +12108,6 @@ a > .ck-content code {
 .ck-content .toolbar-icon-10 .form-item-field-auto-login-url-0-value {
   display: block;
 }
-.ck-content section {
-  padding: 60px 0;
-  overflow: hidden;
-}
 .ck-content .section-title {
   padding-bottom: 40px;
 }
@@ -12063,47 +12120,6 @@ a > .ck-content code {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #aaaaaa;
-}
-.ck-content .testimonial-container {
-  text-align: center;
-  padding-bottom: 40px;
-  height: 100%;
-}
-.ck-content .testimonial-card {
-  background-color: #fff;
-  padding: 30px;
-  text-align: center;
-  font-style: italic;
-  position: relative;
-  border-radius: 5px;
-  height: 100%;
-}
-.ck-content .testimonial-card2 {
-  background-color: #f4f4f4;
-  padding: 30px;
-  text-align: center;
-  font-style: italic;
-  position: relative;
-  border-radius: 5px;
-  height: 100%;
-}
-.ck-content .testimonial-card2::after {
-  background-color: inherit;
-  bottom: -7px;
-  content: "";
-  display: block;
-  height: 14px;
-  left: 50%;
-  margin-left: -7px;
-  position: absolute;
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-  width: 14px;
-}
-.ck-content .testimonial-card p {
-  font-size: 18px;
-  line-height: 36px;
-  margin-bottom: 16px;
 }
 .ck-content .color-blue {
   background-color: #0177ae;
@@ -12123,77 +12139,61 @@ a > .ck-content code {
   height: 24px;
   display: inline-block;
 }
-.ck-content .text-success {
-  color: #5c9731 !important;
+.ck-content .paragraph--id--76 .paragraph--type--bp-columns {
+  background-color: #fff;
+  margin: 6px;
+  border: 2px #003366 solid;
 }
-.ck-content .about .icon-boxes h3, .ck-content .about .icon-boxes .h3 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #0177ae;
-  margin-bottom: 15px;
+.ck-content .paragraph--id--76 .paragraph--type--bp-columns .bi {
+  color: #003366;
 }
-.ck-content .about .icon-box {
-  margin-top: 40px;
+.ck-content .paragraph--id--76 .paragraph--type--bp-columns .paragraph--type--bp-blank {
+  padding: 4px;
 }
-.ck-content .about .icon-box .icon {
-  float: left;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border: 2px solid #0177ae;
-  border-radius: 50px;
-  transition: 0.5s;
+.ck-content .hero {
+  background-image: url("https://rp-escoach.communityinclusion.org/sites/default/files/escoach-hero-mobile.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
 }
-.ck-content .about .icon-box .icon i {
-  color: #0177ae;
-  font-size: 32px;
-}
-.ck-content .about .icon-box:hover .icon {
-  background: #0177ae;
-  border-color: #0177ae;
-}
-.ck-content .about .icon-box:hover .icon i {
+.ck-content section .hero-content {
+  z-index: 1;
+  text-align: center;
   color: #fff;
+  padding: 1rem;
+  max-height: 500px;
+  background-color: rgba(60, 135, 179, 0.6);
 }
-.ck-content .about .icon-box .title {
-  margin-left: 85px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  font-size: 18px;
+.ck-content section .hero-content h1, .ck-content section .hero-content .h1 {
+  font-size: 3rem;
+  font-weight: 500;
+  margin: 0 0 1rem;
 }
-.ck-content .about .icon-box .title a {
-  color: #343a40;
-  transition: 0.3s;
-}
-.ck-content .about .icon-box .title a:hover {
-  color: #0177ae;
-}
-.ck-content .about .icon-box .description {
-  margin-left: 85px;
-  line-height: 24px;
-  font-size: 14px;
+.ck-content section .hero-content p {
+  padding: 0 60px;
 }
 .ck-content .paragraph--type--section {
   margin: 30px 0;
-  border-bottom: 1px solid #333;
+}
+.ck-content .paragraph--id--81, .ck-content .paragraph--id--124 {
+  background-color: #f8f9fa;
 }
 .ck-content .paragraph--type--section h2 .field--name-bp-header, .ck-content .paragraph--type--section .h2 .field--name-bp-header {
   font-weight: 700;
   padding: 10px 0;
-  margin: 0 0 5px 0;
+  margin: 0 0 25px 0;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #0177ae;
   margin-left: 4px;
+  border-bottom: 1px solid #eee;
 }
 .ck-content .paragraph--type--section h2 .field--name-bp-header:before, .ck-content .paragraph--type--section .h2 .field--name-bp-header:before {
   content: url(https://rp-escoach.communityinclusion.org/sites/default/files/escoach-before-header.svg);
   margin-right: 4px;
 }
 .ck-content .paragraph--id--93 .paragraph__column .paragraph--type--bp-columns {
-  outline: #000 solid 1px;
   background-color: #003366;
   color: #fff;
   margin: 5px;
@@ -12203,4 +12203,10 @@ a > .ck-content code {
 .ck-content .paragraph--id--93 .paragraph__column .paragraph--type--bp-columns p {
   padding: 5px;
   text-align: center;
+}
+.ck-content .paragraph--type--section.paragraph--id--81, .ck-content .paragraph--type--section.paragraph--id--124 {
+  background-color: #f8f9fa;
+}
+.ck-content .btn-darkblue {
+  background-color: #003366;
 }

@@ -71,7 +71,7 @@
   --bs-dark-border-subtle: #adb5bd;
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
-  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-sans-serif: "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -14164,11 +14164,6 @@ select#edit-tid--2 option[value="12"] {
 }
 
 /*--- Home and About page styles --*/
-section {
-  padding: 60px 0;
-  overflow: hidden;
-}
-
 .section-title {
   padding-bottom: 40px;
 }
@@ -14182,52 +14177,6 @@ section {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #aaaaaa;
-}
-
-.testimonial-container {
-  text-align: center;
-  padding-bottom: 40px;
-  height: 100%;
-}
-
-.testimonial-card {
-  background-color: #fff;
-  padding: 30px;
-  text-align: center;
-  font-style: italic;
-  position: relative;
-  border-radius: 5px;
-  height: 100%;
-}
-
-.testimonial-card2 {
-  background-color: #f4f4f4;
-  padding: 30px;
-  text-align: center;
-  font-style: italic;
-  position: relative;
-  border-radius: 5px;
-  height: 100%;
-}
-
-.testimonial-card2::after {
-  background-color: inherit;
-  bottom: -7px;
-  content: "";
-  display: block;
-  height: 14px;
-  left: 50%;
-  margin-left: -7px;
-  position: absolute;
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-  width: 14px;
-}
-
-.testimonial-card p {
-  font-size: 18px;
-  line-height: 36px;
-  margin-bottom: 16px;
 }
 
 .color-blue {
@@ -14251,11 +14200,9 @@ section {
   display: inline-block;
 }
 
-.text-success {
-  color: #5c9731 !important;
-}
+/*
 
-.about .icon-boxes h3, .about .icon-boxes .h3 {
+.about .icon-boxes h3 {
   font-size: 28px;
   font-weight: 700;
   color: #0177ae;
@@ -14313,21 +14260,66 @@ section {
   line-height: 24px;
   font-size: 14px;
 }
+*/
+/* How can es-coach help block para id 76 */
+.paragraph--id--76 .paragraph--type--bp-columns {
+  background-color: #fff;
+  margin: 6px;
+  border: 2px #003366 solid;
+}
 
-/* Homepage */
+.paragraph--id--76 .paragraph--type--bp-columns .bi {
+  color: #003366;
+}
+
+.paragraph--id--76 .paragraph--type--bp-columns .paragraph--type--bp-blank {
+  padding: 4px;
+}
+
+.hero {
+  background-image: url("https://rp-escoach.communityinclusion.org/sites/default/files/escoach-hero-mobile.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+section .hero-content {
+  z-index: 1;
+  text-align: center;
+  color: #fff;
+  padding: 1rem;
+  max-height: 500px;
+  background-color: rgba(60, 135, 179, 0.6);
+}
+
+section .hero-content h1, section .hero-content .h1 {
+  font-size: 3rem;
+  font-weight: 500;
+  margin: 0 0 1rem;
+}
+
+section .hero-content p {
+  padding: 0 60px;
+}
+
 .paragraph--type--section {
   margin: 30px 0;
-  border-bottom: 1px solid #333;
+}
+
+.paragraph--id--81, .paragraph--id--124 {
+  background-color: #f8f9fa;
 }
 
 .paragraph--type--section h2 .field--name-bp-header, .paragraph--type--section .h2 .field--name-bp-header {
   font-weight: 700;
   padding: 10px 0;
-  margin: 0 0 5px 0;
+  margin: 0 0 25px 0;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #0177ae;
   margin-left: 4px;
+  border-bottom: 1px solid #eee;
 }
 
 .paragraph--type--section h2 .field--name-bp-header:before, .paragraph--type--section .h2 .field--name-bp-header:before {
@@ -14336,7 +14328,6 @@ section {
 }
 
 .paragraph--id--93 .paragraph__column .paragraph--type--bp-columns {
-  outline: #000 solid 1px;
   background-color: #003366;
   color: #fff;
   margin: 5px;
@@ -14347,4 +14338,12 @@ section {
 .paragraph--id--93 .paragraph__column .paragraph--type--bp-columns p {
   padding: 5px;
   text-align: center;
+}
+
+.paragraph--type--section.paragraph--id--81, .paragraph--type--section.paragraph--id--124 {
+  background-color: #f8f9fa;
+}
+
+.btn-darkblue {
+  background-color: #003366;
 }
