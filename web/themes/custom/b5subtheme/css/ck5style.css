@@ -84,7 +84,8 @@
     font-size: 14px;
   }
   */
-  /* How can es-coach help block para id 76 */ }
+  /* How can es-coach help block para id 76 */
+  /*What do people say about es-coach block */ }
   .ck-content :root,
   .ck-content [data-bs-theme="light"] {
     --bs-blue: #0177ae;
@@ -9219,13 +9220,13 @@
     max-height: 500px;
     background-color: rgba(60, 135, 179, 0.6); }
   .ck-content section .hero-content h1, .ck-content section .hero-content .h1 {
-    font-size: 3rem;
-    font-weight: 500;
+    font-size: 4rem;
+    font-weight: 800;
     margin: 0 0 1rem; }
   .ck-content section .hero-content p {
     padding: 0  60px; }
   .ck-content .paragraph--type--section {
-    margin: 30px 0; }
+    margin: 20px 0; }
   .ck-content .paragraph--id--81, .ck-content .paragraph--id--124 {
     background-color: #f8f9fa; }
   .ck-content .paragraph--type--section h2 .field--name-bp-header, .ck-content .paragraph--type--section .h2 .field--name-bp-header {
@@ -9239,11 +9240,10 @@
     border-bottom: 1px solid #eee; }
   .ck-content .paragraph--type--section h2 .field--name-bp-header:before, .ck-content .paragraph--type--section .h2 .field--name-bp-header:before {
     content: url(https://rp-escoach.communityinclusion.org/sites/default/files/escoach-before-header.svg);
-    margin-right: 4px; }
+    margin-right: 10px; }
   .ck-content .paragraph--id--93 .paragraph__column .paragraph--type--bp-columns {
     background-color: #003366;
     color: #fff;
-    margin: 5px;
     margin: 4px;
     padding: 5px; }
   .ck-content .paragraph--id--93 .paragraph__column .paragraph--type--bp-columns p {
@@ -9253,5 +9253,21 @@
     background-color: #f8f9fa; }
   .ck-content .btn-darkblue {
     background-color: #003366; }
+  .ck-content div.paragraph--id--118 {
+    font-size: 20px; }
+  .ck-content div.paragraph--id--118 {
+    font-size: 20px; }
+  .ck-content .paragraph--id--113 .paragraph--type--bp-columns:nth-child(1) {
+    border: 2px #003366 solid;
+    display: flex;
+    align-items: center; }
+  .ck-content .paragraph--id--113 .paragraph--type--bp-columns:nth-child(3) {
+    border: 2px #003366 solid;
+    display: flex;
+    align-items: center; }
+  .ck-content .paragraph--id--117 .paragraph--type--bp-columns:nth-child(2) {
+    border: 2px #003366 solid;
+    display: flex;
+    align-items: center; }
 
 /*# sourceMappingURL=ck5style.css.map */

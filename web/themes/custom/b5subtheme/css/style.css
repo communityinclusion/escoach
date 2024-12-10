@@ -11351,15 +11351,15 @@ section .hero-content {
   background-color: rgba(60, 135, 179, 0.6); }
 
 section .hero-content h1, section .hero-content .h1 {
-  font-size: 3rem;
-  font-weight: 500;
+  font-size: 4rem;
+  font-weight: 800;
   margin: 0 0 1rem; }
 
 section .hero-content p {
   padding: 0  60px; }
 
 .paragraph--type--section {
-  margin: 30px 0; }
+  margin: 20px 0; }
 
 .paragraph--id--81, .paragraph--id--124 {
   background-color: #f8f9fa; }
@@ -11376,12 +11376,11 @@ section .hero-content p {
 
 .paragraph--type--section h2 .field--name-bp-header:before, .paragraph--type--section .h2 .field--name-bp-header:before {
   content: url(https://rp-escoach.communityinclusion.org/sites/default/files/escoach-before-header.svg);
-  margin-right: 4px; }
+  margin-right: 10px; }
 
 .paragraph--id--93 .paragraph__column .paragraph--type--bp-columns {
   background-color: #003366;
   color: #fff;
-  margin: 5px;
   margin: 4px;
   padding: 5px; }
 
@@ -11394,5 +11393,27 @@ section .hero-content p {
 
 .btn-darkblue {
   background-color: #003366; }
+
+/*What do people say about es-coach block */
+div.paragraph--id--118 {
+  font-size: 20px; }
+
+div.paragraph--id--118 {
+  font-size: 20px; }
+
+.paragraph--id--113 .paragraph--type--bp-columns:nth-child(1) {
+  border: 2px #003366 solid;
+  display: flex;
+  align-items: center; }
+
+.paragraph--id--113 .paragraph--type--bp-columns:nth-child(3) {
+  border: 2px #003366 solid;
+  display: flex;
+  align-items: center; }
+
+.paragraph--id--117 .paragraph--type--bp-columns:nth-child(2) {
+  border: 2px #003366 solid;
+  display: flex;
+  align-items: center; }
 
 /*# sourceMappingURL=style.css.map */
