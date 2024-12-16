@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1616bdba0aa29e1d417ebbdb87c210d2",
+    "content-hash": "9c5fe8b4c61633d9ee35a785f65af05b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1814,6 +1814,50 @@
                 }
             ],
             "time": "2024-10-30T19:48:12+00:00"
+        },
+        {
+            "name": "drupal/action",
+            "version": "0.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/action.git",
+                "reference": "0.2.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/action-0.2.1.zip",
+                "reference": "0.2.1",
+                "shasum": "efc67e925ceb3e78fc8c1f73e58ddd0312bda6f3"
+            },
+            "require": {
+                "drupal/core": ">10.2"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "0.2.1",
+                    "datestamp": "1712919607",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "andypost",
+                    "homepage": "https://www.drupal.org/user/118908"
+                }
+            ],
+            "description": "Allows configuration of tasks to be executed in response to events.",
+            "homepage": "https://www.drupal.org/project/action",
+            "support": {
+                "source": "https://git.drupalcode.org/project/action"
+            }
         },
         {
             "name": "drupal/address",
@@ -4651,6 +4695,86 @@
             "support": {
                 "source": "https://cgit.drupalcode.org/migrate_source_csv",
                 "issues": "https://www.drupal.org/project/issues/migrate_source_csv"
+            }
+        },
+        {
+            "name": "drupal/node_export",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/node_export.git",
+                "reference": "8.x-1.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/node_export-8.x-1.1.zip",
+                "reference": "8.x-1.1",
+                "shasum": "3bec30f840dda1cbb452e02519850ef00252034e"
+            },
+            "require": {
+                "drupal/action": "*",
+                "drupal/core": "^8 || ^9 || ^10",
+                "ext-json": "*",
+                "php": ">7.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.1",
+                    "datestamp": "1706644228",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "cgmonroe",
+                    "homepage": "https://www.drupal.org/user/563114"
+                },
+                {
+                    "name": "chia",
+                    "homepage": "https://www.drupal.org/user/398572"
+                },
+                {
+                    "name": "danielb",
+                    "homepage": "https://www.drupal.org/user/134005"
+                },
+                {
+                    "name": "gaurav.kapoor",
+                    "homepage": "https://www.drupal.org/user/3495331"
+                },
+                {
+                    "name": "i-trokhanenko",
+                    "homepage": "https://www.drupal.org/user/3546872"
+                },
+                {
+                    "name": "James Andres",
+                    "homepage": "https://www.drupal.org/user/33827"
+                },
+                {
+                    "name": "mcdruid",
+                    "homepage": "https://www.drupal.org/user/255969"
+                }
+            ],
+            "description": "Allows users to export content and then import into another Drupal installation.",
+            "homepage": "https://www.drupal.org/project/node_export",
+            "keywords": [
+                "Drupal"
+            ],
+            "support": {
+                "source": "http://cgit.drupalcode.org/node_export",
+                "issues": "https://www.drupal.org/project/issues/node_export"
             }
         },
         {
