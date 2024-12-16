@@ -85,7 +85,9 @@
   }
   */
   /* How can es-coach help block para id 76 */
-  /*What do people say about es-coach block */ }
+  /*What do people say about es-coach block */
+  /* How does in work home block */
+  /*---*/ }
   .ck-content :root,
   .ck-content [data-bs-theme="light"] {
     --bs-blue: #0177ae;
@@ -9211,14 +9213,15 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    position: relative; }
+    position: relative;
+    margin: 0 12px; }
   .ck-content section .hero-content {
     z-index: 1;
     text-align: center;
     color: #fff;
-    padding: 1rem;
+    padding: 2rem 1rem;
     max-height: 500px;
-    background-color: rgba(60, 135, 179, 0.6); }
+    background-color: rgba(60, 135, 179, 0.4); }
   .ck-content section .hero-content h1, .ck-content section .hero-content .h1 {
     font-size: 4rem;
     font-weight: 800;
@@ -9269,5 +9272,19 @@
     border: 2px #003366 solid;
     display: flex;
     align-items: center; }
+  .ck-content .p--id--124 {
+    margin-bottom: 15px; }
+  @media (min-width: 1400px) {
+    .ck-content .p--id--124 {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 0; }
+    .ck-content .p--id--124 h4, .ck-content .p--id--124 .h4 {
+      flex: 0 0 auto; }
+    .ck-content .p--id--124 .description {
+      align-items: stretch; } }
+  @media (max-width: 767.98px) {
+    .ck-content footer {
+      text-align: center; } }
 
 /*# sourceMappingURL=ck5style.css.map */

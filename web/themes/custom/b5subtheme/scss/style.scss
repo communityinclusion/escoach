@@ -213,16 +213,17 @@ border:2px #003366 solid;}
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
+  margin:0 12px;
 }
-
+ 
 
 section .hero-content {
   z-index: 1;
   text-align: center;
   color: #fff;
-  padding: 1rem;
+   padding: 2rem 1rem;
   max-height: 500px;
-  background-color: rgba(60, 135, 179, 0.6);
+  background-color: rgba(60, 135, 179, 0.4);
 }
 section  .hero-content h1 {
   font-size: 4rem;
@@ -301,3 +302,26 @@ div.paragraph--id--118  {
     display: flex;
     align-items: center;
 }
+
+/* How does in work home block */
+
+.p--id--124 {margin-bottom:15px;}
+@media (min-width: 1400px) {
+  
+  .p--id--124  {	display:flex;
+	flex-wrap: wrap;
+    margin-bottom:0;
+}
+  
+ 
+.p--id--124 h4{flex: 0 0 auto;}
+.p--id--124 .description {   	align-items: stretch;
+}
+}
+
+/*---*/
+
+@media (max-width: 767.98px){
+footer {text-align:center}
+}
+
