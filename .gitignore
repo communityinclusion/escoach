@@ -30,3 +30,4 @@
 
 #Ignore ddev files
 /.ddev
+/.vscode
