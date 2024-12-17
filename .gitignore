@@ -31,3 +31,7 @@
 #Ignore ddev files
 /.ddev
 /.vscode
+<<<<<<< HEAD
+=======
+/vendor
+>>>>>>> devel

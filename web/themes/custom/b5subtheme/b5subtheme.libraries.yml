@@ -2,3 +2,4 @@ global-styling:
   css:
     theme:
       css/style.css: {}
+      bootstrap-icons/font/bootstrap-icons.css: {}

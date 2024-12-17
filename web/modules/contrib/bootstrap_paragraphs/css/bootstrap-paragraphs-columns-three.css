@@ -1,0 +1,181 @@
+/**
+ * @file
+ * The css file for Bootstrap Paragraphs Three Column Bundle.
+ *
+ * Compiled from bootstrap-paragraphs-columns-three.less.
+ */
+/* Three Uneven Columns Paragraph. */
+.paragraph--type--bp-columns-three-uneven.paragraph--style--25-50-25 .paragraph--type--bp-columns-three-uneven__3col-column1,
+.paragraph--type--bp-columns-three-uneven.paragraph--style--25-50-25 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--25-50-25 .paragraph--type--bp-columns-three-uneven__3col-column1,
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--25-50-25 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+    float: left;
+    width: 25%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--25-50-25 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--25-50-25 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+    float: left;
+    width: 50%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--50-25-25 .paragraph--type--bp-columns-three-uneven__3col-column1 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--50-25-25 .paragraph--type--bp-columns-three-uneven__3col-column1 {
+    float: left;
+    width: 50%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--50-25-25 .paragraph--type--bp-columns-three-uneven__3col-column2,
+.paragraph--type--bp-columns-three-uneven.paragraph--style--50-25-25 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--50-25-25 .paragraph--type--bp-columns-three-uneven__3col-column2,
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--50-25-25 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+    float: left;
+    width: 25%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--25-25-50 .paragraph--type--bp-columns-three-uneven__3col-column1,
+.paragraph--type--bp-columns-three-uneven.paragraph--style--25-25-50 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--25-25-50 .paragraph--type--bp-columns-three-uneven__3col-column1,
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--25-25-50 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+    float: left;
+    width: 25%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--25-25-50 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--25-25-50 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+    float: left;
+    width: 50%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--16-66-16 .paragraph--type--bp-columns-three-uneven__3col-column1,
+.paragraph--type--bp-columns-three-uneven.paragraph--style--16-66-16 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--16-66-16 .paragraph--type--bp-columns-three-uneven__3col-column1,
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--16-66-16 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+    float: left;
+    width: 16.66667%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--16-66-16 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--16-66-16 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+    float: left;
+    width: 66.66667%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--66-16-16 .paragraph--type--bp-columns-three-uneven__3col-column1 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--66-16-16 .paragraph--type--bp-columns-three-uneven__3col-column1 {
+    float: left;
+    width: 66.66667%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--66-16-16 .paragraph--type--bp-columns-three-uneven__3col-column2,
+.paragraph--type--bp-columns-three-uneven.paragraph--style--66-16-16 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--66-16-16 .paragraph--type--bp-columns-three-uneven__3col-column2,
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--66-16-16 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+    float: left;
+    width: 16.66667%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--16-16-66 .paragraph--type--bp-columns-three-uneven__3col-column1,
+.paragraph--type--bp-columns-three-uneven.paragraph--style--16-16-66 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--16-16-66 .paragraph--type--bp-columns-three-uneven__3col-column1,
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--16-16-66 .paragraph--type--bp-columns-three-uneven__3col-column2 {
+    float: left;
+    width: 16.66667%;
+  }
+}
+.paragraph--type--bp-columns-three-uneven.paragraph--style--16-16-66 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven.paragraph--style--16-16-66 .paragraph--type--bp-columns-three-uneven__3col-column3 {
+    float: left;
+    width: 66.66667%;
+  }
+}
+/* These fix the padding and column title misalignment. */
+.paragraph--type--bp-columns-three-uneven .paragraph__column .paragraph--type--bp-columns-three-uneven__3col-column1,
+.paragraph--type--bp-columns-three-uneven .paragraph__column .paragraph--type--bp-columns-three-uneven__3col-column2,
+.paragraph--type--bp-columns-three-uneven .paragraph__column .paragraph--type--bp-columns-three-uneven__3col-column3 {
+  padding-right: 0;
+  padding-left: 0;
+}
+@media (min-width: 768px) {
+  .paragraph--type--bp-columns-three-uneven .paragraph__column .paragraph--type--bp-columns-three-uneven__3col-column1,
+  .paragraph--type--bp-columns-three-uneven .paragraph__column .paragraph--type--bp-columns-three-uneven__3col-column2 {
+    padding-right: 1.5rem;
+    padding-left: 0;
+  }
+  .paragraph--type--bp-columns-three-uneven .paragraph__column .paragraph--type--bp-columns-three-uneven__3col-column3 {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}

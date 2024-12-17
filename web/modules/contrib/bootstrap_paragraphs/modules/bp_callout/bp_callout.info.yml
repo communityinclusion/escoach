@@ -1,0 +1,13 @@
+name: Bootstrap Paragraphs Callout
+type: module
+description: A reusable Callout Paragraph bundle.
+core_version_requirement: ^10 || ^11
+package: Paragraphs
+dependencies:
+  - paragraphs
+  - bootstrap_paragraphs
+
+# Information added by Drupal.org packaging script on 2024-09-16
+version: '5.0.2'
+project: 'bootstrap_paragraphs'
+datestamp: 1726498915

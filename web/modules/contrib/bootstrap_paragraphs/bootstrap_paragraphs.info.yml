@@ -1,0 +1,26 @@
+name: Bootstrap Paragraphs
+type: module
+description: A suite of Paragraph bundles made with the Bootstrap framework.
+core_version_requirement: ^10 || ^11
+package: Paragraphs
+dependencies:
+  - drupal:block
+  - drupal:field
+  - drupal:file
+  - drupal:filter
+  - drupal:image
+  - drupal:link
+  - drupal:options
+  - drupal:system
+  - drupal:text
+  - drupal:user
+  - drupal:views
+  - entity_reference_revisions:entity_reference_revisions
+  - field_group:field_group
+  - paragraphs:paragraphs
+  - viewsreference:viewsreference
+
+# Information added by Drupal.org packaging script on 2024-09-16
+version: '5.0.2'
+project: 'bootstrap_paragraphs'
+datestamp: 1726498915

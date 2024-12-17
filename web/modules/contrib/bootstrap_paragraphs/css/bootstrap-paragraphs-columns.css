@@ -1,0 +1,13 @@
+/**
+ * @file
+ * The css file for Bootstrap Paragraphs Columns Bundle.
+ *
+ * Compiled from bootstrap-paragraphs-columns.less.
+ */
+/* Removes Padding on Columns (Padding is on columns inside). */
+.paragraph.paragraph--type--bp-columns > .paragraph__column,
+.paragraph.paragraph--type--bp-columns-two-uneven > .paragraph__column,
+.paragraph.paragraph--type--bp-columns-three-uneven > .paragraph__column {
+  padding-right: 0;
+  padding-left: 0;
+}

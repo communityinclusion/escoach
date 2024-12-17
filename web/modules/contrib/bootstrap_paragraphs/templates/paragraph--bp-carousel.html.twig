@@ -1,0 +1,99 @@
+{#
+/**
+ * @file
+ * Bootstrap Paragraphs template for displaying a Carousel.
+ *
+ * Available variables:
+ * - paragraph: Full paragraph entity.
+ *   - id: The paragraph ID.
+ *   - bundle: The type of the paragraph, for example, "image" or "text".
+ *   - authorid: The user ID of the paragraph author.
+ *   - createdtime: Formatted creation date. Preprocess functions can
+ *     reformat it by calling format_date() with the desired parameters on
+ *     $variables['paragraph']->getCreatedTime().
+ * - content: All paragraph items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}. Use
+ *   {{ content|without('field_example') }} to temporarily suppress the printing
+ *   of a given child element.
+ * - attributes: HTML attributes for the containing element.
+ *   The attributes.class element may contain one or more of the following
+ *   classes:
+ *   - paragraphs: The current template type (also known as a "theming hook").
+ *   - paragraphs--type-[type]: The current paragraphs type. For example, if the paragraph is an
+ *     "Image" it would result in "paragraphs--type--image". Note that the machine
+ *     name will often be in a short form of the human readable label.
+ *   - paragraphs--view-mode--[view_mode]: The View Mode of the paragraph; for example, a
+ *     preview would result in: "paragraphs--view-mode--preview", and
+ *     default: "paragraphs--view-mode--default".
+ * - view_mode: View mode; for example, "preview" or "full".
+ * - logged_in: Flag for authenticated user status. Will be true when the
+ *   current user is a logged-in member.
+ * - is_admin: Flag for admin user status. Will be true when the current user
+ *   is an administrator.
+ *
+ * @see template_preprocess_paragraph()
+ *
+ * @ingroup themeable
+ */
+#}
+
+{{ attach_library('bootstrap_paragraphs/bootstrap-paragraphs') }}
+{{ attach_library('bootstrap_paragraphs/bp-carousel') }}
+
+{# Renders Slide Interval field. #}
+{# Converts database values to classes supplied by template. #}
+	{% if paragraph.bp_slide_interval is not empty %}
+	{% set slide_interval = content.bp_slide_interval['#items'].getString() %}
+{% set slide_interval_classes = [
+    'false' == slide_interval ? 'false',
+    '1000' == slide_interval ? '1000',
+    '2000' == slide_interval ? '2000',
+    '3000' == slide_interval ? '3000',
+    '4000' == slide_interval ? '4000',
+    '5000' == slide_interval ? '5000',
+    '6000' == slide_interval ? '6000',
+    '7000' == slide_interval ? '7000',
+  ]
+  %}
+{% endif %}
+
+{# The template default set classes. #}
+{# Sets Paragraph ID as class. #}
+{%
+set classes = [
+'paragraph',
+'paragraph--type--' ~ paragraph.bundle|clean_class,
+view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+'paragraph--id--' ~ paragraph.id.value,
+'carousel',
+'slide',
+content.bp_width['#items'].getString() ? content.bp_width['#items'].getString(),
+bs.background_color ? bs.background_color,
+content.bp_margin[0]['#markup'] ? content.bp_margin[0]['#markup'],
+content.bp_padding[0]['#markup'] ? content.bp_padding[0]['#markup'],
+]
+%}
+
+{# Sets Unique ID for Carousel from Paragraph ID. #}
+{% set paragraph_id = 'myCarousel-' ~ paragraph.id.value %}
+{# Prints Carousel template. #}
+{{ content|without('bp_slide_content','bp_slide_interval', 'bp_background', 'bp_width', 'bp_margin', 'bp_padding') }}
+	<div{{attributes.addClass(classes).setAttribute('id',paragraph_id).setAttribute('data-bs-interval',slide_interval_classes).setAttribute('data-bs-ride','carousel')}}>
+		<div class="carousel-indicators"> {% for key, item in content.bp_slide_content|filter((value, key) => key|first != '#') %}
+			<button type="button" data-bs-target="#{{ paragraph_id }}" data-bs-slide-to="{{ key }}" {% if loop.first %} class="active" {% endif %} aria-current="true" aria-label="{{ key }}"></button>
+		{% endfor %}
+	</div>
+	<div class="carousel-inner">
+		{% for key, item in content.bp_slide_content|filter((value, key) => key|first != '#') %}
+			<div class="paragraph--layout-slideshow__slide-{{ key + 1 }} item carousel-item{% if loop.first %} active{% endif %}">{{ item }}</div>
+		{% endfor %}
+	</div>
+	<button class="carousel-control-prev" type="button" data-bs-target="#{{ paragraph_id }}" data-bs-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="visually-hidden">Previous</span>
+	</button>
+	<button class="carousel-control-next" type="button" data-bs-target="#{{ paragraph_id }}" data-bs-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="visually-hidden">Next</span>
+	</button>
+</div>

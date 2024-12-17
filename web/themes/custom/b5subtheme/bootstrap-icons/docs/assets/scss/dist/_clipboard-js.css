@@ -1,0 +1,30 @@
+.bd-clipboard {
+  position: relative;
+  display: none;
+  float: right;
+}
+.bd-clipboard + .highlight {
+  margin-top: 0;
+}
+@media (min-width: 768px) {
+  .bd-clipboard {
+    display: block;
+  }
+}
+
+.btn-clipboard {
+  position: absolute;
+  top: 0.75em;
+  right: 0.5em;
+  z-index: 10;
+  display: block;
+  padding: 0.5em 0.75em 0.625em;
+  line-height: 1;
+  color: var(--bs-body-color);
+  background-color: var(--bs-tertiary-bg);
+  border: 0;
+  border-radius: 0.25rem;
+}
+.btn-clipboard:hover {
+  color: var(--bs-link-hover-color);
+}
