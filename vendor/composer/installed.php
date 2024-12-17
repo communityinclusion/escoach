@@ -1,15 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'drupal/recommended-project',
-<<<<<<< HEAD
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '77eaf8ef34835844af5f69ee56d05b9437702f01',
-=======
         'pretty_version' => '1.0.0+no-version-set',
         'version' => '1.0.0.0',
         'reference' => null,
->>>>>>> devel
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -893,15 +887,9 @@
             'dev_requirement' => false,
         ),
         'drupal/recommended-project' => array(
-<<<<<<< HEAD
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '77eaf8ef34835844af5f69ee56d05b9437702f01',
-=======
             'pretty_version' => '1.0.0+no-version-set',
             'version' => '1.0.0.0',
             'reference' => null,
->>>>>>> devel
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -946,11 +934,7 @@
         'drupal/search_api_db' => array(
             'pretty_version' => '1.35.0',
             'version' => '1.35.0.0',
-<<<<<<< HEAD
-            'reference' => NULL,
-=======
             'reference' => null,
->>>>>>> devel
             'type' => 'metapackage',
             'install_path' => null,
             'aliases' => array(),
@@ -1807,11 +1791,7 @@
             'version' => '1.31.0.0',
             'reference' => 'fa2ae56c44f03bed91a39bfc9822e31e7c5c38ce',
             'type' => 'metapackage',
-<<<<<<< HEAD
-            'install_path' => NULL,
-=======
             'install_path' => null,
->>>>>>> devel
             'aliases' => array(),
             'dev_requirement' => false,
         ),

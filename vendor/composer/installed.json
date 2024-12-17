@@ -4100,8 +4100,6 @@
                 {
                     "name": "Jacob Friis Mathiasen (jacobfriis)",
                     "homepage": "https://www.drupal.org/u/jacobfriis",
-<<<<<<< HEAD
-=======
                     "role": "Maintainer"
                 },
                 {
@@ -4226,7 +4224,6 @@
                 {
                     "name": "Neslee Canil Pinto",
                     "homepage": "https://www.drupal.org/u/neslee-canil-pinto",
->>>>>>> devel
                     "role": "Maintainer"
                 },
                 {
@@ -4235,14 +4232,8 @@
                     "role": "Maintainer"
                 },
                 {
-<<<<<<< HEAD
-                    "name": "Oleksandr Kuzava (nginex)",
-                    "homepage": "https://www.drupal.org/u/nginex",
-                    "role": "Maintainer"
-=======
                     "name": "neslee canil pinto",
                     "homepage": "https://www.drupal.org/user/3580850"
->>>>>>> devel
                 },
                 {
                     "name": "Istvan Reszler-Fekete (reszli)",
