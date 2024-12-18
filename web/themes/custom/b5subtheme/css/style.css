@@ -11395,6 +11395,12 @@ section .hero-content p {
   background-color: #003366; }
 
 /*What do people say about es-coach block */
+.testimonial {
+  text-align: center; }
+
+.testimonial em {
+  display: block; }
+
 div.paragraph--id--118, div.paragraph--id--10 {
   font-size: 20px; }
 
