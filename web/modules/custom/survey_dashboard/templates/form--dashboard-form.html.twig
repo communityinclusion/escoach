@@ -6,6 +6,16 @@
     </div>
 
     <div class="col-md-8">
+
+      {% if form.provider %}
+      <div class="row">
+        <div class="col-md-8">
+          {{ form.provider }}
+        </div>
+      </div>
+
+      {% endif %}
+
       <div class="row">
         <div class="col-md-6">
           {{ form.who }}
@@ -27,5 +37,5 @@
     </div>
 
   </div>
-  {{ form|without('who', 'what', 'where', 'results', 'timeframe', 'actions') }}
+  {{ form|without('who', 'what', 'where', 'results', 'timeframe', 'actions', 'provider') }}
 </div>
