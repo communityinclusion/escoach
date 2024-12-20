@@ -7,6 +7,21 @@
 
   'use strict';
 
+  Drupal.behaviors.survey_dashboard_menu = {
+    attach: function (context, settings) {
+      $(once('menu-links', 'nav.menu--homepage ul li a', context)).each(function () {
+        var baseURL = $(this).attr('href');
+        if ($('#state-select').length === 1) {
+          baseURL += '?state=' + $('#state-select').val();
+        }
+        else if ($('#edit-provider').length === 1) {
+          baseURL += '?provider=' + encodeURIComponent($('#edit-provider').val());
+        }
+        $(this).attr('href', baseURL);
+      });
+    }
+  };
+
   Drupal.behaviors.surveyDashboard = {
     attach: function (context, settings) {
       $(once('who-select', 'select[name="who"]', context)).each(function () {
