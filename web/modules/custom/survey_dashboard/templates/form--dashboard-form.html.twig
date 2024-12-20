@@ -6,16 +6,6 @@
     </div>
 
     <div class="col-md-8">
-
-      {% if form.provider %}
-      <div class="row">
-        <div class="col-md-8">
-          {{ form.provider }}
-        </div>
-      </div>
-
-      {% endif %}
-
       <div class="row">
         <div class="col-md-6">
           {{ form.who }}
@@ -26,6 +16,14 @@
         <div class="col-md-6">
           {{ form.timeframe }}
         </div>
+        {% if form.provider %}
+
+            <div class="col-md-6">
+              {{ form.provider }}
+            </div>
+
+
+        {% endif %}
         <div class="col-md-6 escoach-submit-wrapper">
           {{ form.actions }}
         </div>

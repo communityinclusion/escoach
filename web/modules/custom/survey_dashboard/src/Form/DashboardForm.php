@@ -56,6 +56,7 @@ class DashboardForm extends FormBase {
         '#weight' => -10,
         '#empty_value' => '_none',
         '#empty_option' => 'No Selection',
+        '#description' => $this->t('Select another Provider and Submit to change the Team data displayed below'),
       ];
     }
 
