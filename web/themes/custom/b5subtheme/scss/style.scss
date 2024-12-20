@@ -193,22 +193,22 @@ font-size: 24px;
   font-size: 14px;
 }
 */
-/* How can es-coach help block para id 76 */
-.paragraph--id--76 .paragraph--type--bp-columns {
+/* How can es-coach help block para id 76(on dev) para id 4 (on Prod) */
+.paragraph--id--76 .paragraph--type--bp-columns, .paragraph--id--4 .paragraph--type--bp-columns  {
   background-color:#fff;
   margin:6px;
 border:2px #003366 solid;}
 
-.paragraph--id--76 .paragraph--type--bp-columns .bi
+.paragraph--id--76 .paragraph--type--bp-columns .bi, .paragraph--id--4 .paragraph--type--bp-columns .bi
 {color:#003366 ;}
 
-.paragraph--id--76 .paragraph--type--bp-columns .paragraph--type--bp-blank
+.paragraph--id--76 .paragraph--type--bp-columns .paragraph--type--bp-blank, .paragraph--id--4 .paragraph--type--bp-columns .paragraph--type--bp-blank
 {padding:4px}
 
 
 
 .hero {
-  background-image: url('https://rp-escoach.communityinclusion.org/sites/default/files/escoach-hero-mobile.png');
+  background-image: url('https://www.es-coach.org/sites/default/files/escoach-hero-mobile.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -238,7 +238,6 @@ section .hero-content p {padding: 0  60px}
  .paragraph--type--section{
    margin:20px 0;
 }
-.paragraph--id--81, .paragraph--id--124 {background-color:#f8f9fa}
 
 
 .paragraph--type--section h2 .field--name-bp-header {
@@ -254,21 +253,25 @@ border-bottom: 1px solid #eee;
 }
 
 .paragraph--type--section h2 .field--name-bp-header:before {
-  content:url(https://rp-escoach.communityinclusion.org/sites/default/files/escoach-before-header.svg);
+  content:url(/sites/default/files/escoach-before-header.svg);
 margin-right:10px;}
 
 
 
-.paragraph--id--93  .paragraph__column .paragraph--type--bp-columns {
+.paragraph--id--93  .paragraph__column .paragraph--type--bp-columns,
+.paragraph--id--24  .paragraph__column .paragraph--type--bp-columns {
   background-color:#003366;
   color:#fff;
   margin:4px;
   padding:5px;
   }
 
-.paragraph--id--93  .paragraph__column .paragraph--type--bp-columns p {padding:5px; text-align:center}
+.paragraph--id--93  .paragraph__column .paragraph--type--bp-columns p,
+.paragraph--id--24  .paragraph__column .paragraph--type--bp-columns p {padding:5px; text-align:center}
 
-.paragraph--type--section.paragraph--id--81, .paragraph--type--section.paragraph--id--124 {background-color:#f8f9fa}
+.paragraph--id--81, .paragraph--id--124, .paragraph--id--5, .paragraph--id--19 {background-color:#f8f9fa}
+
+
 
 .btn-darkblue {
   background-color: #003366;
@@ -276,28 +279,29 @@ margin-right:10px;}
 
 
 /*What do people say about es-coach block */
-  div.paragraph--id--118  {
+.testimonial {text-align:center; } 
+.testimonial  em {display:block;}
+
+  div.paragraph--id--118, div.paragraph--id--10  {
     font-size:20px;
 }
 
-div.paragraph--id--118  {
-    font-size:20px;
-}
-
-
-.paragraph--id--113 .paragraph--type--bp-columns:nth-child(1) {
+.paragraph--id--113 .paragraph--type--bp-columns:nth-child(1),
+.paragraph--id--9 .paragraph--type--bp-columns:nth-child(1)  {
  border: 2px #003366 solid;
     display: flex;
     align-items: center;
 }
 
-.paragraph--id--113 .paragraph--type--bp-columns:nth-child(3) {
+.paragraph--id--113 .paragraph--type--bp-columns:nth-child(3),
+.paragraph--id--9 .paragraph--type--bp-columns:nth-child(3) {
    border: 2px #003366 solid;
     display: flex;
     align-items: center;
 }
 
-.paragraph--id--117 .paragraph--type--bp-columns:nth-child(2) {
+.paragraph--id--117 .paragraph--type--bp-columns:nth-child(2),
+.paragraph--id--14 .paragraph--type--bp-columns:nth-child(2) {
  border: 2px #003366 solid;
     display: flex;
     align-items: center;
