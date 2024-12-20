@@ -190,7 +190,12 @@ class QueryBuilder {
    */
   public function process($params = []) {
 
-    $this->getProvider();
+    if (!empty($params['provider'])) {
+      $this->provider = $params['provider'];
+    }
+    else {
+      $this->getProvider();
+    }
     $this->timeframe = $params['timeframe'];
     $this->dataframe = $params['dataframe'];
 
@@ -359,6 +364,10 @@ class QueryBuilder {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
    private function getProviderName() {
+     if ($this->provider) {
+       return $this->provider;
+     }
+
      $profiles = $this->entityTypeManager->getStorage('profile')
        ->loadByProperties([
          'uid' => $this->currentUser->id(),

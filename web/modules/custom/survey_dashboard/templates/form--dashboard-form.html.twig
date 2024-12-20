@@ -16,6 +16,14 @@
         <div class="col-md-6">
           {{ form.timeframe }}
         </div>
+        {% if form.provider %}
+
+            <div class="col-md-6">
+              {{ form.provider }}
+            </div>
+
+
+        {% endif %}
         <div class="col-md-6 escoach-submit-wrapper">
           {{ form.actions }}
         </div>
@@ -27,5 +35,5 @@
     </div>
 
   </div>
-  {{ form|without('who', 'what', 'where', 'results', 'timeframe', 'actions') }}
+  {{ form|without('who', 'what', 'where', 'results', 'timeframe', 'actions', 'provider') }}
 </div>

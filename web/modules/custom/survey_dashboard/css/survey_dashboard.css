@@ -33,6 +33,7 @@
 
 .form-item-who label,
 .form-item-where label,
+.form-item-provider label,
 .form-item-timeframe label {
   font-size: 1.5em;
 }

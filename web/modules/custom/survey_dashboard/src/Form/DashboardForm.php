@@ -13,12 +13,18 @@ class DashboardForm extends FormBase {
 
   /** @var \Drupal\survey_dashboard\Service\QueryBuilder */
   private $surveyDashboardQueryBuilder;
+
+  /**
+   * @var \Drupal\es_homepage\Services\HomePageService
+   */
+  private $homePageService;
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->surveyDashboardQueryBuilder = $container->get('survey_dashboard.query_builder');
+    $instance->homePageService = $container->get('es_homepage.home_page_service');
     return $instance;
   }
   /**
@@ -32,6 +38,28 @@ class DashboardForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
+    $input = $form_state->getUserInput();
+    $roles = \Drupal::currentUser()->getRoles();
+    if (in_array('ta_admin', $roles)) {
+      $providers = $this->homePageService->getProviderList();
+      $options = [];
+      foreach ($providers as $provider) {
+        $options[$provider] = $provider;
+      }
+
+      $form['provider'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Provider'),
+        '#default_value' => $input['provider'] ?? $this->homePageService->getProvider(),
+        '#options' => $options,
+        '#weight' => -10,
+        '#empty_value' => '_none',
+        '#empty_option' => 'No Selection',
+        '#description' => $this->t('Select another Provider and Submit to change the Team data displayed below'),
+      ];
+    }
+
     $form['what'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('What'),
@@ -85,6 +113,7 @@ class DashboardForm extends FormBase {
       'what' => $input['what'] ?? NULL,
       'where' => $input['where'] ?? NULL,
       'debug' => TRUE,
+      'provider' => $input['provider'] ?? NULL
     ];
 
     $results = $this->surveyDashboardQueryBuilder->process($params);
