@@ -1,7 +1,7 @@
 name: 'Paragraphs Features'
 type: module
 description: 'Provides additional paragraphs widgets.'
-core_version_requirement: ^9.2 || ^10
+core_version_requirement: ^9.2 || ^10 || ^11
 package: Paragraphs
 configure: paragraphs_features.settings_form
 dependencies:
@@ -9,7 +9,7 @@ dependencies:
   - drupal:field
   - drupal:ckeditor5
 
-# Information added by Drupal.org packaging script on 2024-04-24
-version: '2.0.0'
+# Information added by Drupal.org packaging script on 2025-01-07
+version: '2.1.0'
 project: 'paragraphs_features'
-datestamp: 1713956981
+datestamp: 1736258968

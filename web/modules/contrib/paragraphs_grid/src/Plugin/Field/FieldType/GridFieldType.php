@@ -19,7 +19,7 @@ use Drupal\Core\TypedData\TypedDataInterface;
  *   id = "grid_field_type",
  *   label = @Translation("Paragraphs grid"),
  *   description = @Translation("Provides a field where bootstrap grid classes can be defined for the parent entity."),
- *   category = @Translation("Reference revisions"),
+ *   category = "reference",
  *   default_widget = "grid_widget",
  *   default_formatter = "grid_field_formatter",
  *   group = "default",
@@ -109,11 +109,11 @@ class GridFieldType extends FieldItemBase {
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
     // Prevent early t() calls by using the TranslatableMarkup.
     $properties['value'] = DataDefinition::create('string')
-      ->setLabel(new TranslatableMarkup('Grid classes'))
+      ->setLabel((String) new TranslatableMarkup('Grid classes'))
       ->setSetting('case_sensitive', TRUE)
       ->setRequired(FALSE);
     $properties['view_mode'] = DataDefinition::create('string')
-      ->setLabel(new TranslatableMarkup('View mode'))
+      ->setLabel((String) new TranslatableMarkup('View mode'))
       ->setSetting('case_sensitive', TRUE)
       ->setRequired(FALSE);
 

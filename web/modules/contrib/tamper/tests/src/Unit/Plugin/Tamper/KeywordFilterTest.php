@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\tamper\Unit\Plugin\Tamper;
 
+use Drupal\tamper\Exception\SkipTamperItemException;
 use Drupal\tamper\Plugin\Tamper\KeywordFilter;
 
 /**
@@ -24,9 +25,16 @@ class KeywordFilterTest extends TamperPluginTestBase {
    *
    * @dataProvider providerKeywordFilter
    */
-  public function testKeywordFilter(string $expected, array $config) {
+  public function testKeywordFilter($expected, array $config, ?string $exception_message = NULL) {
     $this->plugin = new KeywordFilter($config, 'keyword_filter', [], $this->getMockSourceDefinition());
-    $this->assertEquals($expected, $this->plugin->tamper('This is a title'));
+    if (is_string($exception_message)) {
+      $this->expectException(SkipTamperItemException::class);
+      $this->expectExceptionMessage($exception_message);
+      $this->plugin->tamper('This is a title');
+    }
+    else {
+      $this->assertEquals($expected, $this->plugin->tamper('This is a title'));
+    }
   }
 
   /**
@@ -34,9 +42,17 @@ class KeywordFilterTest extends TamperPluginTestBase {
    *
    * @dataProvider providerKeywordFilterBc
    */
-  public function testKeywordFilterBc($expected, $config) {
+  public function testKeywordFilterBc($expected, array $config, ?string $exception_message = NULL) {
     $this->plugin = new KeywordFilter($config, 'keyword_filter', [], $this->getMockSourceDefinition());
-    $this->assertEquals($expected, $this->plugin->tamper('This is a title'));
+    if (is_string($exception_message)) {
+      $this->expectException(SkipTamperItemException::class);
+      $this->expectExceptionMessage($exception_message);
+      $this->plugin->tamper('This is a title');
+    }
+    else {
+      $this->assertEquals($expected, $this->plugin->tamper('This is a title'));
+      $this->assertFalse($this->plugin->multiple(), 'The returned data is expected to be singular.');
+    }
   }
 
   /**
@@ -67,7 +83,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
   public static function providerKeywordFilterWithBcLayer(): array {
     return [
       'StriPosFilter' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => 'booya',
           KeywordFilter::WORD_LIST => ['booya'],
@@ -76,6 +92,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => FALSE,
           KeywordFilter::INVERT => FALSE,
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
       'StriPosPass' => [
         'expected' => 'This is a title',
@@ -89,7 +106,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
         ],
       ],
       'StrPosFilter' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => 'this',
           KeywordFilter::WORD_LIST => ['this'],
@@ -98,6 +115,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => TRUE,
           KeywordFilter::INVERT => FALSE,
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
       'StrPosPass' => [
         'expected' => 'This is a title',
@@ -111,7 +129,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
         ],
       ],
       'StrPosFilterMultipleWords' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => "this\nTitle",
           KeywordFilter::WORD_LIST => ['this', 'Title'],
@@ -120,6 +138,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => TRUE,
           KeywordFilter::INVERT => FALSE,
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
       // Only one words needs a match.
       'StrPosPassMultipleWords' => [
@@ -134,7 +153,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
         ],
       ],
       'ExactFilter' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => 'a title',
           KeywordFilter::WORD_LIST => ['a title'],
@@ -143,9 +162,10 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => FALSE,
           KeywordFilter::INVERT => FALSE,
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
       'ExactFilter2' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => 'This is  a title',
           KeywordFilter::WORD_LIST => ['This is  a title'],
@@ -154,6 +174,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => FALSE,
           KeywordFilter::INVERT => FALSE,
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
       'ExactCaseInsensitivePass' => [
         'expected' => 'This is a title',
@@ -167,7 +188,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
         ],
       ],
       'ExactCaseSensitiveFilter' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => 'This is a Title',
           KeywordFilter::WORD_LIST => ['This is a Title'],
@@ -176,6 +197,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => TRUE,
           KeywordFilter::INVERT => FALSE,
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
       'ExactCaseSensitivePass' => [
         'expected' => 'This is a title',
@@ -189,7 +211,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
         ],
       ],
       'WordBoundariesFilter' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => 'tit',
           KeywordFilter::WORD_LIST => ['tit'],
@@ -198,6 +220,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => FALSE,
           KeywordFilter::INVERT => FALSE,
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
       'WordBoundariesPass' => [
         'expected' => 'This is a title',
@@ -233,7 +256,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
         ],
       ],
       'InvertFilteringResult' => [
-        'expected' => '',
+        'expected' => NULL,
         'config' => [
           KeywordFilter::WORDS => 'this',
           KeywordFilter::WORD_LIST => ['this'],
@@ -242,6 +265,7 @@ class KeywordFilterTest extends TamperPluginTestBase {
           KeywordFilter::CASE_SENSITIVE => FALSE,
           KeywordFilter::INVERT => TRUE,
         ],
+        'exception_message' => 'Item contains one of the configured keywords.',
       ],
       'InvertEnablingFailedCaseResult' => [
         'expected' => 'This is a title',
@@ -294,13 +318,21 @@ class KeywordFilterTest extends TamperPluginTestBase {
    * @covers ::tamper
    * @dataProvider providerKeywordFilterWithArrayData
    */
-  public function testKeywordFilterWithArrayData($expected, array $data) {
+  public function testKeywordFilterWithArrayData($expected, array $data, ?string $exception_message = NULL) {
     $config = [
       KeywordFilter::WORD_LIST => ['Foo', 'Bar', 'Qux'],
     ];
 
     $this->plugin = new KeywordFilter($config, 'keyword_filter', [], $this->getMockSourceDefinition());
-    $this->assertEquals($expected, $this->plugin->tamper($data));
+    if (is_string($exception_message)) {
+      $this->expectException(SkipTamperItemException::class);
+      $this->expectExceptionMessage($exception_message);
+      $this->plugin->tamper($data);
+    }
+    else {
+      $this->assertEquals($expected, $this->plugin->tamper($data));
+      $this->assertTrue($this->plugin->multiple(), 'The returned data is expected to be multivalued.');
+    }
   }
 
   /**
@@ -331,10 +363,20 @@ class KeywordFilterTest extends TamperPluginTestBase {
         ],
       ],
       'no keywords used' => [
-        'expected' => '',
+        'expected' => NULL,
         'data' => [
           'Lorem ipsum',
         ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
+      ],
+      'with empty data' => [
+        'expected' => NULL,
+        'data' => [
+          '',
+          0,
+          NULL,
+        ],
+        'exception_message' => 'Item does not contain one of the configured keywords.',
       ],
     ];
   }
@@ -358,6 +400,30 @@ class KeywordFilterTest extends TamperPluginTestBase {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('Search text must begin and end with a letter, number, or underscore when word boundaries should be respected.');
     $plugin->getRegexWrapper('*Bar');
+  }
+
+  /**
+   * Test with a null value.
+   */
+  public function testWithNullValue() {
+    $this->plugin->setConfiguration([
+      KeywordFilter::WORD_LIST => ['Foo', 'Bar'],
+    ]);
+    $this->expectException(SkipTamperItemException::class);
+    $this->expectExceptionMessage('Item does not contain one of the configured keywords.');
+    $this->plugin->tamper(NULL);
+  }
+
+  /**
+   * Test with an empty string.
+   */
+  public function testWithEmptyString() {
+    $this->plugin->setConfiguration([
+      KeywordFilter::WORD_LIST => ['Foo', 'Bar'],
+    ]);
+    $this->expectException(SkipTamperItemException::class);
+    $this->expectExceptionMessage('Item does not contain one of the configured keywords.');
+    $this->plugin->tamper('');
   }
 
 }

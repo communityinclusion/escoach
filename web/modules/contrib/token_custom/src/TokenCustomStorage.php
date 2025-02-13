@@ -2,9 +2,9 @@
 
 namespace Drupal\token_custom;
 
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\token_custom\Entity\TokenCustomType;
-use Drupal\Core\Entity\EntityStorageException;
 
 /**
  * Defines the storage for custom_token entities.

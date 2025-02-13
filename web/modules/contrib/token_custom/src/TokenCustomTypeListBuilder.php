@@ -29,8 +29,8 @@ class TokenCustomTypeListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['type'] = t('Custom token type');
-    $header['description'] = t('Description');
+    $header['type'] = $this->t('Custom token type');
+    $header['description'] = $this->t('Description');
     return $header + parent::buildHeader();
   }
 
@@ -38,7 +38,7 @@ class TokenCustomTypeListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    $row['type'] = $entity->toLink()->toString();
+    $row['type'] = $entity->label();
     $row['description']['data']['#markup'] = $entity->getDescription();
     return $row + parent::buildRow($entity);
   }

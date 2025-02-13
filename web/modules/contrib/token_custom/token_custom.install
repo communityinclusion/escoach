@@ -26,16 +26,16 @@ function token_custom_update_8001() {
     return;
   }
 
-  /* @var string */
+  /** @var string */
   $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
 
-  /* @var \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface */
+  /** @var \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface */
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
 
-  /* @var \Drupal\Core\Database\Schema */
+  /** @var \Drupal\Core\Database\Schema */
   $schema = $connection->schema();
 
-  /* @var boolean */
+  /** @var boolean */
   $field_data_exists = $schema->tableExists($field_data_table);
 
   // Copy tables and then truncate them so the entity definition can be updated.

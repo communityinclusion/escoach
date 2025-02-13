@@ -280,8 +280,6 @@ class EntityUsage implements EntityUsageInterface {
    * Core doesn't support big integers (bigint) for entity reference fields.
    * Therefore we consider integers with more than 10 digits (big integer) to be
    * strings.
-   * @todo: Fix bigint support once fixed in core. More info on #2680571 and
-   * #2989033.
    *
    * @param int|string $value
    *   The value to check.
@@ -289,6 +287,9 @@ class EntityUsage implements EntityUsageInterface {
    * @return bool
    *   TRUE if the value is a numeric integer or a string containing an integer,
    *   FALSE otherwise.
+   *
+   * @todo Fix bigint support once fixed in core. More info on #2680571 and
+   *   #2989033.
    */
   protected function isInt($value) {
     return ((string) (int) $value === (string) $value) && strlen($value) < 11;

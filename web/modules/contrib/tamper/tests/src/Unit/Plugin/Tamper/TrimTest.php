@@ -66,11 +66,4 @@ class TrimTest extends TamperPluginTestBase {
     $this->assertEquals('hello', $plugin->tamper('$$hello$$'));
   }
 
-  /**
-   * Test trimming null.
-   */
-  public function testTrimNull() {
-    $this->assertEquals(NULL, $this->plugin->tamper(NULL));
-  }
-
 }

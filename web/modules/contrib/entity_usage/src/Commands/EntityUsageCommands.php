@@ -4,9 +4,9 @@ namespace Drupal\entity_usage\Commands;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\entity_usage\EntityUsageBatchManager;
 use Drupal\entity_usage\EntityUsageQueueBatchManager;
 use Drush\Commands\DrushCommands;
-use Drupal\entity_usage\EntityUsageBatchManager;
 
 /**
  * Entity Usage drush commands.

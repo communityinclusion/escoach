@@ -111,7 +111,7 @@ class WktGenerator implements WktGeneratorInterface {
   /**
    * {@inheritdoc}
    */
-  public function wktGeneratePoint(array $point = NULL) {
+  public function wktGeneratePoint(?array $point = NULL) {
     $point = $point ? $point : $this->randomPoint();
     return $this->wktBuildPoint($point);
   }
@@ -160,7 +160,7 @@ class WktGenerator implements WktGeneratorInterface {
    * @return array
    *   The linestring components coordinates.
    */
-  protected function generateLinestring(array $start = NULL, $segments = NULL) {
+  protected function generateLinestring(?array $start = NULL, $segments = NULL) {
     $start = $start ? $start : $this->randomPoint();
     $segments = $segments ? $segments : $this->ddGenerate(2, 5, TRUE);
     $points[] = [$start[0], $start[1]];
@@ -177,7 +177,7 @@ class WktGenerator implements WktGeneratorInterface {
   /**
    * {@inheritdoc}
    */
-  public function wktGenerateLinestring(array $start = NULL, $segments = NULL) {
+  public function wktGenerateLinestring(?array $start = NULL, $segments = NULL) {
     return $this->wktBuildLinestring($this->generateLinestring($start, $segments));
   }
 
@@ -242,7 +242,7 @@ class WktGenerator implements WktGeneratorInterface {
    * @return array
    *   The polygon components coordinates.
    */
-  protected function generatePolygon(array $start = NULL, $segments = NULL) {
+  protected function generatePolygon(?array $start = NULL, $segments = NULL) {
     $start = $start ?: $this->randomPoint();
     $segments = $segments ?: $this->ddGenerate(2, 4, TRUE);
     $poly = $this->generateLinestring($start, $segments);
@@ -254,7 +254,7 @@ class WktGenerator implements WktGeneratorInterface {
   /**
    * {@inheritdoc}
    */
-  public function wktGeneratePolygon(array $start = NULL, $segments = NULL) {
+  public function wktGeneratePolygon(?array $start = NULL, $segments = NULL) {
     return $this->wktBuildPolygon($this->generatePolygon($start, $segments));
   }
 

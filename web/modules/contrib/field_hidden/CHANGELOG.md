@@ -11,16 +11,18 @@ using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
 ### Fixed
 
-## [2.1.1] - 2024-03-28
+## [Unreleased]
 
 ### Added
-- Issue #3426505 by andrii-momotov, jacobfriis: Add composer.json file.
+
+### Changed
 
 ### Fixed
-- Issue #3426467 by andrii-momotov, zaryab_drupal, nitin_lama:
-  Replace README.txt with README.md file
-- Issue #3426478 by andrii-momotov, jacobfriis:
-  Fix the errors/warnings reported by PHP_CodeSniffer
+
+## [2.1.2] - 2024-11-29
+
+### Added
+- Issue #3430508: Add Drupal 11 support.
 
 ## [2.1.0] - 2023-10-13
 

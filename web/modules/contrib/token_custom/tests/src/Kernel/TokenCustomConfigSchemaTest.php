@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\token_custom\Kernel;
 
-use Drupal\token_custom\Entity\TokenCustomType;
-use Drupal\Tests\SchemaCheckTestTrait;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\SchemaCheckTestTrait;
+use Drupal\token_custom\Entity\TokenCustomType;
 
 /**
  * Tests the token_custom config schema.
@@ -12,8 +12,14 @@ use Drupal\KernelTests\KernelTestBase;
  * @group token_custom
  */
 class TokenCustomConfigSchemaTest extends KernelTestBase {
-
   use SchemaCheckTestTrait;
+
+  /**
+   * The typed config service.
+   *
+   * @var \Drupal\Core\Config\TypedConfigManagerInterface
+   */
+  protected $typedConfig;
 
   /**
    * {@inheritdoc}

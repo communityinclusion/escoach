@@ -233,12 +233,12 @@ class EntityUsageSettingsForm extends ConfigFormBase {
       $form['edit_warning_message_entity_types']['entity_types'][$entity_type_id]['#states'] = [
         'enabled' => [
           ':input[name="track_enabled_target_entity_types[entity_types][' . $entity_type_id . ']"]' => ['checked' => TRUE],
-        ]
+        ],
       ];
       $form['delete_warning_message_entity_types']['entity_types'][$entity_type_id]['#states'] = [
         'enabled' => [
           ':input[name="track_enabled_target_entity_types[entity_types][' . $entity_type_id . ']"]' => ['checked' => TRUE],
-        ]
+        ],
       ];
     }
 

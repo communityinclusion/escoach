@@ -1887,3 +1887,62 @@ $form['strings'] = [
   '#empty' => $this->t('No strings available.'),
   '#attributes' => ['class' => ['locale-translate-edit-table']],
 ];
+
+/**
+ * Implements hook_cron().
+ */
+#[Hook('cron')]
+class CronHook {
+
+  public function __construct(
+    private readonly EntityTypeManagerInterface $entityTypeManager,
+    private readonly StreamWrapperManagerInterface $streamWrapperManager,
+    private readonly ConfigFactoryInterface $configFactory,
+    private readonly FileUsageInterface $fileUsage,
+    private readonly TimeInterface $time,
+    #[Autowire('@logger.channel.file')]
+    private readonly LoggerInterface $logger,
+  ) {}
+
+}
+
+/**
+ * Doc block is here and an ignore directive is ok.
+ */
+// phpcs:ignore Drupal.NamingConventions.ValidClassName
+enum PUROSELY_WRONG_BUT_OK: int {
+  case One = 1;
+  case Two = 2;
+}
+
+/**
+ * Fully qualified class name is allowed in PHP attributes for now.
+ */
+#[\Drupal\action_link\Attribute\StateAction(
+  id: 'test_always',
+  label: new \Drupal\Core\StringTranslation\TranslatableMarkup('Test Always'),
+  description: new \Drupal\Core\StringTranslation\TranslatableMarkup('Test Always'),
+  directions: [
+    'change' => 'change',
+  ]
+)]
+class TestAlways extends StateActionBase {
+
+  /**
+   * Partial names are ok in attributes for now.
+   */
+  #[Assert\NotBlank]
+  private bool $bar;
+
+  /**
+   * Partially qualified names are ok in attributes for now.
+   */
+  #[CLI\Command(
+    name: 'example',
+    aliases: ['example-foo']
+  )]
+  #[CLI\Option(name: 'pretty_format', description: 'Display the count in pretty format.')]
+  public function test(array $options = ['pretty-format' => TRUE]): void {
+  }
+
+}

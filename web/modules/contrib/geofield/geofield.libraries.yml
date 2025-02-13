@@ -19,3 +19,9 @@ proximity_origin_summary_update:
   dependencies:
     - core/jquery
     - core/once
+geofield-icon:
+  css:
+    theme:
+      css/geofield-icon.css: {}
+  dependencies:
+    - field_ui/drupal.field_ui.manage_fields

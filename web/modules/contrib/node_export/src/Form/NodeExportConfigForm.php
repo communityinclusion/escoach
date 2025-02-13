@@ -46,7 +46,7 @@ class NodeExportConfigForm extends ConfigFormBase {
       '#title' => $this->t('Format to use when exporting a node'),
       '#default_value' => 'JSON',
       '#options' => ['JSON' => $this->t('JSON')],
-      '#description' => $this->t("Right Now we use only JSON Foramt."),
+      '#description' => $this->t("Right now we use only JSON Format."),
     ];
     $form['basic']['node_export_existing'] = [
       '#type' => 'radios',

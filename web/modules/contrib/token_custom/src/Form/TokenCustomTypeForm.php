@@ -2,8 +2,8 @@
 
 namespace Drupal\token_custom\Form;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\BundleEntityFormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Configure custom settings for this site.
@@ -46,7 +46,7 @@ class TokenCustomTypeForm extends BundleEntityFormBase {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
-    $token_type = $this->entity;;
+    $token_type = $this->entity;
 
     $form['name'] = [
       '#type' => 'textfield',
@@ -60,10 +60,11 @@ class TokenCustomTypeForm extends BundleEntityFormBase {
     $form['machineName'] = [
       '#type' => 'machine_name',
       '#title' => $this->t("Token type's machine name"),
-      '#description' => $this->t('A unique machine-readable name for this token. It must only contain lowercase letters, numbers, and underscores.'),
+      '#description' => $this->t('A unique machine-readable name for this token. It must only contain lowercase letters, numbers, and hyphens.'),
       '#default_value' => $token_type->id(),
       '#maxlength' => 32,
       '#machine_name' => [
+        'source' => ['name'],
         'exists' => '\Drupal\token_custom\Entity\TokenCustomType::load',
         'replace' => '-',
         'replace_pattern' => '[^a-z0-9\-]+',
@@ -100,6 +101,8 @@ class TokenCustomTypeForm extends BundleEntityFormBase {
     }
 
     $form_state->setRedirectUrl($entity->toUrl('collection'));
+
+    return $status;
   }
 
 }

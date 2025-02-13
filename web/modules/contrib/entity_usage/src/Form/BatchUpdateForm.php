@@ -2,9 +2,9 @@
 
 namespace Drupal\entity_usage\Form;
 
-use Drupal\entity_usage\EntityUsageBatchManager;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\entity_usage\EntityUsageBatchManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

@@ -2,13 +2,13 @@
 
 namespace Drupal\Tests\entity_usage\Kernel;
 
-use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestMulRevPub;
 use Drupal\entity_usage\Events\EntityUsageEvent;
 use Drupal\entity_usage\Events\Events;
-use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
  * Tests the basic API operations of our tracking service.
@@ -148,7 +148,7 @@ class EntityUsageTest extends EntityKernelTestBase {
     $this->assertEquals($expected_source_list, $real_source_list);
 
     // Test the limit parameter.
-    unset($expected_source_list[$source_entity->getEntityTypeId()][2]);
+    unset($expected_source_list[$source_entity->getEntityTypeId()][(string) $source_entity->id()]);
     $real_source_list = $entity_usage->listSources($target_entity, TRUE, 1);
     $this->assertEquals($expected_source_list, $real_source_list);
 
@@ -259,6 +259,8 @@ class EntityUsageTest extends EntityKernelTestBase {
    *   The source entity.
    * @param \Drupal\Core\Entity\EntityInterface $target
    *   The target entity.
+   * @param string $field_name
+   *   The field name.
    */
   protected function insertEntityUsage(EntityInterface $source, EntityInterface $target, string $field_name) {
     $source_vid = ($source instanceof RevisionableInterface && $source->getRevisionId()) ? $source->getRevisionId() : 0;

@@ -37,7 +37,7 @@ interface WktGeneratorInterface {
    * @return string
    *   The WKT point feature.
    */
-  public function wktGeneratePoint(array $point = NULL);
+  public function wktGeneratePoint(?array $point = NULL);
 
   /**
    * Returns a WKT format multipoint feature.
@@ -69,7 +69,7 @@ interface WktGeneratorInterface {
    * @return string
    *   The WKT linestring feature.
    */
-  public function wktGenerateLinestring(array $start = NULL, $segments = NULL);
+  public function wktGenerateLinestring(?array $start = NULL, $segments = NULL);
 
   /**
    * Returns a WKT format multilinestring feature.
@@ -101,7 +101,7 @@ interface WktGeneratorInterface {
    * @return string
    *   The WKT polygon feature.
    */
-  public function wktGeneratePolygon(array $start = NULL, $segments = NULL);
+  public function wktGeneratePolygon(?array $start = NULL, $segments = NULL);
 
   /**
    * Returns a WKT format multipolygon feature given an array of polygon points.

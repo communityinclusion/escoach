@@ -13,6 +13,16 @@
     init() {
       this.editor.ui.on('ready', function () {
         const plugins = this.editor.plugins;
+        // Image -- v44.0.0+.
+        if (plugins.has('ImageInsertViaUrlUI')) {
+          const dialog = plugins.get('Dialog');
+          if (dialog) {
+            dialog.once('show:insertImageViaUrl', (evt, data) => {
+              const el = data.content.element.getElementsByClassName('ck-input-text')[0];
+              imceInput.processCKEditor5Input(el, 'image');
+            });
+          }
+        }
         // Image.
         if (plugins.has('ImageInsertUI')) {
           const view = plugins.get('ImageInsertUI').dropdownView;

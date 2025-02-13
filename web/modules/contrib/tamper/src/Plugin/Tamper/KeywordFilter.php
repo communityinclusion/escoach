@@ -4,6 +4,7 @@ namespace Drupal\tamper\Plugin\Tamper;
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\tamper\Exception\SkipTamperItemException;
 use Drupal\tamper\TamperBase;
 use Drupal\tamper\TamperableItemInterface;
 
@@ -54,6 +55,13 @@ class KeywordFilter extends TamperBase {
    * If checked, then "book" will match "book" but not "Book" or "BOOK".
    */
   const INVERT = 'invert';
+
+  /**
+   * Flag indicating whether there are multiple values.
+   *
+   * @var bool
+   */
+  protected $multiple = FALSE;
 
   /**
    * {@inheritdoc}
@@ -124,7 +132,7 @@ class KeywordFilter extends TamperBase {
     if ($form_state->getValue(self::WORD_BOUNDARIES)) {
       foreach ($word_list as $word) {
         if (!preg_match('/^\w(.*\w)?$/u', $word)) {
-          $form_state->setErrorByName(self::WORDS, $this->t('Search text must begin and end with a letter, number, or underscore to use the %option option.', ['%option' => t('Respect word boundaries')]));
+          $form_state->setErrorByName(self::WORDS, $this->t('Search text must begin and end with a letter, number, or underscore to use the %option option.', ['%option' => $this->t('Respect word boundaries')]));
         }
       }
     }
@@ -154,8 +162,11 @@ class KeywordFilter extends TamperBase {
     $word_list = $this->getWordList();
 
     if (is_array($data)) {
+      // Set flag that the data is multivalued.
+      $this->multiple = is_array($data);
+
       foreach ($data as $value) {
-        if ($this->match($match_func, $value, $word_list)) {
+        if ($this->match($match_func, (string) $value, $word_list)) {
           $match = TRUE;
           break;
         }
@@ -163,18 +174,25 @@ class KeywordFilter extends TamperBase {
       reset($data);
     }
     else {
-      $match = $this->match($match_func, $data, $word_list);
+      $match = $this->match($match_func, (string) $data, $word_list);
     }
 
     if (!$match && empty($this->getSetting(self::INVERT))) {
-      return '';
+      throw new SkipTamperItemException('Item does not contain one of the configured keywords.');
     }
 
     if ($match && !empty($this->getSetting(self::INVERT))) {
-      return '';
+      throw new SkipTamperItemException('Item contains one of the configured keywords.');
     }
 
     return $data;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function multiple() {
+    return $this->multiple;
   }
 
   /**

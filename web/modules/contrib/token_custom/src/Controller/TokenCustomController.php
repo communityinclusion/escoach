@@ -4,8 +4,8 @@ namespace Drupal\token_custom\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\token_custom\TokenCustomTypeInterface;
 use Drupal\Core\Url;
+use Drupal\token_custom\TokenCustomTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -49,7 +49,6 @@ class TokenCustomController extends ControllerBase {
    *   The custom token type storage.
    */
   public function __construct(EntityStorageInterface $token_custom_storage, EntityStorageInterface $token_custom_type_storage) {
-
     $this->tokenCustomStorage = $token_custom_storage;
     $this->tokenCustomTypeStorage = $token_custom_type_storage;
   }

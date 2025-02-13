@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 
 /**
- * Class EntityUpdateManager.
+ * The entity update manager.
  *
  * @package Drupal\entity_usage
  */
@@ -35,7 +35,7 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
   protected $config;
 
   /**
-   * EntityUpdateManager constructor.
+   * Constructs a new \Drupal\entity_usage\EntityUpdateManager object.
    *
    * @param \Drupal\entity_usage\EntityUsageInterface $usage_service
    *   The usage tracking service.
@@ -140,7 +140,7 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
   }
 
   /**
-   * Check if an entity is allowed to be tracked as source.
+   * Checks if an entity is allowed to be tracked as source.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity object.
@@ -163,7 +163,7 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
   }
 
   /**
-   * Get the enabled tracking plugins, all plugins are enabled by default.
+   * Gets the enabled tracking plugins, all plugins are enabled by default.
    *
    * @return array<string, \Drupal\entity_usage\EntityUsageTrackInterface>
    *   The enabled plugin instances keyed by plugin ID.

@@ -34,7 +34,7 @@ class MediaEmbed extends TextFieldEmbedBase {
       // when we should record 2. The alternative is to add a lot of complexity
       // to the update logic of our plugin, to deal with all possible
       // combinations in the update scenario.
-      // @TODO Re-evaluate if this is worth the effort and overhead.
+      // @todo Re-evaluate if this is worth the effort and overhead.
       $entities[$node->getAttribute('data-entity-uuid')] = $node->getAttribute('data-entity-type');
     }
     return $entities;

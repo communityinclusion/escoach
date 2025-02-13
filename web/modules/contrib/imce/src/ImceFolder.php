@@ -96,7 +96,7 @@ class ImceFolder extends ImceItem {
     $oldpath = $this->path;
     if ($path !== $oldpath) {
       // Remove oldpath references.
-      if (isset($oldpath)) {
+      if ($oldpath !== NULL) {
         unset($this->fm()->tree[$oldpath]);
         foreach ($this->subfolders as $name => $item) {
           $item->setPath(NULL);

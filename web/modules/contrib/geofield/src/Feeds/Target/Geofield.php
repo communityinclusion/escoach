@@ -47,8 +47,8 @@ class Geofield extends FieldTargetBase implements ContainerFactoryPluginInterfac
    *   The messenger.
    */
   public function __construct(array $configuration, $plugin_id, array $plugin_definition, MessengerInterface $messenger) {
-    $this->targetDefinition = $configuration['target_definition'];
-    $this->settings = $this->targetDefinition->getFieldDefinition()->getSettings();
+    $target_definition = $configuration['target_definition'];
+    $this->settings = $target_definition->getFieldDefinition()->getSettings();
     $this->messenger = $messenger;
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }

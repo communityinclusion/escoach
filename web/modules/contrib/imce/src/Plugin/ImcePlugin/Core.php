@@ -2,6 +2,7 @@
 
 namespace Drupal\imce\Plugin\ImcePlugin;
 
+use Drupal\imce\Imce;
 use Drupal\imce\ImceFM;
 use Drupal\imce\ImcePluginBase;
 
@@ -72,7 +73,7 @@ class Core extends ImcePluginBase {
     }
     if ($uris) {
       /** @var \Drupal\file\FileInterface[] $files */
-      $files = \Drupal::entityTypeManager()->getStorage('file')->loadByProperties(['uri' => array_keys($uris)]);
+      $files = Imce::entityStorage('file')->loadByProperties(['uri' => array_keys($uris)]);
       $uuids = [];
       foreach ($files as $file) {
         $item = $uris[$file->getFileUri()];

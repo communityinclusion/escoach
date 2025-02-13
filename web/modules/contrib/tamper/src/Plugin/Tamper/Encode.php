@@ -2,6 +2,7 @@
 
 namespace Drupal\tamper\Plugin\Tamper;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\tamper\TamperBase;
 use Drupal\tamper\TamperableItemInterface;
@@ -37,10 +38,14 @@ class Encode extends TamperBase {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form[self::SETTING_MODE] = [
       '#type' => 'radios',
-      '#title' => $this->t('Serialization mode:'),
+      '#title' => $this->t('Conversion mode:'),
       '#options' => $this->getOptions(),
       '#default_value' => $this->getSetting(self::SETTING_MODE),
     ];
+
+    foreach ($this->getOptionsDescriptions() as $key => $description) {
+      $form[self::SETTING_MODE][$key]['#description'] = $description;
+    }
 
     return $form;
   }
@@ -59,7 +64,7 @@ class Encode extends TamperBase {
    * @return array
    *   List of options, keyed by method.
    */
-  protected function getOptions() {
+  protected function getOptions(): array {
     return [
       'serialize' => $this->t('PHP Serialize'),
       'unserialize' => $this->t('PHP Unserialize'),
@@ -73,19 +78,54 @@ class Encode extends TamperBase {
   }
 
   /**
+   * Defines the description for each available option.
+   *
+   * @return array
+   *   List of option descriptions.
+   */
+  protected function getOptionsDescriptions(): array {
+    return [
+      'serialize' => $this->t('Generates a storable representation of a value.'),
+      'unserialize' => $this->t('Creates a PHP value from a stored representation.'),
+      'json_encode' => $this->t('Creates the JSON representation of a value.'),
+      'json_decode' => $this->t('Takes a JSON encoded string and converts it into a PHP value.'),
+      'base64_encode' => $this->t('Encodes data with MIME base64.'),
+      'base64_decode' => $this->t('Decodes data encoded with MIME base64.'),
+      'yaml_encode' => $this->t('Creates the YAML representation of a value.'),
+      'yaml_decode' => $this->t('Takes a YAML encoded string and converts it into a PHP value.'),
+    ];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function tamper($data, ?TamperableItemInterface $item = NULL) {
-    $function = $this->getSetting(self::SETTING_MODE);
+    $mode = $this->getSetting(self::SETTING_MODE);
+    switch ($mode) {
+      case 'serialize':
+      case 'unserialize':
+      case 'base64_encode':
+      case 'base64_decode':
+        if (function_exists($mode)) {
+          $data = call_user_func($mode, $data);
+        }
+        break;
 
-    if (function_exists($function)) {
-      $data = call_user_func($function, $data);
-    }
-    elseif ($function === 'yaml_encode') {
-      $data = Yaml::dump($data);
-    }
-    elseif ($function === 'yaml_decode') {
-      $data = Yaml::parse($data);
+      case 'json_encode':
+        $data = Json::encode($data);
+        break;
+
+      case 'json_decode':
+        $data = Json::decode($data);
+        break;
+
+      case 'yaml_encode':
+        $data = Yaml::dump($data);
+        break;
+
+      case 'yaml_decode':
+        $data = Yaml::parse($data);
+        break;
     }
 
     return $data;

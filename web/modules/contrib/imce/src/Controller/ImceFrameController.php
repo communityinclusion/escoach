@@ -35,7 +35,7 @@ class ImceFrameController extends ControllerBase {
    * Checks access to /user/{user}/imce path.
    */
   public function checkAccess() {
-    $path = \Drupal::service('path.current')->getPath();
+    $path = Imce::service('path.current')->getPath();
     $args = explode('/', trim($path, '/'));
     $user = $this->currentUser();
     $uid = $user->id();

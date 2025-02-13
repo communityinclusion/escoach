@@ -9,12 +9,12 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Path\PathValidatorInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\entity_usage\EntityUsageInterface;
 use Drupal\entity_usage\EntityUsageTrackBase;
 use Drupal\layout_builder\Plugin\Field\FieldType\LayoutSectionItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Path\PathValidatorInterface;
-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 
 /**
  * Tracks usage of entities related in Layout Builder layouts.
@@ -194,7 +194,7 @@ class LayoutBuilder extends EntityUsageTrackBase {
     $ids = array_filter($ebbContentIds, function ($item) {
       // Entity Browser Block stores each entity in "entity_ids" in the format:
       // "{$entity_type_id}:{$entity_id}".
-      list($entity_type_id, $entity_id) = explode(":", $item);
+      [$entity_type_id, $entity_id] = explode(":", $item);
       $storage = $this->entityTypeManager->getStorage($entity_type_id);
       if (!$storage) {
         return FALSE;
@@ -236,7 +236,7 @@ class LayoutBuilder extends EntityUsageTrackBase {
     $ids = array_map(function ($item) {
       // Content dependencies are stored in the format:
       // "{$entity_type_id}:{$bundle_id}:{$entity_uuid}".
-      list($entity_type_id, , $entity_uuid) = explode(':', $item);
+      [$entity_type_id, , $entity_uuid] = explode(':', $item);
       if ($entity = $this->entityRepository->loadEntityByUuid($entity_type_id, $entity_uuid)) {
         return "{$entity_type_id}|{$entity->id()}";
       }

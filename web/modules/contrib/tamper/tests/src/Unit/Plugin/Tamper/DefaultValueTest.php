@@ -51,4 +51,18 @@ class DefaultValueTest extends TamperPluginTestBase {
     $this->assertEquals([1], $plugin->tamper([1]));
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function testWithNullValue() {
+    $this->assertEquals('HEYO!', $this->plugin->tamper(NULL));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function testWithEmptyString() {
+    $this->assertEquals('HEYO!', $this->plugin->tamper(''));
+  }
+
 }

@@ -22,6 +22,11 @@ class StrLen extends TamperBase {
    * {@inheritdoc}
    */
   public function tamper($data, ?TamperableItemInterface $item = NULL) {
+    // Don't process null values.
+    if (is_null($data)) {
+      return $data;
+    }
+
     if (!is_string($data)) {
       throw new TamperException('Input should be a string.');
     }

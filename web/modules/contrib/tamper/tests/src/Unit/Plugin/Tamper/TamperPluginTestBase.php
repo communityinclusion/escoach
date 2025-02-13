@@ -93,4 +93,18 @@ abstract class TamperPluginTestBase extends UnitTestCase {
     $this->assertIsBool($this->plugin->multiple());
   }
 
+  /**
+   * Test with a null value.
+   */
+  public function testWithNullValue() {
+    $this->assertNull($this->plugin->tamper(NULL));
+  }
+
+  /**
+   * Test with an empty string.
+   */
+  public function testWithEmptyString() {
+    $this->assertSame('', $this->plugin->tamper(''));
+  }
+
 }

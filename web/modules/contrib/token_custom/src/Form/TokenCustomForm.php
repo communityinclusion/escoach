@@ -2,14 +2,14 @@
 
 namespace Drupal\token_custom\Form;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
-use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\token_custom\Entity\TokenCustomType;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form handler for the custom token edit forms.
@@ -40,12 +40,14 @@ class TokenCustomForm extends ContentEntityForm {
   /**
    * Constructs a TokenCustomForm object.
    *
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+   *   The entity type bundle info.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $token_custom_storage
-   *   The custom token storage.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $token_custom_type_storage
-   *   The custom token type storage.
    */
   public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
@@ -96,7 +98,10 @@ class TokenCustomForm extends ContentEntityForm {
 
     $form['machine_name']['widget'][0]['value']['#type'] = 'machine_name';
     $form['machine_name']['widget'][0]['value']['#machine_name'] = [
+      'source' => ['name', 'widget', 0, 'value'],
       'exists' => '\Drupal\token_custom\Entity\TokenCustom::load',
+      'replace' => '-',
+      'replace_pattern' => '[^a-z0-9\-]+',
     ];
 
     $account = $this->currentUser();
@@ -115,7 +120,7 @@ class TokenCustomForm extends ContentEntityForm {
     $token = $this->entity;
 
     $insert = $token->isNew();
-    $token->save();
+    $status = $token->save();
     token_clear_cache();
 
     $context = [
@@ -149,6 +154,7 @@ class TokenCustomForm extends ContentEntityForm {
       $this->messenger()->addError($this->t('The token could not be saved.'));
       $form_state->setRebuild();
     }
+    return $status;
   }
 
 }

@@ -397,12 +397,18 @@ class GridWidget extends WidgetBase implements ContainerFactoryPluginInterface {
       }
       else {
         $element['subform_container']['view_mode_wrap']['view_mode_remark'] = [
-          '#markup' => new TranslatableMarkup(
+          '#markup' => (String) new TranslatableMarkup(
             '<p>No view modes to select found (except "default") for paragraph type %type. @link</p>', [
               '%type' => $this->fieldDefinition->getTargetBundle(),
               '@link' => ($vm_link) ? $vm_link->toString() : '',
             ]
           ),
+         /* '#markup' =>
+            '<p>No view modes to select found (except "default") for paragraph type %type. @link</p>', [
+             // '%type' => $this->fieldDefinition->getTargetBundle(),
+             // '@link' => ($vm_link) ? $vm_link->toString() : '',
+            ]
+          , */
         ];
       }
     }

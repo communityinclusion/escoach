@@ -8,9 +8,10 @@ include:
 
 variables:
   _PHPUNIT_CONCURRENT: '1'
-  OPT_IN_TEST_PREVIOUS_MINOR: 1
+  OPT_IN_TEST_PREVIOUS_MAJOR: 1
   RUN_JOB_UPGRADE_STATUS: '1'
-
+phpcs:
+  allow_failure: false
 # By default, Gitlab CI runs on the default system mysql database, change
 # this as it won't work for the schema required by entity_usage.
 # Remove when https://www.drupal.org/project/gitlab_templates/issues/3463044 is
@@ -21,16 +22,23 @@ variables:
     MYSQL_ROOT_PASSWORD: drupal
 
 # Workaround for development dependencies that are not yet compatible
-# with next major, use lenient and override their core compatibility.
-composer (next major):
+# with Drupal 11, use lenient and override their core compatibility.
+composer:
   variables:
-    _LENIENT_ALLOW_LIST: "inline_entity_form,entity_embed,embed,ckeditor,webform,entity_browser_block,paragraphs"
-    PHP_VERSION: $CORE_PHP_MAX
-    DRUPAL_CORE: $CORE_MAJOR_DEVELOPMENT
+    _LENIENT_ALLOW_LIST: "entity_embed,embed,ckeditor,entity_browser_block"
+    PHP_VERSION: $CORE_PHP_MIN
     IGNORE_PROJECT_DRUPAL_CORE_VERSION: 1
 
-phpunit (next major):
+phpunit:
   before_script:
-    - 'sed -i "s/core_version_requirement.*/core_version_requirement: \^11/" web/modules/contrib/**/*.info.yml'
+    - 'sed -i "s/core_version_requirement.*/core_version_requirement: \^10||\^11/" web/modules/contrib/**/*.info.yml'
   variables:
     SYMFONY_DEPRECATIONS_HELPER: "disabled"
+
+#
+# Linting jobs are passing so any issue that breaks them should fix them.
+#
+phpcs:
+  allow_failure: false
+phpstan:
+  allow_failure: false

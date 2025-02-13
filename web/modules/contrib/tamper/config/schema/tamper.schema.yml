@@ -171,6 +171,9 @@ tamper.math:
     value:
       type: float
       label: 'Value'
+    skip_on_nan:
+      type: boolean
+      label: 'Skip calculation when the data is not numeric'
 
 tamper.number_format:
   mapping:

@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\entity_usage\FunctionalJavascript;
 
+use Drupal\Tests\entity_usage\Traits\EntityUsageLastEntityQueryTrait;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\node\Entity\Node;
-use Drupal\Tests\entity_usage\Traits\EntityUsageLastEntityQueryTrait;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
+use Drupal\node\Entity\Node;
 
 /**
  * Basic functional tests for the usage tracking of embedded content.

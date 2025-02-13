@@ -65,6 +65,28 @@ class EncodeTest extends TamperPluginTestBase {
   }
 
   /**
+   * Tests encoding a PHP array to JSON.
+   */
+  public function testJsonEncode() {
+    $config = [
+      Encode::SETTING_MODE => 'json_encode',
+    ];
+    $plugin = new Encode($config, 'encode', [], $this->getMockSourceDefinition());
+    $this->assertEquals('{"key":"value"}', $plugin->tamper(['key' => 'value']));
+  }
+
+  /**
+   * Tests decoding JSON string to a PHP array.
+   */
+  public function testJsonDecode() {
+    $config = [
+      Encode::SETTING_MODE => 'json_decode',
+    ];
+    $plugin = new Encode($config, 'encode', [], $this->getMockSourceDefinition());
+    $this->assertEquals(['key' => 'value'], $plugin->tamper('{"key":"value"}'));
+  }
+
+  /**
    * Test base64_encode.
    */
   public function testBase64Encode() {
@@ -108,4 +130,38 @@ class EncodeTest extends TamperPluginTestBase {
     $this->assertEquals(['x' => 'y', 'y' => 'x'], $plugin->tamper("x: y\ny: x"));
   }
 
+  /**
+   * Tests that a function that is not defined as option is not called.
+   */
+  public function testInvalidEncodeOption() {
+    $config = [
+      Encode::SETTING_MODE => '\Drupal\Tests\tamper\Unit\Plugin\Tamper\tamper_test_invalid_encode',
+    ];
+    $plugin = new Encode($config, 'encode', [], $this->getMockSourceDefinition());
+    $this->assertEquals(['foo', 'bar'], $plugin->tamper(['foo', 'bar']));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function testWithNullValue() {
+    // Serializing the data is the default.
+    $this->assertEquals('N;', $this->plugin->tamper(NULL));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function testWithEmptyString() {
+    // Serializing the data is the default.
+    $this->assertEquals('s:0:"";', $this->plugin->tamper(''));
+  }
+
+}
+
+/**
+ * Function that should not get called.
+ */
+function tamper_test_invalid_encode() {
+  throw new \LogicException('This function should not be called.');
 }

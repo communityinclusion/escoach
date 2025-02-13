@@ -134,8 +134,8 @@ abstract class KernelTestBasePlugin extends KernelTestBase {
    *   uri.
    */
   protected function getTestFileUri() {
-    \Drupal::service('file_system')->copy(
-      \Drupal::service('extension.list.module')->getPath('imce') . '/tests/files/ciandt.jpg',
+    Imce::service('file_system')->copy(
+      Imce::service('extension.list.module')->getPath('imce') . '/tests/files/ciandt.jpg',
       PublicStream::basePath()
     );
     return 'public://ciandt.jpg';

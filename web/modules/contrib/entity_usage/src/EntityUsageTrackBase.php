@@ -2,8 +2,6 @@
 
 namespace Drupal\entity_usage;
 
-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -14,7 +12,8 @@ use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\StreamWrapper\PublicStream;
+use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -56,7 +55,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    * @var \Drupal\Core\Entity\EntityRepositoryInterface
    */
   protected $entityRepository;
- 
+
   /**
    * The Drupal Path Validator service.
    *
@@ -272,7 +271,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
 
     return $referencing_fields_on_bundle;
   }
- 
+
   /**
    * Process the url to a Url object.
    *
@@ -403,9 +402,6 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    *   The public file directory path.
    */
   protected function publicFileDirectory() {
-    if (!$this->publicFileDirectory) {
-      $this->publicFileDirectory = \Drupal::service('stream_wrapper.public')->getDirectoryPath();
-    }
     return $this->publicFileDirectory;
   }
 

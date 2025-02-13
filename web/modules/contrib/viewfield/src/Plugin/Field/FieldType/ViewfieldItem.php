@@ -18,7 +18,6 @@ use Drupal\views\Views;
  *   id = "viewfield",
  *   label = @Translation("Viewfield"),
  *   description = @Translation("Defines a entity reference field type to display a view."),
- *   category = @Translation("Reference"),
  *   default_widget = "viewfield_select",
  *   default_formatter = "viewfield_default",
  *   list_class = "\Drupal\Core\Field\EntityReferenceFieldItemList",
@@ -214,6 +213,9 @@ class ViewfieldItem extends EntityReferenceItem {
     if (isset($views[$entity_id])) {
       $allowed_display_types = $filter ? array_filter($this->getSetting('allowed_display_types')) : [];
       foreach ($views[$entity_id]->get('display') as $key => $display) {
+        if (isset($display['display_options']['enabled']) && !$display['display_options']['enabled']) {
+          continue;
+        }
         if (empty($allowed_display_types) || isset($allowed_display_types[$display['display_plugin']])) {
           $display_options[$key] = FieldFilteredMarkup::create($display['display_title']);
         }

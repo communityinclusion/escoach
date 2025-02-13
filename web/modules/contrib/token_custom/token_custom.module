@@ -5,6 +5,7 @@
  * Hooks for Custom Tokens module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\token_custom\Entity\TokenCustom;
@@ -43,17 +44,58 @@ function token_custom_token_info() {
  */
 function token_custom_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
-  $token_customs = TokenCustom::loadMultiple(array_keys($tokens));
-  foreach ($token_customs as $machine_name => $token_custom) {
-    if (($type == $token_custom->bundle()) && array_key_exists($machine_name, $tokens)) {
-      if ($token_custom instanceof TranslatableInterface) {
-        $langcode = isset($options['langcode']) ? $options['langcode'] : Language::LANGCODE_DEFAULT;
-        $token_custom = \Drupal::service('entity.repository')->getTranslationFromContext($token_custom, $langcode);
-      }
+  $allowlist = token_custom_type_allowlist();
+  if (isset($allowlist[$type])) {
+    $token_customs = TokenCustom::loadMultiple(array_keys($tokens));
+    foreach ($token_customs as $machine_name => $token_custom) {
+      if (($type == $token_custom->bundle()) && array_key_exists($machine_name, $tokens)) {
+        if ($token_custom instanceof TranslatableInterface) {
+          $langcode = $options['langcode'] ?? Language::LANGCODE_DEFAULT;
+          $token_custom = \Drupal::service('entity.repository')->getTranslationFromContext($token_custom, $langcode);
+        }
 
-      $replacements[$tokens[$machine_name]] = $token_custom->getFormattedContent();
-      $bubbleable_metadata->addCacheableDependency($token_custom);
+        $replacements[$tokens[$machine_name]] = $token_custom->getFormattedContent();
+        $bubbleable_metadata->addCacheableDependency($token_custom);
+      }
     }
   }
   return $replacements;
+}
+
+/**
+ * Rebuild the token type allow list.
+ */
+function token_custom_type_allowlist($rebuild = FALSE) {
+  $allowlist = &drupal_static(__FUNCTION__, NULL);
+
+  if (!$rebuild) {
+    if (!isset($allowlist)) {
+      $cache = \Drupal::cache()->get('token_custom.allowlist');
+      if ($cache && isset($cache->data)) {
+        $allowlist = $cache->data;
+      }
+      else {
+        $rebuild = TRUE;
+      }
+    }
+  }
+
+  if ($rebuild) {
+    $token_type_storage = \Drupal::entityTypeManager()
+      ->getStorage('token_custom_type');
+
+    // @todo Only return types with tokens that actually exist.
+    $allowlist = $token_type_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->execute();
+
+    \Drupal::cache()->set(
+      'token_custom.allowlist',
+      $allowlist,
+      Cache::PERMANENT,
+      $token_type_storage->getEntityType()->getListCacheTags()
+    );
+  }
+
+  return $allowlist;
 }

@@ -18,5 +18,8 @@
     "require": {
         "drupal/core": "^9.3 || ^10 || ^11"
     },
+    "require-dev": {
+        "drupal/bueditor": "^3.0"
+    },
     "license": "GPL-2.0-or-later"
 }

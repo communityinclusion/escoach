@@ -4,10 +4,10 @@ namespace Drupal\Tests\entity_usage\FunctionalJavascript;
 
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Url;
+use Drupal\Tests\entity_usage\Traits\EntityUsageLastEntityQueryTrait;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\link\LinkItemInterface;
-use Drupal\Tests\entity_usage\Traits\EntityUsageLastEntityQueryTrait;
 
 /**
  * Basic functional tests for the usage tracking.
@@ -128,6 +128,10 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
     $assert_session->linkExists('recorded usages');
     $assert_session->linkByHrefExists($usage_url);
 
+    // Ensure that delete forms are uncacheable once the message is activated.
+    $this->drupalGet("/node/{$node2->id()}/delete");
+    $assert_session->pageTextNotContains('There are recorded usages of this entity');
+
     // Create a new entity reference field.
     $storage = FieldStorageConfig::create([
       'field_name' => 'field_eu_test_related_nodes2',
@@ -194,6 +198,11 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
       ],
     ];
     $this->assertEquals($expected, $usage);
+
+    // Ensure that node 2 now has the warning.
+    $this->drupalGet("/node/{$node2->id()}/delete");
+    $assert_session->pageTextContains('There are recorded usages of this entity');
+
     // If we delete the field storage the usage should update accordingly.
     $storage->delete();
     $usage = $usage_service->listTargets($node3);
@@ -469,4 +478,5 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
     ];
     $this->assertEquals($expected, $usage);
   }
+
 }

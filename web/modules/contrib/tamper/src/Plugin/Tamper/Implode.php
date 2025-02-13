@@ -59,6 +59,11 @@ class Implode extends TamperBase {
    * {@inheritdoc}
    */
   public function tamper($data, ?TamperableItemInterface $item = NULL) {
+    // Don't process null values.
+    if (is_null($data)) {
+      return $data;
+    }
+
     if (!is_array($data) && !is_string($data)) {
       throw new TamperException('Input should be an array or a string.');
     }

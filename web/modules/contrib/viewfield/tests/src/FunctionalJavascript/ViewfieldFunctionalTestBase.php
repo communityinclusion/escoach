@@ -159,6 +159,13 @@ abstract class ViewfieldFunctionalTestBase extends WebDriverTestBase {
           'display_plugin' => 'block',
           'id' => 'block_1',
         ],
+        'block_disabled' => [
+          'display_plugin' => 'block',
+          'id' => 'block_disabled',
+          'display_options' => [
+            'enabled' => FALSE,
+          ],
+        ],
       ],
     ])->save();
     \Drupal::service('router.builder')->rebuild();

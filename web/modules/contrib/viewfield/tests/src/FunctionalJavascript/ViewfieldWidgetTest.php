@@ -44,6 +44,8 @@ class ViewfieldWidgetTest extends ViewfieldFunctionalTestBase {
     $viewfield_target->setValue('content_test');
     $session->assertWaitOnAjaxRequest();
 
+    $session->optionExists('field_view_test[0][display_id]', 'block_1');
+    $session->optionNotExists('field_view_test[0][display_id]', 'block_disabled');
     $viewfield_display = $session->fieldExists('field_view_test[0][display_id]');
     $viewfield_display->setValue('block_1');
 

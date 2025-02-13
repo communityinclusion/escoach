@@ -163,7 +163,7 @@ class ConvertBoolean extends TamperBase {
     // Convert match field, truth and false values to lowercase, if no match
     // case required.
     if (!$this->getSetting(self::SETTING_MATCH_CASE)) {
-      $match_field = mb_strtolower($match_field);
+      $match_field = mb_strtolower((string) $match_field);
       $truth_value = mb_strtolower($truth_value);
       $false_value = mb_strtolower($false_value);
     }

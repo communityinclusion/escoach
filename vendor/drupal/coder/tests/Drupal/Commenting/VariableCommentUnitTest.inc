@@ -96,4 +96,17 @@ class Test {
    */
   protected UserStorageInterface&MockObject $userStorageMock2;
 
+  /**
+   * The search score.
+   */
+  // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
+  public string $search_score;
+
+  /**
+   * Allow parentheses in the type declaration.
+   *
+   * @var (\Drupal\user\UserInterface&\PHPUnit\Framework\MockObject\MockObject)|null
+   */
+  protected $userMock;
+
 }

@@ -5,7 +5,6 @@ namespace Drupal\token_custom\Form;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Entity\EntityDeleteFormTrait;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a confirmation form for deleting a custom token type entity.
@@ -19,6 +18,7 @@ class TokenCustomTypeDeleteForm extends EntityConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $tokens = $this->entityTypeManager->getStorage('token_custom')->getQuery()
+      ->accessCheck(TRUE)
       ->condition('type', $this->entity->id())
       ->execute();
     if (!empty($tokens)) {

@@ -60,3 +60,7 @@ field.formatter.settings.viewfield_default:
     empty_view_title:
       type: string
       label: 'Empty view title'
+
+field.formatter.settings.viewfield_rendered:
+  type: field.formatter.settings.entity_reference_entity_view
+  label: 'Viewfield rendered entities formatter settings'

@@ -68,4 +68,18 @@ class CastToIntTest extends TamperPluginTestBase {
     $this->assertEquals(23456, $this->plugin->tamper('23456'));
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function testWithNullValue() {
+    $this->assertSame(0, $this->plugin->tamper(NULL));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function testWithEmptyString() {
+    $this->assertSame(0, $this->plugin->tamper(''));
+  }
+
 }

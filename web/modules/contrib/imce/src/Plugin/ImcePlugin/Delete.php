@@ -93,11 +93,11 @@ class Delete extends ImcePluginBase {
     $file = Imce::getFileEntity($uri);
     if ($file) {
       if (!$ignore_usage) {
-        $usage = \Drupal::service('file.usage')->listUsage($file);
+        $usage = Imce::service('file.usage')->listUsage($file);
         if ($usage) {
           unset($usage['imce']);
           if ($usage) {
-            \Drupal::messenger()->addMessage(t(
+            Imce::messenger()->addMessage(t(
               '%filename is in use by another application.',
               ['%filename' => $file->getFilename()]
             ), 'error');
@@ -109,7 +109,7 @@ class Delete extends ImcePluginBase {
       return TRUE;
     }
     // Unmanaged file.
-    return \Drupal::service('file_system')->delete($uri);
+    return Imce::service('file_system')->delete($uri);
   }
 
   /**
@@ -122,9 +122,9 @@ class Delete extends ImcePluginBase {
       return FALSE;
     }
     if ($check_files && !empty($content['files'])) {
-      \Drupal::messenger()->addMessage(t(
+      Imce::messenger()->addMessage(t(
         '%folder contains files and can not be deleted.',
-        ['%folder' => \Drupal::service('file_system')->basename($uri)]
+        ['%folder' => Imce::service('file_system')->basename($uri)]
       ), 'error');
       return FALSE;
     }

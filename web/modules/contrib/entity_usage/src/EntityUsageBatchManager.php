@@ -39,15 +39,15 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
   /**
    * Recreate the entity usage statistics.
    *
-   * @param bool $keep_existing_records
-   *   (optional) If TRUE existing usage records won't be deleted. Defaults to
-   *   FALSE.
-   *
    * Generate a batch to recreate the statistics for all entities.
    * Note that if we force all statistics to be created, there is no need to
-   * separate them between source / target cases. If all entities are
-   * going to be re-tracked, tracking all of them as source is enough, because
-   * there could never be a target without a source.
+   * separate them between source/target cases. If all entities are going to
+   * be re-tracked, tracking all of them as source is enough, because there
+   * could never be a target without a source.
+   *
+   * @param bool $keep_existing_records
+   *   (optional) If TRUE, existing usage records won't be deleted. Defaults to
+   *   FALSE.
    */
   public function recreate($keep_existing_records = FALSE) {
     $batch = $this->generateBatch($keep_existing_records);
@@ -83,7 +83,10 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
         $track_this_entity_type = TRUE;
       }
       if ($track_this_entity_type) {
-        $operations[] = ['\Drupal\entity_usage\EntityUsageBatchManager::updateSourcesBatchWorker', [$entity_type_id, $keep_existing_records]];
+        $operations[] = [
+          '\Drupal\entity_usage\EntityUsageBatchManager::updateSourcesBatchWorker',
+          [$entity_type_id, $keep_existing_records],
+        ];
       }
     }
 
@@ -123,7 +126,7 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
 
       $context['sandbox']['progress'] = 0;
       $context['sandbox']['current_id'] = '';
-      if (($id_definition instanceof FieldStorageDefinitionInterface) && $id_definition->getType()  === 'integer') {
+      if (($id_definition instanceof FieldStorageDefinitionInterface) && $id_definition->getType() === 'integer') {
         $context['sandbox']['current_id'] = -1;
       }
       $context['sandbox']['total'] = (int) $entity_storage->getQuery()
@@ -185,12 +188,8 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
             ];
           }
 
-          foreach ($revision_ids as $revision_id) {
+          foreach ($entity_storage->loadMultipleRevisions($revision_ids) as $entity_revision) {
             /** @var \Drupal\Core\Entity\EntityInterface $entity_revision */
-            if (!$entity_revision = $entity_storage->loadRevision($revision_id)) {
-              continue;
-            }
-
             \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity_revision);
           }
         }

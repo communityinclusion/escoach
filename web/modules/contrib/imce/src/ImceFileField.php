@@ -117,12 +117,12 @@ class ImceFileField implements TrustedCallbackInterface {
       $paths = array_slice($paths, 0, $element['#cardinality']);
     }
     // Check if paths are accessible by the current user with Imce.
-    $paths = Imce::accessFilePaths($paths, \Drupal::currentUser(), $element['#scheme']);
+    $paths = Imce::accessFilePaths($paths, Imce::currentUser(), $element['#scheme']);
     if (!$paths) {
       return;
     }
     // Validate paths as file entities.
-    $file_usage = \Drupal::service('file.usage');
+    $file_usage = Imce::service('file.usage');
     $errors = [];
     foreach ($paths as $path) {
       // Get entity by uri.
@@ -151,13 +151,13 @@ class ImceFileField implements TrustedCallbackInterface {
       $errors = array_unique($errors);
       if (count($errors) > 1) {
         $errors = ['#theme' => 'item_list', '#items' => $errors];
-        $message = \Drupal::service('renderer')->render($errors);
+        $message = Imce::service('renderer')->render($errors);
       }
       else {
         $message = array_pop($errors);
       }
       // May break the widget flow if set as a form error.
-      \Drupal::messenger()->addMessage($message, 'error');
+      Imce::messenger()->addMessage($message, 'error');
     }
   }
 

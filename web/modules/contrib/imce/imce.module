@@ -35,9 +35,9 @@ function imce_theme() {
  * Implements hook_file_download().
  */
 function imce_file_download($uri) {
-  if (Imce::accessFileUri($uri, \Drupal::currentUser())) {
+  if (Imce::accessFileUri($uri, Imce::currentUser())) {
     return [
-      'Content-type' => \Drupal::service('file.mime_type.guesser')->guessMimeType($uri),
+      'Content-type' => Imce::service('file.mime_type.guesser')->guessMimeType($uri),
       'Content-Length' => filesize($uri),
     ];
   }
@@ -49,7 +49,7 @@ function imce_file_download($uri) {
  * Returns imce settings form for supported file widgets.
  */
 function imce_field_widget_third_party_settings_form(WidgetInterface $widget, FieldDefinitionInterface $field_definition, $form_mode, $form, FormStateInterface $form_state) {
-  return ImceFileField::widgetSettingsForm($widget, $field_definition, $form_mode, $form, $form_state);
+  return ImceFileField::widgetSettingsForm($widget);
 }
 
 /**
@@ -69,13 +69,13 @@ function imce_field_widget_settings_summary_alter(&$summary, $context) {
 function imce_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   if ($context['widget']->getThirdPartySetting('imce', 'enabled')) {
     $scheme = $context['items'][$context['delta']]->getFieldDefinition()->getSetting('uri_scheme');
-    if (Imce::access(\Drupal::currentUser(), $scheme)) {
+    if (Imce::access(Imce::currentUser(), $scheme)) {
       $element['#scheme'] = $scheme;
       $class = 'Drupal\imce\ImceFileField';
       $element['#process'][] = [$class, 'processWidget'];
       // Make sure default value callbacks are added.
       if (empty($element['#file_value_callbacks'])) {
-        $info = \Drupal::service('element_info')->getInfo($element['#type']);
+        $info = Imce::service('element_info')->getInfo($element['#type']);
         if (!empty($info['#file_value_callbacks'])) {
           $element['#file_value_callbacks'] = $info['#file_value_callbacks'];
         }

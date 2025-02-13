@@ -5,14 +5,14 @@ namespace Drupal\entity_usage;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
- * Class EntityUpdateManagerInterface.
+ * The interface implemented by the entity update manager.
  *
  * @package Drupal\entity_usage
  */
 interface EntityUpdateManagerInterface {
 
   /**
-   * Track updates on creation of potential source entities.
+   * Tracks updates on creation of potential source entities.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity we are dealing with.
@@ -20,7 +20,7 @@ interface EntityUpdateManagerInterface {
   public function trackUpdateOnCreation(EntityInterface $entity);
 
   /**
-   * Track updates on edit / update of potential source entities.
+   * Tracks updates on edits/updates of potential source entities.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity we are dealing with.
@@ -28,7 +28,7 @@ interface EntityUpdateManagerInterface {
   public function trackUpdateOnEdition(EntityInterface $entity);
 
   /**
-   * Track updates on deletion of entities.
+   * Tracks updates on deletion of entities.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity we are dealing with.

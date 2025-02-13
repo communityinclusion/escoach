@@ -65,8 +65,8 @@ class Resize extends ImcePluginBase {
    * Resizes a list of imce items and returns succeeded ones.
    */
   public function resizeItems(ImceFM $fm, array $items, $width, $height, $copy = FALSE) {
-    $factory = \Drupal::service('image.factory');
-    $fs = \Drupal::service('file_system');
+    $factory = Imce::service('image.factory');
+    $fs = Imce::service('file_system');
     $success = [];
     foreach ($items as $item) {
       $uri = $item->getUri();
@@ -101,11 +101,11 @@ class Resize extends ImcePluginBase {
           'filemime' => $image->getMimeType(),
         ];
         /** @var \Drupal\file\FileStorage $storage */
-        $storage = \Drupal::entityTypeManager()->getStorage('file');
+        $storage = Imce::entityStorage('file');
         $file = $storage->create($values);
         // Check quota.
         $quota = $fm->getConf('quota');
-        if ($quota && ($storage->spaceUsed(\Drupal::currentUser()->id()) + $filesize) > $quota) {
+        if ($quota && ($storage->spaceUsed(Imce::currentUser()->id()) + $filesize) > $quota) {
           $fs->delete($destination);
           $fm->setMessage(t('The file is %filesize which would exceed your disk quota of %quota.', [
             '%filesize' => Imce::formatSize($filesize),

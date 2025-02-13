@@ -100,7 +100,7 @@ class ImceFM {
    */
   public function __construct(array $conf, AccountProxyInterface $user = NULL, Request $request = NULL) {
     $this->conf = $conf;
-    $this->user = $user ?: \Drupal::currentUser();
+    $this->user = $user ?: Imce::currentUser();
     $this->request = $request;
     $this->init();
   }
@@ -225,7 +225,7 @@ class ImceFM {
       return FALSE;
     }
     // Let plugins handle the operation.
-    $return = \Drupal::service('plugin.manager.imce.plugin')->handleOperation($op, $this);
+    $return = Imce::service('plugin.manager.imce.plugin')->handleOperation($op, $this);
     if ($return === FALSE) {
       $this->setMessage($this->t('Invalid operation %op.', ['%op' => $op]));
     }
@@ -274,7 +274,7 @@ class ImceFM {
    * @param string $path
    *   The patches folder.
    *
-   * @return \Drupal\imce\ImceFolder
+   * @return \Drupal\imce\ImceFolder|null
    *   Returns the folder object with the path.
    */
   public function checkFolder($path) {
@@ -481,7 +481,7 @@ class ImceFM {
     ];
     // Some file systems need url altering for each file.
     if (!empty($this->conf['url_alter'])) {
-      $properties['url'] = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+      $properties['url'] = Imce::service('file_url_generator')->generateAbsoluteString($uri);
     }
     // Get image properties.
     $regexp = $this->conf['image_extensions_regexp'] ?? $this->imageExtensionsRegexp();
@@ -510,7 +510,7 @@ class ImceFM {
       $this->thumbnailStyle = FALSE;
       $style_name = $this->getConf('thumbnail_style');
       if ($style_name) {
-        $this->thumbnailStyle = \Drupal::entityTypeManager()->getStorage('image_style')->load($style_name);
+        $this->thumbnailStyle = Imce::entityStorage('image_style')->load($style_name);
       }
     }
     return $this->thumbnailStyle;
@@ -551,7 +551,7 @@ class ImceFM {
    */
   public function getMessages() {
     // Get drupal messages.
-    $messenger = \Drupal::messenger();
+    $messenger = Imce::messenger();
     $messages = $messenger->all();
     $messenger->deleteAll();
     foreach ($messages as &$group) {
@@ -700,7 +700,7 @@ class ImceFM {
     // Disable cache.
     $page['#cache']['max-age'] = 0;
     // Run builders of available plugins.
-    \Drupal::service('plugin.manager.imce.plugin')->buildPage($page, $this);
+    Imce::service('plugin.manager.imce.plugin')->buildPage($page, $this);
     // Add active path to the conf.
     $conf = $this->conf;
     if (!isset($conf['active_path'])) {
@@ -739,7 +739,7 @@ class ImceFM {
    */
   public function buildRenderPage() {
     $page = $this->buildPage();
-    return \Drupal::service('bare_html_page_renderer')->renderBarePage(
+    return Imce::service('bare_html_page_renderer')->renderBarePage(
       $page,
       $this->t('File manager'),
       'imce_page',
@@ -759,7 +759,7 @@ class ImceFM {
     if ($request->request->has('jsop')) {
       $this->run();
       $data = $this->getResponse();
-      \Drupal::service('plugin.manager.imce.plugin')->alterJsResponse($data, $this);
+      Imce::service('plugin.manager.imce.plugin')->alterJsResponse($data, $this);
       // Return html response if the flag is set.
       if ($request->request->get('return_html')) {
         return new Response('<html><body><textarea>' . Json::encode($data) . '</textarea></body></html>');

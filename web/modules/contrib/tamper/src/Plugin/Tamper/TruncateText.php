@@ -75,6 +75,11 @@ class TruncateText extends TamperBase {
    * {@inheritdoc}
    */
   public function tamper($data, ?TamperableItemInterface $item = NULL) {
+    // Don't process empty or null values.
+    if (is_null($data) || $data === '') {
+      return $data;
+    }
+
     return Unicode::truncate(
       $data,
       $this->getSetting(self::SETTING_NUM_CHAR),

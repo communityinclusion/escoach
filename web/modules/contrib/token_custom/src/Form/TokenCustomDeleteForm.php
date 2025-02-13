@@ -2,8 +2,8 @@
 
 namespace Drupal\token_custom\Form;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 /**

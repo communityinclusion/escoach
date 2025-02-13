@@ -3,6 +3,7 @@
 namespace Drupal\token_custom\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\token_custom\TokenCustomTypeInterface;
 
 /**
@@ -39,10 +40,10 @@ use Drupal\token_custom\TokenCustomTypeInterface;
  *   },
  *   links = {
  *     "add-form" = "/admin/structure/token-custom/type/add",
- *     "edit-form" = "/admin/structure/token-custom/type/manage/{token_custom}/edit",
- *     "delete-form" = "/admin/structure/token-custom/type/manage/{token_custom}/delete",
+ *     "edit-form" = "/admin/structure/token-custom/type/manage/{token_custom_type}/edit",
+ *     "delete-form" = "/admin/structure/token-custom/type/manage/{token_custom_type}/delete",
  *     "collection" = "/admin/structure/token-custom/type",
- *     "canonical" = "/admin/structure/token-custom/type/manage/{token_custom}",
+ *     "canonical" = "/admin/structure/token-custom/type/manage/{token_custom_type}/edit",
  *   }
  * )
  */
@@ -89,6 +90,15 @@ class TokenCustomType extends ConfigEntityBundleBase implements TokenCustomTypeI
   public function setDescription($description) {
     $this->description = $description;
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    drupal_static_reset('token_custom_type_allowlist');
   }
 
 }

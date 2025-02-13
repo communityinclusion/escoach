@@ -5,6 +5,7 @@ field_ui:
     component:
       css/field_group.field_ui.css: {}
   dependencies:
+    - field_ui/drupal.field_ui
     - core/jquery
     - core/drupal
     - core/once

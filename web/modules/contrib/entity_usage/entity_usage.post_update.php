@@ -2,15 +2,16 @@
 
 /**
  * @file
- * hook_post_update_NAME functions for entity_usage module.
+ * Post update functions for the Entity Usage module.
  */
 
 use Drupal\Core\Entity\RevisionableStorageInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_post_update_NAME().
+ *
  * Re-generate entity_usage statistics.
  */
 function entity_usage_post_update_regenerate_2x(&$sandbox) {
@@ -93,12 +94,8 @@ function entity_usage_post_update_regenerate_2x(&$sandbox) {
           ->execute();
         $revision_ids = array_keys($result);
 
-        foreach ($revision_ids as $revision_id) {
+        foreach ($entity_storage->loadMultipleRevisions($revision_ids) as $entity_revision) {
           /** @var \Drupal\Core\Entity\EntityInterface $entity_revision */
-          if (!$entity_revision = $entity_storage->loadRevision($revision_id)) {
-            continue;
-          }
-
           \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity_revision);
         }
       }

@@ -50,8 +50,7 @@ entity.token_custom.collection:
 entity.token_custom_type.canonical:
   path: '/admin/structure/token-custom/type/manage/{token_custom_type}/edit'
   defaults:
-    _entity_list: 'token_custom_type'
-    _title: 'Edit custom token types'
+    _entity_form: 'token_custom_type.edit'
   requirements:
     _permission: 'administer custom token types'
 

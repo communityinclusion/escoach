@@ -96,6 +96,11 @@ class FindReplace extends TamperBase {
    * {@inheritdoc}
    */
   public function tamper($data, ?TamperableItemInterface $item = NULL) {
+    // Don't process empty or null values.
+    if (is_null($data) || $data === '') {
+      return $data;
+    }
+
     if (!is_string($data) && !is_numeric($data)) {
       throw new TamperException('Input should be a string or numeric.');
     }

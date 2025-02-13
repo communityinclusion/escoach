@@ -57,9 +57,23 @@ class TokenCustom extends ContentEntityBase implements TokenCustomInterface {
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Name'))
+      ->setDescription(t('Administrative name.'))
+      ->setRequired(TRUE)
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDefaultValue('')
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+
     $fields['machine_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Machine name ID'))
-      ->setDescription(t('A unique machine-readable name for this token. It must only contain lowercase letters, numbers, and underscores.'))
+      ->setDescription(t('A unique machine-readable name for this token. It must only contain lowercase letters, numbers, hyphens, and underscores.'))
       ->setSetting('max_length', 64)
       ->setDisplayOptions('form', [
         'label' => 'hidden',
@@ -78,20 +92,6 @@ class TokenCustom extends ContentEntityBase implements TokenCustomInterface {
         'type' => 'string',
         'weight' => 2,
       ]);
-
-    $fields['name'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Name'))
-      ->setDescription(t('Administrative name.'))
-      ->setRequired(TRUE)
-      ->setTranslatable(FALSE)
-      ->setRevisionable(FALSE)
-      ->setDefaultValue('')
-      ->setSetting('max_length', 255)
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('form', TRUE);
 
     $fields['description'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Description'))

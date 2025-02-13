@@ -74,9 +74,7 @@ class ImcePluginManager extends DefaultPluginManager {
    */
   public function getInstance(array $options) {
     $id = $options['id'] ?? NULL;
-    if ($id) {
-      return $this->instances[$id] ?? $this->createInstance($id);
-    }
+    return $id ? ($this->instances[$id] ?? $this->createInstance($id)) : FALSE;
   }
 
   /**

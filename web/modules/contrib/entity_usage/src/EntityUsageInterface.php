@@ -160,7 +160,8 @@ interface EntityUsageInterface {
    * @param \Drupal\Core\Entity\EntityInterface $source_entity
    *   The source entity to check for references.
    * @param int $vid
-   *   (optional) The revision id to return the references for. Defaults to all revisions.
+   *   (optional) The revision id to return the references for.
+   *   Defaults to all revisions.
    *
    * @return array<string, array<int, array<array{method: string, field_name: string, count: string}>>>
    *   A nested array with usage data. The first level is keyed by the type of
@@ -194,8 +195,10 @@ interface EntityUsageInterface {
    *   Note that if $include_method is TRUE, the first level is keyed by the
    *   reference method, and the second level will continue as explained above.
    *
-   * @deprecated in branch 2.x.
+   * @deprecated in entity_usage:2.0.0 and is removed from entity_usage:3.0.0.
    *   Use \Drupal\entity_usage\EntityUsageInterface::listSources() instead.
+   *
+   * @see https://www.drupal.org/project/entity_usage/issues/3445394
    */
   public function listUsage(EntityInterface $entity, $include_method = FALSE);
 
@@ -216,8 +219,10 @@ interface EntityUsageInterface {
    *   the second level contains the usage count, which will be summed for all
    *   revisions and translations tracked.
    *
-   * @deprecated in branch 2.x.
+   * @deprecated in entity_usage:2.0.0 and is removed from entity_usage:3.0.0.
    *   Use \Drupal\entity_usage\EntityUsageInterface::listTargets() instead.
+   *
+   * @see https://www.drupal.org/project/entity_usage/issues/3445394
    */
   public function listReferencedEntities(EntityInterface $entity);
 

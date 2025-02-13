@@ -23,6 +23,11 @@ class Unique extends TamperBase {
    * {@inheritdoc}
    */
   public function tamper($data, ?TamperableItemInterface $item = NULL) {
+    // Don't process empty values.
+    if (empty($data)) {
+      return $data;
+    }
+
     if (!is_array($data)) {
       throw new TamperException('Input should be an array.');
     }

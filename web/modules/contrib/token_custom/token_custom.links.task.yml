@@ -1,8 +1,8 @@
 token_custom.menus:
   route_name: entity.token_custom.collection
-  title: 'CUSTOM TOKENS'
+  title: 'Custom Tokens'
   base_route: token_custom.menus
 token_custom_type.menus:
   route_name: entity.token_custom_type.collection
-  title: 'CUSTOM TOKEN TYPES'
+  title: 'Custom Token Types'
   base_route: token_custom.menus

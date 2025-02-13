@@ -2,9 +2,10 @@
 
 namespace Drupal\Tests\entity_usage\Functional;
 
+use Drupal\Core\Url;
+use Drupal\Tests\BrowserTestBase;
 use Drupal\block_content\Entity\BlockContent;
 use Drupal\block_content\Entity\BlockContentType;
-use Drupal\Core\Url;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -12,7 +13,6 @@ use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\layout_builder\Plugin\SectionStorage\OverridesSectionStorage;
 use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
-use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests layout builder usage through Inline Blocks displays in UI.

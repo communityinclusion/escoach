@@ -358,6 +358,7 @@ class ImceProfileForm extends EntityForm {
         ->addMessage($this->t('The changes have been saved.'));
     }
     $form_state->setRedirect('entity.imce_profile.edit_form', ['imce_profile' => $imce_profile->id()]);
+    return $status;
   }
 
   /**

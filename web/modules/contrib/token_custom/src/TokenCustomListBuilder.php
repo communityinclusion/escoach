@@ -22,8 +22,8 @@ class TokenCustomListBuilder extends EntityListBuilder {
     $header['machine_name'] = $this->t('Machine name');
     $header['type'] = $this->t('Type');
     $header['name'] = $this->t('Name');
-    $header['description'] = t('Description');
-    $header['content'] = t('Content');
+    $header['description'] = $this->t('Description');
+    $header['content'] = $this->t('Content');
     return $header + parent::buildHeader();
   }
 

@@ -38,10 +38,6 @@ class HtmlEntityDecodeTest extends TamperPluginTestBase {
     $this->expectException(TamperException::class);
     $this->expectExceptionMessage('Input should be a string.');
     $this->plugin->tamper(['awesomes4uc3!']);
-
-    $this->expectException(TamperException::class);
-    $this->expectExceptionMessage('Input should be a string.');
-    $this->plugin->tamper(NULL);
   }
 
 }
