@@ -9170,7 +9170,7 @@
     justify-content: space-between;
     width: 100%;
     flex-wrap: wrap; }
-  .ck-content .form-item-field-auto-login-url-0-value {
+  .ck-content #edit-survey-participants-profiles-0-entity-field-auto-login-url-wrapper {
     display: none; }
   .ck-content .toolbar-icon-10 .form-item-field-auto-login-url-0-value {
     display: block; }
@@ -9256,6 +9256,10 @@
     background-color: #f8f9fa; }
   .ck-content .btn-darkblue {
     background-color: #003366; }
+  .ck-content .testimonial {
+    text-align: center; }
+  .ck-content .testimonial em {
+    display: block; }
   .ck-content div.paragraph--id--118, .ck-content div.paragraph--id--10 {
     font-size: 20px; }
   .ck-content .paragraph--id--113 .paragraph--type--bp-columns:nth-child(1),

@@ -65,6 +65,10 @@ class TokenProcessor extends PluginBase implements DataProcessorInterface, Conta
    * {@inheritdoc}
    */
   public function process($value, ExecutionStateInterface $rules_state) {
+    if (empty($value)) {
+	    return $value;
+	  }
+
     $data = [];
     $placeholders_by_data = $this->placeholderResolver->scan($value);
     foreach ($placeholders_by_data as $variable_name => $placeholders) {
