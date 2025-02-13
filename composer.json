@@ -22,13 +22,15 @@
         "drupal/admin_toolbar": "^3.4",
         "drupal/auto_entitylabel": "^3.0",
         "drupal/auto_login_url": "2.x-dev@dev",
-        "drupal/bootstrap5": "3.0.10",
+        "drupal/bootstrap5": "^3.0.10",
         "drupal/bootstrap_barrio": "^5.5",
         "drupal/bootstrap_library": "^2.0",
         "drupal/bootstrap_paragraphs": "^5.0",
         "drupal/captcha": "^2.0",
         "drupal/coder": "^8.3.2",
         "drupal/conditional_fields": "^4.0@alpha",
+        "drupal/config_filter": "^2.7",
+        "drupal/config_split": "^2.0",
         "drupal/core": "10.3.10",
         "drupal/core-composer-scaffold": "^8.9.1",
         "drupal/core-project-message": "^8.8",
@@ -89,8 +91,7 @@
         "twilio/sdk": "^6.4"
     },
     "require-dev": {
-        "drupal/config_devel": "^1.8",
-        "drupal/config_split": "^1.7"
+        "drupal/config_devel": "^1.8"
     },
     "conflict": {
         "drupal/drupal": "*"

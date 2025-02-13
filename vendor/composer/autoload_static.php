@@ -562,7 +562,7 @@ class ComposerStaticInit62cf3323b61da76ee76aa6958906756c
         ),
         'Doctrine\\Deprecations\\' => 
         array (
-            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
