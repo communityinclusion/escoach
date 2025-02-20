@@ -298,6 +298,7 @@ class HomePageService {
     if (isset($profile)) {
       if (isset($profile->field_providers)) {
         foreach ($profile->field_providers as $provider) {
+          if($provider && $provider->entity)
           $this->providerList[] = $provider->entity->getName();
         }
       }
