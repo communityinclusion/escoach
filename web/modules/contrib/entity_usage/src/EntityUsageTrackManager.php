@@ -16,7 +16,7 @@ class EntityUsageTrackManager extends DefaultPluginManager {
   /**
    * Constructs a new EntityUsageTrackManager.
    *
-   * @param \Traversable $namespaces
+   * @param mixed[] $namespaces
    *   An object that implements \Traversable which contains the root paths
    *   keyed by the corresponding namespace to look for plugin implementations.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend

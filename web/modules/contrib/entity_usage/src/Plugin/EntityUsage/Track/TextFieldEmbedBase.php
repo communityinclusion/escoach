@@ -14,7 +14,7 @@ abstract class TextFieldEmbedBase extends EntityUsageTrackBase implements EmbedT
   /**
    * {@inheritdoc}
    */
-  public function getTargetEntities(FieldItemInterface $item) {
+  public function getTargetEntities(FieldItemInterface $item): array {
     $item_value = $item->getValue();
     if (empty($item_value['value'])) {
       return [];
@@ -25,14 +25,31 @@ abstract class TextFieldEmbedBase extends EntityUsageTrackBase implements EmbedT
     }
     $entities_in_text = $this->parseEntitiesFromText($text);
     $valid_entities = [];
+
+    $uuids_by_type = [];
     foreach ($entities_in_text as $uuid => $entity_type) {
-      // Check if the target entity exists since text fields are not
-      // automatically updated when an entity is removed.
-      if ($target_entity = $this->entityRepository->loadEntityByUuid($entity_type, $uuid)) {
-        $valid_entities[] = $target_entity->getEntityTypeId() . "|" . $target_entity->id();
+      // If the entity's existence has already been checked then do not recheck
+      // this.
+      if (str_starts_with($entity_type, self::VALID_ENTITY_ID_PREFIX)) {
+        $valid_entities[] = substr($entity_type, strlen(self::VALID_ENTITY_ID_PREFIX));
+      }
+      else {
+        $uuids_by_type[$entity_type][] = $uuid;
       }
     }
-    return array_unique($valid_entities);
+
+    foreach ($uuids_by_type as $entity_type => $uuids) {
+      $target_type = $this->entityTypeManager->getDefinition($entity_type);
+      // Check if the target entity exists since text fields are not
+      // automatically updated when an entity is removed.
+      $query = $this->entityTypeManager->getStorage($entity_type)
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition($target_type->getKey('uuid'), $uuids, 'IN');
+      $valid_entities = array_merge($valid_entities, array_values(array_unique(array_map(fn ($id) => $entity_type . '|' . $id, $query->execute()))));
+    }
+
+    return $valid_entities;
   }
 
 }

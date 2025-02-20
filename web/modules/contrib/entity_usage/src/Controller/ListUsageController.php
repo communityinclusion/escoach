@@ -2,7 +2,9 @@
 
 namespace Drupal\entity_usage\Controller;
 
+use Drupal\block_content\BlockContentInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
@@ -12,7 +14,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Pager\PagerManagerInterface;
-use Drupal\block_content\BlockContentInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_usage\EntityUsageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -65,7 +67,7 @@ class ListUsageController extends ControllerBase {
   /**
    * All source rows for this target entity.
    *
-   * @var array
+   * @var mixed[]
    */
   protected $allRows;
 
@@ -134,12 +136,12 @@ class ListUsageController extends ControllerBase {
    * @param int $entity_id
    *   The entity ID.
    *
-   * @return array
+   * @return mixed[]
    *   The page build to be rendered.
    *
    * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
-  public function listUsagePage($entity_type, $entity_id) {
+  public function listUsagePage($entity_type, $entity_id): array {
     $all_rows = $this->getRows($entity_type, $entity_id);
     if (empty($all_rows)) {
       return [
@@ -204,11 +206,11 @@ class ListUsageController extends ControllerBase {
    * @param int|string $entity_id
    *   The ID of the target entity.
    *
-   * @return array
+   * @return mixed[]
    *   An indexed array of rows that should be displayed as sources for this
    *   target entity.
    */
-  protected function getRows($entity_type, $entity_id) {
+  protected function getRows($entity_type, $entity_id): array {
     if (!empty($this->allRows)) {
       return $this->allRows;
       // @todo Cache this based on the target entity, invalidating the cached
@@ -260,7 +262,7 @@ class ListUsageController extends ControllerBase {
 
           foreach ($revision_groups as $index => $label) {
             if (!empty($revisions[$index])) {
-              $used_in[] = $this->summariseRevisionGroup($default_langcode, $label, $revisions[$index]);
+              $used_in[] = $this->summarizeRevisionGroup($default_langcode, $label, $revisions[$index]);
             }
           }
 
@@ -316,10 +318,10 @@ class ListUsageController extends ControllerBase {
    *   An indexed array of language codes that reference the entity in the given
    *   type.
    *
-   * @return array
+   * @return mixed[]
    *   A render array summarizing the information passed in.
    */
-  protected function summariseRevisionGroup($default_langcode, $revision_label, array $languages) {
+  protected function summarizeRevisionGroup($default_langcode, $revision_label, array $languages): array {
     $language_objects = $this->languageManager()->getLanguages(LanguageInterface::STATE_ALL);
     if (count($languages) === 1 && !empty($languages[$default_langcode])) {
       // If there's only one relevant revision and it's the entity's default
@@ -364,10 +366,10 @@ class ListUsageController extends ControllerBase {
    * @param int|string $entity_id
    *   The ID of the target entity.
    *
-   * @return array
+   * @return mixed[]
    *   An indexed array of rows representing the records for a given page.
    */
-  protected function getPageRows($page, $num_per_page, $entity_type, $entity_id) {
+  protected function getPageRows($page, $num_per_page, $entity_type, $entity_id): array {
     $offset = $page * $num_per_page;
     return array_slice($this->getRows($entity_type, $entity_id), $offset, $num_per_page);
   }
@@ -380,10 +382,10 @@ class ListUsageController extends ControllerBase {
    * @param int $entity_id
    *   The entity id.
    *
-   * @return string
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The title to be used on this page.
    */
-  public function getTitle($entity_type, $entity_id) {
+  public function getTitle($entity_type, $entity_id): TranslatableMarkup {
     $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
     if ($entity) {
       return $this->t('Entity usage information for %entity_label', ['%entity_label' => $entity->label()]);
@@ -397,10 +399,10 @@ class ListUsageController extends ControllerBase {
    * @param \Drupal\Core\Entity\EntityInterface $source_entity
    *   The source entity.
    *
-   * @return string
+   * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
    *   The entity's status.
    */
-  protected function getSourceEntityStatus(EntityInterface $source_entity) {
+  protected function getSourceEntityStatus(EntityInterface $source_entity): string|TranslatableMarkup {
     // Treat paragraph entities in a special manner. Paragraph entities
     // should get their host (parent) entity's status.
     if ($source_entity->getEntityTypeId() == 'paragraph') {
@@ -440,7 +442,7 @@ class ListUsageController extends ControllerBase {
    *   to correctly build a link. Will return FALSE if this item should not be
    *   shown on the UI (for example when dealing with an orphan paragraph).
    */
-  protected function getSourceEntityLink(EntityInterface $source_entity, $text = NULL) {
+  protected function getSourceEntityLink(EntityInterface $source_entity, $text = NULL): mixed {
     // Note that $paragraph_entity->label() will return a string of type:
     // "{parent label} > {parent field}", which is actually OK for us.
     $entity_label = $source_entity->access('view label') ? $source_entity->label() : $this->t('- Restricted access -');
@@ -508,7 +510,7 @@ class ListUsageController extends ControllerBase {
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  public function checkAccess($entity_type, $entity_id) {
+  public function checkAccess($entity_type, $entity_id): AccessResultInterface {
     $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
     if (!$entity || !$entity->access('view')) {
       return AccessResult::forbidden();

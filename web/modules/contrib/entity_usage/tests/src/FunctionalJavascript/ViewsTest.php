@@ -23,7 +23,7 @@ class ViewsTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests the views integration.
    */
-  public function testViewsIntegration() {
+  public function testViewsIntegration(): void {
     $page = $this->getSession()->getPage();
 
     // Create node 1.

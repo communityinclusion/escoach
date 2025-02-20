@@ -43,7 +43,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
    *
    * @covers \Drupal\entity_usage\Controller\ListUsageController::listUsagePage
    */
-  public function testListController() {
+  public function testListController(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();
@@ -159,6 +159,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
 
     // If some sources reference our entity in a previous revision, an
     // additional column is shown.
+    // @phpstan-ignore-next-line
     $node2->field_eu_test_related_nodes = NULL;
     $node2->setNewRevision();
     $node2->save();

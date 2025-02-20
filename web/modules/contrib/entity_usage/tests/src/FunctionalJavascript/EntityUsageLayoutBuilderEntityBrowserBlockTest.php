@@ -76,7 +76,7 @@ class EntityUsageLayoutBuilderEntityBrowserBlockTest extends EntityUsageJavascri
   /**
    * Test usage tracking in Layout Builder through Entity Browser Block.
    */
-  public function testLayoutBuilderEntityBrowserBlockUsage() {
+  public function testLayoutBuilderEntityBrowserBlockUsage(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();

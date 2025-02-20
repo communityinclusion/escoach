@@ -23,7 +23,7 @@ class EntityUsageTrack extends Plugin {
   /**
    * The human-readable name of the tracking method.
    *
-   * @var \Drupal\Core\Annotation\Translation
+   * @var \Drupal\Core\Annotation\Translation|string
    *
    * @ingroup plugin_translatable
    */
@@ -32,7 +32,7 @@ class EntityUsageTrack extends Plugin {
   /**
    * A brief description of the tracking method.
    *
-   * @var \Drupal\Core\Annotation\Translation
+   * @var \Drupal\Core\Annotation\Translation|string
    *
    * @ingroup plugin_translatable
    */

@@ -34,6 +34,14 @@ phpunit:
     - 'sed -i "s/core_version_requirement.*/core_version_requirement: \^10||\^11/" web/modules/contrib/**/*.info.yml'
   variables:
     SYMFONY_DEPRECATIONS_HELPER: "disabled"
+  parallel:
+    matrix:
+      - _TARGET_DB_TYPE: 'mysql'
+        _TARGET_DB_VERSION: $CORE_MYSQL_TEST_DEFAULT
+      - _TARGET_DB_TYPE: 'pgsql'
+        _TARGET_DB_VERSION: $CORE_PGSQL_MIN
+      - _TARGET_DB_TYPE: 'sqlite'
+        _TARGET_DB_VERSION: $CORE_SQLITE_MIN
 
 #
 # Linting jobs are passing so any issue that breaks them should fix them.
@@ -41,4 +49,8 @@ phpunit:
 phpcs:
   allow_failure: false
 phpstan:
+  allow_failure: false
+cspell:
+  allow_failure: false
+eslint:
   allow_failure: false

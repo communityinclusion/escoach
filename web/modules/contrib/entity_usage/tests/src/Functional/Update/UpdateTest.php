@@ -39,7 +39,7 @@ class UpdateTest extends UpdatePathTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    /** @var \Drupal\Core\Database\Connection $connection */
+
     $this->connection = \Drupal::service('database');
     if ($this->connection->databaseType() == 'pgsql') {
       $this->databaseName = 'public';
@@ -64,41 +64,17 @@ class UpdateTest extends UpdatePathTestBase {
         DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-9.4.0.bare.standard.php.gz',
       ];
     }
-    $this->databaseDumpFiles[] = __DIR__ . '/../../../fixtures/update/update_8206.php';
+    $this->databaseDumpFiles[] = __DIR__ . '/../../../fixtures/update/post_update_test.php';
   }
 
   /**
-   * @covers \entity_usage_update_8206
-   * @see https://www.drupal.org/project/entity_usage/issues/3335488
+   * @covers \entity_usage_post_update_clean_up_regenerate_queue
    */
-  public function testUpdate8206(): void {
-    if (\Drupal::service('database')->databaseType() == 'sqlite') {
-      $this->markTestSkipped('This test does not support the SQLite database driver.');
-    }
+  public function testPostUpdateCleanUpRegenerateQueue(): void {
+    $this->assertSame(1, \Drupal::queue('entity_usage_regenerate_queue')->numberOfItems());
 
-    $this->assertColumnLength(128);
     $this->runUpdates();
-    $this->assertColumnLength(255);
-  }
-
-  /**
-   * Asserts the string entity ID columns max length.
-   *
-   * @param int $expected_length
-   *   The expected max length.
-   */
-  protected function assertColumnLength(int $expected_length): void {
-    $query = <<<QUERY
-    SELECT character_maximum_length
-    FROM information_schema.columns
-    WHERE table_schema = '%s'
-      AND table_name = '%s'
-      AND column_name = '%s';
-    QUERY;
-    foreach (['target_id_string', 'source_id_string'] as $column) {
-      $actual_length = $this->connection->query(sprintf($query, $this->databaseName, $this->tableName, $column))->fetchField();
-      $this->assertEquals($expected_length, $actual_length);
-    }
+    $this->assertSame(0, \Drupal::queue('entity_usage_regenerate_queue')->numberOfItems());
   }
 
 }

@@ -20,22 +20,28 @@ class Link extends EntityUsageTrackBase {
   /**
    * {@inheritdoc}
    */
-  public function getTargetEntities(FieldItemInterface $link) {
+  public function getTargetEntities(FieldItemInterface $link): array {
     /** @var \Drupal\link\LinkItemInterface $link */
     if ($link->isExternal()) {
       $url = $link->getUrl()->toString();
-      $entity = $this->findEntityByUrlString($url);
+      $entity_info = $this->urlToEntity->findEntityIdByUrl($url);
     }
     else {
       $url = $link->getUrl();
-      $entity = $this->findEntityByRoutedUrl($url);
+      $entity_info = $this->urlToEntity->findEntityIdByRoutedUrl($url);
     }
 
-    if (!$entity) {
+    if (empty($entity_info)) {
       return [];
     }
 
-    return [$entity->getEntityTypeId() . '|' . $entity->id()];
+    ['type' => $entity_type_id, 'id' => $entity_id] = $entity_info;
+    $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+    $query = $this->entityTypeManager->getStorage($entity_type_id)
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition($entity_type->getKey('id'), $entity_id);
+    return array_values(array_map(fn ($id) => $entity_type_id . '|' . $id, $query->execute()));
   }
 
 }

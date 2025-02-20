@@ -17,7 +17,7 @@ interface EntityUpdateManagerInterface {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity we are dealing with.
    */
-  public function trackUpdateOnCreation(EntityInterface $entity);
+  public function trackUpdateOnCreation(EntityInterface $entity): void;
 
   /**
    * Tracks updates on edits/updates of potential source entities.
@@ -25,7 +25,7 @@ interface EntityUpdateManagerInterface {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity we are dealing with.
    */
-  public function trackUpdateOnEdition(EntityInterface $entity);
+  public function trackUpdateOnEdition(EntityInterface $entity): void;
 
   /**
    * Tracks updates on deletion of entities.
@@ -37,10 +37,10 @@ interface EntityUpdateManagerInterface {
    *   - default: The main entity (default language, default revision) is being
    *   deleted (delete also other languages and revisions).
    *   - translation: Only one translation is being deleted.
-   *   - revision: Onlyone revision is being deleted.
+   *   - revision: Only one revision is being deleted.
    *
    * @throws \InvalidArgumentException
    */
-  public function trackUpdateOnDeletion(EntityInterface $entity, $type = 'default');
+  public function trackUpdateOnDeletion(EntityInterface $entity, $type = 'default'): void;
 
 }

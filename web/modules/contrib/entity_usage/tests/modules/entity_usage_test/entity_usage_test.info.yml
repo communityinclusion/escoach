@@ -3,13 +3,13 @@ type: module
 description: 'Support module for the Entity Usage module tests.'
 package: Testing
 dependencies:
-   - entity_usage:entity_usage
-   - entity_embed:entity_embed
-   - drupal:text
-   - drupal:node
-   - drupal:ckeditor
+  - entity_usage:entity_usage
+  - entity_embed:entity_embed
+  - drupal:text
+  - drupal:node
+  - drupal:ckeditor
 
-# Information added by Drupal.org packaging script on 2025-01-14
-version: '8.x-2.0-beta17'
+# Information added by Drupal.org packaging script on 2025-02-18
+version: '8.x-2.0-beta19'
 project: 'entity_usage'
-datestamp: 1736865889
+datestamp: 1739870538

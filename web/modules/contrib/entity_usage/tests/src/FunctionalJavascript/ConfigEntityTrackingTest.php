@@ -60,7 +60,7 @@ class ConfigEntityTrackingTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests webform tracking.
    */
-  public function testWebformTracking() {
+  public function testWebformTracking(): void {
 
     // Create an entity reference field pointing to a webform.
     $storage = FieldStorageConfig::create([
@@ -160,7 +160,7 @@ class ConfigEntityTrackingTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests block_field / views tracking.
    */
-  public function testBlockFieldViewsTracking() {
+  public function testBlockFieldViewsTracking(): void {
 
     // Create block field on the node type.
     $storage = FieldStorageConfig::create([
@@ -273,7 +273,7 @@ class ConfigEntityTrackingTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests block_field / custom_blocks tracking.
    */
-  public function testBlockFieldCustomBlocksTracking() {
+  public function testBlockFieldCustomBlocksTracking(): void {
 
     // Create block field on the node type.
     $storage = FieldStorageConfig::create([

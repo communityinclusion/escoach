@@ -35,7 +35,7 @@ class ParagraphsTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests the integration with paragraphs.
    */
-  public function testParagraphsUsage() {
+  public function testParagraphsUsage(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();

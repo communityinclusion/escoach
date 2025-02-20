@@ -92,7 +92,7 @@ class EntityUsageLayoutBuilderTest extends BrowserTestBase {
     $type->save();
 
     $fieldStorage = FieldStorageConfig::create([
-      'field_name' => 'myref',
+      'field_name' => 'my_ref',
       'entity_type' => 'block_content',
       'type' => 'entity_reference',
       'settings' => [
@@ -109,14 +109,14 @@ class EntityUsageLayoutBuilderTest extends BrowserTestBase {
     $block = BlockContent::create([
       'type' => $type->id(),
       'reusable' => 0,
-      'myref' => $innerEntity,
+      'my_ref' => $innerEntity,
     ]);
     $block->save();
 
     $block2 = BlockContent::create([
       'type' => $type->id(),
       'reusable' => 1,
-      'myref' => $innerEntity2,
+      'my_ref' => $innerEntity2,
     ]);
     $block2->save();
 

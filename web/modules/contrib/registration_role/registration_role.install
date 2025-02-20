@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\user\Entity\Role;
+
 /**
  * @file
  * Install, update and uninstall functions for the registration role module.
@@ -10,10 +12,12 @@
  * Assign 'administer registration roles' to roles having 'administer users'
  */
 function registration_role_update_8007(&$sandbox) {
-  $roles = user_roles(FALSE, 'administer users');
+  $roles = Role::loadMultiple();
   foreach ($roles as $role) {
-    $roleId = $role->id();
-    user_role_grant_permissions($roleId,['administer registration roles']);
+    if ($role->hasPermission('administer users')) {
+      $roleId = $role->id();
+      user_role_grant_permissions($roleId, ['administer registration roles']);
+    }
   }
 }
 

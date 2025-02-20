@@ -61,7 +61,7 @@ class EntityUsageLayoutBuilderTest extends KernelTestBase {
   /**
    * Tests blocks referenced by inline blocks in layouts are recorded.
    */
-  public function testLayoutBuilderInlineBlockUsage() {
+  public function testLayoutBuilderInlineBlockUsage(): void {
     $type = BlockContentType::create([
       'id' => 'foo',
       'label' => 'Foo',

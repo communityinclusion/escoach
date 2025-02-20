@@ -34,7 +34,7 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests the config form.
    */
-  public function testConfigForm() {
+  public function testConfigForm(): void {
     $this->drupalPlaceBlock('local_tasks_block');
     $session = $this->getSession();
     $page = $session->getPage();

@@ -28,7 +28,7 @@ class DynamicEntityReferenceTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests the tracking of entities through dynamic entity reference fields.
    */
-  public function testDynamicEntityReferenceTracking() {
+  public function testDynamicEntityReferenceTracking(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();

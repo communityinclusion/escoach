@@ -13,7 +13,26 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * Defines the entity usage base class.
  */
-class EntityUsage implements EntityUsageInterface {
+class EntityUsage implements EntityUsageBulkInterface {
+
+  /**
+   * Table to use for bulk inserts.
+   */
+  private string $bulkTableName;
+
+  /**
+   * Flag to indicate whether to bulk insert or not.
+   *
+   * @var bool
+   */
+  protected bool $bulkInsert = FALSE;
+
+  /**
+   * Data to bulk insert into the table when ::bulkInsert() is called.
+   *
+   * @var mixed[]
+   */
+  protected array $inserts = [];
 
   /**
    * Construct the EntityUsage service.
@@ -30,7 +49,46 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function registerUsage($target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid, $method, $field_name, $count = 1) {
+  public function enableBulkInsert(?string $table_name = NULL): static {
+    $this->bulkTableName = $table_name ?? $this->tableName;
+    $this->bulkInsert = TRUE;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isBulkInserting(): bool {
+    return $this->bulkInsert;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function bulkInsert(): static {
+    $this->bulkInsert = FALSE;
+    if (empty($this->inserts)) {
+      return $this;
+    }
+    $query = $this->connection->insert($this->bulkTableName)->fields(array_keys($this->inserts[array_key_first($this->inserts)]));
+    foreach ($this->inserts as $insert) {
+      $query->values($insert);
+    }
+    $query->execute();
+    if ($this->tableName === $this->bulkTableName) {
+      foreach ($this->inserts as $insert) {
+        $event = new EntityUsageEvent($insert['target_id'], $insert['target_type'], $insert['source_id'], $insert['source_type'], $insert['source_langcode'], $insert['source_vid'], $insert['method'], $insert['field_name'], $insert['count']);
+        $this->eventDispatcher->dispatch($event, Events::USAGE_REGISTER);
+      }
+    }
+    $this->inserts = [];
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function registerUsage($target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid, $method, $field_name, $count = 1): void {
     // Check if target entity type is enabled, all entity types are enabled by
     // default.
     $enabled_target_entity_types = $this
@@ -63,6 +121,24 @@ class EntityUsage implements EntityUsageInterface {
     // on each case.
     $target_id_column = $this->isInt($target_id) ? 'target_id' : 'target_id_string';
     $source_id_column = $this->isInt($source_id) ? 'source_id' : 'source_id_string';
+
+    if ($this->bulkInsert) {
+      if ($count > 0) {
+        $key = $target_id . $target_type . $source_id . $source_type . $source_langcode . $source_vid ?: 0 . $method . $field_name;
+        $this->inserts[$key] = [
+          $target_id_column => $target_id,
+          'target_type' => $target_type,
+          $source_id_column => $source_id,
+          'source_type' => $source_type,
+          'source_langcode' => $source_langcode,
+          'source_vid' => $source_vid ?: 0,
+          'method' => $method,
+          'field_name' => $field_name,
+          'count' => $count,
+        ];
+      }
+      return;
+    }
 
     // If $count is 0, we want to delete the record.
     if ($count <= 0) {
@@ -100,7 +176,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function bulkDeleteTargets($target_type) {
+  public function bulkDeleteTargets($target_type): void {
     $query = $this->connection->delete($this->tableName)
       ->condition('target_type', $target_type);
     $query->execute();
@@ -112,7 +188,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function bulkDeleteSources($source_type) {
+  public function bulkDeleteSources($source_type): void {
     $query = $this->connection->delete($this->tableName)
       ->condition('source_type', $source_type);
     $query->execute();
@@ -124,7 +200,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteByField($source_type, $field_name) {
+  public function deleteByField($source_type, $field_name): void {
     $query = $this->connection->delete($this->tableName)
       ->condition('source_type', $source_type)
       ->condition('field_name', $field_name);
@@ -137,7 +213,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteBySourceEntity($source_id, $source_type, $source_langcode = NULL, $source_vid = NULL) {
+  public function deleteBySourceEntity($source_id, $source_type, $source_langcode = NULL, $source_vid = NULL): void {
     // Entities can have string IDs. We support that by using different columns
     // on each case.
     $source_id_column = $this->isInt($source_id) ? 'source_id' : 'source_id_string';
@@ -160,7 +236,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteByTargetEntity($target_id, $target_type) {
+  public function deleteByTargetEntity($target_id, $target_type): void {
     // Entities can have string IDs. We support that by using different columns
     // on each case.
     $target_id_column = $this->isInt($target_id) ? 'target_id' : 'target_id_string';
@@ -177,7 +253,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function listSources(EntityInterface $target_entity, $nest_results = TRUE, int $limit = 0) {
+  public function listSources(EntityInterface $target_entity, $nest_results = TRUE, int $limit = 0): array {
     // Entities can have string IDs. We support that by using different columns
     // on each case.
     $target_id_column = $this->isInt($target_entity->id()) ? 'target_id' : 'target_id_string';
@@ -208,7 +284,7 @@ class EntityUsage implements EntityUsageInterface {
 
     $references = [];
     foreach ($result as $usage) {
-      $source_id_value = !empty($usage->source_id) ? (string) $usage->source_id : (string) $usage->source_id_string;
+      $source_id_value = !empty($usage->source_id) ? $usage->source_id : $usage->source_id_string;
       if ($nest_results) {
         $references[$usage->source_type][$source_id_value][] = [
           'source_langcode' => $usage->source_langcode,
@@ -237,7 +313,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function listTargets(EntityInterface $source_entity, $vid = NULL) {
+  public function listTargets(EntityInterface $source_entity, $vid = NULL): array {
     // Entities can have string IDs. We support that by using different columns
     // on each case.
     $source_id_column = $this->isInt($source_entity->id()) ? 'source_id' : 'source_id_string';
@@ -298,7 +374,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function listUsage(EntityInterface $entity, $include_method = FALSE) {
+  public function listUsage(EntityInterface $entity, $include_method = FALSE): array {
     $result = $this->listSources($entity);
     $references = [];
     foreach ($result as $source_entity_type => $entity_record) {
@@ -333,7 +409,7 @@ class EntityUsage implements EntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function listReferencedEntities(EntityInterface $entity) {
+  public function listReferencedEntities(EntityInterface $entity): array {
     $result = $this->listTargets($entity);
     $references = [];
     foreach ($result as $target_entity_type => $entity_record) {
@@ -351,6 +427,14 @@ class EntityUsage implements EntityUsageInterface {
       }
     }
     return $references;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function truncateTable(): static {
+    $this->connection->truncate($this->tableName)->execute();
+    return $this;
   }
 
 }

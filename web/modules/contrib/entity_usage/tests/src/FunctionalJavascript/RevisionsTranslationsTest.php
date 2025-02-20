@@ -49,13 +49,14 @@ class RevisionsTranslationsTest extends EntityUsageJavascriptTestBase {
       ->set('site_domains', [$current_request->getHttpHost() . $current_request->getBasePath()])
       ->set('local_task_enabled_entity_types', ['node'])
       ->save();
-    \Drupal::service('router.builder')->rebuild();
+    // Changing site domains requires services to be reconstructed.
+    $this->rebuildAll();
   }
 
   /**
    * Tests the tracking of nodes and revisions.
    */
-  public function testRevisionsTracking() {
+  public function testRevisionsTracking(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();
@@ -360,7 +361,7 @@ class RevisionsTranslationsTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests the tracking of nodes with revisions and translations.
    */
-  public function testRevisionsTranslationsTracking() {
+  public function testRevisionsTranslationsTracking(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();
