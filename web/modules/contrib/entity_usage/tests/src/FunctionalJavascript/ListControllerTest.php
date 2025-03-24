@@ -54,7 +54,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 1 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 1 has been created.');
     /** @var \Drupal\node\NodeInterface $node1 */
     $node1 = $this->getLastEntityOfType('node', TRUE);
 
@@ -65,7 +65,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 2 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 2 has been created.');
     $node2 = $this->getLastEntityOfType('node', TRUE);
 
     // Create node 3 also referencing node 1 in an embed text field.
@@ -97,7 +97,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
     $this->assertEquals('Node 3', $first_row_title_link->getText());
     $this->assertStringContainsString($node3->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
     $first_row_type = $this->xpath('//table/tbody/tr[1]/td[2]')[0];
-    $this->assertEquals('Content', $first_row_type->getText());
+    $this->assertEquals('Content: Entity Usage test content', $first_row_type->getText());
     $first_row_langcode = $this->xpath('//table/tbody/tr[1]/td[3]')[0];
     $this->assertEquals('English', $first_row_langcode->getText());
     $first_row_field_label = $this->xpath('//table/tbody/tr[1]/td[4]')[0];
@@ -109,7 +109,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
     $this->assertEquals('Node 2', $second_row_title_link->getText());
     $this->assertStringContainsString($node2->toUrl()->toString(), $second_row_title_link->getAttribute('href'));
     $second_row_type = $this->xpath('//table/tbody/tr[2]/td[2]')[0];
-    $this->assertEquals('Content', $second_row_type->getText());
+    $this->assertEquals('Content: Entity Usage test content', $second_row_type->getText());
     $second_row_langcode = $this->xpath('//table/tbody/tr[2]/td[3]')[0];
     $this->assertEquals('English', $second_row_langcode->getText());
     $second_row_field_label = $this->xpath('//table/tbody/tr[2]/td[4]')[0];
@@ -210,7 +210,7 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save (this translation)');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 2 has been updated.');
+    $assert_session->pageTextContains('Entity Usage test content Node 2 has been updated.');
 
     // Usage now should be the same as before.
     $this->drupalGet("/admin/content/entity-usage/node/{$node1->id()}");
@@ -244,6 +244,19 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
     $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
     $this->assertEquals('Node 2', $first_row_title_link->getText());
     $assert_session->elementNotExists('xpath', '//table/tbody/tr[2]');
+
+    // Set reference on bundleless user entity referencing node 1.
+    $this->loggedInUser->set('field_eu_test_related_nodes', [
+      'target_id' => $node1->id(),
+    ])->save();
+
+    // Check this reference shows up on usage page, without bundle label.
+    $this->drupalGet("/admin/content/entity-usage/node/{$node1->id()}", ['query' => ['page' => '2']]);
+    $first_row_title_link = $assert_session->elementExists('xpath', '//table/tbody/tr[1]/td[1]/a');
+    $this->assertEquals($this->loggedInUser->getDisplayName(), $first_row_title_link->getText());
+    $this->assertStringContainsString($this->loggedInUser->toUrl()->toString(), $first_row_title_link->getAttribute('href'));
+    $first_row_type = $this->xpath('//table/tbody/tr[1]/td[2]')[0];
+    $this->assertEquals('User', $first_row_type->getText());
   }
 
 }

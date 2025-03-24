@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\entity_usage\EntityUpdateManagerInterface;
+use Drupal\entity_usage\PreSaveUrlRecorder;
 use Drupal\field\FieldStorageConfigInterface;
 
 /**
@@ -32,6 +33,20 @@ function entity_usage_help(string $route_name, RouteMatchInterface $route_match)
 }
 
 /**
+ * Implements hook_entity_presave().
+ */
+function entity_usage_entity_presave(EntityInterface $entity): void {
+  if (!$entity->isNew() && ($entity->hasLinkTemplate('canonical') || $entity->hasLinkTemplate('edit-form'))) {
+    $config = \Drupal::config('entity_usage.settings');
+    $enabled_target_entity_types = $config->get('track_enabled_target_entity_types');
+    // Every entity type is tracked if not set.
+    if (!is_array($enabled_target_entity_types) || in_array($entity->getEntityTypeId(), $enabled_target_entity_types, TRUE)) {
+      \Drupal::service(PreSaveUrlRecorder::class)->recordEntity($entity);
+    }
+  }
+}
+
+/**
  * Implements hook_entity_insert().
  */
 function entity_usage_entity_insert(EntityInterface $entity): void {
@@ -45,6 +60,10 @@ function entity_usage_entity_update(EntityInterface $entity): void {
   $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
   assert($entity_usage_update_manager instanceof EntityUpdateManagerInterface);
   $entity_usage_update_manager->trackUpdateOnEdition($entity);
+  // The previous URL is no longer needed so remove it to save memory in case
+  // this is a part of a long-running process updating a large number of
+  // entities.
+  \Drupal::service(PreSaveUrlRecorder::class)->removeEntity($entity);
 }
 
 /**
@@ -174,4 +193,52 @@ function entity_usage_form_alter(array &$form, FormStateInterface $form_state, s
       '#weight' => -201,
     ];
   }
+}
+
+/**
+ * Implements hook_module_preuninstall().
+ */
+function entity_usage_module_preuninstall(string $module, bool $is_syncing = FALSE): void {
+  if ($is_syncing) {
+    return;
+  }
+
+  /** @var \Drupal\entity_usage\EntityUsageTrackManager $plugin_manager */
+  $plugin_manager = \Drupal::service('plugin.manager.entity_usage.track');
+  $source_entity_classes = $provided_plugins = [];
+  foreach ($plugin_manager->getDefinitions() as $plugin_id => $definition) {
+    if ($definition['provider'] === $module) {
+      $provided_plugins[] = $plugin_id;
+    }
+    else {
+      $source_entity_classes[] = $definition['source_entity_class'];
+    }
+  }
+
+  if (empty($provided_plugins)) {
+    // The module does not provide any entity usage tracking plugins. There is
+    // nothing to do.
+    return;
+  }
+
+  $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
+  $config->set('track_enabled_plugins', array_diff($config->get('track_enabled_plugins') ?: [], $provided_plugins));
+
+  // Remove any entity types that are not supported.
+  $source_entity_classes = array_unique($source_entity_classes);
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+  $source_entity_types = $config->get('track_enabled_source_entity_types') ?? [];
+  foreach ($source_entity_types as $key => $entity_type_id) {
+    $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+    foreach ($source_entity_classes as $source_entity_class) {
+      if ($entity_type->entityClassImplements($source_entity_class)) {
+        continue 2;
+      }
+    }
+    unset($source_entity_types[$key]);
+  }
+
+  $config
+    ->set('track_enabled_source_entity_types', array_values($source_entity_types))
+    ->save();
 }

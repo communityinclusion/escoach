@@ -4,6 +4,7 @@ namespace Drupal\entity_usage;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
@@ -114,5 +115,15 @@ interface EntityUsageTrackInterface extends PluginInspectionInterface {
    *   target entity could be retrieved from the received field item value.
    */
   public function getTargetEntities(FieldItemInterface $item): array;
+
+  /**
+   * Updates the track usage data for an entity field.
+   *
+   * @param \Drupal\Core\Entity\FieldableEntityInterface $source_entity
+   *   The source entity.
+   * @param string $field_name
+   *   The field name.
+   */
+  public function updateTrackingDataForField(FieldableEntityInterface $source_entity, string $field_name): void;
 
 }

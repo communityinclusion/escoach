@@ -3,7 +3,6 @@ status: true
 dependencies:
   module:
     - node
-    - action
     - node_export
 id: bulk_node_export
 label: 'Node Export'

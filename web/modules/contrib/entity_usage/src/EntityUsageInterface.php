@@ -226,4 +226,30 @@ interface EntityUsageInterface {
    */
   public function listReferencedEntities(EntityInterface $entity): array;
 
+  /**
+   * Lists all target entities for a source entity, field and method.
+   *
+   * @param string|int $source_id
+   *   The source entity ID.
+   * @param string $source_entity_type_id
+   *   The source entity type.
+   * @param string $source_langcode
+   *   The source entity language code.
+   * @param string|int $source_vid
+   *   The source entity revision ID.
+   * @param string $method
+   *   The method used to relate source entity with the target entity. Normally
+   *   the plugin id.
+   * @param string $field_name
+   *   The field name.
+   *
+   * @return string[]
+   *   An indexed array of strings where each target entity type and ID are
+   *   concatenated with a "|" character. Will return an empty array if no
+   *   target entities found.
+   *
+   * @see \Drupal\entity_usage\EntityUsageTrackInterface::getTargetEntities()
+   */
+  public function listTargetEntitiesByFieldAndMethod(string|int $source_id, string $source_entity_type_id, string $source_langcode, string|int $source_vid, string $method, string $field_name): array;
+
 }

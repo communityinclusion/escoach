@@ -13,6 +13,7 @@ use Drupal\entity_usage\EntityUsageTrackBase;
  *   label = @Translation("Link Fields"),
  *   description = @Translation("Tracks relationships created with 'Link' fields."),
  *   field_types = {"link", "link_tree"},
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
 class Link extends EntityUsageTrackBase {

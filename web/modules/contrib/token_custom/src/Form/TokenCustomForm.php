@@ -101,7 +101,7 @@ class TokenCustomForm extends ContentEntityForm {
       'source' => ['name', 'widget', 0, 'value'],
       'exists' => '\Drupal\token_custom\Entity\TokenCustom::load',
       'replace' => '-',
-      'replace_pattern' => '[^a-z0-9\-]+',
+      'replace_pattern' => '[^a-z0-9\-\_]+',
     ];
 
     $account = $this->currentUser();

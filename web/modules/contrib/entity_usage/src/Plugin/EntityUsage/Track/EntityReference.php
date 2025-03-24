@@ -22,6 +22,7 @@ use Drupal\entity_usage\EntityUsageTrackMultipleLoadInterface;
  *     "image",
  *     "webform",
  *   },
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
 class EntityReference extends EntityUsageTrackBase implements EntityUsageTrackMultipleLoadInterface {

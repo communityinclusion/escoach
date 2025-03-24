@@ -12,6 +12,7 @@ use Drupal\Component\Utility\Html;
  *   label = @Translation("CKEditor Image"),
  *   description = @Translation("Tracks relationships created with CKEditor Image widget in formatted text fields."),
  *   field_types = {"text", "text_long", "text_with_summary"},
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
 class CkeditorImage extends TextFieldEmbedBase {

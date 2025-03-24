@@ -12,6 +12,7 @@ use Drupal\Component\Utility\Html;
  *   label = @Translation("Entity Embed"),
  *   description = @Translation("Tracks relationships created with 'Entity Embed' in formatted text fields."),
  *   field_types = {"text", "text_long", "text_with_summary"},
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
 class EntityEmbed extends TextFieldEmbedBase {

@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Layout builder"),
  *   description = @Translation("Tracks relationships in layout builder layouts."),
  *   field_types = {"layout_section"},
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
 class LayoutBuilder extends EntityUsageTrackBase {

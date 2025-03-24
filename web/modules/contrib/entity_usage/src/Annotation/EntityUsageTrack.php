@@ -45,4 +45,14 @@ class EntityUsageTrack extends Plugin {
    */
   public $field_types = [];
 
+  /**
+   * Determines what source entities the plugins support.
+   *
+   * Plugins that extend from \Drupal\entity_usage\EntityUsageTrackBase should
+   * use \Drupal\Core\Entity\FieldableEntityInterface.
+   *
+   * @var class-string
+   */
+  public $source_entity_class;
+
 }

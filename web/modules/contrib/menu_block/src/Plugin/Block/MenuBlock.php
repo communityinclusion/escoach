@@ -2,6 +2,7 @@
 
 namespace Drupal\menu_block\Plugin\Block;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -31,6 +32,7 @@ class MenuBlock extends SystemMenuBlock {
    */
   const LABEL_BLOCK = 'block';
   const LABEL_MENU = 'menu';
+  const LABEL_VISIBILITY_LEVEL_PARENT = 'visibility_level_parent';
   const LABEL_ACTIVE_ITEM = 'active_item';
   const LABEL_PARENT = 'parent';
   const LABEL_ROOT = 'root';
@@ -56,6 +58,11 @@ class MenuBlock extends SystemMenuBlock {
    * @var array
    */
   protected $buildCache;
+
+  /**
+   * Instance reference to the derived menu root.
+   */
+  protected string $menuRoot;
 
   /**
    * {@inheritdoc}
@@ -129,6 +136,7 @@ class MenuBlock extends SystemMenuBlock {
       '#options' => [
         self::LABEL_BLOCK => $this->t('Block title'),
         self::LABEL_MENU => $this->t('Menu title'),
+        self::LABEL_VISIBILITY_LEVEL_PARENT => $this->t('Parent title at initial visibility level'),
         self::LABEL_FIXED => $this->t("Fixed parent item's title"),
         self::LABEL_ACTIVE_ITEM => $this->t("Active item's title"),
         self::LABEL_PARENT => $this->t("Active trail's parent title"),
@@ -151,6 +159,7 @@ class MenuBlock extends SystemMenuBlock {
           ':input[name="settings[label_display]"]' => ['checked' => TRUE],
           ':input[name="settings[label_type]"]' => [
             ['value' => self::LABEL_ACTIVE_ITEM],
+            ['value' => self::LABEL_VISIBILITY_LEVEL_PARENT],
             ['value' => self::LABEL_PARENT],
             ['value' => self::LABEL_ROOT],
             ['value' => self::LABEL_FIXED],
@@ -196,6 +205,13 @@ class MenuBlock extends SystemMenuBlock {
       ],
     ];
 
+    $form['advanced']['display_empty'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('<strong>Display empty block</strong>'),
+      '#default_value' => $config['display_empty'],
+      '#description' => $this->t('Display block if block content is empty.'),
+    ];
+
     $form['style']['suggestion'] = [
       '#type' => 'machine_name',
       '#title' => $this->t('Theme hook suggestion'),
@@ -236,6 +252,7 @@ class MenuBlock extends SystemMenuBlock {
   public function blockSubmit($form, FormStateInterface $form_state) {
     $this->configuration['follow'] = $form_state->getValue('follow');
     $this->configuration['follow_parent'] = $form_state->getValue('follow_parent');
+    $this->configuration['display_empty'] = (bool) $form_state->getValue('display_empty');
     $this->configuration['level'] = $form_state->getValue('level');
     $this->configuration['depth'] = $form_state->getValue('depth');
     $this->configuration['expand_all_items'] = (bool) $form_state->getValue('expand_all_items');
@@ -317,8 +334,8 @@ class MenuBlock extends SystemMenuBlock {
         // root based on the parent of the configured start level.
         $menu_trail_ids = array_reverse(array_values($parameters->activeTrail));
         $offset = ($following && $follow_parent == 'active') ? 2 : 1;
-        $menu_root = $menu_trail_ids[$level - $offset];
-        $parameters->setRoot($menu_root);
+        $this->menuRoot = $menu_trail_ids[$level - $offset];
+        $parameters->setRoot($this->menuRoot);
         if ($following || !$render_parent) {
           $parameters->setMinDepth(1);
         }
@@ -399,16 +416,18 @@ class MenuBlock extends SystemMenuBlock {
     $build['#title'] = [
       '#markup' => $label,
     ];
-    if (!empty($build['#theme'])) {
-      // Add the configuration for use in menu_block_theme_suggestions_menu().
-      $build['#menu_block_configuration'] = $this->configuration;
-      // Set the generated label into the configuration array so it is
-      // propagated to the theme preprocessor and template(s) as needed.
-      $build['#menu_block_configuration']['label'] = $label;
-      // Remove the menu name-based suggestion so we can control its precedence
-      // better in menu_block_theme_suggestions_menu().
-      $build['#theme'] = 'menu';
-    }
+
+    // Add the configuration for use in menu_block_theme_suggestions_menu().
+    $build['#menu_block_configuration'] = $this->configuration;
+    // Set the generated label into the configuration array so it is
+    // propagated to the theme preprocessor and template(s) as needed.
+    $build['#menu_block_configuration']['label'] = $label;
+    // Remove the menu name-based suggestion so we can control its precedence
+    // better in menu_block_theme_suggestions_menu().
+    $build['#theme'] = 'menu';
+    // Set the menu name, which may not have been set if menuTree->build()
+    // had no visible links.
+    $build['#menu_name'] = $menu_name;
 
     $build['#contextual_links']['menu'] = [
       'route_parameters' => ['menu' => $menu_name],
@@ -424,7 +443,7 @@ class MenuBlock extends SystemMenuBlock {
    */
   public function blockAccess(AccountInterface $account) {
     $build = $this->build();
-    if (empty($build['#items'])) {
+    if (empty($build['#items']) && !$this->configuration['display_empty']) {
       return AccessResult::forbidden();
     }
     return parent::blockAccess($account);
@@ -437,6 +456,7 @@ class MenuBlock extends SystemMenuBlock {
     return [
       'follow' => 0,
       'follow_parent' => 'child',
+      'display_empty' => FALSE,
       'level' => 1,
       'depth' => 0,
       'expand_all_items' => FALSE,
@@ -475,6 +495,9 @@ class MenuBlock extends SystemMenuBlock {
 
       case self::LABEL_PARENT:
         return $this->getActiveTrailParentTitle();
+
+      case self::LABEL_VISIBILITY_LEVEL_PARENT:
+        return $this->getVisibilityLevelParentTitle();
 
       case self::LABEL_ROOT:
         return $this->getActiveTrailRootTitle();
@@ -572,6 +595,22 @@ class MenuBlock extends SystemMenuBlock {
   }
 
   /**
+   * Gets the current menu item visibility level parent menu item title.
+   */
+  protected function getVisibilityLevelParentTitle(): MarkupInterface|string|null {
+    $active_trail_ids = $this->getDerivativeActiveTrailIds();
+
+    if ($active_trail_ids) {
+      if ($this->menuRoot && in_array($this->menuRoot, $active_trail_ids)) {
+        $active_trail_ids = [$this->menuRoot];
+      }
+      return $this->getLinkTitleFromLink(end($active_trail_ids));
+    }
+
+    return NULL;
+  }
+
+  /**
    * Gets an array of the active trail menu link items.
    *
    * @return array
@@ -588,10 +627,10 @@ class MenuBlock extends SystemMenuBlock {
    * @param string $link_id
    *   The menu item ID.
    *
-   * @return string|null
-   *   The menu item title or NULL if the given menu item can't be found.
+   * @return string|\Drupal\Component\Render\MarkupInterface|null
+   *   The menu item title, link, or NULL if the given menu item can't be found.
    */
-  protected function getLinkTitleFromLink(string $link_id) {
+  protected function getLinkTitleFromLink(string $link_id): MarkupInterface|string|null {
     // Get the actual parameters so we have the active trail.
     $menu_name = $this->getDerivativeId();
     $parameters = $this->menuTree->getCurrentRouteMenuTreeParameters($menu_name);
@@ -607,7 +646,8 @@ class MenuBlock extends SystemMenuBlock {
 
         // Set the active trail class.
         if (in_array($link_id, $parameters->activeTrail)) {
-          $attributes = $url->getOption('attributes');
+          $attributes = $url->getOption('attributes') ?? [];
+          $attributes['class'] = (array) ($attributes['class'] ?? []);
           $attributes['class'][] = 'menu-item--active-trail';
           $url->setOption('attributes', $attributes);
         }

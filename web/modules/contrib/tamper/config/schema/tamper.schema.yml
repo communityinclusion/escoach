@@ -2,6 +2,12 @@ tamper.*:
   type: mapping
   label: 'Tamper plugin'
 
+tamper.absolute_url:
+  mapping:
+    base_url_source:
+      type: string
+      label: 'Source'
+
 tamper.aggregate:
   mapping:
     function:
@@ -62,6 +68,21 @@ tamper.encode:
     mode:
       type: string
       label: 'Serialization mode'
+
+tamper.entity_finder:
+  mapping:
+    entity_type:
+      type: string
+      label: 'Entity type'
+    bundle:
+      type: string
+      label: 'Bundle'
+    field:
+      type: string
+      label: 'Field'
+    column:
+      type: string
+      label: 'Column'
 
 tamper.explode:
   mapping:

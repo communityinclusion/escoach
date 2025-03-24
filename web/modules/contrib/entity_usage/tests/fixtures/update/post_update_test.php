@@ -8,6 +8,7 @@
  * @see \Drupal\Tests\entity_usage\Functional\Update\UpdateTest::testUpdate8206()
  */
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Database\Database;
 
 $connection = Database::getConnection();
@@ -25,6 +26,22 @@ $connection->update('config')
   ->fields(['data' => serialize($extensions)])
   ->condition('collection', '')
   ->condition('name', 'core.extension')
+  ->execute();
+
+// Add entity_usage.settings.
+$config_data = Yaml::decode(file_get_contents(__DIR__ . '/entity_usage.settings.yml'));
+$config_data['track_enabled_source_entity_types'] = ['filter_format', 'node'];
+$connection->insert('config')
+  ->fields([
+    'collection',
+    'name',
+    'data',
+  ])
+  ->values([
+    'collection' => '',
+    'name' => 'entity_usage.settings',
+    'data' => serialize($config_data),
+  ])
   ->execute();
 
 // Set the schema version.

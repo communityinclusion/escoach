@@ -290,9 +290,20 @@ class ListUsageController extends ControllerBase {
         };
         $field_name = $get_field_name($revisions);
         $field_label = isset($field_definitions[$field_name]) ? $field_definitions[$field_name]->getLabel() : $this->t('Unknown');
+        $type = $entity_types[$source_type]->getLabel();
+        if ($source_bundle_key = $source_entity->getEntityType()->getKey('bundle')) {
+          $bundle_field = $source_entity->{$source_bundle_key};
+          if ($bundle_field->getFieldDefinition()->getType() === 'entity_reference') {
+            $bundle_label = $bundle_field->entity->label();
+          }
+          else {
+            $bundle_label = $bundle_field->getString();
+          }
+          $type .= ': ' . $bundle_label;
+        }
         $rows[] = [
           $link,
-          $entity_types[$source_type]->getLabel(),
+          $type,
           $languages[$default_langcode]->getName(),
           $field_label,
           $published,

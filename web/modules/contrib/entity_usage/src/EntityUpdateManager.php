@@ -44,12 +44,29 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
    *   The PluginManager track service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
+   * @param \Drupal\entity_usage\PreSaveUrlRecorder|null $preSaveUrlRecorder
+   *   The presave URL recorder.
+   * @param \Drupal\entity_usage\RecreateTrackingDataForFieldQueuer|null $recreateTrackingDataForFieldQueuer
+   *   The recreate tracking data for field queuer.
    */
-  public function __construct(EntityUsageInterface $usage_service, EntityUsageTrackManager $track_manager, ConfigFactoryInterface $config_factory) {
+  public function __construct(
+    EntityUsageInterface $usage_service,
+    EntityUsageTrackManager $track_manager,
+    ConfigFactoryInterface $config_factory,
+    protected ?PreSaveUrlRecorder $preSaveUrlRecorder = NULL,
+    protected ?RecreateTrackingDataForFieldQueuer $recreateTrackingDataForFieldQueuer = NULL,
+  ) {
     $this->usageService = $usage_service;
     $this->trackManager = $track_manager;
     $this->config = $config_factory->get('entity_usage.settings');
-
+    if ($this->preSaveUrlRecorder === NULL) {
+      // @phpstan-ignore-next-line
+      $this->preSaveUrlRecorder = \Drupal::service(PreSaveUrlRecorder::class);
+    }
+    if ($this->recreateTrackingDataForFieldQueuer === NULL) {
+      // @phpstan-ignore-next-line
+      $this->recreateTrackingDataForFieldQueuer = \Drupal::service(RecreateTrackingDataForFieldQueuer::class);
+    }
   }
 
   /**
@@ -86,6 +103,24 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
    * {@inheritdoc}
    */
   public function trackUpdateOnEdition(EntityInterface $entity): void {
+    // If the URL has changed and this entity can be a target then any tracking
+    // info based on the old the URL needs to be updated.
+    if ($this->allowTargetEntityTracking($entity) && ($previous_url = $this->preSaveUrlRecorder->getUrl($entity))) {
+      if ($previous_url !== $entity->toUrl()->toString()) {
+        foreach ($this->usageService->listSources($entity, FALSE) as $usage) {
+          if (is_subclass_of($this->trackManager->getDefinition($usage['method'])['class'], EntityUsageTrackUrlUpdateInterface::class)) {
+            $this->recreateTrackingDataForFieldQueuer->addRecord(
+              $usage['source_type'],
+              $usage['source_id'],
+              $usage['source_vid'],
+              $usage['method'],
+              $usage['field_name']
+            );
+          }
+        }
+      }
+    }
+
     if (!$this->allowSourceEntityTracking($entity)) {
       return;
     }
@@ -162,6 +197,21 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
       $allow_tracking = TRUE;
     }
     return $allow_tracking;
+  }
+
+  /**
+   * Checks if an entity is allowed to be tracked as target.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object.
+   *
+   * @return bool
+   *   Whether the entity can be tracked or not.
+   */
+  protected function allowTargetEntityTracking(EntityInterface $entity): bool {
+    $enabled_target_entity_types = $this->config->get('track_enabled_target_entity_types');
+    // Every entity type is tracked if not set.
+    return !is_array($enabled_target_entity_types) || in_array($entity->getEntityTypeId(), $enabled_target_entity_types, TRUE);
   }
 
   /**

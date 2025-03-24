@@ -43,7 +43,7 @@ class EmbeddedContentTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 1 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 1 has been created.');
     $node1 = $this->getLastEntityOfType('node', TRUE);
 
     // Nobody is using this guy for now.
@@ -150,7 +150,7 @@ class EmbeddedContentTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 1 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 1 has been created.');
     $node1 = $this->getLastEntityOfType('node', TRUE);
 
     // Nobody is using this guy for now.
@@ -273,7 +273,7 @@ class EmbeddedContentTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 1 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 1 has been created.');
     $node1 = $this->getLastEntityOfType('node', TRUE);
 
     // Nobody is using this guy for now.

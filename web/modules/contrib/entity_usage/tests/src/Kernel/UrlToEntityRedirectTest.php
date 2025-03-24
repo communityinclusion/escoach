@@ -29,7 +29,7 @@ class UrlToEntityRedirectTest extends EntityKernelTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-
+    $this->installSchema('entity_usage', ['entity_usage']);
     $this->installEntitySchema('path_alias');
     $this->installEntitySchema('redirect');
   }

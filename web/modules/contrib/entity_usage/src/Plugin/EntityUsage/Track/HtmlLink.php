@@ -3,6 +3,7 @@
 namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
 
 use Drupal\Component\Utility\Html;
+use Drupal\entity_usage\EntityUsageTrackUrlUpdateInterface;
 
 /**
  * Tracks usage of entities referenced from regular HTML Links.
@@ -12,9 +13,10 @@ use Drupal\Component\Utility\Html;
  *   label = @Translation("HTML links"),
  *   description = @Translation("Tracks relationships created with standard links inside formatted text fields."),
  *   field_types = {"text", "text_long", "text_with_summary"},
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
-class HtmlLink extends TextFieldEmbedBase {
+class HtmlLink extends TextFieldEmbedBase implements EntityUsageTrackUrlUpdateInterface {
 
   /**
    * {@inheritdoc}

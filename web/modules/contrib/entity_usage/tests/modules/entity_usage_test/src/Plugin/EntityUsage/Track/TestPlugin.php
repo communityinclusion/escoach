@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   field_types = {
  *     "text_long",
  *   },
+ *   source_entity_class = "Drupal\Core\Entity\EntityInterface"
  * )
  */
 class TestPlugin extends EntityUsageTrackBase {

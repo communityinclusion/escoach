@@ -7,9 +7,10 @@ dependencies:
   - entity_embed:entity_embed
   - drupal:text
   - drupal:node
-  - drupal:ckeditor
+  - drupal:media
+  - drupal:ckeditor5
 
-# Information added by Drupal.org packaging script on 2025-02-18
-version: '8.x-2.0-beta19'
+# Information added by Drupal.org packaging script on 2025-03-11
+version: '8.x-2.0-beta23'
 project: 'entity_usage'
-datestamp: 1739870538
+datestamp: 1741698541

@@ -15,6 +15,7 @@ use Drupal\entity_usage\EntityUsageTrackMultipleLoadInterface;
  *   label = @Translation("Dynamic Entity Reference"),
  *   description = @Translation("Tracks relationships created with 'Dynamic Entity Reference' fields."),
  *   field_types = {"dynamic_entity_reference"},
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
 class DynamicEntityReference extends EntityUsageTrackBase implements EntityUsageTrackMultipleLoadInterface {

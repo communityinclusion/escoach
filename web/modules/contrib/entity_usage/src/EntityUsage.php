@@ -71,13 +71,24 @@ class EntityUsage implements EntityUsageBulkInterface {
       return $this;
     }
     $query = $this->connection->insert($this->bulkTableName)->fields(array_keys($this->inserts[array_key_first($this->inserts)]));
+
     foreach ($this->inserts as $insert) {
       $query->values($insert);
     }
     $query->execute();
     if ($this->tableName === $this->bulkTableName) {
       foreach ($this->inserts as $insert) {
-        $event = new EntityUsageEvent($insert['target_id'], $insert['target_type'], $insert['source_id'], $insert['source_type'], $insert['source_langcode'], $insert['source_vid'], $insert['method'], $insert['field_name'], $insert['count']);
+        $event = new EntityUsageEvent(
+          $insert['target_id_string'] !== '' ? $insert['target_id_string'] : $insert['target_id'],
+          $insert['target_type'],
+          $insert['source_id_string'] ?? $insert['source_id'],
+          $insert['source_type'],
+          $insert['source_langcode'],
+          $insert['source_vid'],
+          $insert['method'],
+          $insert['field_name'],
+          $insert['count']
+        );
         $this->eventDispatcher->dispatch($event, Events::USAGE_REGISTER);
       }
     }
@@ -117,18 +128,22 @@ class EntityUsage implements EntityUsageBulkInterface {
       return;
     }
 
-    // Entities can have string IDs. We support that by using different columns
-    // on each case.
-    $target_id_column = $this->isInt($target_id) ? 'target_id' : 'target_id_string';
-    $source_id_column = $this->isInt($source_id) ? 'source_id' : 'source_id_string';
-
     if ($this->bulkInsert) {
       if ($count > 0) {
+        // Entities can have string IDs. We support that by using different
+        // columns on each case.
+        $target_id_int = $this->isInt($target_id);
+        $source_id_int = $this->isInt($source_id);
+
         $key = $target_id . $target_type . $source_id . $source_type . $source_langcode . $source_vid ?: 0 . $method . $field_name;
         $this->inserts[$key] = [
-          $target_id_column => $target_id,
+          'target_id' => $target_id_int ? $target_id : 0,
+          // Target ID string default value is an empty string.
+          'target_id_string' => $target_id_int ? '' : $target_id,
           'target_type' => $target_type,
-          $source_id_column => $source_id,
+          'source_id' => $source_id_int ? $source_id : 0,
+          // Source ID string default value is NULL.
+          'source_id_string' => $source_id_int ? NULL : $source_id,
           'source_type' => $source_type,
           'source_langcode' => $source_langcode,
           'source_vid' => $source_vid ?: 0,
@@ -139,6 +154,11 @@ class EntityUsage implements EntityUsageBulkInterface {
       }
       return;
     }
+
+    // Entities can have string IDs. We support that by using different columns
+    // on each case.
+    $target_id_column = $this->isInt($target_id) ? 'target_id' : 'target_id_string';
+    $source_id_column = $this->isInt($source_id) ? 'source_id' : 'source_id_string';
 
     // If $count is 0, we want to delete the record.
     if ($count <= 0) {
@@ -258,6 +278,10 @@ class EntityUsage implements EntityUsageBulkInterface {
     // on each case.
     $target_id_column = $this->isInt($target_entity->id()) ? 'target_id' : 'target_id_string';
     $query = $this->connection->select($this->tableName, 'e')
+      ->addTag('entity_usage_list_sources')
+      ->addMetaData('entity_usage', [
+        'target_entity' => $target_entity,
+      ])
       ->fields('e', [
         'source_id',
         'source_id_string',
@@ -318,6 +342,11 @@ class EntityUsage implements EntityUsageBulkInterface {
     // on each case.
     $source_id_column = $this->isInt($source_entity->id()) ? 'source_id' : 'source_id_string';
     $query = $this->connection->select($this->tableName, 'e')
+      ->addTag('entity_usage_list_targets')
+      ->addMetaData('entity_usage', [
+        'source_entity' => $source_entity,
+        'vid' => $vid,
+      ])
       ->fields('e', [
         'target_id',
         'target_id_string',
@@ -435,6 +464,35 @@ class EntityUsage implements EntityUsageBulkInterface {
   public function truncateTable(): static {
     $this->connection->truncate($this->tableName)->execute();
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function listTargetEntitiesByFieldAndMethod(string|int $source_id, string $source_entity_type_id, string $source_langcode, string|int $source_vid, string $method, string $field_name): array {
+    // Entities can have string IDs. We support that by using different columns
+    // on each case.
+    $source_id_column = $this->isInt($source_id) ? 'source_id' : 'source_id_string';
+    $query = $this->connection->select($this->tableName, 'e')
+      ->fields('e', [
+        'target_id',
+        'target_id_string',
+        'target_type',
+      ])
+      ->condition($source_id_column, $source_id)
+      ->condition('source_type', $source_entity_type_id)
+      ->condition('source_vid', $source_vid ?: 0)
+      ->condition('field_name', $field_name)
+      ->condition('method', $method)
+      ->condition('count', 0, '>')
+      ->orderBy('target_id', 'DESC');
+
+    $entities = [];
+    foreach ($query->execute() as $usage) {
+      $target_id_value = !empty($usage->target_id) ? $usage->target_id : $usage->target_id_string;
+      $entities[] = $usage->target_type . '|' . $target_id_value;
+    }
+    return $entities;
   }
 
 }

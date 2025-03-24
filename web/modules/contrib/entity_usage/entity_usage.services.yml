@@ -5,6 +5,10 @@ parameters:
       # source entity the only use case is to track entities in the
       # redirect_redirect link field.
       - redirect
+  # Number of entity usage records to update on kernel terminate when an
+  # entity's URL changes. Above this limit, remaining records will be
+  # deferred to be processed in a background queue.
+  entity_usage.url_updater_records_to_process: 15
 
 services:
   _defaults:
@@ -43,6 +47,9 @@ services:
 
   Drupal\entity_usage\UrlToEntity: ~
   Drupal\entity_usage\UrlToEntityInterface: '@Drupal\entity_usage\UrlToEntity'
+
+  Drupal\entity_usage\PreSaveUrlRecorder: ~
+  Drupal\entity_usage\RecreateTrackingDataForFieldQueuer: ~
 
   # By default we enable Entity and Language subscribers to the
   # \Drupal\entity_usage\Events\Events::URL_TO_ENTITY event. If the file and/or

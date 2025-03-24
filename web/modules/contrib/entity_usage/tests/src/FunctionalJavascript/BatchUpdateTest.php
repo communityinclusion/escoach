@@ -43,7 +43,7 @@ class BatchUpdateTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 1 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 1 has been created.');
     $node1 = Node::load(1);
 
     // Create node 2 referencing node 1 using reference field.
@@ -53,7 +53,7 @@ class BatchUpdateTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 2 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 2 has been created.');
 
     // Create node 3 also referencing node 1 in a reference field.
     $this->drupalGet('/node/add/eu_test_ct');
@@ -62,7 +62,7 @@ class BatchUpdateTest extends EntityUsageJavascriptTestBase {
     $page->pressButton('Save');
     $session->wait(500);
     $this->saveHtmlOutput();
-    $assert_session->pageTextContains('eu_test_ct Node 3 has been created.');
+    $assert_session->pageTextContains('Entity Usage test content Node 3 has been created.');
 
     // Remove one of the records from the database to simulate an usage
     // non-tracked by the module.

@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Drupal\\\\entity_usage\\\\EntityUsageTrackManager\\:\\:processDefinition\\(\\) has parameter \\$definition with no type specified\\.$#"
+			count: 1
+			path: src/EntityUsageTrackManager.php
+
+		-
+			message: "#^Method Drupal\\\\entity_usage\\\\EntityUsageTrackManager\\:\\:processDefinition\\(\\) has parameter \\$plugin_id with no type specified\\.$#"
+			count: 1
+			path: src/EntityUsageTrackManager.php
+
+		-
 			message: "#^PHPDoc tag @param for parameter \\$namespaces with type array is incompatible with native type Traversable\\.$#"
 			count: 1
 			path: src/EntityUsageTrackManager.php

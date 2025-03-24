@@ -723,6 +723,9 @@ class EntityUsageTest extends EntityKernelTestBase {
     $real_usage = $this->injectedDatabase->select($this->tableName, 'e')->countQuery()->execute()->fetchField();
     $this->assertEquals(0, $real_usage);
 
+    // Register with string IDs.
+    $entity_usage->registerUsage('a string', 'fake', 'another string', 'foo', 'en', 1, 'entity_reference', $field_name, 3);
+
     // Do the bulk insert.
     $entity_usage->bulkInsert();
 
@@ -747,10 +750,20 @@ class EntityUsageTest extends EntityKernelTestBase {
     $this->assertSame($event[1]['method'], 'entity_reference');
     $this->assertSame($event[1]['field_name'], $field_name);
     $this->assertSame($event[1]['count'], 2);
-    $this->assertCount(2, $event);
+    $this->assertSame($event[2]['event_name'], Events::USAGE_REGISTER);
+    $this->assertSame($event[2]['target_id'], 'a string');
+    $this->assertSame($event[2]['target_type'], 'fake');
+    $this->assertSame($event[2]['source_id'], 'another string');
+    $this->assertSame($event[2]['source_type'], 'foo');
+    $this->assertSame($event[2]['source_langcode'], 'en');
+    $this->assertSame($event[2]['source_vid'], 1);
+    $this->assertSame($event[2]['method'], 'entity_reference');
+    $this->assertSame($event[2]['field_name'], $field_name);
+    $this->assertSame($event[2]['count'], 3);
+    $this->assertCount(3, $event);
 
     $real_usage = $this->injectedDatabase->select($this->tableName, 'e')->countQuery()->execute()->fetchField();
-    $this->assertEquals(2, $real_usage);
+    $this->assertEquals(3, $real_usage);
   }
 
   /**

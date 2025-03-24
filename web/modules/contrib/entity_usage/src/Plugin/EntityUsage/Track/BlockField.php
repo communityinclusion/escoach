@@ -14,6 +14,7 @@ use Drupal\entity_usage\EntityUsageTrackBase;
  *   label = @Translation("Block Field"),
  *   description = @Translation("Tracks relationships created with 'Block Field' fields."),
  *   field_types = {"block_field"},
+ *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
  * )
  */
 class BlockField extends EntityUsageTrackBase {

@@ -261,73 +261,17 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
     if (empty($source_entity->original) || !($source_entity instanceof FieldableEntityInterface)) {
       return;
     }
+
+    // New revisions should be tracked the same way as new entities.
+    if ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId() != $source_entity->original->getRevisionId()) {
+      $this->trackOnEntityCreation($source_entity);
+      return;
+    }
+
     $trackable_field_types = $this->getApplicableFieldTypes();
     $fields = array_keys($this->getReferencingFields($source_entity, $trackable_field_types));
     foreach ($fields as $field_name) {
-      if (($source_entity instanceof RevisionableInterface) &&
-        $source_entity->getRevisionId() != $source_entity->original->getRevisionId() &&
-        $source_entity->hasField($field_name) &&
-        !$source_entity->{$field_name}->isEmpty()) {
-
-        $this->trackOnEntityCreation($source_entity);
-        return;
-      }
-
-      // We are updating an existing revision, compare target entities to see if
-      // we need to add or remove tracking records.
-      $current_targets = [];
-      try {
-        if ($source_entity->hasField($field_name) && !$source_entity->{$field_name}->isEmpty()) {
-          if ($this instanceof EntityUsageTrackMultipleLoadInterface) {
-            $current_targets = $this->getTargetEntitiesFromField($source_entity->{$field_name});
-          }
-          else {
-            /** @var \Drupal\Core\Field\FieldItemInterface $field_item */
-            foreach ($source_entity->{$field_name} as $field_item) {
-              $current_targets = array_merge($current_targets, $this->getTargetEntities($field_item));
-            }
-          }
-        }
-      }
-      catch (\Exception $e) {
-        $this->logTrackingException($e, $source_entity, $field_name);
-      }
-
-      $original_targets = [];
-      try {
-        if ($source_entity->original->hasField($field_name) && !$source_entity->original->{$field_name}->isEmpty()) {
-          if ($this instanceof EntityUsageTrackMultipleLoadInterface) {
-            $original_targets = $this->getTargetEntitiesFromField($source_entity->original->{$field_name});
-          }
-          else {
-            /** @var \Drupal\Core\Field\FieldItemInterface $field_item */
-            foreach ($source_entity->original->{$field_name} as $field_item) {
-              $original_targets = array_merge($original_targets, $this->getTargetEntities($field_item));
-            }
-          }
-        }
-      }
-      catch (\Exception $e) {
-        $this->logTrackingException($e, $source_entity, $field_name);
-      }
-
-      // If a field references the same target entity, we record only one usage.
-      $original_targets = array_unique($original_targets);
-      $current_targets = array_unique($current_targets);
-
-      $added_ids = array_diff($current_targets, $original_targets);
-      $removed_ids = array_diff($original_targets, $current_targets);
-
-      foreach ($added_ids as $added_entity) {
-        [$target_type, $target_id] = explode('|', $added_entity);
-        $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
-        $this->usageService->registerUsage($target_id, $target_type, $source_entity->id(), $source_entity->getEntityTypeId(), $source_entity->language()->getId(), $source_vid, $this->pluginId, $field_name);
-      }
-      foreach ($removed_ids as $removed_entity) {
-        [$target_type, $target_id] = explode('|', $removed_entity);
-        $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
-        $this->usageService->registerUsage($target_id, $target_type, $source_entity->id(), $source_entity->getEntityTypeId(), $source_entity->language()->getId(), $source_vid, $this->pluginId, $field_name, 0);
-      }
+      $this->updateTrackingDataForField($source_entity, $field_name);
     }
   }
 
@@ -357,6 +301,51 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
     }
 
     return $referencing_fields_on_bundle;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function updateTrackingDataForField(FieldableEntityInterface $source_entity, string $field_name): void {
+    // We are updating an existing revision, compare target entities to see if
+    // we need to add or remove tracking records.
+    $current_targets = [];
+    try {
+      if ($source_entity->hasField($field_name) && !$source_entity->{$field_name}->isEmpty()) {
+        if ($this instanceof EntityUsageTrackMultipleLoadInterface) {
+          $current_targets = $this->getTargetEntitiesFromField($source_entity->{$field_name});
+        }
+        else {
+          /** @var \Drupal\Core\Field\FieldItemInterface $field_item */
+          foreach ($source_entity->{$field_name} as $field_item) {
+            $current_targets = array_merge($current_targets, $this->getTargetEntities($field_item));
+          }
+        }
+      }
+    }
+    catch (\Exception $e) {
+      $this->logTrackingException($e, $source_entity, $field_name);
+    }
+
+    $source_entity_langcode = $source_entity->language()->getId();
+    $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
+    $original_targets = $this->usageService->listTargetEntitiesByFieldAndMethod($source_entity->id(), $source_entity->getEntityTypeId(), $source_entity_langcode, $source_vid, $this->pluginId, $field_name);
+
+    // If a field references the same target entity, we record only one usage.
+    $original_targets = array_unique($original_targets);
+    $current_targets = array_unique($current_targets);
+
+    $added_ids = array_diff($current_targets, $original_targets);
+    $removed_ids = array_diff($original_targets, $current_targets);
+
+    foreach ($added_ids as $added_entity) {
+      [$target_type, $target_id] = explode('|', $added_entity);
+      $this->usageService->registerUsage($target_id, $target_type, $source_entity->id(), $source_entity->getEntityTypeId(), $source_entity_langcode, $source_vid, $this->pluginId, $field_name);
+    }
+    foreach ($removed_ids as $removed_entity) {
+      [$target_type, $target_id] = explode('|', $removed_entity);
+      $this->usageService->registerUsage($target_id, $target_type, $source_entity->id(), $source_entity->getEntityTypeId(), $source_entity_langcode, $source_vid, $this->pluginId, $field_name, 0);
+    }
   }
 
   /**

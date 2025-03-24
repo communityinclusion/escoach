@@ -21,14 +21,6 @@ phpcs:
     MYSQL_DATABASE: drupal
     MYSQL_ROOT_PASSWORD: drupal
 
-# Workaround for development dependencies that are not yet compatible
-# with Drupal 11, use lenient and override their core compatibility.
-composer:
-  variables:
-    _LENIENT_ALLOW_LIST: "entity_embed,embed,ckeditor,entity_browser_block"
-    PHP_VERSION: $CORE_PHP_MIN
-    IGNORE_PROJECT_DRUPAL_CORE_VERSION: 1
-
 phpunit:
   before_script:
     - 'sed -i "s/core_version_requirement.*/core_version_requirement: \^10||\^11/" web/modules/contrib/**/*.info.yml'

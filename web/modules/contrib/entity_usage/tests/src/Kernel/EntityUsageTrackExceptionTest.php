@@ -89,7 +89,7 @@ class EntityUsageTrackExceptionTest extends KernelTestBase {
       "count" => "1",
     ], $this->container->get('entity_usage.usage')->listTargets($entity1)['entity_test'][100][0]);
 
-    $key_value->set('returns', [new \Exception('This is a test'), ['entity_test|100']]);
+    $key_value->set('returns', [new \Exception('This is a test')]);
     $entity1->save();
     $logs = $logger->getLogs('error');
     $this->assertCount(1, $logs);
@@ -98,19 +98,12 @@ class EntityUsageTrackExceptionTest extends KernelTestBase {
     // info was successful but usage could not be determined for the new values.
     $this->assertEmpty($this->container->get('entity_usage.usage')->listTargets($entity1));
 
-    $key_value->set('returns', [['entity_test|75'], new \Exception('This is another test')]);
+    $key_value->set('returns', [new \Exception('This is another test')]);
     $logger->clear();
     $entity1->save();
     $logs = $logger->getLogs('error');
     $this->assertCount(1, $logs);
     $this->assertStringStartsWith('Calculating entity usage for field <em class="placeholder">text</em> on entity_test:1 using the <em class="placeholder">entity_usage_test</em> plugin threw <em class="placeholder">Exception</em>: This is another test', $logs[0]);
-    // The entity usage information is updated since the call to get the old
-    // info was failed but usage can be determined for the new values.
-    $this->assertSame([
-      "method" => "entity_usage_test",
-      "field_name" => "text",
-      "count" => "1",
-    ], $this->container->get('entity_usage.usage')->listTargets($entity1)['entity_test'][75][0]);
 
     // Ensure exceptions are also caught during creation.
     $key_value->set('returns', [new \Exception('This is yet another test')]);
