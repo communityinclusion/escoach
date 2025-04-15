@@ -232,6 +232,28 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '#default_value' => $config->get('def_send_days'),
 
       ];
+    
+      $form['configuration']['default_settings']['default_survey_todaytime'] = [
+        '#type' => 'datetime',
+        '#title' => $this->t('Default survey: set text send time of today\'s survey: format 00:00 (24 hour time). This is at the end of the half hour survey period.'),
+        '#description' => t('This field will be populated automatically every day in early AM.  You can manually change the time of the survey here.  Don\'t change the date.'),
+        '#size' => 20,
+        // '#date_date_element' => 'none', // hide date element
+        // '#date_time_element' => 'time', // you can use text element here as well
+  
+        '#default_value' => ($datereturn ? DrupalDateTime::createFromTimestamp(strtotime($datereturn)) : ""),
+      ];
+      $form['configuration']['default_settings']['default_survey_tomorrowtime'] = [
+        '#type' => 'datetime',
+        '#title' => $this->t('Default survey: Set text send time of tomorrow\'s survey: format 00:00 (24 hour time)'),
+  
+        '#description' => t('This field will be populated automatically tomorrow in early AM.  You can manually set the time of tomorrow\' survey here.  Only use tomorrow\'s date for now.'),
+        '#size' => 20,
+        // '#date_date_element' => 'none', // hide date element
+        // '#date_time_element' => 'time', // you can use text element here as well
+  
+        '#default_value' => ($datereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($datereturntomorrow)) : ""),
+      ];
 
     $form['configuration']['default_settings']['shell'] = array(
       '#type' => 'fieldset',
@@ -302,27 +324,6 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
 
 
-    $form['configuration']['default_settings']['default_survey_todaytime'] = [
-      '#type' => 'datetime',
-      '#title' => $this->t('Default survey: set text send time of today\'s survey: format 00:00 (24 hour time). This is at the end of the half hour survey period.'),
-      '#description' => t('This field will be populated automatically every day in early AM.  You can manually change the time of the survey here.  Don\'t change the date.'),
-      '#size' => 20,
-      // '#date_date_element' => 'none', // hide date element
-      // '#date_time_element' => 'time', // you can use text element here as well
-
-      '#default_value' => ($datereturn ? DrupalDateTime::createFromTimestamp(strtotime($datereturn)) : ""),
-    ];
-    $form['configuration']['default_settings']['default_survey_tomorrowtime'] = [
-      '#type' => 'datetime',
-      '#title' => $this->t('Default survey: Set text send time of tomorrow\'s survey: format 00:00 (24 hour time)'),
-
-      '#description' => t('This field will be populated automatically tomorrow in early AM.  You can manually set the time of tomorrow\' survey here.  Only use tomorrow\'s date for now.'),
-      '#size' => 20,
-      // '#date_date_element' => 'none', // hide date element
-      // '#date_time_element' => 'time', // you can use text element here as well
-
-      '#default_value' => ($datereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($datereturntomorrow)) : ""),
-    ];
     $form['configuration']['default_settings']['first_text_body'] = [
       '#type' => 'text_format',
       '#title' => 'First text message body for default survey',
