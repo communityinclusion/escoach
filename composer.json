@@ -58,7 +58,7 @@
         "drupal/node_export": "^1.1",
         "drupal/nodeaccess": "^2.0@alpha",
         "drupal/page_manager": "^4.0@beta",
-        "drupal/panels": "^4.3",
+        "drupal/panels": "^4.9",
         "drupal/paragraphs": "^1.18",
         "drupal/paragraphs_features": "^2.0",
         "drupal/paragraphs_grid": "^1.6",
