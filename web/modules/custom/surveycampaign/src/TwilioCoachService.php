@@ -901,9 +901,8 @@ class TwilioCoachService
 
         }
         if($noreplylevel == 2 && $isprimary) {
-
-             $cutofftextbody = str_replace("@name", "$firstname $lastname",str_replace('@cutoffdays', $dayno, $cutofftextconfig));
             $dayno = $inactiveno;
+             $cutofftextbody = str_replace("@name", "$firstname $lastname",str_replace('@cutoffdays', $dayno, $cutofftextconfig));
             $params['title'] = t('Daily survey paused');
             $params['message'] = t("$cutofftextbody");
 
