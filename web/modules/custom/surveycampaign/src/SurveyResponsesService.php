@@ -39,7 +39,7 @@ class SurveyResponsesService
         $gethighest = $gethighestquery ? $gethighestquery : '2021-09-23 10:00:00';
         // make a call to SG, get number of pages, filter by date
         // URL calls to page through data
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $page = 1;
         $perpage = 50;
         $totalpages = 0;

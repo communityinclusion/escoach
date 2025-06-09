@@ -17,7 +17,7 @@ class TwilioCoachService
     public function load($surveyid,$type = 1,$day = 0,$fixdate = null) {
 
         $user = 'oliver.lyons@umb.edu'; //Email address used to log in
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
         $onetime = $type == '2'  && $config->get('alt_repeat') == '0' ? true : false;
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
@@ -25,7 +25,7 @@ class TwilioCoachService
         //Else use the default heading and text for the final screen, from the lib settings page defaults.
         // call the manage closing screen function (if today's date/default to do the work of changing things in SG
         $defaultenable = $type == 1 ? $config->get('defaultenable') : $config->get('secondenable');
-        require $_SERVER['SERVER_ADDR'] == '162.243.15.189' || $_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
+        require $_SERVER['SERVER_ADDR'] == '162.243.15.189' || $_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
         $survey = '5500151';//Survey to pull from
         $todaydate = date("Y-m-d");
         $tomorrowdate = new DateTime("$todaydate");
@@ -121,7 +121,7 @@ class TwilioCoachService
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
         $finalpageid = $surveytype == 'default' ?  $libconfig->get('sg_clos_page_id') :  $libconfig->get('alt_sg_clos_page_id');
         $finalquestionid = $surveytype == 'default' ? $libconfig->get('sg_clos_ques_id') : $libconfig->get('alt_sg_clos_ques_id');
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $entity = \Drupal::entityTypeManager()->getStorage('node');
         $query = $entity->getQuery();
 
@@ -230,7 +230,7 @@ class TwilioCoachService
         $onetime = false;
         $onetime = !$isprimary && $config->get('alt_repeat') === '0' ? true : false;
         //read mailer table
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
         $database = \Drupal::database();
         $query =  $database->select('surveycampaign_mailer','sm')
@@ -483,7 +483,7 @@ class TwilioCoachService
                 $bodytext = $firsttextbody;
                 break;
         }
-       include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+       include($_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
 
       // A Twilio number you own with SMS capabilities
       $twilio_number = "+16172497169";
@@ -561,9 +561,7 @@ class TwilioCoachService
             if(!$checkcompletedonce && !$delayineffect)
             {
 
-                //echo "$campaignid,$email,$firstname,$lastname,$mobilephone";
                 $url = "https://restapi.surveygizmo.com/v5/survey/{$surveyid}/surveycampaign/{$campaignid}/surveycontact/?_method=PUT&email_address={$email}&first_name={$firstnameencoded}&last_name={$lastnameencoded}&home_phone={$urlphone}&customfield1={$timezone}&customfield2={$provider}&customfield3={$regcode}&customfield4={$your_state}&customfield5={$job_type}" . ($autologinurl && $autologinurl != "" ? "&customfield6={$autologinurl}" : "") . "&api_token={$api_key}&api_token_secret={$api_secret}";
-               // \Drupal::logger('surveycampaign')->notice("URL: " . $url);
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -574,22 +572,31 @@ class TwilioCoachService
                 $inactive = true;
                 $inactive = \Drupal::service('surveycampaign.survey_users')->checkInactive($mobilephone,$contact[2]);
                 $cancelled = false;
-                if($inactive && $isprimary)$cancelled = $this->checkSuspendedReminder($mobilephone,$fullname,$surveyid);
+                // The check below is in case someone has been reactivated ($cancelled = 3) but still has passed the max nonreplies for final cancellation
+                $cancelhold = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
+                // CheckSuspendReminder counts campaigns missed by inactive users, not sent texts with no reply
+                $cancelholdprint = $cancelhold ? 'CheckCancelled yes': 'Checkcancelled false';
+                if(($inactive || $cancelhold) && $isprimary) $cancelled = $this->checkSuspendedReminder($mobilephone,$fullname,$surveyid);
                 $todaylink = null;
-                if($cancelled) $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
+                if($cancelled == 4) $final = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,4,$todaylink,$isprimary);
+                elseif($cancelled == 3) {
+                    $comeback = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,3,$todaylink,$isprimary);
+                    $inactive = false;
+                }
+                $printcampaign = print_r($cutoffcampaigns, true);
+                // checkNonReplies below checks surveys not completed in surveycampaign_mailer table for active users
                 $didnotreply = !empty($cutoffcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$cutoffcampaigns)) : false;
                 $warningcount = !empty($warningcampaigns) ? intval($this->checkNonReplies($surveyid,$mobilephone,$fullname,$warningcampaigns)) :false;
-                // \Drupal::logger('surveycampaign')->notice("Name: " . $lastname . "Did not reply: " . $didnotreply . " Warning: " . $warning);
+                 \Drupal::logger('surveycampaign')->notice("Check cancelled: $cancelholdprint Surveyid: " .$surveyid . " Name: " . $lastname . "Did not reply: " . $didnotreply . " Cutoff: " . $cutoff . " Warning: " . $warning . ' Cancelled: ' .$cancelled . " Campaignarray: " . $printcampaign);
 
-                if($didnotreply >= $cutoff && !$inactive) {
+                if($didnotreply >= $cutoff && !$inactive && $cancelled != 3) {
 
                     $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,2,$todaylink,$isprimary);
                     }
-                elseif ($didnotreply >= $warning && $warningcount >= $warning && !$inactive)
+                elseif ($didnotreply >= $warning && $warningcount >= $warning && !$inactive && $cancelled != 3)
                 {
 
                     if (!is_bool($output)) {
-                        // \Drupal::logger('surveycampaign')->notice("First warning sent to mailer");
                         $todaylink = $output->invitelink;
                         $sendwarning = $this->mailNonReplyer($email,$firstname,$lastname,$mobilephone,1,$todaylink,$isprimary);
                     }
@@ -625,8 +632,8 @@ class TwilioCoachService
                     $senddate = $senddate->format('Y-m-d H:i:s');
                     $checkalready = false;
                     $checkalready =  $this->conditionCheck('surveycampaign_mailer',$surveyid,$senddate,$mobilephone);
-
-                    if(!$checkalready && !$cancelsurvey && $didnotreply < $cutoff && ($invitelink && $invitelink != '')) {
+                    // had to add || $cancelled == 3 below because the didnotreply does not apply in that case
+                    if(!$checkalready && !$cancelsurvey && ($didnotreply < $cutoff || $cancelled == 3 ) && ($invitelink && $invitelink != '')) {
                         $database = \Drupal::database();
                         $result = $database->insert('surveycampaign_mailer')
                         ->fields([
@@ -651,7 +658,7 @@ class TwilioCoachService
 
     }
     function updateCampaignTime($surveyid,$pastdate,$newdate,$day) {
-        include($_SERVER['SERVER_ADDR'] == '104.130.195.70' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
         $todaydate = date("Y-m-d");
         $gizmodate = new DateTime("$todaydate");
         $gizmodate->modify("+ $day day");
@@ -846,28 +853,69 @@ class TwilioCoachService
       $database = \Drupal::database();
       $config =  \Drupal::config('surveycampaign.settings');
       $dayspastinactive = $config->get('def_days_past_inactive');
+      $finalcanceldays = $config->get('def_final_inactive_trigger');
 
-      $query =  $database->select('surveycampaign_mailer','sm')
+     /* $query =  $database->select('surveycampaign_mailer','sm')
       ->fields('sm', array(
       'senddate')
       )
       ->condition('sm.surveyid', $surveyid)
       ->condition('sm.mobilephone', $mobilephone)
       ->condition('sm.fullname', $fullname)
+      ->condition('sm.Complete', 1)
       ->orderBy('senddate','DESC')
       ->range(0,1);
       $result = $query->execute()->fetchField();
+      */
+       $query2 =  $database->select('surveycampaign_mailer','sm')
+      ->fields('sm', array(
+      'campaignid')
+      )
+      ->condition('sm.surveyid', $surveyid)
+      ->condition('sm.mobilephone', $mobilephone)
+      ->condition('sm.fullname', $fullname)
+      ->condition('sm.Complete', 1)
+      ->orderBy('senddate','DESC')
+      ->range(0,1);
+      $result2 = $query2->execute()->fetchField();
+       
+      $result3 = $database->select('surveycampaign_campaigns', 'sc')
+        ->fields('sc', array(
+        'ID'
+          )
+        )
+        ->condition('sc.campaignid', $result2, '>')
+        ->countQuery()->execute()->fetchField();
+
+       
+      
+      /*  We are counting campaigns now, not days for inactivated users
       $lastsurveydate = substr($result, 0, 10);
       $todaydate = date("Y-m-d");
       $triggerdate = new DateTime("$lastsurveydate");
       $triggerdate->modify("+ $dayspastinactive days");
       $triggerdate = $triggerdate->format('Y-m-d');
+      $canceldate = new DateTime("$lastsurveydate");
+      $canceldate->modify("+ $finalcanceldays days");
+      $canceldate = $canceldate->format('Y-m-d');
+      */
       $cancelled = false;
+      $compareminus = (int)$result3 - 1; //get rid of today's survey campaign to line up with getRecentCampaigns
+      $comparenumber = $compareminus;
       $cancelled = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
-      if($todaydate == $triggerdate && $cancelled) {
-        return true;
+       \Drupal::logger('surveycampaign')->notice("$fullname Last campaignid: $result2 Count campaigns since last: $comparenumber Days pastinactive: $finalcanceldays");
+       if((int)$comparenumber == (int)$finalcanceldays)
+      { 
+        $cancellevel = 4;
+        return $cancellevel;
       }
-      //$lastactivedate = "select  DATE_FORMAT(senddate, "%Y-%m-%d") truncatedate from surveycampaign_mailer where mobilephone = 6125015804 AND surveyid =  5420562 ORDER BY senddate DESC LIMIT 1";
+      elseif($dayspastinactive == $comparenumber) {
+        $cancellevel = 3;
+        return $cancellevel;
+      } 
+      
+      else
+          return false;
 
     }
     protected function mailNonReplyer($email,$firstname,$lastname,$mobilephone,$noreplylevel,$invitelink,$isprimary) {
@@ -877,7 +925,7 @@ class TwilioCoachService
         $module = 'surveycampaign';
         $key = 'mailgun';
         $usermail = urldecode($email);
-        $siteemail = 'admin@rsmail.communityinclusion.org';
+        $siteemail = 'paul.foos@umb.edu';
         $admin = $config->get('survey_admin_mail');
         $warningmode =$config->get('def_inactive_mode');
         $warningno =$config->get('def_warning_trigger');
@@ -887,22 +935,39 @@ class TwilioCoachService
         $warningtextconfig = $config->get('warning_text_body.value');
         $cutofftextconfig = $config->get('cutoff_text_body.value');
         $comebacktextconfig = $config->get('comeback_text_body.value');
-        if($noreplylevel == 3 && $isprimary) {
+        $reopentextconfig = $config->get('reopen_text_body.value');
+       
+         if($noreplylevel == 4 && $isprimary) {
 
             $comebacktextbody = str_replace("@name", "$firstname $lastname", $comebacktextconfig);
             $dayno = $inactiveno;
-            $params['title'] = t('Come back to the daily survey');
+            $params['title'] = t('The daily survey has been closed');
             $params['message'] = t("$comebacktextbody");
 
             $langcode = "en";
             $send = true;
             $textno = 6;
-            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,"2",2);
+            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,"2",3);
+
+        } 
+
+        if($noreplylevel == 3 && $isprimary) {
+
+            $surveyreopenedbody = str_replace("@name", "$firstname $lastname", $reopentextconfig);
+            $dayno = $inactiveno;
+            $params['title'] = t('The daily survey will resume today');
+            $params['message'] = t("$surveyreopenedbody");
+
+            $langcode = "en";
+            $send = true;
+            $textno = 6;
+            $setinactive = \Drupal::service('surveycampaign.survey_users')->setUserStatus($mobilephone,"1",3);
 
         }
         if($noreplylevel == 2 && $isprimary) {
-            $dayno = $inactiveno;
+
              $cutofftextbody = str_replace("@name", "$firstname $lastname",str_replace('@cutoffdays', $dayno, $cutofftextconfig));
+            $dayno = $inactiveno;
             $params['title'] = t('Daily survey paused');
             $params['message'] = t("$cutofftextbody");
 
@@ -954,7 +1019,7 @@ class TwilioCoachService
         switch ($responseaction) {
             case 'start':
                 $usermail = urldecode($email);
-                $siteemail = 'admin@rsmail.communityinclusion.org';
+                $siteemail = 'paul.foos@umb.edu';
                 $admin = $config->get('survey_admin_mail');
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";
@@ -976,7 +1041,7 @@ class TwilioCoachService
             break;
             case 'stop':
                 $usermail = urldecode($email);
-                $siteemail = 'admin@rsmail.communityinclusion.org';
+                $siteemail = 'paul.foos@umb.edu';
                 $admin = $config->get('survey_admin_mail');
                 $inactiveno =$config->get('def_inactive_trigger');
                 $to = "Administrator <$admin>,$firstname $lastname <$usermail>";

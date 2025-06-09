@@ -163,7 +163,6 @@ class SurveyUsersService
             $user = $profile->getOwnerId();
             $userobj = \Drupal\user\Entity\User::load($user);
             $userstatus = $userobj ->get('status')->value;
-
             if(($userstatus == 0) || ($profile->get('field_cell_phone')->value && $cleanphone == preg_replace('/\D+/', '',$profile->get('field_cell_phone')->value) && $profile->get('field_active_2_deactivated_3')->value == 3)) {
 
             return true;
@@ -201,7 +200,7 @@ class SurveyUsersService
                 $profile->set('field_active_2_deactivated_3', array(
                     'value' => $setcancel));
                 $profile->save();
-                // \Drupal::logger('surveycampaign')->notice("Vars: " . $useremail . "  " . $firstname . " " . $lastname);
+                
                 return array($useremail,$firstname,$lastname);
 
             }

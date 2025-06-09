@@ -144,7 +144,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#title' => $this->t('Default survey id'),
       '#description' => $this->t('The default survey id number from SurveyGizmo'),
       '#default_value' => $defaultid,
-       '#size' => 60,
+        '#size' => 60,
       '#maxlength' => 128,
       '#required' => TRUE,
 
@@ -158,170 +158,102 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         t('Enable'),
         t('Disable'),
       )
-      );
-      $form['configuration']['default_settings']['hour_range_low'] = [
-        '#type' => 'select',
-        '#title' => $this->t('Select earliest time to start random survey period. (The text message will be sent 1/2 hour after this time, at the end of the survey period.)'),
-        '#options' => [
-          '21600' => $this->t('6:00 AM'),
-          '23400' => $this->t('6:30 AM'),
-          '25200' => $this->t('7:00 AM'),
-          '27000' => $this->t('7:30 AM'),
-          '28800' => $this->t('8:00 AM'),
-          '30600' => $this->t('8:30 AM'),
-          '32400' => $this->t('9:00 AM'),
-          '34200' => $this->t('9:30 AM'),
-          '36000' => $this->t('10:00 AM'),
-          '37800' => $this->t('10:30 AM'),
-          '39600' => $this->t('11:00 AM'),
-          '41400' => $this->t('11:30 AM'),
-          '43200' => $this->t('12:00 PM'),
-          '45000' => $this->t('12:30 PM'),
-          '46800' => $this->t('1:00 PM'),
-          '48600' => $this->t('1:30 PM'),
-          '50400' => $this->t('2:00 PM'),
-          '52200' => $this->t('2:30 PM'),
-          '54000' => $this->t('3:00 PM'),
-          '55800' => $this->t('3:30 PM'),
-          '57600' => $this->t('4:00 PM'),
-          '59400' => $this->t('4:30 PM'),
-          '61200' => $this->t('5:00 PM'),
-          '63000' => $this->t('5:30 PM'),
-        ],
-        '#default_value' => $config->get('hour_range_low'),
-      ];
-
-      $form['configuration']['default_settings']['hour_range_high'] = [
-        '#type' => 'select',
-        '#title' => $this->t('Select latest time to start random survey period. (The text message will be sent 1/2 hour after this time, at the end of the survey period.)'),
-        '#options' => [
-          '25200' => $this->t('7:00 AM'),
-          '27000' => $this->t('7:30 AM'),
-          '28800' => $this->t('8:00 AM'),
-          '30600' => $this->t('8:30 AM'),
-          '32400' => $this->t('9:00 AM'),
-          '34200' => $this->t('9:30 AM'),
-          '36000' => $this->t('10:00 AM'),
-          '37800' => $this->t('10:30 AM'),
-          '39600' => $this->t('11:00 AM'),
-          '41400' => $this->t('11:30 AM'),
-          '43200' => $this->t('12:00 PM'),
-          '45000' => $this->t('12:30 PM'),
-          '46800' => $this->t('1:00 PM'),
-          '48600' => $this->t('1:30 PM'),
-          '50400' => $this->t('2:00 PM'),
-          '52200' => $this->t('2:30 PM'),
-          '54000' => $this->t('3:00 PM'),
-          '55800' => $this->t('3:30 PM'),
-          '57600' => $this->t('4:00 PM'),
-          '59400' => $this->t('4:30 PM'),
-          '61200' => $this->t('5:00 PM'),
-          '63000' => $this->t('5:30 PM'),
-          '64800' => $this->t('6:00 PM'),
-          '66600' => $this->t('6:30 PM'),
-          '68400' => $this->t('7:00 PM'),
-          '70200' => $this->t('7:30 PM'),
-          '72000' => $this->t('8:00 PM'),
-        ],
-        '#default_value' => $config->get('hour_range_high'),
-      ];
-      $form['configuration']['default_settings']['def_send_days'] = [
-        '#type' => 'checkboxes',
-        '#options' => ['Sunday' => $this->t('Sunday'), 'Monday' => $this->t('Monday'), 'Tuesday' => $this->t('Tuesday'), 'Wednesday' => $this->t('Wednesday'), 'Thursday' => $this->t('Thursday'), 'Friday' => $this->t('Friday'), 'Saturday' => $this->t('Saturday')],
-        '#title' => $this->t('Days to send the default survey'),
-        '#default_value' => $config->get('def_send_days'),
-
-      ];
-    
-      $form['configuration']['default_settings']['default_survey_todaytime'] = [
-        '#type' => 'datetime',
-        '#title' => $this->t('Default survey: set text send time of today\'s survey: format 00:00 (24 hour time). This is at the end of the half hour survey period.'),
-        '#description' => t('This field will be populated automatically every day in early AM.  You can manually change the time of the survey here.  Don\'t change the date.'),
-        '#size' => 20,
-        // '#date_date_element' => 'none', // hide date element
-        // '#date_time_element' => 'time', // you can use text element here as well
-  
-        '#default_value' => ($datereturn ? DrupalDateTime::createFromTimestamp(strtotime($datereturn)) : ""),
-      ];
-      $form['configuration']['default_settings']['default_survey_tomorrowtime'] = [
-        '#type' => 'datetime',
-        '#title' => $this->t('Default survey: Set text send time of tomorrow\'s survey: format 00:00 (24 hour time)'),
-  
-        '#description' => t('This field will be populated automatically tomorrow in early AM.  You can manually set the time of tomorrow\' survey here.  Only use tomorrow\'s date for now.'),
-        '#size' => 20,
-        // '#date_date_element' => 'none', // hide date element
-        // '#date_time_element' => 'time', // you can use text element here as well
-  
-        '#default_value' => ($datereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($datereturntomorrow)) : ""),
-      ];
-
-    $form['configuration']['default_settings']['shell'] = array(
-      '#type' => 'fieldset',
-      '#title' => t(''),
-      '#tree' => TRUE,
     );
+    $form['configuration']['default_settings']['hour_range_low'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select earliest time to start random survey period. (The text message will be sent 1/2 hour after this time, at the end of the survey period.)'),
+      '#options' => [
+        '21600' => $this->t('6:00 AM'),
+        '23400' => $this->t('6:30 AM'),
+        '25200' => $this->t('7:00 AM'),
+        '27000' => $this->t('7:30 AM'),
+        '28800' => $this->t('8:00 AM'),
+        '30600' => $this->t('8:30 AM'),
+        '32400' => $this->t('9:00 AM'),
+        '34200' => $this->t('9:30 AM'),
+        '36000' => $this->t('10:00 AM'),
+        '37800' => $this->t('10:30 AM'),
+        '39600' => $this->t('11:00 AM'),
+        '41400' => $this->t('11:30 AM'),
+        '43200' => $this->t('12:00 PM'),
+        '45000' => $this->t('12:30 PM'),
+        '46800' => $this->t('1:00 PM'),
+        '48600' => $this->t('1:30 PM'),
+        '50400' => $this->t('2:00 PM'),
+        '52200' => $this->t('2:30 PM'),
+        '54000' => $this->t('3:00 PM'),
+        '55800' => $this->t('3:30 PM'),
+        '57600' => $this->t('4:00 PM'),
+        '59400' => $this->t('4:30 PM'),
+        '61200' => $this->t('5:00 PM'),
+        '63000' => $this->t('5:30 PM'),
+      ],
+      '#default_value' => $config->get('hour_range_low'),
+    ];
 
-      $form['configuration']['default_settings']['shell']['holiday_fieldset'] = [
-        '#type' => 'fieldset',
-        '#title' => $this->t('Holiday suspension'),
-        '#prefix' => "<div id='names-fieldset-wrapper'>",
-        '#suffix' => '</div>',
-      ];
+    $form['configuration']['default_settings']['hour_range_high'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select latest time to start random survey period. (The text message will be sent 1/2 hour after this time, at the end of the survey period.)'),
+      '#options' => [
+        '25200' => $this->t('7:00 AM'),
+        '27000' => $this->t('7:30 AM'),
+        '28800' => $this->t('8:00 AM'),
+        '30600' => $this->t('8:30 AM'),
+        '32400' => $this->t('9:00 AM'),
+        '34200' => $this->t('9:30 AM'),
+        '36000' => $this->t('10:00 AM'),
+        '37800' => $this->t('10:30 AM'),
+        '39600' => $this->t('11:00 AM'),
+        '41400' => $this->t('11:30 AM'),
+        '43200' => $this->t('12:00 PM'),
+        '45000' => $this->t('12:30 PM'),
+        '46800' => $this->t('1:00 PM'),
+        '48600' => $this->t('1:30 PM'),
+        '50400' => $this->t('2:00 PM'),
+        '52200' => $this->t('2:30 PM'),
+        '54000' => $this->t('3:00 PM'),
+        '55800' => $this->t('3:30 PM'),
+        '57600' => $this->t('4:00 PM'),
+        '59400' => $this->t('4:30 PM'),
+        '61200' => $this->t('5:00 PM'),
+        '63000' => $this->t('5:30 PM'),
+        '64800' => $this->t('6:00 PM'),
+        '66600' => $this->t('6:30 PM'),
+        '68400' => $this->t('7:00 PM'),
+        '70200' => $this->t('7:30 PM'),
+        '72000' => $this->t('8:00 PM'),
+      ],
+      '#default_value' => $config->get('hour_range_high'),
+    ];
+    $form['configuration']['default_settings']['def_send_days'] = [
+      '#type' => 'checkboxes',
+      '#options' => ['Sunday' => $this->t('Sunday'), 'Monday' => $this->t('Monday'), 'Tuesday' => $this->t('Tuesday'), 'Wednesday' => $this->t('Wednesday'), 'Thursday' => $this->t('Thursday'), 'Friday' => $this->t('Friday'), 'Saturday' => $this->t('Saturday')],
+      '#title' => $this->t('Days to send the default survey'),
+      '#default_value' => $config->get('def_send_days'),
 
-      if (empty($name_field) || $counthols < 1) {
-        $name_field = $counthols <= 1 ? $form_state->set('num_hols', 1) : $form_state->set('num_hols', $counthols);
+    ];
+      
+    $form['configuration']['default_settings']['default_survey_todaytime'] = [
+      '#type' => 'datetime',
+      '#title' => $this->t('Default survey: set text send time of today\'s survey: format 00:00 (24 hour time). This is at the end of the half hour survey period.'),
+      '#description' => t('This field will be populated automatically every day in early AM.  You can manually change the time of the survey here.  Don\'t change the date.'),
+      '#size' => 20,
+      // '#date_date_element' => 'none', // hide date element
+      // '#date_time_element' => 'time', // you can use text element here as well
 
-      }
+      '#default_value' => ($datereturn ? DrupalDateTime::createFromTimestamp(strtotime($datereturn)) : ""),
+    ];
+    $form['configuration']['default_settings']['default_survey_tomorrowtime'] = [
+      '#type' => 'datetime',
+      '#title' => $this->t('Default survey: Set text send time of tomorrow\'s survey: format 00:00 (24 hour time)'),
 
+      '#description' => t('This field will be populated automatically tomorrow in early AM.  You can manually set the time of tomorrow\' survey here.  Only use tomorrow\'s date for now.'),
+      '#size' => 20,
+      // '#date_date_element' => 'none', // hide date element
+      // '#date_time_element' => 'time', // you can use text element here as well
 
-      for ($i = 0; $i < $form_state->get('num_hols'); $i++) {
-        $thisdate = !empty($holdates) && $holdates[$i] ? $holdates[$i] : '';
-        $thisname = !empty($holnames) && $holnames[$i] ? $holnames[$i] : '';
-        $j = $i + 1;
-
-
-        $form['configuration']['default_settings']['shell']['holiday_fieldset'][$i]['holiday_name'] = [
-          '#type' => 'textfield',
-          '#title' => $this->t('Holiday name'),
-          '#maxlength' => 64,
-          '#size' => 64,
-          '#default_value' => $thisname,
-          '#prefix' => "<div class='inner-fieldset'><legend><span class='fieldset-legend'>Holiday {$j}</span></legend>",
-        ];
-        $form['configuration']['default_settings']['shell']['holiday_fieldset'][$i]['holiday_date'] = [
-          '#type' => 'date',
-          '#title' => $this->t('Default survey: set a survey holiday.'),
-          '#description' => t('Set a date in the future, holiday or otherwise, on which you wish the survey not to send.'),
-          '#size' => 20,
-          '#default_value' => $thisdate,
-        ];
-
-      }
-        $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions'] = [
-          '#type' => 'actions',
-        ];
-        $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['add_name'] = [
-          '#type' => 'submit',
-          '#value' => t('Add another holiday'),
-          '#submit' => array('::addOne'),
-          '#ajax' => [
-            'callback' => '::addmoreCallback',
-            'wrapper' => "names-fieldset-wrapper",
-          ],
-        ];
-        if ($form_state->get('num_hols') > 1) {
-          $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['remove_name'] = [
-            '#type' => 'submit',
-            '#value' => t('Remove this holiday'),
-            '#submit' => array('::removeCallback'),
-            '#ajax' => [
-              'callback' => '::addmoreCallback',
-              'wrapper' => "names-fieldset-wrapper",
-            ],
-          ];
-        }
-
-
+      '#default_value' => ($datereturntomorrow ? DrupalDateTime::createFromTimestamp(strtotime($datereturntomorrow)) : ""),
+    ];
 
 
     $form['configuration']['default_settings']['first_text_body'] = [
@@ -386,7 +318,7 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
     $form['configuration']['default_settings']['def_warning_trigger'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select the number of days a user must be inactive to get a warning they will be deactivated'),
+      '#title' => $this->t('Select the number of days (days surveys sent, not calendar days) a user must be inactive to get a warning they will be deactivated'),
       '#options' => [
         '1' => $this->t('1'),
         '2' => $this->t('2'),
@@ -407,8 +339,9 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
     ];
     $form['configuration']['default_settings']['def_inactive_trigger'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select the number of days a user must be inactive to deactivate the default survey'),
+      '#title' => $this->t('Select the number of days a user must be inactive to temporarily deactivate the default survey'),
       '#options' => [
+        '1' => $this->t('1'),
         '2' => $this->t('2'),
         '3' => $this->t('3'),
         '4' => $this->t('4'),
@@ -424,9 +357,14 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
     $form['configuration']['default_settings']['def_days_past_inactive'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select the number of days after a user has been deactivated which will trigger an invitation to come back.'),
+      '#title' => $this->t('Select the number of days after a user has been deactivated which will trigger a resumption of the survey (days surveys sent, not calendar days).'),
       '#options' => [
         '1' => $this->t('1 (for testing purposes)'),
+        '2' => $this->t('2'),
+        '3' => $this->t('3'),
+        '4' => $this->t('4'),
+        '5' => $this->t('5'),
+        '6' => $this->t('6'),
         '7' => $this->t('One week'),
         '14' => $this->t('Two weeks'),
         '21' => $this->t('Three weeks'),
@@ -435,6 +373,25 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '42' => $this->t('Six weeks'),
       ],
       '#default_value' => $config->get('def_days_past_inactive'),
+    ];
+    $form['configuration']['default_settings']['def_final_inactive_trigger'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Select the number of days a user must be inactive to deactivate the default survey with no renewal (days surveys sent, not calendar days).  This setting counts days from the last completed survey.'),
+      '#options' => [
+        '1' => $this->t('1'),
+        '2' => $this->t('2'),
+        '3' => $this->t('3'),
+        '4' => $this->t('4'),
+        '5' => $this->t('5'),
+        '6' => $this->t('6'),
+        '7' => $this->t('One week'),
+        '14' => $this->t('Two weeks'),
+        '21' => $this->t('Three weeks'),
+        '28' => $this->t('Four weeks'),
+        '35' => $this->t('Five weeks'),
+        '42' => $this->t('Six weeks'),
+      ],
+      '#default_value' => $config->get('def_final_inactive_trigger'),
     ];
 
     $form['configuration']['default_settings']['def_inactive_mode'] = [
@@ -469,11 +426,20 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
     $form['configuration']['default_settings']['comeback_text_body'] = [
       '#type' => 'text_format',
-      '#title' => 'Invitation to come back to the survey for x days expired users',
+      '#title' => 'Notification that the survey has been stopped.',
       '#description' => t('You can use these tokens to add personalized messages to the text: @name'),
       '#format' => 'plain_text',
       '#default_value' => $config->get('comeback_text_body.value'),
      // '#format' => $config->get('cutoff_text_body.format'),
+    ];
+
+
+    $form['configuration']['default_settings']['reopen_text_body'] = [
+      '#type' => 'text_format',
+      '#title' => 'Notification that the survey has been restarted after x days suspension',
+      '#description' => t('You can use these tokens to add personalized messages to the text: @name'),
+      '#format' => 'plain_text',
+      '#default_value' => $config->get('reopen_text_body.value'),
     ];
 
 
@@ -498,6 +464,75 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       '#required' => TRUE,
 
     );
+
+
+    $form['configuration']['default_settings']['shell'] = array(
+      '#type' => 'fieldset',
+      '#title' => t(''),
+      '#tree' => TRUE,
+    );
+
+    $form['configuration']['default_settings']['shell']['holiday_fieldset'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Holiday suspension'),
+      '#open' => TRUE,
+      '#prefix' => "<div id='names-fieldset-wrapper'>",
+      '#suffix' => '</div>',
+    ];
+
+    if (empty($name_field) || $counthols < 1) {
+      $name_field = $counthols <= 1 ? $form_state->set('num_hols', 1) : $form_state->set('num_hols', $counthols);
+
+    }
+
+
+    for ($i = 0; $i < $form_state->get('num_hols'); $i++) {
+      $thisdate = !empty($holdates) && $holdates[$i] ? $holdates[$i] : '';
+      $thisname = !empty($holnames) && $holnames[$i] ? $holnames[$i] : '';
+      $j = $i + 1;
+
+
+      $form['configuration']['default_settings']['shell']['holiday_fieldset'][$i]['holiday_name'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Holiday name'),
+        '#maxlength' => 64,
+        '#size' => 64,
+        '#default_value' => $thisname,
+        '#prefix' => "<div class='inner-fieldset'><legend><span class='fieldset-legend'>Holiday {$j}</span></legend>",
+      ];
+      $form['configuration']['default_settings']['shell']['holiday_fieldset'][$i]['holiday_date'] = [
+        '#type' => 'date',
+        '#title' => $this->t('Default survey: set a survey holiday.'),
+        '#description' => t('Set a date in the future, holiday or otherwise, on which you wish the survey not to send.'),
+        '#size' => 20,
+        '#default_value' => $thisdate,
+      ];
+
+    }
+    $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions'] = [
+      '#type' => 'actions',
+    ];
+    $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['add_name'] = [
+      '#type' => 'submit',
+      '#value' => t('Add another holiday'),
+      '#submit' => array('::addOne'),
+      '#ajax' => [
+        'callback' => '::addmoreCallback',
+        'wrapper' => "names-fieldset-wrapper",
+      ],
+    ];
+    if ($form_state->get('num_hols') > 1) {
+      $form['configuration']['default_settings']['shell']['holiday_fieldset']['actions']['remove_name'] = [
+        '#type' => 'submit',
+        '#value' => t('Remove this holiday'),
+        '#submit' => array('::removeCallback'),
+        '#ajax' => [
+          'callback' => '::addmoreCallback',
+          'wrapper' => "names-fieldset-wrapper",
+        ],
+      ];
+    }
+    
     $form['configuration']['default_settings']['finalpageheading'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Default final screen heading'),
@@ -925,12 +960,14 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
       ->set('def_inactive_mode', $form_state->getValue('def_inactive_mode'))
       ->set('def_days_past_inactive', $form_state->getValue('def_days_past_inactive'))
       ->set('def_inactive_trigger', $form_state->getValue('def_inactive_trigger'))
+      ->set('def_final_inactive_trigger', $form_state->getValue('def_final_inactive_trigger'))
       ->set('first_text_body', $form_state->getValue('first_text_body'))
       ->set('second_text_body', $form_state->getValue('second_text_body'))
       ->set('third_text_body', $form_state->getValue('third_text_body'))
       ->set('warning_text_body', $form_state->getValue('warning_text_body'))
       ->set('cutoff_text_body', $form_state->getValue('cutoff_text_body'))
       ->set('comeback_text_body', $form_state->getValue('comeback_text_body'))
+      ->set('reopen_text_body', $form_state->getValue('reopen_text_body'))
       ->set('alt_first_text_body', $form_state->getValue('alt_first_text_body'))
       ->set('alt_second_text_body', $form_state->getValue('alt_second_text_body'))
       ->set('alt_third_text_body', $form_state->getValue('alt_third_text_body'))
