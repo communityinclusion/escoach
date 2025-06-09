@@ -26,7 +26,7 @@ class ResponseRateQuery extends HomePageQuery {
     $this->query->addJoin('LEFT', 'surveycampaign_results', 'results', 'mailer.contactid = results.contact_id');
     $this->query->addJoin('LEFT', 'provider_state_map', 'map', 'mailer.provider = map.provider');
     $this->setDateRange($year, $month, 'mailer.senddate');
-    if($exclude) $this->query->condition('results.regcode', 10000, '>=');
+    // if($exclude) $this->query->condition('results.regcode', 10000, '>=');
     $this->query->condition('mailer.surveyid', 5420562);
     $this->email = $email;
     $this->provider = $provider;
