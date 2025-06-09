@@ -19,15 +19,13 @@
     attach: function (context, settings) {
       $(once('menu-links', 'nav.menu--homepage ul li a', context)).each(function () {
         var baseURL = $(this).attr('href');
-        if (baseURL != '/dashboard') {
-          if ($('#state-select').length === 1) {
-            baseURL += '?state=' + $('#state-select').val();
-          }
-          else if ($('#provider-select').length === 1) {
-            baseURL += '?provider=' + encodeURIComponent($('#provider-select').val());
-          }
-          $(this).attr('href', baseURL);
+        if ($('#state-select').length === 1) {
+          baseURL += '?state=' + $('#state-select').val();
         }
+        else if ($('#provider-select').length === 1) {
+          baseURL += '?provider=' + encodeURIComponent($('#provider-select').val());
+        }
+        $(this).attr('href', baseURL);
       });
     }
   };
