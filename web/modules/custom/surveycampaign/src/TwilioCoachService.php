@@ -903,7 +903,7 @@ class TwilioCoachService
       $compareminus = (int)$result3 - 1; //get rid of today's survey campaign to line up with getRecentCampaigns
       $comparenumber = $compareminus;
       $cancelled = \Drupal::service('surveycampaign.survey_users')->checkCancelled($mobilephone);
-       \Drupal::logger('surveycampaign')->notice("$fullname Last campaignid: $result2 Count campaigns since last: $comparenumber Days pastinactive: $finalcanceldays");
+       \Drupal::logger('surveycampaign')->notice("$fullname Last campaignid: $result2 Count campaigns since last: $comparenumber Days pastinactive for this user: $dayspastinactive Cancel if reach this inactive number: $finalcanceldays");
        if((int)$comparenumber == (int)$finalcanceldays)
       { 
         $cancellevel = 4;
