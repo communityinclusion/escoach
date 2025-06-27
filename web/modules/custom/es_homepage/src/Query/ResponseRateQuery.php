@@ -12,23 +12,33 @@ class ResponseRateQuery extends HomePageQuery {
 
     // Not calling parent::__construct because it uses suverycampaign_results as the base table
     $database = \Drupal::database();
+
     $this->query = $database->select(self::BASE_TABLE, 'mailer');
 
     $excludeStr = '';
-    $excludeStr2 = '*';
+    $respondentcount = 'count(distinct(email))';
 
     if ($exclude) {
       $excludeStr = ' AND results.regcode >= 10000 ';
-      $excludeStr2 = 'case when results.regcode >= 10000 then 1 end';
+          $subquery = $database->select('surveycampaign_results', 'results2');
+    $subquery->fields('results2',array('email',));
+    $subquery->condition('surveyid', 5420562);
+    $subquery->condition('regcode', 10000, '>=');
+    $subquery->condition('date_submitted',"$year-$month-%", 'LIKE'); 
+    $respondentcount = $subquery->distinct()->countQuery()->execute()->fetchField(0);
     }
+
+
+
+
+
     $this->query->addExpression('count(*)', 'totalSurveysSent');
-    $this->query->addExpression('count(distinct(email))', 'respondents');
+    $this->query->addExpression($respondentcount,'respondents');
     $this->query->addExpression('count(case when mailer.Complete =1 then 1 end)- count(case when results.answer482 = 11760 then 1 end)', 'netResponses');
-    $this->query->addExpression("(count(case when mailer.Complete =1 $excludeStr then 1 end)- count(case when results.answer482 = 11760 $excludeStr then 1 end))/count($excludeStr2)", 'responseRate');
+    $this->query->addExpression("(count(case when mailer.Complete =1 $excludeStr then 1 end)- count(case when results.answer482 = 11760 $excludeStr then 1 end))/count(*)", 'responseRate');
     $this->query->addJoin('LEFT', 'surveycampaign_results', 'results', 'mailer.contactid = results.contact_id');
     $this->query->addJoin('LEFT', 'provider_state_map', 'map', 'mailer.provider = map.provider');
     $this->setDateRange($year, $month, 'mailer.senddate');
-     if($exclude) $this->query->condition('results.regcode', 10000, '>=');
     $this->query->condition('mailer.surveyid', 5420562);
     $this->email = $email;
     $this->provider = $provider;
