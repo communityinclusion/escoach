@@ -5,7 +5,7 @@ namespace Drupal\mailgun\Commands;
 use Consolidation\AnnotatedCommand\CommandData;
 use Drupal\Core\Queue\QueueFactory;
 use Drush\Commands\DrushCommands;
-use Drush\Commands\sql\sanitize\SanitizePluginInterface;
+use Drush\Drupal\Commands\sql\SanitizePluginInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
