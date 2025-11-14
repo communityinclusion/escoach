@@ -28,11 +28,12 @@ class SchedulerJavascriptDefaultTimeTest extends SchedulerJavascriptTestBase {
     // to local testing having a different locale to drupal.org testing.
     // @see https://www.drupal.org/project/scheduler/issues/2913829 from #18.
     $this->drupalLogin($this->schedulerUser);
+    $this->nodetype->setThirdPartySetting('scheduler', 'fields_display_mode', 'fieldset')
+      ->setThirdPartySetting('scheduler', 'expand_fieldset', 'always')->save();
     $this->drupalGet('node/add/' . $this->type);
     $page = $this->getSession()->getPage();
-    $title = 'Date format test ' . $this->randomString(12);
+    $title = "Add a node to determine the date-picker format";
     $page->fillField('edit-title-0-value', $title);
-    $page->clickLink('Scheduling options');
     // Set the date using a day and month which could be correctly interpreted
     // either way. Set the year to be next year to ensure a future date.
     // Use a time format which includes 'pm' as this may be necessary, and will
@@ -48,7 +49,7 @@ class SchedulerJavascriptDefaultTimeTest extends SchedulerJavascriptTestBase {
   /**
    * Test the default time functionality when scheduling dates are required.
    *
-   * @dataProvider dataTimeWhenSchedulingIsRequired()
+   * @dataProvider dataTimeWhenSchedulingIsRequired
    */
   public function testTimeWhenSchedulingIsRequired($field) {
     $config = $this->config('scheduler.settings');
@@ -74,11 +75,8 @@ class SchedulerJavascriptDefaultTimeTest extends SchedulerJavascriptTestBase {
       // Create a node.
       $this->drupalGet('node/add/' . $this->type);
       $page = $this->getSession()->getPage();
-
-      $title = ucfirst($field) . ($required ? ' required ' : ' not required ') . $this->randomString(12);
+      $title = ucfirst($field) . ($required ? ' required' : ' not required') . ', datepickerFormat = ' . $this->datepickerFormat;
       $page->fillField('edit-title-0-value', $title);
-      $page->fillField('edit-body-0-value', 'datepickerFormat = ' . $this->datepickerFormat);
-      $page->clickLink('Scheduling options');
       if ($required) {
         // Fill in the date value but do nothing with the time field.
         $page->fillField('edit-' . $field . '-on-0-value-date', $scheduling_time->format($this->datepickerFormat));
@@ -107,7 +105,7 @@ class SchedulerJavascriptDefaultTimeTest extends SchedulerJavascriptTestBase {
    * @return array
    *   The test data.
    */
-  public function dataTimeWhenSchedulingIsRequired() {
+  public static function dataTimeWhenSchedulingIsRequired() {
     return [
       ['publish'],
       ['unpublish'],

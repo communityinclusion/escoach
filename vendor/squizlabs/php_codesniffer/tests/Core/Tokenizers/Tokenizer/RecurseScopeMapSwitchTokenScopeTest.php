@@ -4,7 +4,7 @@
  *
  * @author    Rodrigo Primo <rodrigosprimo@gmail.com>
  * @copyright 2024 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Tests\Core\Tokenizers\Tokenizer;
@@ -92,7 +92,7 @@ final class RecurseScopeMapSwitchTokenScopeTest extends AbstractTokenizerTestCas
      *
      * @see testSwitchScope()
      *
-     * @return array<string, array<string, string|array<string, int|string>>>
+     * @return array<string, array<string, string|array<string, int|string>|null>>
      */
     public static function dataSwitchScope()
     {

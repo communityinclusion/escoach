@@ -14,12 +14,12 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
-use Drupal\workbench_moderation\Plugin\Action\ModerationOptOutPublishNode;
-use Drupal\workbench_moderation\Plugin\Action\ModerationOptOutUnpublishNode;
 use Drupal\node\Entity\NodeType;
 use Drupal\scheduler\SchedulerEvent;
 use Drupal\scheduler\SchedulerEvents;
 use Drupal\views\Entity\View;
+use Drupal\workbench_moderation\Plugin\Action\ModerationOptOutPublishNode;
+use Drupal\workbench_moderation\Plugin\Action\ModerationOptOutUnpublishNode;
 
 /**
  * Implements hook_help().
@@ -62,7 +62,7 @@ function scheduler_help($route_name, RouteMatchInterface $route_match) {
  */
 function scheduler_form_node_type_form_alter(array &$form, FormStateInterface $form_state) {
   // Load the real code only when needed.
-  module_load_include('inc', 'scheduler', 'scheduler.admin');
+  \Drupal::moduleHandler()->loadInclude('scheduler', 'inc', 'scheduler.admin');
   _scheduler_form_node_type_form_alter($form, $form_state);
 }
 
@@ -340,7 +340,7 @@ function _scheduler_translation_validate($form, FormStateInterface $form_state) 
   foreach ($content_types as $name => $settings) {
     $enabled['publish_on'] = in_array($name, $publishing_enabled_types);
     $enabled['unpublish_on'] = in_array($name, $unpublishing_enabled_types);
-    if ($settings['translatable'] && ($enabled['publish_on'] || $enabled['unpublish_on'])) {
+    if (isset($settings['translatable']) && $settings['translatable'] && ($enabled['publish_on'] || $enabled['unpublish_on'])) {
       $params = [
         '@type' => $form['settings']['node'][$name]['settings']['#label'],
         '@status' => $form['settings']['node'][$name]['fields']['status']['#label'],
@@ -452,7 +452,7 @@ function scheduler_node_presave(EntityInterface $node) {
   // @see https://www.drupal.org/node/2902512
   if (is_null($entity) || !get_class($entity) == 'Drupal\node\Entity\NodeType') {
     return;
-  };
+  }
 
   // If this node is being created via Devel Generate then set values for the
   // publish_on and unpublish_on dates as specified in the devel_generate form.
@@ -499,7 +499,7 @@ function scheduler_node_presave(EntityInterface $node) {
     $publish_immediately = $entity->getThirdPartySetting('scheduler', 'publish_past_date', $config->get('default_publish_past_date')) == 'publish';
 
     if ($publication_allowed && $publish_immediately && $node->publish_on->value <= $request_time) {
-      // Trigger the PRE_PUBLISH_INMEDIATELY event so that modules can react
+      // Trigger the PRE_PUBLISH_IMMEDIATELY event so that modules can react
       // before the node has been published.
       $event = new SchedulerEvent($node);
       $scheduler_manager->dispatch($event, SchedulerEvents::PRE_PUBLISH_IMMEDIATELY);
@@ -713,7 +713,7 @@ function scheduler_feeds_processor_targets_alter(&$targets, $entity_type, $bundl
  * @see https://www.drupal.org/node/2651354
  */
 function scheduler_feeds_set_target($source, $entity, $target, $value, $mapping) {
-  // We expect a string or integer, but can accomodate an array, by taking the
+  // We expect a string or integer, but can accommodate an array, by taking the
   // first item. Use trim() so that a string of blanks is reduced to empty.
   $value = is_array($value) ? trim(reset($value)) : trim($value);
 

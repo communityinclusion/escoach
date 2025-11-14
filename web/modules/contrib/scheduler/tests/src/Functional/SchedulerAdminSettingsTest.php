@@ -14,7 +14,14 @@ namespace Drupal\Tests\scheduler\Functional;
 class SchedulerAdminSettingsTest extends SchedulerBrowserTestBase {
 
   /**
-   * Test the admin settings page.
+   * Additional modules required.
+   *
+   * @var array
+   */
+  protected static $modules = ['language'];
+
+  /**
+   * Test the Scheduler admin settings page.
    */
   public function testAdminSettings() {
     $this->drupalLogin($this->adminUser);
@@ -71,6 +78,22 @@ class SchedulerAdminSettingsTest extends SchedulerBrowserTestBase {
 
     // Show the status report, which includes the Scheduler timecheck.
     $this->drupalGet('admin/reports/status');
+
+    // Visit the content type manage page for the test type.
+    $this->drupalGet("admin/structure/types/manage/{$this->type}");
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains('Scheduler');
+  }
+
+  /**
+   * Test the Content Language form.
+   */
+  public function testContentLanguage() {
+    $this->drupalLogin($this->drupalCreateUser(['administer languages']));
+    $this->drupalGet('/admin/config/regional/content-language');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->submitForm([], 'Save configuration');
+    $this->assertSession()->pageTextNotContains('error');
   }
 
 }

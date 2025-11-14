@@ -283,7 +283,10 @@ class ImporterForm extends FormBase {
    *   Entity type fields.
    */
   protected function getEntityTypeFields(string $entity_type, string $entity_type_bundle = NULL) {
-    $fields = [];
+    $fields = [
+      'fields' => [],
+      'required' => [],
+    ];
 
     if (!$entity_type_bundle) {
       $entity_type_bundle = key($this->entityBundleInfo->getBundleInfo($entity_type));

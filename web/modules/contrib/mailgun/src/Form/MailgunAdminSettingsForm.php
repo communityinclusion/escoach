@@ -3,6 +3,7 @@
 namespace Drupal\mailgun\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -36,6 +37,7 @@ class MailgunAdminSettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('mailgun.mail_handler'),
       $container->get('plugin.manager.filter')
     );
@@ -44,8 +46,8 @@ class MailgunAdminSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, MailgunHandlerInterface $mailgun_handler, FilterPluginManager $filter_manager) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typedConfigManager, MailgunHandlerInterface $mailgun_handler, FilterPluginManager $filter_manager) {
+    parent::__construct($config_factory, $typedConfigManager);
     $this->mailgunHandler = $mailgun_handler;
     $this->filterManager = $filter_manager;
   }
@@ -99,8 +101,8 @@ class MailgunAdminSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Mailgun API Key'),
       '#type' => 'textfield',
       '#required' => TRUE,
-      '#description' => $this->t('Enter your @link.', [
-        '@link' => Link::fromTextAndUrl($this->t('Private API key'), Url::fromUri('https://app.mailgun.com/app/account/security/api_keys'))->toString(),
+      '#description' => $this->t('Manage your @link here.', [
+        '@link' => Link::fromTextAndUrl($this->t('Mailgun API keys'), Url::fromUri('https://app.mailgun.com/settings/api_security'))->toString(),
       ]),
       '#default_value' => $config->get('api_key'),
     ];
@@ -145,7 +147,7 @@ class MailgunAdminSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Enable Debug Mode'),
       '#type' => 'checkbox',
       '#default_value' => $config->get('debug_mode'),
-      '#description' => $this->t('Enable to log every email and queuing.'),
+      '#description' => $this->t('Enable to log every email and queueing.'),
     ];
 
     $form['test_mode'] = [
@@ -223,8 +225,8 @@ class MailgunAdminSettingsForm extends ConfigFormBase {
       $options[$filter_format_id] = $filter_format->label();
     }
 
-    // Add additional description text if there is a recommended filter plugin.
-    // To be sure we are using the correct plugin name, let's use the plugin definition.
+    // Adds additional description text if there is a recommended filter plugin.
+    // The plugin definition is used to ensure the correct name.
     $recommendation = !$this->filterManager->hasDefinition('filter_autop') ? ''
       : $this->t('Recommended format filters: @filter.', ['@filter' => $this->filterManager->getDefinition('filter_autop')['title'] ?? '']);
 

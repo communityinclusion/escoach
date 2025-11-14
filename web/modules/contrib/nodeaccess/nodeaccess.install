@@ -108,7 +108,7 @@ function nodeaccess_schema() {
 function nodeaccess_update_8101() {
   $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
   $role_alias = $config->get('role_alias');
-  foreach (user_roles() as $id => $role) {
+  foreach (Role::loadMultiple() as $id => $role) {
     if ($role_alias[$id]) {
       $role_alias[$id]['alias'] = $role->label();
       $role_alias[$id]['name'] = $role->label();

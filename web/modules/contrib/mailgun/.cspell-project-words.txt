@@ -1,0 +1,19 @@
+# List of words excluded from cspell validation for the project.
+
+# Mailgun API related words.
+deliverytime
+testmode
+htmlonly
+
+# Custom variable names, ids, keys or identifiers in paths or yaml files.
+mailkey
+mailsystem
+
+# Ignore certain string values used for tests.
+mymodule
+notworkingabcdefghijkl
+workingabcdefghijklmno
+
+# User names: contributors, maintainers, users (mostly in README.md files).
+bohart
+matroskeen

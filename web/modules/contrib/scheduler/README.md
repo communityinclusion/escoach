@@ -1,6 +1,6 @@
 # Scheduler
 
-[![Build Status](https://travis-ci.org/jonathan1055/scheduler.svg?branch=8.x-1.x)](https://travis-ci.org/jonathan1055/scheduler)
+[![Build Status](https://git.drupalcode.org/project/scheduler/badges/8.x-1.x/pipeline.svg)](https://git.drupalcode.org/project/scheduler/-/pipeline_schedules)
 
 Scheduler gives content editors the ability to schedule nodes to be published
 and unpublished at specified dates and times in the future.
@@ -82,6 +82,8 @@ For a fuller description of the module, visit the [project page on Drupal.org](h
 
 ## Maintainers
 
+[//]: # "cSpell:disable"
+[//]: # "Do not want to add all these names into the project-words file"
 Current maintainers:
 - [Pieter Frenssen](https://www.drupal.org/u/pfrenssen) 2014(6.x)-current
 - [Jonathan Smith](https://www.drupal.org/u/jonathan1055) 2013(6.x)-current

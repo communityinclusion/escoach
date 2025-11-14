@@ -17,6 +17,55 @@ class SchedulerScheduledContentListAccessTest extends SchedulerBrowserTestBase {
   protected static $modules = ['views'];
 
   /**
+   * Ordinary editor user with no Scheduler permissions.
+   *
+   * @var \Drupal\user\Entity\User
+   */
+  protected $editorUser;
+
+  /**
+   * Scheduler user with permission to schedule nodes.
+   *
+   * @var \Drupal\user\Entity\User
+   */
+  protected $schedulerUser;
+
+  /**
+   * Scheduler manager with permission to view the scheduled content list.
+   *
+   * @var \Drupal\user\Entity\User
+   */
+  protected $schedulerManager;
+
+  /**
+   * Test content node1.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node1;
+
+  /**
+   * Test content node2.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node2;
+
+  /**
+   * Test content node3.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node3;
+
+  /**
+   * Test content node4.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node4;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {

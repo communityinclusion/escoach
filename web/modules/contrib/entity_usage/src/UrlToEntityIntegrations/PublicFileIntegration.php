@@ -3,7 +3,6 @@
 namespace Drupal\entity_usage\UrlToEntityIntegrations;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\StreamWrapper\LocalStream;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\entity_usage\Events\Events;
 use Drupal\entity_usage\Events\UrlToEntityEvent;
@@ -25,8 +24,16 @@ class PublicFileIntegration implements EventSubscriberInterface {
     #[Autowire(service: 'stream_wrapper.public')]
     StreamWrapperInterface $publicStream,
   ) {
-    assert($publicStream instanceof LocalStream);
-    $this->publicFilePattern = '{^/?' . $publicStream->getDirectoryPath() . '/}';
+    $baseUrl = $publicStream->getExternalUrl();
+    $parsed = parse_url($baseUrl);
+
+    if (isset($parsed['path'])) {
+      $this->publicFilePattern = '{^' . preg_quote($parsed['path'], '{}') . '/}';
+    }
+    else {
+      throw new \LogicException('The public stream wrapper does not provide a valid external URL.');
+    }
+
   }
 
   /**

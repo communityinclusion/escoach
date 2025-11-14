@@ -3,7 +3,17 @@
 namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\FieldItemInterface;
+use Drupal\entity_usage\EntityUsageInterface;
 use Drupal\entity_usage\EntityUsageTrackUrlUpdateInterface;
+use Drupal\entity_usage\UrlToEntityInterface;
+use Drupal\filter\Entity\FilterFormat;
+use Psr\Log\LoggerInterface;
 
 /**
  * Tracks usage of entities referenced from regular HTML Links.
@@ -17,6 +27,19 @@ use Drupal\entity_usage\EntityUsageTrackUrlUpdateInterface;
  * )
  */
 class HtmlLink extends TextFieldEmbedBase implements EntityUsageTrackUrlUpdateInterface {
+
+  /**
+   * The filter settings.
+   */
+  protected ImmutableConfig $filterConfig;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsageInterface $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository, ?LoggerInterface $entityUsageLogger = NULL, ?UrlToEntityInterface $urlToEntity = NULL, ?array $always_track_base_fields = NULL) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $usage_service, $entity_type_manager, $entity_field_manager, $config_factory, $entity_repository, $entityUsageLogger, $urlToEntity, $always_track_base_fields);
+    $this->filterConfig = $config_factory->get('filter.settings');
+  }
 
   /**
    * {@inheritdoc}
@@ -72,6 +95,23 @@ class HtmlLink extends TextFieldEmbedBase implements EntityUsageTrackUrlUpdateIn
     }
 
     return $entities;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getTextFromField(FieldItemInterface $item): string {
+    $text = parent::getTextFromField($item);
+
+    // Use the fallback format if necessary.
+    // @see \Drupal\filter\Element\ProcessedText::preRenderText()
+    $format = FilterFormat::load($item->format ?? $this->filterConfig->get('fallback_format'));
+    // If the text format convert URLs in text to real URLs we should too.
+    if ($format instanceof FilterFormat && $format->filters()->has('filter_url') && $format->filters('filter_url')->status) {
+      $filter = $format->filters()->get('filter_url');
+      $text = $filter->process($text, $item->getLangcode())->getProcessedText();
+    }
+    return $text;
   }
 
 }

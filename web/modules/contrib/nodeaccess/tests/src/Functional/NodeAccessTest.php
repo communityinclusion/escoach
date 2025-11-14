@@ -3,6 +3,7 @@
 namespace Drupal\Tests\nodeaccess\Functional;
 
 use Drupal\Core\Url;
+use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 
@@ -20,7 +21,12 @@ class NodeAccessTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['nodeaccess'];
+  protected static $modules = [
+    'nodeaccess',
+    'locale',
+    'language',
+    'content_translation',
+  ];
 
   /**
    * {@inheritdoc}
@@ -47,6 +53,21 @@ class NodeAccessTest extends BrowserTestBase {
   protected function setUp(): void {
     parent::setUp();
     $this->drupalCreateContentType(['type' => 'foo', 'name' => 'Foo']);
+
+    $this->drupalLogin($this->rootUser);
+    ConfigurableLanguage::createFromLangcode('de')->save();
+    // Enable content translation on foo content type.
+    $this->drupalGet('admin/config/regional/content-language');
+    $edit = [
+      'entity_types[node]' => TRUE,
+      'settings[node][foo][translatable]' => TRUE,
+      'settings[node][foo][fields][status]' => TRUE,
+    ];
+    $this->submitForm($edit, 'Save configuration');
+    // Adding languages requires a container rebuild in the test running
+    // environment so that multilingual services are used.
+    $this->rebuildContainer();
+
     $this->nodeaccessAdmin = $this->createUser([
       'administer nodeaccess',
       'access user profiles',
@@ -317,6 +338,64 @@ class NodeAccessTest extends BrowserTestBase {
     $assert_session->pageTextContains($node->label());
     $this->drupalGet($node_delete_url);
     $assert_session->pageTextContains($node->label());
+  }
+
+  /**
+   * Tests node access against anonymous user and unpublished node.
+   */
+  public function testUnpublishedNodeAccessAnonymous() {
+    $assert_session = $this->assertSession();
+
+    $this->drupalLogin($this->nodeaccessAdmin);
+    $this->drupalGet('/admin/config/people/nodeaccess');
+    $assert_session->pageTextContains('Nodeaccess settings');
+    $this->submitForm([
+      "bundles_roles_grants[foo][settings][anonymous][grant_view]" => 0,
+      "bundles_roles_grants[foo][settings][anonymous][grant_update]" => 0,
+      "bundles_roles_grants[foo][settings][anonymous][grant_delete]" => 0,
+      'bundles_roles_grants[foo][show_grant_tab]' => 1,
+      "roles_settings[settings][anonymous][selected]" => 1,
+    ], 'Save configuration');
+    $assert_session->pageTextContains('The configuration options have been saved.');
+    node_access_rebuild();
+    $node = $this->drupalCreateNode(['type' => 'foo']);
+    $node->setUnpublished()->save();
+    $this->assertFalse($node->isPublished());
+    $node_view_url = $node->toUrl()->toString();
+    $translation = $node->addTranslation('de', ['title' => $this->randomString()]);
+    $translation->setPublished()->save();
+    $translation_view_url = $translation->toUrl()->toString();
+
+    $grant_url = Url::fromRoute('entity.node.grants', ['node' => $node->id()])->toString();
+
+    $this->drupalGet($grant_url);
+    $nodeaccess_settings = $this->config('nodeaccess.settings');
+    $map_rid_gid = $nodeaccess_settings->get('map_rid_gid');
+
+    $anonymous_grant_id = $map_rid_gid['anonymous'];
+
+    $this->submitForm([
+      "nodeaccess_role[$anonymous_grant_id][grant_view]" => 1,
+      "nodeaccess_role[$anonymous_grant_id][grant_update]" => 0,
+      "nodeaccess_role[$anonymous_grant_id][grant_delete]" => 0,
+    ], 'Save Grants');
+
+    $admin = $this->createUser();
+    $admin_rid = $this->createAdminRole();
+    $admin->addRole($admin_rid);
+    $admin->save();
+    $this->drupalLogin($admin);
+    $this->drupalGet(Url::fromRoute('entity.user_role.edit_permissions_form', ['user_role' => 'anonymous'])->toString());
+    $this->submitForm(['anonymous[access content]' => 1], 'Save permissions');
+    $this->drupalLogout();
+
+    // Checking if anonymous user is restricted to view unpublished content.
+    $this->drupalGet($node_view_url);
+    $assert_session->statusCodeEquals(403);
+
+    // Checking that anonymous has access to the published translation.
+    $this->drupalGet($translation_view_url);
+    $assert_session->statusCodeEquals(200);
   }
 
 }

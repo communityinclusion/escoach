@@ -81,6 +81,7 @@ function mailgun_requirements($phase) {
  * Rename Mailgun config object name.
  */
 function mailgun_update_8001() {
+  // cspell:ignore adminsettings
   \Drupal::configFactory()->rename('mailgun.adminsettings', MailgunHandlerInterface::CONFIG_NAME);
   return t('Mailgun config object was renamed. Please visit configuration page to make sure that your configuration options are correct.');
 }

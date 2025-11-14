@@ -36,14 +36,14 @@ trait SchedulerSetupTrait {
    *
    * @var string
    */
-  protected $type;
+  protected $type = 'testpage';
 
   /**
    * The readable name of the standard content type created for testing.
    *
    * @var string
    */
-  protected $typeName;
+  protected $typeName = 'Test Page';
 
   /**
    * The node type object.
@@ -57,7 +57,7 @@ trait SchedulerSetupTrait {
    *
    * @var \Drupal\node\Entity\NodeType
    */
-  protected $nonSchedulerNodetype;
+  protected $nonSchedulerNodeType;
 
   /**
    * The node storage object.
@@ -74,7 +74,7 @@ trait SchedulerSetupTrait {
   protected $database;
 
   /**
-   * The request time stored as interger for direct re-use in many tests.
+   * The request time stored as integer for direct re-use in many tests.
    *
    * @var int
    */
@@ -96,8 +96,6 @@ trait SchedulerSetupTrait {
     // The tests should use $this->type and $this->typeName and not use
     // $this->nodetype->get('type') or $this->nodetype->get('name'), nor have
     // the hard-coded strings 'testpage' or 'Test Page'.
-    $this->type = 'testpage';
-    $this->typeName = 'Test Page';
     /** @var NodeTypeInterface $nodetype */
     $this->nodetype = $this->drupalCreateContentType([
       'type' => $this->type,
@@ -124,11 +122,13 @@ trait SchedulerSetupTrait {
     // rights on the test content type and all of the Scheduler permissions.
     // 'access site reports' is required for admin/reports/dblog.
     // 'administer site configuration' is required for admin/reports/status.
+    // 'administer content types' is required for admin/structure/types/manage.
     $this->adminUser = $this->drupalCreateUser([
       'access content',
       'access content overview',
       'access site reports',
       'administer nodes',
+      'administer content types',
       'administer site configuration',
       'create ' . $this->type . ' content',
       'edit any ' . $this->type . ' content',
@@ -141,6 +141,7 @@ trait SchedulerSetupTrait {
       'schedule publishing of nodes',
       'view scheduled content',
     ]);
+    $this->adminUser->set('name', 'Admolly the Admin user')->save();
 
     // Create an ordinary Scheduler user, with permission to create and schedule
     // content but not with administrator permissions.
@@ -152,6 +153,7 @@ trait SchedulerSetupTrait {
       'schedule publishing of nodes',
       'view scheduled content',
     ]);
+    $this->schedulerUser->set('name', 'Shelly the Scheduler user')->save();
 
     // Store the database connection for re-use in the actual tests.
     $this->database = $this->container->get('database');

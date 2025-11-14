@@ -1,6 +1,7 @@
+# cspell:ignore q0rban tugboatqa updatedb
 services:
   php:
-    image: q0rban/tugboat-drupal:9.0
+    image: q0rban/tugboat-drupal:10
     default: true
     http: false
     depends: mysql
@@ -24,23 +25,23 @@ services:
         # Composer package repository.
         composer config repositories.tugboat vcs $TUGBOAT_ROOT
 
-        # Now we can require this module, specifing the branch name we created
+        # Now we can require this module, specifying the branch name we created
         # above that uses the $TUGBOAT_REPO_ID environment variable.
         composer require drupal/scheduler:dev-$TUGBOAT_REPO_ID
 
         # Get other useful modules.
-        composer require drupal/devel_generate
-        composer require drupal/module_filter
-        composer require drupal/workbench_moderation
-        composer require drupal/workbench_moderation_actions:dev-1.x
+        composer require drupal/devel_generate drupal/module_filter drupal/admin_toolbar
 
         # Install Drupal on the site.
         vendor/bin/drush \
           --yes \
           --db-url=mysql://tugboat:tugboat@mysql:3306/tugboat \
-          --site-name="Scheduler issue ${TUGBOAT_PREVIEW_NAME}" \
+          --site-name="Scheduler ${TUGBOAT_PREVIEW_NAME}" \
           --account-pass=admin \
           site:install standard
+
+        # Show site status
+        vendor/bin/drush status-report
 
         # Set up the files directory permissions.
         mkdir -p $DRUPAL_DOCROOT/sites/default/files
@@ -49,13 +50,20 @@ services:
         chmod -R g+w $DRUPAL_DOCROOT/sites/default/files
 
         # Enable modules.
-        vendor/bin/drush --yes pm:enable scheduler devel devel_generate module_filter
+        vendor/bin/drush --yes pm:enable scheduler devel devel_generate module_filter admin_toolbar
 
         # Show versions.
         composer show drupal/scheduler | egrep 'name |vers'
         vendor/bin/drush pml | grep scheduler
         composer show drupal/devel | egrep 'name |vers'
         vendor/bin/drush pml | grep devel
+
+        # Add some more items to the Devel toolbar. The default is 7 items, stored as 0 - 6, so new items start 7. These items
+        # are already available in the devel toolbar 'config' but adding them here is equivalent to ticking the checkbox.
+        vendor/bin/drush -y -q config-set devel.toolbar.settings toolbar_items.7 devel_generate.generate2
+        vendor/bin/drush -y -q config-set devel.toolbar.settings toolbar_items.8 devel.configs_list
+        vendor/bin/drush -y -q config-set devel.toolbar.settings toolbar_items.9 devel.switch_user
+        vendor/bin/drush config-get devel.toolbar.settings
 
         # Scheduler general settings.
         vendor/bin/drush -y config-set scheduler.settings allow_date_only 1
@@ -70,28 +78,26 @@ services:
         vendor/bin/drush -y config-set node.type.article third_party_settings.scheduler.publish_past_date 'schedule'
         vendor/bin/drush config-get node.type.article third_party_settings
 
-        # Create roles for each of the scheduler user permissions.
-        vendor/bin/drush role-create 'my_content_editor' 'Content Editor'
-        vendor/bin/drush role-add-perm 'my_content_editor' 'schedule publishing of nodes'
-        vendor/bin/drush role-create 'content_viewer' 'Content Viewer'
+        # Create and update roles for scheduler permissions. We can re-use the pre-existing content_editor role.
+        vendor/bin/drush role-add-perm 'content_editor' 'schedule publishing of nodes'
+        vendor/bin/drush role-create 'content_viewer' 'Content viewer'
         vendor/bin/drush role-add-perm 'content_viewer' 'view scheduled content'
 
         # Add some permissions for all authenticated users.
         vendor/bin/drush role-add-perm 'authenticated' \
-          "create article content, edit any article content, delete any article content, \
-           access content overview, view own unpublished content, switch users"
+          "create article content, edit any article content, delete any article content, access content overview, \
+           view own unpublished content, switch users, access toolbar, access administration pages, access devel information"
 
         # Create users and give them roles.
-        vendor/bin/drush user-create 'Eddy content editor'
-        vendor/bin/drush user-add-role 'my_content_editor' 'Eddy content editor'
-        vendor/bin/drush user-create 'Vera content viewer'
-        vendor/bin/drush user-add-role 'content_viewer' 'Vera content viewer'
+        vendor/bin/drush user-create 'Eddy editor'
+        vendor/bin/drush user-add-role 'content_editor' 'Eddy editor'
+        vendor/bin/drush user-create 'Vera viewer'
+        vendor/bin/drush user-add-role 'content_viewer' 'Vera viewer'
 
         # Generate content.
-        vendor/bin/drush devel-generate-content 2 --bundles=article --authors=1,2 --verbose
-        vendor/bin/drush devel-generate-content 2 --bundles=page --authors=1,2 --verbose
+        vendor/bin/drush devel-generate-content 3 --bundles=article --authors=1,2 --verbose
+        vendor/bin/drush devel-generate-content 1 --bundles=page --authors=1,2 --verbose
 
-        # @todo Place the 'Switch users' block in first sidebar.
         # @todo Add 'content overview' to tools menu.
 
       build: |
@@ -105,7 +111,7 @@ services:
 
         # Update this module, including all dependencies.
         composer update drupal/scheduler --with-all-dependencies
-        vendor/bin/drush --yes updb
+        vendor/bin/drush --yes updatedb
         vendor/bin/drush cache:rebuild
 
   mysql:

@@ -40,7 +40,7 @@ class SetPublishingDate extends RulesActionBase {
     $config = \Drupal::config('scheduler.settings');
     if ($node->type->entity->getThirdPartySetting('scheduler', 'publish_enable', $config->get('default_publish_enable'))) {
       $node->set('publish_on', $date);
-      // When this action is invoked and it operates on the node being editted
+      // When this action is invoked and it operates on the node being edited
       // then hook_node_presave() and hook_node_update() will be executed
       // automatically. But if this action is being used to schedule a different
       // node then we need to call the functions directly here.

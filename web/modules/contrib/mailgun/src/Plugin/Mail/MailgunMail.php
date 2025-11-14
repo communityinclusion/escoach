@@ -105,10 +105,10 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
     // Wrap body with theme function.
     if ($this->mailgunConfig->get('use_theme')) {
       $render = [
-        '#theme' => isset($message['params']['theme']) ? $message['params']['theme'] : 'mailgun',
+        '#theme' => $message['params']['theme'] ?? 'mailgun',
         '#message' => $message,
       ];
-      $message['body'] = $this->renderer->renderPlain($render);
+      $message['body'] = $this->renderer->renderInIsolation($render);
     }
 
     return $message;
@@ -163,7 +163,7 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
   }
 
   /**
-   * Builds the e-mail message in preparation to be sent to Mailgun.
+   * Builds the email message in preparation to be sent to Mailgun.
    *
    * @param array $message
    *   A message array, as described in hook_mail_alter().
@@ -266,6 +266,7 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
         if (!empty($attachment['filepath']) && file_exists($attachment['filepath'])) {
           $attachments[] = ['filePath' => $attachment['filepath']];
         }
+        // cspell:ignore filecontent
         elseif (!empty($attachment['filecontent']) && !empty($attachment['filename'])) {
           $attachments[] = [
             'fileContent' => $attachment['filecontent'],
@@ -297,7 +298,7 @@ class MailgunMail implements MailInterface, ContainerFactoryPluginInterface {
   }
 
   /**
-   * Checks, if the mail key is excempted from tracking.
+   * Checks if the mail key is exempt from tracking.
    *
    * @param array $message
    *   A message array.

@@ -55,7 +55,9 @@ class TokenCustomTypeFormTest extends BrowserTestBase {
     // Create a new custom token using the custom token type.
     $this->drupalGet('admin/structure/token-custom/add');
     $session->statusCodeEquals(Response::HTTP_OK);
-    $page->selectFieldOption('type', 'test_token_type');
+    $page->clickLink('test_token_type');
+    $session->statusCodeEquals(Response::HTTP_OK);
+    $session->fieldExists('name[0][value]');
     $page->fillField('name[0][value]', 'test_token');
     $page->fillField('machine_name[0][value]', 'test-token-machine-name');
     $page->fillField('description[0][value]', 'Test Token description.');

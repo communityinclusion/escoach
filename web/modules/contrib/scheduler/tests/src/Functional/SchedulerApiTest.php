@@ -23,6 +23,27 @@ class SchedulerApiTest extends SchedulerBrowserTestBase {
   protected static $modules = ['scheduler_api_test', 'menu_ui', 'path'];
 
   /**
+   * Node type machine_name.
+   *
+   * @var string
+   */
+  protected $customName;
+
+  /**
+   * Node type object.
+   *
+   * @var \Drupal\node\Entity\NodeType
+   */
+  protected $customNodetype;
+
+  /**
+   * A user with permission to create and schedule the custom node type.
+   *
+   * @var \Drupal\user\Entity\User
+   */
+  protected $webUser;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -49,7 +70,7 @@ class SchedulerApiTest extends SchedulerBrowserTestBase {
    * Covers hook_scheduler_allow_publishing()
    *
    * This hook can allow or deny the publishing of individual nodes. This test
-   * uses the customised content type which has checkboxes 'Approved for
+   * uses the customized content type which has checkboxes 'Approved for
    * publication' and 'Approved for unpublication'.
    *
    * @todo Create and update the nodes through the interface so we can check if
@@ -98,7 +119,7 @@ class SchedulerApiTest extends SchedulerBrowserTestBase {
     $node = $this->createUnapprovedNode('publish_on');
     $this->assertFalse($node->isPublished(), 'An unapproved node with a date in the past is not published immediately after saving.');
 
-    // Check that the node can be approved and published programatically.
+    // Check that the node can be approved and published programmatically.
     $this->approveNode($node->id(), 'field_approved_publishing');
     $this->nodeStorage->resetCache([$node->id()]);
     $node = $this->nodeStorage->load($node->id());

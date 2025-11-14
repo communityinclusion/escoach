@@ -2,7 +2,11 @@
 
 /**
  * @file
- * Drush commands for Scheduler.
+ * Drush 8 commands for Scheduler.
+ *
+ * For Drush 9+ the commands are in src/Commands/SchedulerCommands.php
+ * This file is retained Scheduler 8.x-1.x for backwards compatibility with Core
+ * versions up to 8.4 but is removed in Scheduler 2.x.
  */
 
 /**

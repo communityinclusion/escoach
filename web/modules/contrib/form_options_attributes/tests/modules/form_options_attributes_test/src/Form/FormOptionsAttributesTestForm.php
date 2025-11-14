@@ -4,12 +4,22 @@ namespace Drupal\form_options_attributes_test\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Form for testing form options attributes.
+ */
 class FormOptionsAttributesTestForm extends FormBase {
-  
+
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'form_options_attributes_module_test_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $states = [
       'AL' => $this->t('Alabama'),
@@ -77,9 +87,11 @@ class FormOptionsAttributesTestForm extends FormBase {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    
-  }
 
+  }
 
 }

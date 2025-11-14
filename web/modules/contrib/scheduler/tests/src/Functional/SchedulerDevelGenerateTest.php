@@ -17,6 +17,13 @@ class SchedulerDevelGenerateTest extends SchedulerBrowserTestBase {
   protected static $modules = ['devel_generate'];
 
   /**
+   * A user with devel_generate permissions.
+   *
+   * @var \Drupal\user\Entity\User
+   */
+  protected $develUser;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -72,9 +79,9 @@ class SchedulerDevelGenerateTest extends SchedulerBrowserTestBase {
       // Define the minimum and maximum times that we expect the scheduled dates
       // to be within. REQUEST_TIME remains static for the duration of this test
       // but even though devel_generate also uses uses REQUEST_TIME this will
-      // slowly creep forward during sucessive calls. Tests can fail incorrectly
-      // for this reason, hence the best approximation is to use time() when
-      // calculating the upper end of the range.
+      // slowly creep forward during successive calls. Tests can fail
+      // incorrectly for this reason, hence the best approximation is to use
+      // time() when calculating the upper end of the range.
       $min = $this->requestTime - $time_range;
       $max = time() + $time_range;
 
@@ -88,7 +95,7 @@ class SchedulerDevelGenerateTest extends SchedulerBrowserTestBase {
       $min_found = $result[0]["{$field}_min"];
       $max_found = $result[0]["{$field}_max"];
 
-      // Assert that the found values are within the expcted range.
+      // Assert that the found values are within the expected range.
       $this->assertGreaterThanOrEqual($min, $min_found, sprintf('The minimum value for %s is %s, smaller than the expected %s', $field, $this->dateFormatter->format($min_found, 'custom', 'j M, H:i:s'), $this->dateFormatter->format($min, 'custom', 'j M, H:i:s')));
       $this->assertLessThanOrEqual($max, $max_found, sprintf('The maximum value for %s is %s which is larger than expected %s', $field, $this->dateFormatter->format($max_found, 'custom', 'j M, H:i:s'), $this->dateFormatter->format($max, 'custom', 'j M, H:i:s')));
     }

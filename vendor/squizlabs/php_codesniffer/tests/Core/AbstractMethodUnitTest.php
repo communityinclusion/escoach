@@ -4,7 +4,7 @@
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2018-2019 Juliette Reinders Folmer. All rights reserved.
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Tests\Core;
@@ -164,9 +164,9 @@ abstract class AbstractMethodUnitTest extends TestCase
      * Note: the test delimiter comment MUST start with "/* test" to allow this function to
      * distinguish between comments used *in* a test and test delimiters.
      *
-     * @param string           $commentString The delimiter comment to look for.
-     * @param int|string|array $tokenType     The type of token(s) to look for.
-     * @param string           $tokenContent  Optional. The token content for the target token.
+     * @param string                       $commentString The delimiter comment to look for.
+     * @param int|string|array<int|string> $tokenType     The type of token(s) to look for.
+     * @param string                       $tokenContent  Optional. The token content for the target token.
      *
      * @return int
      */
@@ -183,15 +183,15 @@ abstract class AbstractMethodUnitTest extends TestCase
      * Note: the test delimiter comment MUST start with "/* test" to allow this function to
      * distinguish between comments used *in* a test and test delimiters.
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile     The file to find the token in.
-     * @param string                      $commentString The delimiter comment to look for.
-     * @param int|string|array            $tokenType     The type of token(s) to look for.
-     * @param string                      $tokenContent  Optional. The token content for the target token.
+     * @param \PHP_CodeSniffer\Files\File  $phpcsFile     The file to find the token in.
+     * @param string                       $commentString The delimiter comment to look for.
+     * @param int|string|array<int|string> $tokenType     The type of token(s) to look for.
+     * @param string                       $tokenContent  Optional. The token content for the target token.
      *
      * @return int
      *
-     * @throws Exception When the test delimiter comment is not found.
-     * @throws Exception When the test target token is not found.
+     * @throws \Exception When the test delimiter comment is not found.
+     * @throws \Exception When the test target token is not found.
      */
     public static function getTargetTokenFromFile(File $phpcsFile, $commentString, $tokenType, $tokenContent=null)
     {

@@ -1,7 +1,13 @@
+access custom tokens overview:
+  title: 'Access the custom tokens overview page'
+  description: 'Allows view access to the token overview page.'
+
 administer custom tokens:
   title: 'Administer custom tokens'
   description: 'Create, edit and delete custom tokens.'
+  restrict access: true
 
 administer custom token types:
   title: 'Administer custom token types'
   description: 'Create, edit and delete custom token types.'
+  restrict access: true

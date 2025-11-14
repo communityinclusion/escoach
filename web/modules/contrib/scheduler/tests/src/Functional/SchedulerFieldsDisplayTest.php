@@ -17,6 +17,13 @@ class SchedulerFieldsDisplayTest extends SchedulerBrowserTestBase {
   protected static $modules = ['field_ui'];
 
   /**
+   * Additional admin user with permissions for the field_ui module.
+   *
+   * @var \Drupal\user\Entity\User
+   */
+  protected $adminUser2;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {

@@ -63,6 +63,7 @@ class MailingListSubscribeForm extends FormBase {
     $form['email'] = [
       '#type' => 'email',
       '#title' => $this->t('Email'),
+      '#required' => TRUE,
     ];
     $form['submit'] = [
       '#type' => 'submit',

@@ -4,7 +4,7 @@
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2024 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Tests\Core\Util\Common;
@@ -24,7 +24,7 @@ final class GetSniffCodeTest extends TestCase
     /**
      * Test receiving an expected exception when the $sniffClass parameter is not passed a string value or is passed an empty string.
      *
-     * @param string $input NOT a fully qualified sniff class name.
+     * @param mixed $input NOT a fully qualified sniff class name.
      *
      * @dataProvider dataGetSniffCodeThrowsExceptionOnInvalidInput
      *
@@ -54,7 +54,7 @@ final class GetSniffCodeTest extends TestCase
      *
      * @see testGetSniffCodeThrowsExceptionOnInvalidInput()
      *
-     * @return array<string, array<string>>
+     * @return array<string, array<mixed>>
      */
     public static function dataGetSniffCodeThrowsExceptionOnInvalidInput()
     {

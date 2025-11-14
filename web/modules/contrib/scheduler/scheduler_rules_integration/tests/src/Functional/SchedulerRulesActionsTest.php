@@ -3,8 +3,8 @@
 namespace Drupal\Tests\scheduler_rules_integration\Functional;
 
 use Drupal\Core\Logger\RfcLogLevel;
-use Drupal\rules\Context\ContextConfig;
 use Drupal\Tests\scheduler\Functional\SchedulerBrowserTestBase;
+use Drupal\rules\Context\ContextConfig;
 
 /**
  * Tests the six actions that Scheduler provides for use in Rules module.
@@ -21,6 +21,34 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
   protected static $modules = ['scheduler_rules_integration'];
 
   /**
+   * The rules_reaction_rule entity object.
+   *
+   * @var \Drupal\rules\Entity\ReactionRuleConfig
+   */
+  protected $rulesStorage;
+
+  /**
+   * The rules expression plugin manager.
+   *
+   * @var \Drupal\rules\Engine\ExpressionManagerInterface
+   */
+  protected $expressionManager;
+
+  /**
+   * Test node A - published and enabled for Scheduler.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $nodeA;
+
+  /**
+   * Test node B - published but not enabled for Scheduler.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $nodeB;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -32,7 +60,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     $this->drupalLogin($this->adminUser);
 
     // Create node A which is published and enabled for Scheduling.
-    $this->node_a = $this->drupalCreateNode([
+    $this->nodeA = $this->drupalCreateNode([
       'title' => 'Initial Test Node',
       'type' => $this->type,
       'uid' => $this->adminUser->id(),
@@ -40,7 +68,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     ]);
 
     // Create node B which is published but not enabled for Scheduling.
-    $this->node_b = $this->drupalCreateNode([
+    $this->nodeB = $this->drupalCreateNode([
       'title' => 'Something Else',
       'type' => $this->nonSchedulerNodeType->id(),
       'uid' => $this->adminUser->id(),
@@ -135,7 +163,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
 
     // Second, edit a pre-existing Scheduler-enabled node, without triggering
     // either of the rules.
-    $node = $this->node_a;
+    $node = $this->nodeA;
     $edit = [
       'title[0][value]' => 'Edit node - but no rules will be triggered',
       'body[0][value]' => $this->randomString(30),
@@ -209,7 +237,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     $this->assertEquals(1, $log, 'There is 1 watchdog warning message from Scheduler');
 
     // Fourthly, edit a pre-existing node which is not enabled for Scheduler.
-    $node = $this->node_b;
+    $node = $this->nodeB;
 
     // Edit the node, triggering rule 1.
     $edit = [
@@ -339,7 +367,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
 
     // Second, edit a pre-existing Scheduler-enabled node, without triggering
     // either of the rules.
-    $node = $this->node_a;
+    $node = $this->nodeA;
     $edit = [
       'title[0][value]' => 'Edit node - but no rules will be triggered',
       'body[0][value]' => $this->randomString(30),
@@ -413,7 +441,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     $this->assertEquals(1, $log, 'There is 1 watchdog warning message from Scheduler');
 
     // Fourthly, edit a pre-existing node which is not enabled for Scheduler.
-    $node = $this->node_b;
+    $node = $this->nodeB;
 
     // Edit the node, triggering rule 3.
     $edit = [

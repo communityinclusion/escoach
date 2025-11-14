@@ -1946,3 +1946,122 @@ class TestAlways extends StateActionBase {
   }
 
 }
+
+/**
+ * Doc block is here and an ignore directive is ok.
+ */
+// phpcs:ignore Drupal.NamingConventions.ValidClassName
+function phpcs_ignore_comment() {
+
+}
+
+/**
+ * Test class.
+ */
+class TestPlugin {
+
+  /**
+   * Gets a fallback id for a missing plugin.
+   *
+   * This method should be implemented in extending classes that also implement
+   * FallbackPluginManagerInterface. It is called by
+   * PluginManagerBase::handlePluginNotFound on the abstract class, and
+   * therefore should be defined as well on the abstract class to prevent static
+   * analysis errors.
+   *
+   * @param string $plugin_id
+   *   The ID of the missing requested plugin.
+   * @param array $configuration
+   *   An array of configuration relevant to the plugin instance.
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.InvalidNoReturn
+   * @return string
+   *   The id of an existing plugin to use when the plugin does not exist.
+   *
+   * @throws \BadMethodCallException
+   *   If the method is not implemented in the concrete plugin manager class.
+   */
+  protected function getFallbackPluginId($plugin_id, array $configuration = []) {
+    throw new \BadMethodCallException(static::class . '::getFallbackPluginId() not implemented.');
+  }
+
+}
+
+/**
+ * Provides a collection of condition plugins.
+ */
+class ConditionPluginCollection extends DefaultLazyPluginCollection {
+
+  /**
+   * {@inheritdoc}
+   *
+   * phpcs:ignore Drupal.Commenting.FunctionComment.MissingReturnComment
+   * @return \Drupal\Core\Condition\ConditionInterface
+   */
+  public function &get($instance_id) {
+    return 'x';
+  }
+
+}
+
+/**
+ * Test for @phpstan-ignore-next-line.
+ *
+ * Coder issue https://www.drupal.org/project/coder/issues/3516489
+ */
+// @phpstan-ignore-next-line missingType.return
+public function ignore_phpstan_comment() {
+}
+
+/**
+ * Test for @phpstan-ignore with attribute before.
+ */
+#[ExampleAttribute('foo', 'bar')]
+// @phpstan-ignore-next-line missingType.return
+public function ignore_phpstan_comment_with_attribute_before() {
+}
+
+/**
+ * Test PHPCS ignore comments between param docs.
+ */
+interface BreadcrumbBuilderInterface {
+
+  /**
+   * Whether this breadcrumb builder should be used to build the breadcrumb.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   * phpcs:ignore Drupal.Commenting.FunctionComment.ParamNameNoMatch
+   * @param \Drupal\Core\Cache\CacheableMetadata $cacheable_metadata
+   *   The cacheable metadata to add to if your check varies by or depends
+   *   on something. Anything you specify here does not have to be repeated in
+   *   the build() method as it will be merged in automatically.
+   *
+   * @return bool
+   *   TRUE if this builder should be used or FALSE to let other builders
+   *   decide.
+   *
+   * @todo Uncomment new method parameters before drupal:12.0.0, see
+   *   https://www.drupal.org/project/drupal/issues/3459277.
+   */
+  public function applies(RouteMatchInterface $route_match /* , CacheableMetadata $cacheable_metadata */);
+
+}
+
+/**
+ * Test that nested array types are ok.
+ *
+ * @param array<array<scalar|null>|object|scalar|null> $param
+ *   A complex nested array type.
+ *
+ * @return array<array<scalar|null>|object|scalar|null>
+ *   An array of results.
+ */
+function pdo_weird_return_type($param) {
+  return pdo();
+}
+
+/**
+ * Comments are allowed to end in 3 dots...
+ */
+function comment_test_dots() {}

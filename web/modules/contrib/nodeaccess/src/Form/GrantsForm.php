@@ -65,7 +65,7 @@ class GrantsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, NodeInterface $node = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?NodeInterface $node = NULL) {
     $form_values = $form_state->getValues();
     $nodeaccess_settings = $this->configFactory()->get('nodeaccess.settings');
 

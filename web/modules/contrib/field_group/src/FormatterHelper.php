@@ -60,7 +60,7 @@ class FormatterHelper implements TrustedCallbackInterface {
    * @return array
    *   The updated form.
    */
-  public static function formProcess(array &$element, FormStateInterface $form_state = NULL, array &$form = []) {
+  public static function formProcess(array &$element, ?FormStateInterface $form_state = NULL, array &$form = []) {
     if (empty($element['#field_group_form_process'])) {
       $element['#field_group_form_process'] = TRUE;
       if (empty($element['#fieldgroups'])) {

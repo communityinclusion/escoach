@@ -11,7 +11,7 @@ use Drupal\Core\Render\BubbleableMetadata;
  * Implements hook_token_info().
  */
 function scheduler_token_info() {
-  // Initialise the array to avoid 'variable is undefined' phpcs error.
+  // Initialize the array to avoid 'variable is undefined' phpcs error.
   $info = [];
   $info['tokens']['node']['scheduler-publish'] = [
     'name' => t('Publish on date'),

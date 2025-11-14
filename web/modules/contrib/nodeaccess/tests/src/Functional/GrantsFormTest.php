@@ -152,13 +152,13 @@ class GrantsFormTest extends BrowserTestBase {
     $nodeaccess_admin_uid = $this->nodeaccessAdmin->id();
     // $nodeaccess_admin_username = $this->nodeaccessAdmin->getAccountName();
     $foo_bundle_admin_uid = $this->fooBundleAdmin->id();
-    $foo_bundle_admin_usename = $this->fooBundleAdmin->getAccountName();
+    $foo_bundle_admin_username = $this->fooBundleAdmin->getAccountName();
     $grant_url = Url::fromRoute('entity.node.grants', ['node' => $node->id()])->toString();
     $this->drupalGet($grant_url);
     // The logged-in user is nodeaccessAdmin who has the `access user profiles`
     // permission, so the input with name `search_uid` using the entity
     // reference widget.
-    $this->submitForm(['search_uid' => "$foo_bundle_admin_usename ($foo_bundle_admin_uid)"], 'Search');
+    $this->submitForm(['search_uid' => "$foo_bundle_admin_username ($foo_bundle_admin_uid)"], 'Search');
     $this->submitForm([], 'Search');
     $assert_session->fieldValueEquals("nodeaccess_user[$foo_bundle_admin_uid][keep]", 1);
     $this->submitForm([], 'Save Grants');

@@ -4,7 +4,7 @@ description: 'Allows form options for select, checkboxes, and radio elements to 
 core_version_requirement: ^10 || ^11
 package : Field types
 
-# Information added by Drupal.org packaging script on 2024-09-22
-version: '2.1.0'
+# Information added by Drupal.org packaging script on 2025-11-05
+version: '2.1.1'
 project: 'form_options_attributes'
-datestamp: 1727029172
+datestamp: 1762365612

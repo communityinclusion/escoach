@@ -14,6 +14,7 @@ use Drupal\search_api\Query\Query;
 use Drupal\search_api\Utility\QueryHelperInterface;
 use Drupal\search_api\Utility\ThemeSwitcherInterface;
 use Drupal\search_api\Utility\Utility;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -44,7 +45,7 @@ trait TestItemsTrait {
    *   The field type to set for the field.
    * @param mixed $fieldValue
    *   A field value to add to the field.
-   * @param \Drupal\search_api\Item\FieldInterface $field
+   * @param \Drupal\search_api\Item\FieldInterface|null $field
    *   (optional) A variable, passed by reference, into which the created field
    *   will be saved.
    * @param string $fieldId
@@ -54,7 +55,8 @@ trait TestItemsTrait {
    *   An array containing a single item with the specified field.
    */
   public function createSingleFieldItem(IndexInterface $index, $fieldType, $fieldValue, ?FieldInterface &$field = NULL, $fieldId = 'field_test') {
-    $this->itemIds[0] = $itemId = Utility::createCombinedId('entity:node', '1:en');
+    $id = count($this->itemIds) + 1;
+    $this->itemIds[] = $itemId = Utility::createCombinedId('entity:node', "$id:en");
     $item = new Item($index, $itemId);
     $field = new Field($index, $fieldId);
     $field->setType($fieldType);
@@ -156,11 +158,15 @@ trait TestItemsTrait {
     $queryHelper->method('getResults')
       ->willReturn([]);
 
+    // Add logger service for classes using LoggerTrait.
+    $logger = $this->createMock(LoggerInterface::class);
+
     $this->container = new ContainerBuilder();
     $this->container->set('plugin.manager.search_api.data_type', $dataTypeManager);
     $this->container->set('search_api.data_type_helper', $dataTypeHelper);
     $this->container->set('search_api.fields_helper', $fieldsHelper);
     $this->container->set('search_api.query_helper', $queryHelper);
+    $this->container->set('logger.channel.search_api', $logger);
     \Drupal::setContainer($this->container);
   }
 

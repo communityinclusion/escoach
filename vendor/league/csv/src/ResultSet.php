@@ -27,6 +27,7 @@ use LimitIterator;
 use mysqli_result;
 use PDOStatement;
 use PgSql\Result;
+use ReflectionException;
 use RuntimeException;
 use SQLite3Result;
 use Throwable;
@@ -55,8 +56,6 @@ class ResultSet implements TabularDataReader, JsonSerializable
     protected Iterator $records;
 
     /**
-     * @internal
-     *
      * @see self::from() for public API usage
      *
      * @param Iterator|array<array-key, array<array-key, mixed>> $records
@@ -92,7 +91,7 @@ class ResultSet implements TabularDataReader, JsonSerializable
      *
      * @throws RuntimeException|SyntaxError If the column names can not be found
      */
-    public static function tryFrom(PDOStatement|Result|mysqli_result|SQLite3Result|TabularData $tabularData): ?self
+    public static function tryFrom(PDOStatement|Result|mysqli_result|SQLite3Result|TabularData|TabularDataProvider $tabularData): ?self
     {
         try {
             return self::from($tabularData);
@@ -106,8 +105,12 @@ class ResultSet implements TabularDataReader, JsonSerializable
      *
      * @throws RuntimeException|SyntaxError If the column names can not be found
      */
-    public static function from(PDOStatement|Result|mysqli_result|SQLite3Result|TabularData $tabularData): self
+    public static function from(PDOStatement|Result|mysqli_result|SQLite3Result|TabularData|TabularDataProvider $tabularData): self
     {
+        if ($tabularData instanceof TabularDataProvider) {
+            $tabularData = $tabularData->getTabularData();
+        }
+
         if (!$tabularData instanceof TabularData) {
             /** @var ArrayIterator<array-key, array<array-key, mixed>> $data */
             $data = new ArrayIterator();
@@ -498,6 +501,14 @@ class ResultSet implements TabularDataReader, JsonSerializable
         return $this->nth(0);
     }
 
+    public function last(): array
+    {
+        $last = [];
+        foreach ($this->getRecords() as $last); /* @phpstan-ignore-line */
+
+        return $last;
+    }
+
     public function value(int|string $column = 0): mixed
     {
         return match (true) {
@@ -555,6 +566,33 @@ class ResultSet implements TabularDataReader, JsonSerializable
         return $this->nthAsObject(0, $className, $header);
     }
 
+    /**
+     * @param class-string $className
+     *
+     * @throws SyntaxError
+     * @throws ReflectionException
+     */
+    public function lastAsObject(string $className, array $header = []): ?object
+    {
+        $header = $this->prepareHeader($header);
+        $record = $this->last();
+        if ([] === $record) {
+            return null;
+        }
+
+        if ([] === $header || $this->header === $header) {
+            return Denormalizer::assign($className, $record);
+        }
+
+        $row = array_values($record);
+        $record = [];
+        foreach ($header as $offset => $headerName) {
+            $record[$headerName] = $row[$offset] ?? null;
+        }
+
+        return Denormalizer::assign($className, $record);
+    }
+
     public function fetchColumn(string|int $index = 0): Iterator
     {
         return $this->yieldColumn(
@@ -562,31 +600,11 @@ class ResultSet implements TabularDataReader, JsonSerializable
         );
     }
 
-    /**
-     * @throws Exception
-     */
-    public function fetchColumnByName(string $name): Iterator
-    {
-        return $this->yieldColumn(
-            $this->getColumnIndexByValue($name, 'name', __METHOD__)
-        );
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function fetchColumnByOffset(int $offset): Iterator
-    {
-        return $this->yieldColumn(
-            $this->getColumnIndexByKey($offset, 'offset', __METHOD__)
-        );
-    }
-
     protected function yieldColumn(string|int $offset): Generator
     {
         yield from new MapIterator(
             new CallbackFilterIterator($this->records, fn (array $record): bool => isset($record[$offset])),
-            fn (array $record): string => $record[$offset]
+            fn (array $record) => $record[$offset]
         );
     }
 
@@ -645,6 +663,42 @@ class ResultSet implements TabularDataReader, JsonSerializable
         foreach ($iterator as $pair) {
             yield $pair[0] => $pair[1];
         }
+    }
+
+    /**
+     * DEPRECATION WARNING! This method will be removed in the next major point release.
+     *
+     * @throws Exception
+     *
+     * @deprecated since version 9.23.0
+     * @codeCoverageIgnore
+     *
+     * @see ResultSet::fetchColumn()
+     */
+    #[Deprecated(message:'use League\Csv\Resultset::fetchColumn() instead', since:'league/csv:9.23.0')]
+    public function fetchColumnByName(string $name): Iterator
+    {
+        return $this->yieldColumn(
+            $this->getColumnIndexByValue($name, 'name', __METHOD__)
+        );
+    }
+
+    /**
+     * DEPRECATION WARNING! This method will be removed in the next major point release.
+     *
+     * @throws Exception
+     *
+     * @deprecated since version 9.23.0
+     * @codeCoverageIgnore
+     *
+     * @see ResultSet::fetchColumn()
+     */
+    #[Deprecated(message:'use League\Csv\Resultset::fetchColumn() instead', since:'league/csv:9.23.0')]
+    public function fetchColumnByOffset(int $offset): Iterator
+    {
+        return $this->yieldColumn(
+            $this->getColumnIndexByKey($offset, 'offset', __METHOD__)
+        );
     }
 
     /**

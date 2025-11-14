@@ -1,0 +1,22 @@
+{
+  "name": "drupal/nodeaccess",
+  "description": "Nodeaccess is a Drupal access control module which provides view, edit and delete access to nodes.",
+  "type": "drupal-module",
+  "homepage": "https://www.drupal.org/project/nodeaccess",
+  "license": "GPL-2.0-or-later",
+  "minimum-stability": "dev",
+  "repositories": {
+    "drupal": {
+      "type": "composer",
+      "url": "https://packages.drupal.org/8"
+    }
+  },
+  "require": {
+    "drupal/core": "^8.8 || ^9 || ^10 || ^11"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-2.0.x": "2.0.x-dev"
+    }
+  }
+}

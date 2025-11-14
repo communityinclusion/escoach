@@ -12,7 +12,7 @@ class SchedulerNonEnabledTypeTest extends SchedulerBrowserTestBase {
   /**
    * Tests the publish_enable and unpublish_enable node type settings.
    *
-   * @dataProvider dataNonEnabledType()
+   * @dataProvider dataNonEnabledType
    */
   public function testNonEnabledType($id, $description, $publishing_enabled, $unpublishing_enabled) {
     $this->drupalLogin($this->adminUser);
@@ -125,7 +125,7 @@ class SchedulerNonEnabledTypeTest extends SchedulerBrowserTestBase {
    *     publishing_enabled   - (bool) whether publishing is enabled
    *     unpublishing_enabled - (bool) whether unpublishing is enabled
    */
-  public function dataNonEnabledType() {
+  public static function dataNonEnabledType() {
     $data = [
       // By default check that the scheduler date fields are not displayed.
       0 => [0, 'Default', FALSE, FALSE],
@@ -139,7 +139,7 @@ class SchedulerNonEnabledTypeTest extends SchedulerBrowserTestBase {
       // Turn on scheduled unpublishing only.
       3 => [3, 'Enabling unpublishing only', FALSE, TRUE],
 
-      // For completeness turn on bothbscheduled publishing and unpublishing.
+      // For completeness turn on both scheduled publishing and unpublishing.
       4 => [4, 'Enabling both publishing and unpublishing', TRUE, TRUE],
     ];
 

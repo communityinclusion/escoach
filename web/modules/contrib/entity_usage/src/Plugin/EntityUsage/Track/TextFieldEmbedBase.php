@@ -19,10 +19,8 @@ abstract class TextFieldEmbedBase extends EntityUsageTrackBase implements EmbedT
     if (empty($item_value['value'])) {
       return [];
     }
-    $text = $item_value['value'];
-    if ($item->getFieldDefinition()->getType() === 'text_with_summary') {
-      $text .= $item_value['summary'];
-    }
+    $text = $this->getTextFromField($item);
+
     $entities_in_text = $this->parseEntitiesFromText($text);
     $valid_entities = [];
 
@@ -50,6 +48,23 @@ abstract class TextFieldEmbedBase extends EntityUsageTrackBase implements EmbedT
     }
 
     return $valid_entities;
+  }
+
+  /**
+   * Gets the text from the field.
+   *
+   * @param \Drupal\Core\Field\FieldItemInterface $item
+   *   The field item.
+   *
+   * @return string
+   *   The field text.
+   */
+  protected function getTextFromField(FieldItemInterface $item): string {
+    $text = $item->value;
+    if ($item->getFieldDefinition()->getType() === 'text_with_summary') {
+      $text .= $item->summary;
+    }
+    return $text;
   }
 
 }

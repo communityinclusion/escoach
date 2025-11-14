@@ -103,7 +103,7 @@ class UrlToEntity implements UrlToEntityInterface {
 
     if (preg_match(static::ENTITY_ROUTE_PATTERN, $url->getRouteName(), $matches)) {
       $entity_type_id = $matches[1];
-      if ($this->isEntityTypeTracked($entity_type_id)) {
+      if ($this->isEntityTypeTracked($entity_type_id) && isset($url->getRouteParameters()[$entity_type_id])) {
         return [
           'type' => $entity_type_id,
           'id' => $url->getRouteParameters()[$entity_type_id],

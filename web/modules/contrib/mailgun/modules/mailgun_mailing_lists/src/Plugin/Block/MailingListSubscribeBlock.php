@@ -103,7 +103,7 @@ class MailingListSubscribeBlock extends BlockBase implements ContainerFactoryPlu
       '#type' => 'select',
       '#title' => $this->t('Mailing list'),
       '#options' => $options,
-      '#default_value' => isset($config['mailing_list']) ? $config['mailing_list'] : '',
+      '#default_value' => $config['mailing_list'] ?? '',
       '#required' => TRUE,
     ];
     return $form;

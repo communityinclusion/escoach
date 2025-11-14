@@ -4,12 +4,22 @@ namespace Drupal\form_options_attributes_test\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Form for testing form options attributes on option groups.
+ */
 class FormOptionsAttributesOptGroupTestForm extends FormBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'form_options_attributes_module_optgroup_test_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['states'] = [
       '#type' => 'select',
@@ -48,16 +58,18 @@ class FormOptionsAttributesOptGroupTestForm extends FormBase {
           // ..
           'NU' => ['class' => ['arctic'], 'data-bbq-meat' => 'walrus'],
           'YT' => ['class' => ['goldy'], 'data-bbq-meat' => 'moose'],
-        ]
+        ],
       ],
-      '#attributes' => array('class' => array('states-bbq-selector')),
+      '#attributes' => ['class' => ['states-bbq-selector']],
     ];
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
   }
-
 
 }

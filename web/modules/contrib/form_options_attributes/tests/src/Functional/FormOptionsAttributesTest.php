@@ -5,7 +5,7 @@ namespace Drupal\Tests\form_options_attributes\Functional;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- * Tests the #options_attributes functionality of select, checkboxes, and radios.
+ * Tests the #options_attributes for select, checkboxes, and radios.
  *
  * @group form_options_attributes
  */
@@ -34,7 +34,7 @@ class FormOptionsAttributesTest extends BrowserTestBase {
   }
 
   /**
-   * Test form #options_attributes on select elements
+   * Test form #options_attributes on select elements.
    */
   public function testSelect() {
     $this->drupalGet('/form-options-attributes-test');
@@ -42,7 +42,7 @@ class FormOptionsAttributesTest extends BrowserTestBase {
   }
 
   /**
-   * Test form #options_attributes on select elements with option groups
+   * Test form #options_attributes on select elements with option groups.
    */
   public function testOptGroupSelect() {
     $this->drupalGet('form-options-attributes-test-optgroup');
@@ -50,7 +50,7 @@ class FormOptionsAttributesTest extends BrowserTestBase {
   }
 
   /**
-   * Test form #options_attributes on radios elements
+   * Test form #options_attributes on radios elements.
    */
   public function testRadios() {
     $this->drupalGet('form-options-attributes-test');
@@ -63,7 +63,7 @@ class FormOptionsAttributesTest extends BrowserTestBase {
   }
 
   /**
-   * Test form #options_attributes on checkboxes elements
+   * Test form #options_attributes on checkboxes elements.
    */
   public function testCheckboxes() {
     $this->drupalGet('form-options-attributes-test');

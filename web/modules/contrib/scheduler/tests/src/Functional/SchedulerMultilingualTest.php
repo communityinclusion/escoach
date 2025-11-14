@@ -120,7 +120,7 @@ class SchedulerMultilingualTest extends SchedulerBrowserTestBase {
   /**
    * Test creating translations with independent scheduling.
    *
-   * @dataProvider dataPublishingTranslations()
+   * @dataProvider dataPublishingTranslations
    */
   public function testPublishingTranslations($publish_on_translatable, $unpublish_on_translatable, $status_translatable, array $expected_status_values_before, array $expected_status_values_after) {
     // Show the languages, this is for info and debug only.
@@ -177,7 +177,7 @@ class SchedulerMultilingualTest extends SchedulerBrowserTestBase {
     ];
     $this->submitForm($edit, 'Save');
 
-    // Create second translation, for publishing and unpublising in the future.
+    // Create second translation, for publishing and unpublishing in the future.
     $this->drupalGet('node/' . $nid . '/translations/add/' . $this->languages[0]['code'] . '/' . $this->languages[2]['code']);
     $edit = [
       'title[0][value]' => $this->languages[2]['name'] . '(2) - Publish in the future',
@@ -226,7 +226,7 @@ class SchedulerMultilingualTest extends SchedulerBrowserTestBase {
       $this->assertNotEquals($translation3->unpublish_on->value, $translation2->unpublish_on->value, 'Node unpublish_on');
     }
     else {
-      // The scheduer dates should be synchronized across all translations.
+      // The scheduler dates should be synchronized across all translations.
       $this->assertEquals($translation3->publish_on->value, $node->publish_on->value, 'Node publish_on');
       $this->assertEquals($translation3->unpublish_on->value, $node->unpublish_on->value, 'Node unpublish_on');
       $this->assertEquals($translation3->publish_on->value, $translation1->publish_on->value, 'Translation 1 publish_on');
@@ -264,12 +264,12 @@ class SchedulerMultilingualTest extends SchedulerBrowserTestBase {
    * @return array
    *   The test data. Each array element has the format:
    *   Publish_on translatable
-   *   Unublish_on translatable
+   *   Unpublish_on translatable
    *   Status translatable
    *   Expected status of four translations before cron
    *   Expected status of four translations after cron
    */
-  public function dataPublishingTranslations() {
+  public static function dataPublishingTranslations() {
     // The key text relates to which fields are translatable.
     return [
       'all fields' => [TRUE, TRUE, TRUE,

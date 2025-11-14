@@ -4,7 +4,7 @@ administer nodeaccess:
   restrict access: true
 grant node permissions:
   title: Grant all node permissions
-  description: Acces the Grants tab of all nodes
+  description: Access the Grants tab of all nodes
   restrict access: false
 permission_callbacks:
   - Drupal\nodeaccess\NodeGrantPermissions::permissions

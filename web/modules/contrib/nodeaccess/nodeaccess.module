@@ -36,7 +36,7 @@ function nodeaccess_node_access_records(NodeInterface $node) {
     // If the node's author is anonymous, ignore. Don't grant anonymous the
     // author access to avoid unexpected permission leaks.
     // @todo Add a test.
-    if ($node->getOwner()->isAuthenticated()) {
+    if ($node->getOwner() && $node->getOwner()->isAuthenticated()) {
       $grants[] = [
         'realm' => 'nodeaccess_author',
         'gid' => $node->getOwnerId(),
@@ -60,13 +60,19 @@ function nodeaccess_node_access_records(NodeInterface $node) {
   // `nodeaccess.settings`.
   if (!empty($entries)) {
     foreach ($entries as $row) {
-      $grants[] = [
-        'realm' => $row->realm,
-        'gid' => $row->gid,
-        'grant_view' => $row->grant_view,
-        'grant_update' => $row->grant_update,
-        'grant_delete' => $row->grant_delete,
-      ];
+      $grant_languages = $node->getTranslationLanguages(TRUE);
+      foreach ($grant_languages as $grant_language) {
+        $translation = $node->getTranslation($grant_language->getId());
+        $translation_published = $translation->isPublished() ? 1 : 0;
+        $grants[] = [
+          'realm' => $row->realm,
+          'gid' => $row->gid,
+          'grant_view' => $row->grant_view ? $translation_published : 0,
+          'grant_update' => $row->grant_update,
+          'grant_delete' => $row->grant_delete,
+          'langcode' => $grant_language->getId(),
+        ];
+      }
     }
     return $grants;
   }
@@ -76,10 +82,19 @@ function nodeaccess_node_access_records(NodeInterface $node) {
     foreach ($bundle_roles_grants as $role_id => $grant_values) {
       // $grant_values holds values with key grant_view, grant_update and
       // grant_delete.
-      $grants[] = [
-        'realm' => 'nodeaccess_role',
-        'gid' => $map_rid_gid[$role_id],
-      ] + $grant_values;
+      $grant_languages = $node->getTranslationLanguages(TRUE);
+      foreach ($grant_languages as $grant_language) {
+        $translation = $node->getTranslation($grant_language->getId());
+        $translation_published = $translation->isPublished() ? 1 : 0;
+        $grants[] = [
+          'realm' => 'nodeaccess_role',
+          'gid' => $map_rid_gid[$role_id],
+          'grant_view' => $grant_values['grant_view'] ? $translation_published : 0,
+          'grant_update' => $grant_values['grant_update'],
+          'grant_delete' => $grant_values['grant_delete'],
+          'langcode' => $grant_language->getId(),
+        ];
+      }
     }
   }
   return $grants;
@@ -93,9 +108,12 @@ function nodeaccess_node_grants(AccountInterface $account, $op) {
   $map_rid_gid = $config->get('map_rid_gid');
   $roles = $account->getRoles();
   $grant_ids = [];
-
-  foreach ($roles as $role_id) {
-    $grant_ids[] = $map_rid_gid[$role_id];
+  if (is_array($map_rid_gid)) {
+    foreach ($roles as $role_id) {
+      if (isset($map_rid_gid[$role_id])) {
+        $grant_ids[] = $map_rid_gid[$role_id];
+      }
+    }
   }
   $user_id = $account->id();
   if ($account->isAnonymous()) {
@@ -116,7 +134,7 @@ function nodeaccess_node_grants(AccountInterface $account, $op) {
  */
 function nodeaccess_node_type_insert(NodeTypeInterface $node_type) {
   // Update `grants_tab_availability` and `bundles_roles_grants` in
-  // `nodeacess.settings` to add this bundle related settings.
+  // `nodeaccess.settings` to add this bundle related settings.
   $bundle = $node_type->id();
   $nodeaccess_settings = \Drupal::configFactory()->getEditable('nodeaccess.settings');
 
@@ -151,7 +169,7 @@ function nodeaccess_node_type_insert(NodeTypeInterface $node_type) {
  */
 function nodeaccess_node_type_delete(NodeTypeInterface $node_type) {
   // Update `grants_tab_availability` and `bundles_roles_grants` in
-  // `nodeacess.settings` to remove this bundle related settings.
+  // `nodeaccess.settings` to remove this bundle related settings.
   $bundle = $node_type->id();
   $nodeaccess_settings = \Drupal::configFactory()->getEditable('nodeaccess.settings');
   $grants_tab_availability = $nodeaccess_settings->get('grants_tab_availability');
@@ -181,7 +199,7 @@ function nodeaccess_user_role_insert(EntityInterface $entity) {
   /** @var \Drupal\user\RoleInterface $entity */
   /** @var \Drupal\nodeaccess\NodeAccessHelper $nodeaccess_helper */
   $nodeaccess_helper = \Drupal::service('nodeaccess.helper');
-  $nodeaccess_helper->addRoleRelateddSettings($entity);
+  $nodeaccess_helper->addRoleRelatedSettings($entity);
 }
 
 /**
@@ -202,4 +220,6 @@ function nodeaccess_user_role_delete(EntityInterface $entity) {
   /** @var \Drupal\nodeaccess\NodeAccessHelper $nodeaccess_helper */
   $nodeaccess_helper = \Drupal::service('nodeaccess.helper');
   $nodeaccess_helper->deleteRoleRelatedSettings($entity);
+  // Rebuild permissions after deleting role-related settings.
+  \Drupal::service('router.builder')->rebuild();
 }

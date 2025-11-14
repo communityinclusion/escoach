@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\scheduler_rules_integration\Functional;
 
-use Drupal\rules\Context\ContextConfig;
 use Drupal\Tests\scheduler\Functional\SchedulerBrowserTestBase;
+use Drupal\rules\Context\ContextConfig;
 
 /**
  * Tests the four conditions that Scheduler provides for use in Rules module.
@@ -18,6 +18,27 @@ class SchedulerRulesConditionsTest extends SchedulerBrowserTestBase {
    * @var array
    */
   protected static $modules = ['scheduler_rules_integration'];
+
+  /**
+   * The rules_reaction_rule entity object.
+   *
+   * @var \Drupal\rules\Entity\ReactionRuleConfig
+   */
+  protected $rulesStorage;
+
+  /**
+   * The rules expression plugin manager.
+   *
+   * @var \Drupal\rules\Engine\ExpressionManagerInterface
+   */
+  protected $expressionManager;
+
+  /**
+   * Test node.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
 
   /**
    * {@inheritdoc}

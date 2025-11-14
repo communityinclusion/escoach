@@ -423,7 +423,7 @@ function field_group_form_pre_render(array $element) {
  * @return array
  *   Processed form.
  */
-function field_group_form_process(array &$element, FormStateInterface $form_state = NULL, array &$form = []) {
+function field_group_form_process(array &$element, ?FormStateInterface $form_state = NULL, array &$form = []) {
   return FormatterHelper::formProcess($element, $form_state, $form);
 }
 
@@ -490,7 +490,7 @@ function field_group_field_group_pre_render(array &$element, &$group, &$renderin
 /**
  * Implements hook_field_group_form_process_build_alter().
  */
-function field_group_field_group_form_process_build_alter(array &$element, FormStateInterface $form_state = NULL, array &$form = []) {
+function field_group_field_group_form_process_build_alter(array &$element, ?FormStateInterface $form_state = NULL, array &$form = []) {
   $groups = array_keys($element['#fieldgroups']);
   field_group_remove_empty_form_groups($element, $groups, $element['#entity_type']);
 }
@@ -634,7 +634,7 @@ function field_group_build_entity_groups(array &$vars, $context = 'view') {
  * @param string $context
  *   The display context (entity type, form or view).
  */
-function field_group_fields_nest(array &$element, array &$vars = NULL, $context = NULL) {
+function field_group_fields_nest(array &$element, ?array &$vars = NULL, $context = NULL) {
 
   // Create all groups and keep a flat list of references to these groups.
   $group_references = [];
@@ -727,7 +727,7 @@ function field_group_fields_nest(array &$element, array &$vars = NULL, $context 
  * @param string $context
  *   The display context (entity type, form or view).
  */
-function field_group_field_layout_fields_nest(array &$element, array &$vars = NULL, $context = NULL) {
+function field_group_field_layout_fields_nest(array &$element, ?array &$vars = NULL, $context = NULL) {
   // Create all groups and keep a flat list of references to these groups.
   $group_references = [];
   foreach ($element['#fieldgroups'] as $group_name => $group) {
@@ -874,7 +874,7 @@ function field_group_get_content_element_key($context = 'default') {
  *
  * @throws \Drupal\Core\Entity\EntityStorageException
  */
-function field_group_group_save($group, EntityDisplayInterface $display = NULL) {
+function field_group_group_save($group, ?EntityDisplayInterface $display = NULL) {
   if ($display === NULL) {
     if ($group->context == 'form') {
       $display = EntityFormDisplay::load($group->entity_type . '.' . $group->bundle . '.' . $group->mode);

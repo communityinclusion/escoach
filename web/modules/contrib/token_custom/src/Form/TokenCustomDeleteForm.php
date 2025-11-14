@@ -42,6 +42,7 @@ class TokenCustomDeleteForm extends ContentEntityConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $entity = $this->getEntity();
     $entity->delete();
+    token_clear_cache();
     $form_state->setRedirect('entity.token_custom.collection');
   }
 

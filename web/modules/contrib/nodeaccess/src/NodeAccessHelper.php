@@ -361,7 +361,7 @@ class NodeAccessHelper {
    * @param \Drupal\user\RoleInterface $role
    *   The role.
    */
-  public function addRoleRelateddSettings(RoleInterface $role) {
+  public function addRoleRelatedSettings(RoleInterface $role) {
     $nodeaccess_settings = $this->configFactory->getEditable('nodeaccess.settings');
     $bundles_roles_grants = $nodeaccess_settings->get('bundles_roles_grants') ?? [];
     // Swap the role ID and grant ID for adding new item.

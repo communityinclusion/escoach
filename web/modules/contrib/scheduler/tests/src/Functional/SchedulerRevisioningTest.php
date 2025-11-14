@@ -59,9 +59,6 @@ class SchedulerRevisioningTest extends SchedulerBrowserTestBase {
    *   The value with which the log message will be compared.
    * @param string $message
    *   The message to display along with the assertion.
-   *
-   * @return bool
-   *   TRUE if the assertion succeeded, FALSE otherwise.
    */
   protected function assertRevisionLogMessage($nid, $value, $message = '') {
     // Retrieve the latest revision log message for this node.
@@ -72,8 +69,7 @@ class SchedulerRevisioningTest extends SchedulerBrowserTestBase {
       ->range(0, 1)
       ->execute()
       ->fetchField();
-
-    return $this->assertEquals($value, $log_message, $message);
+    $this->assertEquals($value, $log_message, $message);
   }
 
   /**

@@ -12,7 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
  */
 function scheduler_extras_form_node_form_alter(&$form, FormStateInterface $form_state) {
   // This is used in SchedulerDefaultTimeTest to check that the default time is
-  // set correctly even when the time elememt of the datetime input is hidden.
+  // set correctly even when the time element of the datetime input is hidden.
   $type = $form_state->getFormObject()->getEntity()->type->entity->get('type');
   if ($type == 'hidden_time') {
     if (isset($form['publish_on'])) {

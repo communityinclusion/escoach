@@ -94,7 +94,7 @@ block.settings.superfish:*:
       type: integer
       label: 'sf-Smallscreen select copy link classes'
     smallech:
-      type: integer
+      type: string
       label: 'sf-Smallscreen select exclude link classes'
     smallicm:
       type: string
@@ -144,6 +144,12 @@ block.settings.superfish:*:
     link_depth_class:
       type: integer
       label: 'Add item depth classes to menu items and their hyperlinks'
+    link_text_prefix:
+      type: string
+      label: 'Add prefix to the link text'
+    link_text_suffix:
+      type: string
+      label: 'Add suffix to the link text'
     custom_list_class:
       type: string
       label: 'Class for the main UL'

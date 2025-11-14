@@ -3,7 +3,7 @@
  * Tests for the \PHP_CodeSniffer\Config --generator argument.
  *
  * @copyright 2024 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Tests\Core\Config;
@@ -18,6 +18,22 @@ use PHPUnit\Framework\TestCase;
  */
 final class GeneratorArgTest extends TestCase
 {
+
+
+    /**
+     * Skip these tests when in CBF mode.
+     *
+     * @before
+     *
+     * @return void
+     */
+    protected function maybeSkipTests()
+    {
+        if (PHP_CODESNIFFER_CBF === true) {
+            $this->markTestSkipped('The `--generator` CLI flag is only supported for the `phpcs` command');
+        }
+
+    }//end maybeSkipTests()
 
 
     /**
@@ -44,7 +60,7 @@ final class GeneratorArgTest extends TestCase
      *
      * @see self::testValidGenerators()
      *
-     * @return array<int, array<string>>
+     * @return array<string, array<string, string>>
      */
     public static function dataValidGeneratorNames()
     {
@@ -131,7 +147,7 @@ final class GeneratorArgTest extends TestCase
      *
      * @see self::testInvalidGenerator()
      *
-     * @return array<int, array<string>>
+     * @return array<array<string>>
      */
     public static function dataInvalidGeneratorNames()
     {

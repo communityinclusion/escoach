@@ -15,7 +15,7 @@
  *
  * This hook allows modules to add more node ids into the list being processed
  * in the current cron run. It is invoked during cron runs only. This function
- * is retained for backwards compatibility but is superceded by the more
+ * is retained for backwards compatibility but is superseded by the more
  * flexible hook_scheduler_nid_list_alter().
  *
  * @param string $action
@@ -88,7 +88,7 @@ function hook_scheduler_allow_publishing(NodeInterface $node) {
 /**
  * Hook function to deny or allow a node to be unpublished.
  *
- * This hook gives modules the ability to prevent unpblication of a node at the
+ * This hook gives modules the ability to prevent unpublication of a node at the
  * scheduled time. The node may be scheduled, and an attempt to unpublish it
  * will be made during the first cron run after the unpublishing time. If this
  * hook returns FALSE the node will not be unpublished. Attempts at unpublishing
@@ -135,7 +135,7 @@ function hook_scheduler_allow_unpublishing(NodeInterface $node) {
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The current state of the form, as used in hook_form_alter().
  * @param \Drupal\node\NodeInterface $node
- *   The $node object of the node being editted.
+ *   The $node object of the node being edited.
  *
  * @see https://www.drupal.org/project/scheduler/issues/2798689
  *
@@ -164,7 +164,7 @@ function hook_scheduler_hide_publish_on_field(array $form, FormStateInterface $f
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The current state of the form, as used in hook_form_alter().
  * @param \Drupal\node\NodeInterface $node
- *   The $node object of the node being editted.
+ *   The $node object of the node being edited.
  *
  * @see https://www.drupal.org/project/scheduler/issues/2798689
  *
@@ -179,7 +179,7 @@ function hook_scheduler_hide_unpublish_on_field(array $form, FormStateInterface 
 /**
  * Hook function to process the publish action for a node.
  *
- * This hook is called from schedulerManger::publish() and allows oher modules
+ * This hook is called from schedulerManger::publish() and allows other modules
  * to process the publish action on a node during a cron run. The other module
  * may require different functionality to be executed instead of the default
  * publish process. If none of the invoked hook functions return a TRUE value
@@ -208,7 +208,7 @@ function hook_scheduler_publish_action(NodeInterface $node) {
 /**
  * Hook function to process the unpublish action for a node.
  *
- * This hook is called from schedulerManger::unpublish() and allows oher modules
+ * This hook is called from schedulerManger::unpublish() and allows modules
  * to process the unpublish action on a node during a cron run. The other module
  * may require different functionality to be executed instead of the default
  * unpublish process. If none of the invoked hook functions return a TRUE value

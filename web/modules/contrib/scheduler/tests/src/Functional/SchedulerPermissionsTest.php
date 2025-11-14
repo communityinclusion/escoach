@@ -10,6 +10,13 @@ namespace Drupal\Tests\scheduler\Functional;
 class SchedulerPermissionsTest extends SchedulerBrowserTestBase {
 
   /**
+   * The web user object.
+   *
+   * @var \Drupal\user\Entity\User
+   */
+  protected $webUser;
+
+  /**
    * Tests that users without permission do not see the scheduler date fields.
    */
   public function testUserPermissionsAdd() {
@@ -102,7 +109,7 @@ class SchedulerPermissionsTest extends SchedulerBrowserTestBase {
     $this->drupalGet('node/' . $unpublished_node->id() . '/edit');
     $this->submitForm(['title[0][value]' => $title], 'Save');
 
-    // Check the updated title, to verify that edit and save was sucessful.
+    // Check the updated title, to verify that edit and save was successful.
     $unpublished_node = $this->nodeStorage->load($unpublished_node->id());
     $this->assertEquals($title, $unpublished_node->title->value, 'The unpublished node title has been updated correctly after edit.');
 
@@ -118,7 +125,7 @@ class SchedulerPermissionsTest extends SchedulerBrowserTestBase {
     $this->drupalGet('node/' . $published_node->id() . '/edit');
     $this->submitForm(['title[0][value]' => $title], 'Save');
 
-    // Check the updated title, to verify that edit and save was sucessful.
+    // Check the updated title, to verify that edit and save was successful.
     $published_node = $this->nodeStorage->load($published_node->id());
     $this->assertEquals($title, $published_node->title->value, 'The published node title has been updated correctly after edit.');
 

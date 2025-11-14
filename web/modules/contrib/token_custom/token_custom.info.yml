@@ -9,7 +9,7 @@ dependencies:
   - drupal:text
   - token:token
 
-# Information added by Drupal.org packaging script on 2025-02-25
-version: '8.x-1.0-beta2'
+# Information added by Drupal.org packaging script on 2025-09-30
+version: '8.x-1.0'
 project: 'token_custom'
-datestamp: 1740491444
+datestamp: 1759224577

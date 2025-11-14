@@ -80,7 +80,7 @@ class MailingListsAdminForm extends FormBase {
         'members' => $this->t('Members'),
         'everyone' => $this->t('Everyone'),
       ],
-      '#defaul_value' => 'readonly',
+      '#default_value' => 'readonly',
     ];
 
     $form['create_new_list']['submit'] = [

@@ -20,6 +20,7 @@ use Drupal\token_custom\TokenCustomInterface;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\token_custom\TokenCustomListBuilder",
  *     "form" = {
+ *       "add" = "Drupal\token_custom\Form\TokenCustomForm",
  *       "edit" = "Drupal\token_custom\Form\TokenCustomForm",
  *       "delete" = "Drupal\token_custom\Form\TokenCustomDeleteForm",
  *       "default" = "Drupal\token_custom\Form\TokenCustomForm"
@@ -45,7 +46,7 @@ use Drupal\token_custom\TokenCustomInterface;
  *     "collection" = "/admin/structure/token-custom",
  *     "canonical" = "/admin/structure/token-custom/manage/{token_custom}",
  *     "add-page" = "/admin/structure/token-custom/add",
- *     "add-form" = "/admin/structure/token-custom/add",
+ *     "add-form" = "/admin/structure/token-custom/add/{token_custom_type}",
  *     "delete-form" = "/admin/structure/token-custom/manage/{token_custom}/delete",
  *     "edit-form" = "/admin/structure/token-custom/manage/{token_custom}/edit",
  *   }

@@ -27,8 +27,8 @@ class EventSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
-    // Initialise the array to avoid 'variable is undefined' phpcs error.
+  public static function getSubscribedEvents(): array {
+    // Initialize the array to avoid 'variable is undefined' phpcs error.
     $events = [];
 
     // The values in the arrays give the function names below.

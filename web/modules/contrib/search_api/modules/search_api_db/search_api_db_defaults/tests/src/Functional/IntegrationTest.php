@@ -9,12 +9,14 @@ use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the correct installation of the default configs.
  *
  * @group search_api
  */
+#[RunTestsInSeparateProcesses]
 class IntegrationTest extends BrowserTestBase {
 
   use StringTranslationTrait, CommentTestTrait, EntityReferenceFieldCreationTrait;
@@ -78,11 +80,6 @@ class IntegrationTest extends BrowserTestBase {
 
     $expected_page_title = 'Some required modules must be installed';
     $expected_success_message = '3 modules have been installed: Database Search Defaults, Database Search, Search API';
-    // @todo Remove once we depend on Drupal 10.3.
-    if (version_compare(\Drupal::VERSION, '10.3', '<')) {
-      $expected_page_title = 'Some required modules must be enabled';
-      $expected_success_message = '3 modules have been enabled: Database Search Defaults, Database Search, Search API';
-    }
     $this->assertSession()->pageTextContains($expected_page_title);
 
     $this->submitForm([], 'Continue');
