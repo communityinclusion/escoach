@@ -20,7 +20,7 @@ class RulesComponentEditForm extends RulesComponentFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiConfigHandler $rules_ui_handler = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiConfigHandler $rules_ui_handler = NULL) {
     // Overridden such we can receive further route parameters.
     $this->rulesUiHandler = $rules_ui_handler;
     return parent::buildForm($form, $form_state);
@@ -74,18 +74,19 @@ class RulesComponentEditForm extends RulesComponentFormBase {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): int {
     $this->rulesUiHandler->getForm()->submitForm($form, $form_state);
     $component = $this->rulesUiHandler->getComponent();
     $this->entity->updateFromComponent($component);
 
     // Persist changes by saving the entity.
-    parent::save($form, $form_state);
+    $return = parent::save($form, $form_state);
 
     // Also remove the temporarily stored component, it has been persisted now.
     $this->rulesUiHandler->clearTemporaryStorage();
 
     $this->messenger()->addMessage($this->t('Rule component %label has been updated.', ['%label' => $this->entity->label()]));
+    return $return;
   }
 
   /**

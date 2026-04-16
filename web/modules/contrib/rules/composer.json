@@ -12,12 +12,5 @@
         "drupal/core": "^10.3 || ^11",
         "drupal/typed_data": "^2.1"
     },
-    "minimum-stability": "dev",
-    "extra": {
-        "drush": {
-            "services": {
-                "drush.services.yml": ">=9"
-            }
-        }
-    }
+    "minimum-stability": "dev"
 }

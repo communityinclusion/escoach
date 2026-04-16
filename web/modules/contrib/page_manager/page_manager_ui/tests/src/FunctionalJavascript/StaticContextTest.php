@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\page_manager_ui\Functional;
 
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 
 /**
@@ -28,6 +29,12 @@ class StaticContextTest extends WebDriverTestBase {
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+    EntityViewDisplay::load('node.article.default')
+      ->setComponent('body', [
+        'type' => 'text_default',
+        'label' => 'hidden',
+      ])
+      ->save();
     $this->drupalLogin($this->drupalCreateUser(['administer pages', 'create article content']));
 
     $this->drupalPlaceBlock('page_title_block');

@@ -8,10 +8,10 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
 use Drupal\user\UserStorageInterface;
-use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 use Prophecy\Argument;
 
 /**

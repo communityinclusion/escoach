@@ -60,7 +60,7 @@ class DataListContains extends RulesConditionBase {
    * @param mixed $item
    *   Item to be found in list.
    */
-  protected function doEvaluate($list, $item) {
+  protected function doEvaluate($list, $item): bool {
     if ($item instanceof EntityInterface && $id = $item->id()) {
       // Check for equal items using the identifier if there is one.
       foreach ($list as $list_item) {

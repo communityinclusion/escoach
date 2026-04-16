@@ -62,7 +62,7 @@ trait AddEventFormTrait {
       '#type' => 'select',
       '#title' => $this->t('React on event'),
       '#options' => $options,
-      '#description' => $this->t('Rule evaluation is triggered whenever the selected event occurs.'),
+      '#description' => $this->t('Rule evaluation is triggered whenever the selected event occurs. You may add additional events, if you want, after this rule is saved.'),
       '#required' => TRUE,
       '#ajax' => [
         'event' => 'change',

@@ -86,7 +86,7 @@ class DataComparison extends RulesConditionBase {
    * @return bool
    *   The evaluation of the condition.
    */
-  protected function doEvaluate($data, $operation, $value) {
+  protected function doEvaluate($data, $operation, $value): bool {
     $operation = $operation ? strtolower($operation) : '==';
     switch ($operation) {
       case '<':

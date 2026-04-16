@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
-use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
+use Drupal\rules\Context\ContextDefinitionInterface;
 
 /**
  * Tests the Rules action manager.

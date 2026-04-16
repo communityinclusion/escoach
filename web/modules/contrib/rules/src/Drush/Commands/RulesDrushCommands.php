@@ -1,61 +1,45 @@
 <?php
 
-namespace Drupal\rules\Drush\Commands;
+declare(strict_types=1);
 
-// cspell:ignore rlst renb rdis rdel rexp rrev
+namespace Drupal\rules\Drush\Commands;
 
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Drupal\Core\Config\CachedStorage;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Serialization\Yaml;
-use Drupal\rules\Core\RulesEventManager;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\StorageCacheInterface;
+use Drupal\rules\Core\RulesEventManagerInterface;
 use Drush\Attributes as CLI;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+// cspell:ignore rlst renb rdis rdel rexp rrev
+
 /**
  * Drush 12+ commands for the Rules module.
  */
-class RulesDrushCommands extends DrushCommands {
+final class RulesDrushCommands extends DrushCommands {
+  use AutowireTrait;
 
   /**
-   * The config factory service.
+   * RulesDrushCommands constructor.
    *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
-   * The config storage service.
-   *
-   * @var \Drupal\Core\Config\CachedStorage
-   */
-  protected $configStorage;
-
-  /**
-   * The rules event manager.
-   *
-   * @var \Drupal\rules\Core\RulesEventManager
-   */
-  protected $rulesEventManager;
-
-  /**
-   * RulesCommands constructor.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The config factory service.
-   * @param \Drupal\Core\Config\CachedStorage $config_storage
+   * @param \Drupal\Core\Config\StorageCacheInterface $configStorage
    *   The config storage service.
-   * @param \Drupal\rules\Core\RulesEventManager $rules_event_manager
+   * @param \Drupal\rules\Core\RulesEventManagerInterface $rulesEventManager
    *   The rules event manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, CachedStorage $config_storage, RulesEventManager $rules_event_manager) {
+  public function __construct(
+    protected ConfigFactoryInterface $configFactory,
+    protected StorageCacheInterface $configStorage,
+    protected RulesEventManagerInterface $rulesEventManager,
+  ) {
     parent::__construct();
-    $this->configFactory = $config_factory;
-    $this->configStorage = $config_storage;
-    $this->rulesEventManager = $rules_event_manager;
   }
 
   /**
@@ -93,6 +77,8 @@ class RulesDrushCommands extends DrushCommands {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   #[CLI\Command(name: 'rules:list', aliases: ['rules-list', 'rlst'])]
+  #[CLI\Help(description: 'Lists all the active and inactive rules for your site.')]
+  #[CLI\Argument(name: 'type', description: "Type of Rule. Either 'rule' or 'component'.")]
   #[CLI\Usage(name: 'drush rules:list', description: 'Lists both Reaction Rules and Rules Components.')]
   #[CLI\Usage(name: 'drush rules:list component', description: 'Lists only Rules Components.')]
   #[CLI\Usage(name: 'drush rules:list --fields=machine-name', description: 'Lists just the machine names.')]
@@ -150,8 +136,8 @@ class RulesDrushCommands extends DrushCommands {
   /**
    * Enables a Reaction Rule on your site.
    *
-   * @param string $rule
-   *   Reaction rule name (machine name) to enable.
+   * @param string|null $rule
+   *   (optional) Reaction rule name (machine name) to enable.
    *
    * @command rules:enable
    * @interact-disabled-rules
@@ -165,10 +151,11 @@ class RulesDrushCommands extends DrushCommands {
    * @throws \Exception
    */
   #[CLI\Command(name: 'rules:enable', aliases: ['rules-enable', 'renb'])]
+  #[CLI\Help(description: 'Enables a Reaction Rule on your site.')]
   #[CLI\Argument(name: 'rule', description: 'Reaction Rule name (machine name) to enable.')]
   #[CLI\Usage(name: 'drush rules:enable', description: 'Displays all disabled rules and allows you to select one to enable.')]
   #[CLI\Usage(name: 'drush rules:enable test_rule', description: "Enables the rule with machine name 'test_rule'.")]
-  public function enable(string $rule = NULL): void {
+  public function enable(?string $rule = NULL): void {
     if ($rule === NULL) {
       // There are no Reaction Rules to enable.
       return;
@@ -198,8 +185,8 @@ class RulesDrushCommands extends DrushCommands {
   /**
    * Disables a Reaction Rule on your site.
    *
-   * @param string $rule
-   *   Reaction rule name (machine name) to disable.
+   * @param string|null $rule
+   *   (optional) Reaction rule name (machine name) to disable.
    *
    * @command rules:disable
    * @interact-enabled-rules
@@ -213,10 +200,11 @@ class RulesDrushCommands extends DrushCommands {
    * @throws \Exception
    */
   #[CLI\Command(name: 'rules:disable', aliases: ['rules-disable', 'rdis'])]
+  #[CLI\Help(description: 'Disables a Reaction Rule on your site.')]
   #[CLI\Argument(name: 'rule', description: 'Reaction Rule name (machine name) to disable.')]
   #[CLI\Usage(name: 'drush rules:disable', description: 'Displays all enabled rules and allows you to select one to disable.')]
   #[CLI\Usage(name: 'drush rules:disable test_rule', description: "Disables the rule with machine name 'test_rule'.")]
-  public function disable(string $rule = NULL): void {
+  public function disable(?string $rule = NULL): void {
     if ($rule === NULL) {
       // There are no Reaction Rules to disable.
       return;
@@ -261,6 +249,7 @@ class RulesDrushCommands extends DrushCommands {
    * @throws \Exception
    */
   #[CLI\Command(name: 'rules:delete', aliases: ['rules-delete', 'rdel'])]
+  #[CLI\Help(description: 'Deletes a rule on your site.')]
   #[CLI\Argument(name: 'rule', description: 'Rule name (machine name) to delete.')]
   #[CLI\Usage(name: 'drush rules:delete', description: 'Displays all rules and allows you to select one to delete.')]
   #[CLI\Usage(name: 'drush rules:delete test_rule', description: "Permanently deletes the rule with machine name 'test_rule'.")]
@@ -298,18 +287,17 @@ class RulesDrushCommands extends DrushCommands {
    * @interact-rule-names
    * @aliases rexp,rules-export
    *
-   * @codingStandardsIgnoreStart
    * @usage drush rules:export
    *   Displays all rules and allows you to select one to export.
    * @usage drush rules:export test_rule > rules.reaction.test_rule.yml
-   *   Exports the Rule with machine name 'test_rule' and saves it in a .yml file.
+   *   Exports the Rule named 'test_rule' and saves it in a .yml file.
    * @usage drush rules:list rule --fields=machine-name --pipe | xargs -I{}  sh -c "drush rules:export '{}' > 'rules.reaction.{}.yml'"
    *   Exports all Reaction Rules into individual YAML files.
-   * @codingStandardsIgnoreEnd
    *
    * @throws \Exception
    */
   #[CLI\Command(name: 'rules:export', aliases: ['rules-export', 'rexp'])]
+  #[CLI\Help(description: 'Exports a single rule configuration, in YAML format.')]
   #[CLI\Argument(name: 'rule', description: 'Rule name (machine name) to export.')]
   #[CLI\Usage(name: 'drush rules:export', description: 'Displays all rules and allows you to select one to export.')]
   #[CLI\Usage(name: 'drush rules:export test_rule > rules.reaction.test_rule.yml', description: "Exports the Rule with machine name 'test_rule' and saves it in a .yml file.")]
@@ -351,6 +339,7 @@ class RulesDrushCommands extends DrushCommands {
    * @throws \Exception
    */
   #[CLI\Command(name: 'rules:revert', aliases: ['rules-revert', 'rrev'])]
+  #[CLI\Help(description: 'Reverts a rule to its original state on your site.')]
   #[CLI\Argument(name: 'rule', description: 'Rule name (machine name) to revert.')]
   #[CLI\Usage(name: 'drush rules:revert test_rule', description: "Restores the module-provided Rule with machine id 'test_rule' to its original state. If the Rule hasn't been customized on the site, this has no effect.")]
   #[CLI\HookSelector(name: 'interact-rule-names')]
@@ -382,45 +371,49 @@ class RulesDrushCommands extends DrushCommands {
   }
 
   /**
-   * Show a list of Rules events.
+   * Shows a list of Rules events.
    *
    * @command rules:events
    * @aliases rules-events
    */
   #[CLI\Command(name: 'rules:events', aliases: ['rules-events'])]
+  #[CLI\Help(description: 'Shows a list of Rules events.')]
   public function listEvents(): void {
     $this->formatOutput('plugin.manager.rules_event', 'Available Rules Events:');
   }
 
   /**
-   * Show a list of Rules conditions.
+   * Shows a list of Rules conditions.
    *
    * @command rules:conditions
    * @aliases rules-conditions
    */
   #[CLI\Command(name: 'rules:conditions', aliases: ['rules-conditions'])]
+  #[CLI\Help(description: 'Shows a list of Rules conditions.')]
   public function listConditions(): void {
     $this->formatOutput('plugin.manager.condition', 'Available Rules Conditions:');
   }
 
   /**
-   * Show a list of Rules actions.
+   * Shows a list of Rules actions.
    *
    * @command rules:actions
    * @aliases rules-actions
    */
   #[CLI\Command(name: 'rules:actions', aliases: ['rules-actions'])]
+  #[CLI\Help(description: 'Shows a list of Rules actions.')]
   public function listActions(): void {
     $this->formatOutput('plugin.manager.rules_action', 'Available Rules Actions:');
   }
 
   /**
-   * Show a list of Rules expressions.
+   * Shows a list of Rules expressions.
    *
    * @command rules:expressions
    * @aliases rules-expressions
    */
   #[CLI\Command(name: 'rules:expressions', aliases: ['rules-expressions'])]
+  #[CLI\Help(description: 'Shows a list of Rules expressions.')]
   public function listExpressions(): void {
     $this->formatOutput('plugin.manager.rules_expression', 'Available Rules Expressions:');
   }

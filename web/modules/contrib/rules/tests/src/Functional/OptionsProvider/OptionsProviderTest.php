@@ -33,6 +33,7 @@ class OptionsProviderTest extends BrowserTestBase {
     'taxonomy',
     'typed_data',
     'user',
+    'contact',
   ];
 
   /**
@@ -101,7 +102,6 @@ class OptionsProviderTest extends BrowserTestBase {
             'comment' => 'Default comments (comment)',
           ],
           'Contact message' => [
-            'feedback' => 'Website feedback (feedback)',
             'personal' => 'Personal contact form (personal)',
           ],
           'Content' => [

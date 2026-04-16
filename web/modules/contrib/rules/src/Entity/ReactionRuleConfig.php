@@ -3,11 +3,11 @@
 namespace Drupal\rules\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\rules\Rules;
 use Drupal\rules\Core\RulesTriggerableInterface;
-use Drupal\rules\Ui\RulesUiComponentProviderInterface;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\RulesComponent;
+use Drupal\rules\Rules;
+use Drupal\rules\Ui\RulesUiComponentProviderInterface;
 
 // cspell:ignore triggerable
 

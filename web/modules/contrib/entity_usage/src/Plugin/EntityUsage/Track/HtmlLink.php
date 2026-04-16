@@ -8,7 +8,10 @@ use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_usage\Attribute\EntityUsageTrack;
 use Drupal\entity_usage\EntityUsageInterface;
 use Drupal\entity_usage\EntityUsageTrackUrlUpdateInterface;
 use Drupal\entity_usage\UrlToEntityInterface;
@@ -17,15 +20,14 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Tracks usage of entities referenced from regular HTML Links.
- *
- * @EntityUsageTrack(
- *   id = "html_link",
- *   label = @Translation("HTML links"),
- *   description = @Translation("Tracks relationships created with standard links inside formatted text fields."),
- *   field_types = {"text", "text_long", "text_with_summary"},
- *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
- * )
  */
+#[EntityUsageTrack(
+  id: 'html_link',
+  label: new TranslatableMarkup('HTML links'),
+  description: new TranslatableMarkup("Tracks relationships created with standard links inside formatted text fields."),
+  field_types: ["text", "text_long", "text_with_summary"],
+  source_entity_class: FieldableEntityInterface::class,
+)]
 class HtmlLink extends TextFieldEmbedBase implements EntityUsageTrackUrlUpdateInterface {
 
   /**

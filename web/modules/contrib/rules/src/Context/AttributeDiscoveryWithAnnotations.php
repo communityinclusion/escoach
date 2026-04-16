@@ -2,7 +2,6 @@
 
 namespace Drupal\rules\Context;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Drupal\Component\Annotation\AnnotationInterface;
 use Drupal\Component\Annotation\Doctrine\SimpleAnnotationReader;
 use Drupal\Component\Annotation\Doctrine\StaticReflectionParser;
@@ -74,7 +73,18 @@ class AttributeDiscoveryWithAnnotations extends AttributeClassDiscovery {
    */
   public function getDefinitions() {
     // Clear the annotation loaders of any previous annotation classes.
-    AnnotationRegistry::reset();
+    $version = \Drupal::VERSION;
+    if (
+      (version_compare($version, '10.0.0', '>=') && version_compare($version, '10.6.0', '<')) ||
+      (version_compare($version, '11.0.0', '>=') && version_compare($version, '11.3.0', '<'))
+    ) {
+      // phpcs:ignore
+      \Doctrine\Common\Annotations\AnnotationRegistry::reset();
+    }
+    else {
+      // phpcs:ignore
+      \Drupal\Component\Annotation\Doctrine\AnnotationRegistry::reset();
+    }
 
     $definitions = parent::getDefinitions();
 

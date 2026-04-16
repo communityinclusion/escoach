@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
+use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 
 // cspell:ignore testtest
 

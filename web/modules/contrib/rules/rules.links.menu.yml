@@ -2,6 +2,6 @@
 
 rules.reactions:
   title: 'Rules'
+  description: 'Reaction rules administration overview.'
   route_name: entity.rules_reaction_rule.collection
   parent: system.admin_config_workflow
-  description: 'Reaction rules administration overview.'

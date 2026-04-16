@@ -52,7 +52,7 @@ class NodePublish extends RulesActionBase {
   /**
    * {@inheritdoc}
    */
-  public function autoSaveContext() {
+  public function autoSaveContext(): array {
     // The node should be auto-saved after the execution.
     return ['node'];
   }

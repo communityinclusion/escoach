@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\Session\AccountInterface;
@@ -12,7 +14,7 @@ class EmailTypeOptions extends OptionsProviderBase {
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     return [
       'register_admin_created' => $this->t('Welcome message for user created by the admin'),
       'register_no_approval_required' => $this->t('Welcome message when user self-registers'),

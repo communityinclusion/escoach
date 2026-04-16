@@ -41,7 +41,7 @@ rules_system_logger_event:
   context_definitions:
     # @todo Create a TypedData logger-entry object: https://www.drupal.org/node/2625238
     logger_entry:
-      type: 'any'
+      type: any
       label: 'Logger entry'
 
 # User events.
@@ -50,12 +50,12 @@ rules_user_login:
   category: 'User'
   context_definitions:
     account:
-      type: 'entity:user'
+      type: entity:user
       label: 'Logged in user'
 rules_user_logout:
   label: 'User has logged out'
   category: 'User'
   context_definitions:
     account:
-      type: 'entity:user'
+      type: entity:user
       label: 'Logged out user'

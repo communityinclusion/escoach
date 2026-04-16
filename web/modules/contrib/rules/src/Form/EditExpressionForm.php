@@ -4,8 +4,8 @@ namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules\Ui\RulesUiHandlerInterface;
 use Drupal\rules\Engine\RulesComponent;
+use Drupal\rules\Ui\RulesUiHandlerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -51,7 +51,7 @@ class EditExpressionForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiHandlerInterface $rules_ui_handler = NULL, $uuid = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiHandlerInterface $rules_ui_handler = NULL, $uuid = NULL) {
     $this->rulesUiHandler = $rules_ui_handler;
     $this->component = is_object($form_state->get('component')) ? $form_state->get('component') : $this->rulesUiHandler->getComponent();
     $this->uuid = $form_state->get('uuid') ?: $uuid;

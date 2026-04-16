@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction {
 
-  use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
   use Drupal\Core\Logger\LoggerChannelInterface;
   use Drupal\Core\Logger\LoggerChannelFactoryInterface;
   use Drupal\Core\Path\CurrentPathStack;
+  use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
   use Symfony\Component\HttpFoundation\ParameterBag;
   use Symfony\Component\HttpFoundation\Request;
   use Symfony\Component\HttpFoundation\RequestStack;

@@ -20,7 +20,7 @@ class RedirectEventSubscriber implements EventSubscriberInterface {
    * @param \Symfony\Component\HttpKernel\Event\ResponseEvent $event
    *   The response event.
    */
-  public function checkRedirectIssued(ResponseEvent $event) {
+  public function checkRedirectIssued(ResponseEvent $event): void {
     $request = $event->getRequest();
     $redirect_url = $request->attributes->get('_rules_redirect_action_url');
     if (isset($redirect_url)) {
@@ -34,7 +34,7 @@ class RedirectEventSubscriber implements EventSubscriberInterface {
    * @return array
    *   An array of event listener definitions.
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events[KernelEvents::RESPONSE][] = ['checkRedirectIssued'];
     return $events;
   }

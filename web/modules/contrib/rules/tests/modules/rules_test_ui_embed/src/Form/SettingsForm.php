@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules_test_ui_embed\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -48,7 +50,7 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiConfigHandler $rules_ui_handler = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiConfigHandler $rules_ui_handler = NULL) {
     $form = parent::buildForm($form, $form_state);
     $this->rulesUiHandler = $rules_ui_handler;
     $config = $this->config('rules_test_ui_embed.settings');

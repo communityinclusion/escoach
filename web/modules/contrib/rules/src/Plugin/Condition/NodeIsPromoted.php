@@ -50,7 +50,7 @@ class NodeIsPromoted extends RulesConditionBase {
    * @return bool
    *   TRUE if the node is promoted.
    */
-  protected function doEvaluate(NodeInterface $node) {
+  protected function doEvaluate(NodeInterface $node): bool {
     return $node->isPromoted();
   }
 

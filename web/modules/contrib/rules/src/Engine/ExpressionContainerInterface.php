@@ -18,7 +18,7 @@ interface ExpressionContainerInterface extends ExpressionInterface, \IteratorAgg
    *
    * @param string $plugin_id
    *   The id of the expression plugin to add.
-   * @param \Drupal\rules\Context\ContextConfig $config
+   * @param \Drupal\rules\Context\ContextConfig|null $config
    *   (optional) The configuration for the specified plugin.
    *
    * @throws \Drupal\rules\Exception\InvalidExpressionException
@@ -27,7 +27,7 @@ interface ExpressionContainerInterface extends ExpressionInterface, \IteratorAgg
    *
    * @return $this
    */
-  public function addExpression($plugin_id, ContextConfig $config = NULL);
+  public function addExpression(string $plugin_id, ?ContextConfig $config = NULL);
 
   /**
    * Adds an expression object.

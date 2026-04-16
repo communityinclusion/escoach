@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
 use Drupal\Core\Plugin\Context\Context;
-use Drupal\ban\BanIpManagerInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
+use Drupal\ban\BanIpManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 

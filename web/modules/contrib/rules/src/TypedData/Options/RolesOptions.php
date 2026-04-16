@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\Session\AccountInterface;
@@ -14,7 +16,7 @@ class RolesOptions extends OptionsProviderBase {
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     // All roles, including 'Anonymous'.
     $roles = array_map(function (RoleInterface $role) {
       return $role->label();

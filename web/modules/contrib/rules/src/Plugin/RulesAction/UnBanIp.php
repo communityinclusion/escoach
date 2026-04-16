@@ -51,7 +51,7 @@ class UnBanIp extends RulesBanActionBase {
    * @param string $ip
    *   (optional) The IP address for which the ban should be removed.
    */
-  protected function doExecute($ip = NULL) {
+  protected function doExecute(?string $ip = NULL): void {
     if (!isset($ip)) {
       $ip = $this->requestStack->getCurrentRequest()->getClientIp();
     }

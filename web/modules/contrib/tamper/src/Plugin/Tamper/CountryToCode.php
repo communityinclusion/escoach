@@ -3,22 +3,24 @@
 namespace Drupal\tamper\Plugin\Tamper;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\tamper\Attribute\Tamper;
 use Drupal\tamper\Exception\TamperException;
+use Drupal\tamper\ItemUsage;
 use Drupal\tamper\TamperBase;
 use Drupal\tamper\TamperableItemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation for converting country to ISO code.
- *
- * @Tamper(
- *   id = "country_to_code",
- *   label = @Translation("Country to ISO code"),
- *   description = @Translation("Converts this field from a country name string to the two character ISO 3166-1 alpha-2 code."),
- *   category = @Translation("Text"),
- *   itemUsage = "ignored"
- * )
  */
+#[Tamper(
+  id: 'country_to_code',
+  label: new TranslatableMarkup('Country to ISO code'),
+  description: new TranslatableMarkup('Converts this field from a country name string to the two character ISO 3166-1 alpha-2 code.'),
+  category: new TranslatableMarkup('Text'),
+  itemUsage: ItemUsage::IGNORED,
+)]
 class CountryToCode extends TamperBase implements ContainerFactoryPluginInterface {
 
   /**

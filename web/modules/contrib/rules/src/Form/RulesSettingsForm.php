@@ -2,8 +2,8 @@
 
 namespace Drupal\rules\Form;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Psr\Log\LogLevel;
 

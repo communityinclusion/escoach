@@ -2,22 +2,24 @@
 
 namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
 
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_usage\Attribute\EntityUsageTrack;
 use Drupal\entity_usage\EntityUsageTrackBase;
 use Drupal\entity_usage\EntityUsageTrackMultipleLoadInterface;
 
 /**
  * Tracks usage of entities related in dynamic_entity_reference fields.
- *
- * @EntityUsageTrack(
- *   id = "dynamic_entity_reference",
- *   label = @Translation("Dynamic Entity Reference"),
- *   description = @Translation("Tracks relationships created with 'Dynamic Entity Reference' fields."),
- *   field_types = {"dynamic_entity_reference"},
- *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
- * )
  */
+#[EntityUsageTrack(
+  id: 'dynamic_entity_reference',
+  label: new TranslatableMarkup('Dynamic Entity Reference'),
+  description: new TranslatableMarkup("Tracks relationships created with 'Dynamic Entity Reference' fields."),
+  field_types: ["dynamic_entity_reference"],
+  source_entity_class: FieldableEntityInterface::class,
+)]
 class DynamicEntityReference extends EntityUsageTrackBase implements EntityUsageTrackMultipleLoadInterface {
 
   /**

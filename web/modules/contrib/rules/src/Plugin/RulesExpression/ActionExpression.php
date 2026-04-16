@@ -6,6 +6,7 @@ use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\rules\Attribute\RulesExpression;
+use Drupal\rules\Context\ContextHandlerIntegrityTrait;
 use Drupal\rules\Context\DataProcessorManager;
 use Drupal\rules\Context\ExecutionMetadataStateInterface;
 use Drupal\rules\Context\ExecutionStateInterface;
@@ -13,9 +14,8 @@ use Drupal\rules\Core\RulesActionManagerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionInterface;
-use Drupal\rules\Form\Expression\ActionForm;
-use Drupal\rules\Context\ContextHandlerIntegrityTrait;
 use Drupal\rules\Engine\IntegrityViolationList;
+use Drupal\rules\Form\Expression\ActionForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -178,7 +178,7 @@ class ActionExpression extends ExpressionBase implements ContainerFactoryPluginI
   /**
    * {@inheritdoc}
    */
-  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL, $apply_assertions = TRUE) {
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ?ExpressionInterface $until = NULL, bool $apply_assertions = TRUE) {
     if ($until && $this->getUuid() === $until->getUuid()) {
       return TRUE;
     }

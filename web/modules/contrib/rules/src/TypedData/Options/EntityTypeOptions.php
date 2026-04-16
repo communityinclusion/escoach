@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -42,7 +44,7 @@ class EntityTypeOptions extends OptionsProviderBase implements ContainerInjectio
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     $options = [];
 
     // Load all the entity types.
@@ -53,7 +55,7 @@ class EntityTypeOptions extends OptionsProviderBase implements ContainerInjectio
       }
       $options[$entity_type->id()] = (string) $entity_type->getLabel();
       // If the id differs from the label add the id in brackets for clarity.
-      if (strtolower(str_replace('_', ' ', $entity_type->id())) != strtolower($entity_type->getLabel())) {
+      if (strtolower(str_replace('_', ' ', $entity_type->id())) != strtolower((string) $entity_type->getLabel())) {
         $options[$entity_type->id()] .= ' (' . $entity_type->id() . ')';
       }
     }

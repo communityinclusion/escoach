@@ -3,22 +3,24 @@
 namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
 
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_usage\Attribute\EntityUsageTrack;
 use Drupal\entity_usage\EntityUsageTrackBase;
 use Drupal\layout_builder\Plugin\Field\FieldType\LayoutSectionItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Tracks usage of entities related in Layout Builder layouts.
- *
- * @EntityUsageTrack(
- *   id = "layout_builder",
- *   label = @Translation("Layout builder"),
- *   description = @Translation("Tracks relationships in layout builder layouts."),
- *   field_types = {"layout_section"},
- *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
- * )
  */
+#[EntityUsageTrack(
+  id: 'layout_builder',
+  label: new TranslatableMarkup('Layout Builder'),
+  description: new TranslatableMarkup("Tracks relationships in layout builder layouts."),
+  field_types: ["layout_section"],
+  source_entity_class: FieldableEntityInterface::class,
+)]
 class LayoutBuilder extends EntityUsageTrackBase {
 
   /**

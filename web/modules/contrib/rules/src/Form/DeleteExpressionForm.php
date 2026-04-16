@@ -36,7 +36,7 @@ class DeleteExpressionForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiHandlerInterface $rules_ui_handler = NULL, $uuid = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiHandlerInterface $rules_ui_handler = NULL, $uuid = NULL) {
     $this->rulesUiHandler = $rules_ui_handler;
     $this->uuid = $uuid;
     return parent::buildForm($form, $form_state);

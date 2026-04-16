@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\Form\OptGroup;
@@ -16,7 +18,7 @@ abstract class OptionsProviderBase implements OptionsProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPossibleValues(AccountInterface $account = NULL) {
+  public function getPossibleValues(?AccountInterface $account = NULL) {
     // Flatten options firstly, because Possible Options may contain group
     // arrays.
     $flatten_options = OptGroup::flattenOptions($this->getPossibleOptions($account));
@@ -26,14 +28,14 @@ abstract class OptionsProviderBase implements OptionsProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSettableValues(AccountInterface $account = NULL) {
+  public function getSettableValues(?AccountInterface $account = NULL) {
     return $this->getPossibleValues();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSettableOptions(AccountInterface $account = NULL) {
+  public function getSettableOptions(?AccountInterface $account = NULL) {
     return $this->getPossibleOptions();
   }
 

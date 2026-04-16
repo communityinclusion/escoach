@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
+use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Context\ExecutionMetadataState;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 
 /**
  * Tests that the setup of the execution metadata state for an expression works.

@@ -12,7 +12,6 @@ use Drupal\rules\Context\ContextProviderTrait;
  * @todo Figure out whether buildConfigurationForm() is useful to Rules somehow.
  */
 abstract class RulesConditionBase extends ConditionPluginBase implements RulesConditionInterface {
-
   use ContextProviderTrait;
   use ExecutablePluginTrait;
   use ConfigurationAccessControlTrait;
@@ -52,7 +51,7 @@ abstract class RulesConditionBase extends ConditionPluginBase implements RulesCo
   /**
    * {@inheritdoc}
    */
-  public function negate($negate = TRUE) {
+  public function negate(bool $negate = TRUE): static {
     $this->configuration['negate'] = $negate;
     return $this;
   }

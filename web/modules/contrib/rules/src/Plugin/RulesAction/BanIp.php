@@ -48,10 +48,10 @@ class BanIp extends RulesBanActionBase {
   /**
    * Executes the BanIP action with the given context.
    *
-   * @param string $ip
+   * @param string|null $ip
    *   (optional) The IP address that should be banned.
    */
-  protected function doExecute($ip = NULL) {
+  protected function doExecute(?string $ip = NULL): void {
     if (!isset($ip)) {
       $ip = $this->requestStack->getCurrentRequest()->getClientIp();
     }

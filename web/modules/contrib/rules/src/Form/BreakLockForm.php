@@ -99,7 +99,7 @@ class BreakLockForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiHandlerInterface $rules_ui_handler = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiHandlerInterface $rules_ui_handler = NULL) {
     $this->rulesUiHandler = $rules_ui_handler;
     if (!$rules_ui_handler->isLocked()) {
       $form['message']['#markup'] = $this->t('There is no lock on %label to break.', ['%label' => $rules_ui_handler->getComponentLabel()]);

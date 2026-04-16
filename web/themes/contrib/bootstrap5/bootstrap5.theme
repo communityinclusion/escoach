@@ -330,7 +330,7 @@ function bootstrap5_preprocess_media_library_item__widget(array &$variables) {
  * THEME_theme_suggestions_menu_alter.
  */
 function bootstrap5_preprocess_block(&$variables) {
-  if (isset($variables['elements']['#id'])) {
+  if (isset($variables['elements']['#id']) && !isset($variables['content']['#lazy_builder'])) {
     $block = Block::load($variables['elements']['#id']);
     if ($block) {
       $region = Block::load($variables['elements']['#id'])->getRegion();

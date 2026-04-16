@@ -357,13 +357,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    * @return \Drupal\Core\Url|false
    *   The Url object
    *
-   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the
+   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the
    *   Drupal\entity_usage\UrlToEntityInterface service instead.
    *
    * @see https://www.drupal.org/project/entity_usage/issues/3341932
    */
   protected function processUrl($url) {
-    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::processUrl() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::processUrl() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
     // Strip off the scheme and host, so we only get the path.
     $site_domains = $this->config->get('site_domains') ?: [];
     foreach ($site_domains as $site_domain) {
@@ -398,13 +398,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    *   The entity object that corresponds to the received URL, or NULL if no
    *   entity could be retrieved.
    *
-   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the
+   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the
    *   Drupal\entity_usage\UrlToEntityInterface service instead.
    *
    * @see https://www.drupal.org/project/entity_usage/issues/3341932
    */
   protected function findEntityByUrlString($url) {
-    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityByUrlString() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityByUrlString() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
     $entity_info = $this->findEntityIdByUrlString($url);
     if (is_array($entity_info)) {
       ['type' => $entity_type_id, 'id' => $entity_id] = $entity_info;
@@ -424,13 +424,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    *   An array with two values, the entity type and entity ID, or NULL if no
    *   entity could be retrieved.
    *
-   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the
+   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the
    *   Drupal\entity_usage\UrlToEntityInterface service instead.
    *
    * @see https://www.drupal.org/project/entity_usage/issues/3341932
    */
   protected function findEntityIdByUrlString(string $url): ?array {
-    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityIdByUrlString() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityIdByUrlString() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
     return $this->urlToEntity->findEntityIdByUrl($url);
   }
 
@@ -444,13 +444,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    *   The entity object that corresponds to the URL object, or NULL if no
    *   entity could be retrieved.
    *
-   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the
+   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the
    *   Drupal\entity_usage\UrlToEntityInterface service instead.
    *
    * @see https://www.drupal.org/project/entity_usage/issues/3341932
    */
   protected function findEntityByRoutedUrl(Url $url): ?EntityInterface {
-    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityByRoutedUrl() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityByRoutedUrl() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
     $entity_info = $this->findEntityIdByRoutedUrl($url);
     if (is_array($entity_info)) {
       ['type' => $entity_type_id, 'id' => $entity_id] = $entity_info;
@@ -470,13 +470,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    *   An array with two values, the entity type and entity ID, or NULL if no
    *   entity could be retrieved.
    *
-   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the
+   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the
    *   Drupal\entity_usage\UrlToEntityInterface service instead.
    *
    * @see https://www.drupal.org/project/entity_usage/issues/3341932
    */
   protected function findEntityIdByRoutedUrl(Url $url): ?array {
-    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityIdByRoutedUrl() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::findEntityIdByRoutedUrl() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. Use the Drupal\entity_usage\UrlToEntityInterface service instead. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
     return $this->urlToEntity->findEntityIdByRoutedUrl($url);
   }
 
@@ -486,13 +486,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    * @return \Drupal\Core\Path\PathValidatorInterface
    *   The path validator.
    *
-   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. There is no
+   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. There is no
    *   replacement.
    *
    * @see https://www.drupal.org/project/entity_usage/issues/3341932
    */
   protected function pathValidator() {
-    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::pathValidator() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. There is no replacement. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::pathValidator() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. There is no replacement. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
     // @phpstan-ignore-next-line
     return $this->pathValidator;
   }
@@ -503,13 +503,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    * @return string
    *   The public file directory path.
    *
-   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. There is no
+   * @deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. There is no
    *   replacement.
    *
    * @see https://www.drupal.org/project/entity_usage/issues/3341932
    */
   protected function publicFileDirectory() {
-    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::publicFileDirectory() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:8.x-2.0-rc1. There is no replacement. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
+    @trigger_error('\Drupal\entity_usage\EntityUsageTrackBase::publicFileDirectory() is deprecated in entity_usage:8.x-2.0-beta18 and is removed from entity_usage:5.0.0. There is no replacement. See https://www.drupal.org/project/entity_usage/issues/3341932', E_USER_DEPRECATED);
     // @phpstan-ignore-next-line
     return \Drupal::service('stream_wrapper.public')->getDirectoryPath();
   }

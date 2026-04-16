@@ -64,7 +64,7 @@ abstract class ConditionExpressionContainer extends ExpressionContainerBase impl
   /**
    * {@inheritdoc}
    */
-  public function addCondition($condition_id, ContextConfig $config = NULL) {
+  public function addCondition(string $condition_id, ?ContextConfig $config = NULL) {
     return $this->addExpressionObject(
       $this->expressionManager
         ->createCondition($condition_id)
@@ -88,7 +88,7 @@ abstract class ConditionExpressionContainer extends ExpressionContainerBase impl
   /**
    * {@inheritdoc}
    */
-  public function negate($negate = TRUE) {
+  public function negate(bool $negate = TRUE): static {
     $this->configuration['negate'] = $negate;
     return $this;
   }
@@ -96,7 +96,7 @@ abstract class ConditionExpressionContainer extends ExpressionContainerBase impl
   /**
    * {@inheritdoc}
    */
-  public function isNegated() {
+  public function isNegated(): bool {
     return !empty($this->configuration['negate']);
   }
 

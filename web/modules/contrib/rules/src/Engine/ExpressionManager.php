@@ -49,7 +49,7 @@ class ExpressionManager extends DefaultPluginManager implements ExpressionManage
   /**
    * {@inheritdoc}
    */
-  public function createRule(ContextConfig $configuration = NULL) {
+  public function createRule(?ContextConfig $configuration = NULL) {
     $config_array = is_null($configuration) ? [] : $configuration->toArray();
     return $this->createInstance('rules_rule', $config_array);
   }
@@ -57,7 +57,7 @@ class ExpressionManager extends DefaultPluginManager implements ExpressionManage
   /**
    * {@inheritdoc}
    */
-  public function createActionSet(ContextConfig $configuration = NULL) {
+  public function createActionSet(?ContextConfig $configuration = NULL) {
     $config_array = is_null($configuration) ? [] : $configuration->toArray();
     return $this->createInstance('rules_action_set', $config_array);
   }
@@ -65,7 +65,7 @@ class ExpressionManager extends DefaultPluginManager implements ExpressionManage
   /**
    * {@inheritdoc}
    */
-  public function createAction($id, ContextConfig $configuration = NULL) {
+  public function createAction(string $id, ?ContextConfig $configuration = NULL) {
     $config_array = is_null($configuration) ? [] : $configuration->toArray();
     return $this->createInstance('rules_action', [
       'action_id' => $id,
@@ -75,7 +75,7 @@ class ExpressionManager extends DefaultPluginManager implements ExpressionManage
   /**
    * {@inheritdoc}
    */
-  public function createCondition($id, ContextConfig $configuration = NULL) {
+  public function createCondition(string $id, ?ContextConfig $configuration = NULL) {
     $config_array = is_null($configuration) ? [] : $configuration->toArray();
     return $this->createInstance('rules_condition', [
       'condition_id' => $id,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules_test_event\Event;
 
 use Symfony\Component\EventDispatcher\GenericEvent as SymfonyGenericEvent;

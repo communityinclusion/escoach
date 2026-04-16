@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Drupal\Tests\rules\Kernel\Engine;
 
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Tests\rules\Kernel\RulesKernelTestBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Kernel\RulesKernelTestBase;
 
 /**
  * Tests that data selector autocomplete results work correctly.

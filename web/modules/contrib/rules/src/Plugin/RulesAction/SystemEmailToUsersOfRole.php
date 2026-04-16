@@ -159,11 +159,11 @@ class SystemEmailToUsersOfRole extends RulesActionBase implements ContainerFacto
    *   Email message text.
    * @param string $reply
    *   (optional) Reply to email address.
-   * @param \Drupal\Core\Language\LanguageInterface $language
+   * @param \Drupal\Core\Language\LanguageInterface|null $language
    *   (optional) Language object. If not specified, email will be sent to each
    *   recipient in the recipient's preferred language.
    */
-  protected function doExecute(array $roles, $subject, $message, $reply = NULL, LanguageInterface $language = NULL) {
+  protected function doExecute(array $roles, string $subject, string $message, ?string $reply = NULL, ?LanguageInterface $language = NULL): void {
     if (empty($roles)) {
       return;
     }

@@ -150,7 +150,7 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurableInterface
    * @param \Drupal\rules\Context\ExecutionMetadataStateInterface $metadata_state
    *   The execution metadata state, prepared until right before this
    *   expression.
-   * @param \Drupal\rules\Engine\ExpressionInterface $until
+   * @param \Drupal\rules\Engine\ExpressionInterface|null $until
    *   (optional) The expression at which metadata preparation should be
    *   stopped. The preparation of the state will be stopped right before that
    *   expression.
@@ -166,6 +166,6 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurableInterface
    *   True if the metadata has been prepared and the $until expression was
    *   found in the tree. Null otherwise.
    */
-  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL, $apply_assertions = TRUE);
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ?ExpressionInterface $until = NULL, bool $apply_assertions = TRUE);
 
 }

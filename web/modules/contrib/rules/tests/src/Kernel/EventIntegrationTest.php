@@ -120,7 +120,7 @@ class EventIntegrationTest extends RulesKernelTestBase {
     $this->logger = $this->container->get('logger.channel.rules_debug');
     $this->logger->addLogger($this->debugLog);
 
-    // Run cron.
+    // Run cron, which should trigger the rule.
     $this->container->get('cron')->run();
 
     // Test that the action in the rule logged something.

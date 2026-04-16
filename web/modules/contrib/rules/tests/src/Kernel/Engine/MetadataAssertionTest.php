@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Kernel\Engine;
 
+use Drupal\Tests\rules\Kernel\RulesKernelTestBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Kernel\RulesKernelTestBase;
 
 /**
  * Tests asserting metadata works correctly.
@@ -101,7 +101,7 @@ class MetadataAssertionTest extends RulesKernelTestBase {
    * Tests asserted metadata is handled correctly in OR and AND containers.
    */
   public function testAssertingWithLogicalOperations(): void {
-    // Add an nested AND and make sure it keeps working.
+    // Add a nested AND and make sure it keeps working.
     $rule = $this->expressionManager->createRule();
     $and = $this->expressionManager->createAnd();
     $and->addCondition('rules_entity_is_of_bundle', ContextConfig::create()
@@ -119,7 +119,7 @@ class MetadataAssertionTest extends RulesKernelTestBase {
       ->checkIntegrity();
     $this->assertCount(0, $violation_list);
 
-    // Add an nested OR and make sure it is ignored.
+    // Add a nested OR and make sure it is ignored.
     $rule = $this->expressionManager->createRule();
     $or = $this->expressionManager->createOr();
     $or->addCondition('rules_entity_is_of_bundle', ContextConfig::create()
@@ -142,13 +142,15 @@ class MetadataAssertionTest extends RulesKernelTestBase {
    * Tests asserted metadata of negated conditions is ignored.
    */
   public function testAssertingOfNegatedConditions(): void {
-    // Negate the condition only and make sure it is ignored.
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_entity_is_of_bundle', ContextConfig::create()
       ->map('entity', 'node')
       ->setValue('type', 'node')
       ->setValue('bundle', 'page')
-    )->negate(TRUE);
+    );
+    // Negate the condition only and make sure it is ignored.
+    $rule->getConditions()->getIterator()->current()->negate(TRUE);
+
     $rule->addAction('rules_system_message', ContextConfig::create()
       ->map('message', 'node.field_text.value')
       ->setValue('type', 'status')
@@ -158,7 +160,7 @@ class MetadataAssertionTest extends RulesKernelTestBase {
       ->checkIntegrity();
     $this->assertCount(1, $violation_list);
 
-    // Add an negated AND and make sure it is ignored.
+    // Add a negated AND and make sure it is ignored.
     $rule = $this->expressionManager->createRule();
     $and = $this->expressionManager->createAnd();
     $and->addCondition('rules_entity_is_of_bundle', ContextConfig::create()

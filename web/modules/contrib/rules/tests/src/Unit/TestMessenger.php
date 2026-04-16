@@ -16,7 +16,7 @@ class TestMessenger implements MessengerInterface {
    *
    * @var array
    */
-  protected $messages = NULL;
+  protected $messages = [];
 
   /**
    * {@inheritdoc}
@@ -28,6 +28,7 @@ class TestMessenger implements MessengerInterface {
         $this->messages[$type][] = $message;
       }
     }
+    return $this;
   }
 
   /**
@@ -65,13 +66,16 @@ class TestMessenger implements MessengerInterface {
     if (!empty($type)) {
       return $this->messages[$type] ?? [];
     }
+    return [];
   }
 
   /**
    * {@inheritdoc}
    */
   public function deleteAll() {
-    return $this->messages = NULL;
+    $return = $this->messages;
+    $this->messages = [];
+    return $return;
   }
 
   /**
@@ -79,8 +83,11 @@ class TestMessenger implements MessengerInterface {
    */
   public function deleteByType($type) {
     if (!empty($type) && isset($this->messages[$type])) {
-      $this->messages[$type] = NULL;
+      $return = $this->messages[$type];
+      $this->messages[$type] = [];
+      return $return;
     }
+    return [];
   }
 
 }

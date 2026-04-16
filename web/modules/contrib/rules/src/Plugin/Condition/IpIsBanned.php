@@ -2,9 +2,9 @@
 
 namespace Drupal\rules\Plugin\Condition;
 
-use Drupal\ban\BanIpManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\ban\BanIpManagerInterface;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Core\Attribute\Condition;
 use Drupal\rules\Core\RulesConditionBase;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Provides an 'IP address is blocked' condition.
+ * Provides an 'IP address is banned' condition.
  *
  * @Condition(
  *   id = "rules_ip_is_banned",
@@ -95,13 +95,13 @@ class IpIsBanned extends RulesConditionBase implements ContainerFactoryPluginInt
   /**
    * Checks if an IP address is banned.
    *
-   * @param string $ip
-   *   The IP address to check.
+   * @param string|null $ip
+   *   (optional) The IP address to check.
    *
    * @return bool
    *   TRUE if the IP address is banned.
    */
-  protected function doEvaluate($ip = NULL) {
+  protected function doEvaluate(?string $ip = NULL): bool {
     if (!isset($ip)) {
       $ip = $this->requestStack->getCurrentRequest()->getClientIp();
     }

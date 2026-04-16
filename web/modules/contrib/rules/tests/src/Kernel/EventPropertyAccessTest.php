@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules_test_event\Event\PlainEvent;
 use Drupal\rules_test_event\Event\GenericEvent;
 use Drupal\rules_test_event\Event\GetterEvent;
+use Drupal\rules_test_event\Event\PlainEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\EventDispatcher\Event;
 

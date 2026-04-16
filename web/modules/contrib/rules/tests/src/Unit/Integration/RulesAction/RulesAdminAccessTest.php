@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 use Drupal\rules\Core\RulesActionBase;
-use Drupal\Core\Session\AccountInterface;
 use Prophecy\Argument;
 
 /**
@@ -39,7 +39,7 @@ class RulesAdminAccessTest extends RulesIntegrationTestBase {
     $action = $this->getMockBuilder(RulesActionBase::class)
       ->disableOriginalConstructor()
       ->onlyMethods(['getPluginDefinition'])
-      ->getMockForAbstractClass();
+      ->getMock();
 
     $action
       ->expects($this->exactly(2))

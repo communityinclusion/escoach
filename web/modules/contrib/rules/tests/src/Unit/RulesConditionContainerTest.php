@@ -17,25 +17,18 @@ use Drupal\rules\Engine\ExpressionManagerInterface;
 class RulesConditionContainerTest extends RulesUnitTestBase {
 
   /**
-   * Creates a mocked condition container.
-   *
-   * @param array $methods
-   *   The methods to mock.
-   * @param string $class
-   *   The name of the created mock class.
+   * Creates a condition expression container stub.
    *
    * @return \Drupal\rules\Engine\ConditionExpressionContainerInterface
-   *   The mocked condition container.
+   *   A concrete class implementing a condition expression container.
    */
-  protected function getMockConditionContainer(array $methods = [], string $class = 'RulesConditionContainerMock'): ConditionExpressionContainerInterface {
-    return $this->getMockForAbstractClass(
-      ConditionExpressionContainer::class, [
-        [],
-        'test_id',
-        [],
-        $this->prophesize(ExpressionManagerInterface::class)->reveal(),
-        $this->prophesize(LoggerChannelInterface::class)->reveal(),
-      ], $class, TRUE, TRUE, TRUE, $methods
+  protected function getConditionContainerStub(): ConditionExpressionContainerInterface {
+    return new RulesConditionContainerTestStub(
+      [],
+      'test_id',
+      [],
+      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+      $this->prophesize(LoggerChannelInterface::class)->reveal(),
     );
   }
 
@@ -45,7 +38,7 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * @covers ::addExpressionObject
    */
   public function testAddExpressionObject(): void {
-    $container = $this->getMockConditionContainer();
+    $container = $this->getConditionContainerStub();
     $container->addExpressionObject($this->trueConditionExpression->reveal());
 
     $property = new \ReflectionProperty($container, 'conditions');
@@ -61,7 +54,7 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * @covers ::isNegated
    */
   public function testNegate(): void {
-    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [], '', FALSE);
+    $container = $this->getConditionContainerStub();
 
     $this->assertFalse($container->isNegated());
     $this->assertTrue($container->execute());
@@ -77,7 +70,7 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * @covers ::execute
    */
   public function testExecute(): void {
-    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [], '', FALSE);
+    $container = $this->getConditionContainerStub();
     $this->assertTrue($container->execute());
   }
 
@@ -85,13 +78,7 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * Tests that an expression can be retrieved by UUID.
    */
   public function testLookupExpression(): void {
-    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
-      [],
-      'test_id',
-      [],
-      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
-      $this->prophesize(LoggerChannelInterface::class)->reveal(),
-    ], '', TRUE);
+    $container = $this->getConditionContainerStub();
     $container->addExpressionObject($this->trueConditionExpression->reveal());
     $uuid = $this->trueConditionExpression->reveal()->getUuid();
     $this->assertSame($this->trueConditionExpression->reveal(), $container->getExpression($uuid));
@@ -102,22 +89,10 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * Tests that a nested expression can be retrieved by UUID.
    */
   public function testLookupNestedExpression(): void {
-    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
-      [],
-      'test_id',
-      [],
-      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
-      $this->prophesize(LoggerChannelInterface::class)->reveal(),
-    ], '', TRUE);
+    $container = $this->getConditionContainerStub();
     $container->addExpressionObject($this->trueConditionExpression->reveal());
 
-    $nested_container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
-      [],
-      'test_id',
-      [],
-      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
-      $this->prophesize(LoggerChannelInterface::class)->reveal(),
-    ], '', TRUE);
+    $nested_container = $this->getConditionContainerStub();
     $nested_container->addExpressionObject($this->falseConditionExpression->reveal());
 
     $container->addExpressionObject($nested_container);
@@ -130,13 +105,7 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * Tests deleting a condition from the container.
    */
   public function testDeletingCondition(): void {
-    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
-      [],
-      'test_id',
-      [],
-      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
-      $this->prophesize(LoggerChannelInterface::class)->reveal(),
-    ], '', TRUE);
+    $container = $this->getConditionContainerStub();
     $container->addExpressionObject($this->trueConditionExpression->reveal());
     $container->addExpressionObject($this->falseConditionExpression->reveal());
 
@@ -154,22 +123,10 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * Tests deleting a nested condition from the container.
    */
   public function testDeletingNestedCondition(): void {
-    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
-      [],
-      'test_id',
-      [],
-      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
-      $this->prophesize(LoggerChannelInterface::class)->reveal(),
-    ], '', TRUE);
+    $container = $this->getConditionContainerStub();
     $container->addExpressionObject($this->trueConditionExpression->reveal());
 
-    $nested_container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
-      [],
-      'test_id',
-      [],
-      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
-      $this->prophesize(LoggerChannelInterface::class)->reveal(),
-    ], '', TRUE);
+    $nested_container = $this->getConditionContainerStub();
     $nested_container->addExpressionObject($this->falseConditionExpression->reveal());
 
     $container->addExpressionObject($nested_container);
@@ -184,12 +141,19 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
 /**
  * Class used for overriding evaluate() as this does not work with PHPunit.
  */
-abstract class RulesConditionContainerTestStub extends ConditionExpressionContainer {
+class RulesConditionContainerTestStub extends ConditionExpressionContainer {
 
   /**
-   * {@inheritdoc}
+   * Implements one abstract method on ConditionExpressionContainer.
    */
   public function evaluate(ExecutionStateInterface $state): bool {
+    return TRUE;
+  }
+
+  /**
+   * Implements one abstract method on ConditionExpressionContainer.
+   */
+  protected function allowsMetadataAssertions() {
     return TRUE;
   }
 

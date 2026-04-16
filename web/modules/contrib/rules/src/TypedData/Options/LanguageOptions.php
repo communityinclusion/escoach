@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -42,7 +44,7 @@ class LanguageOptions extends OptionsProviderBase implements ContainerInjectionI
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     $languages = $this->languageManager->getLanguages(LanguageInterface::STATE_CONFIGURABLE);
     $default = $this->languageManager->getDefaultLanguage()->getId();
     $options = [LanguageInterface::LANGCODE_NOT_SPECIFIED => $this->t('Not specified')];

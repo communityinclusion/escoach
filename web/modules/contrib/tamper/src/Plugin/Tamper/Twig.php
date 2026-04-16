@@ -5,6 +5,9 @@ namespace Drupal\tamper\Plugin\Tamper;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Template\TwigEnvironment;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\tamper\Attribute\Tamper;
+use Drupal\tamper\ItemUsage;
 use Drupal\tamper\TamperableItemInterface;
 use Drupal\tamper\TamperBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -14,15 +17,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * Note: itemUsage is set to "required", but the plugin won't throw an exception
  * if no item is passed. It just doesn't do anything meaningful without it.
- *
- * @Tamper(
- *   id = "twig",
- *   label = @Translation("Twig"),
- *   description = @Translation("Rewrite a field using twig."),
- *   category = @Translation("Other"),
- *   itemUsage = "required"
- * )
  */
+#[Tamper(
+  id: 'twig',
+  label: new TranslatableMarkup('Twig'),
+  description: new TranslatableMarkup('Rewrite a field using twig.'),
+  category: new TranslatableMarkup('Other'),
+  itemUsage: ItemUsage::REQUIRED,
+)]
 class Twig extends TamperBase implements ContainerFactoryPluginInterface {
 
   const SETTING_TEMPLATE = 'template';

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -41,7 +43,7 @@ class FieldListOptions extends OptionsProviderBase implements ContainerInjection
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     $options = [];
 
     // Load all the fields in the system.

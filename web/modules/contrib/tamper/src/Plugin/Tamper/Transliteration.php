@@ -5,22 +5,24 @@ namespace Drupal\tamper\Plugin\Tamper;
 use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\tamper\Attribute\Tamper;
 use Drupal\tamper\Exception\TamperException;
+use Drupal\tamper\ItemUsage;
 use Drupal\tamper\TamperBase;
 use Drupal\tamper\TamperableItemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation for transliteration.
- *
- * @Tamper(
- *   id = "transliteration",
- *   label = @Translation("Transliterates text from Unicode to US-ASCII."),
- *   description = @Translation("Runs the value through the transliteration service. Letters will have language decorations and accents removed."),
- *   category = @Translation("Text"),
- *   itemUsage = "ignored"
- * )
  */
+#[Tamper(
+  id: 'transliteration',
+  label: new TranslatableMarkup('Transliterates text from Unicode to US-ASCII.'),
+  description: new TranslatableMarkup('Runs the value through the transliteration service. Letters will have language decorations and accents removed.'),
+  category: new TranslatableMarkup('Text'),
+  itemUsage: ItemUsage::IGNORED,
+)]
 class Transliteration extends TamperBase implements ContainerFactoryPluginInterface {
 
   /**

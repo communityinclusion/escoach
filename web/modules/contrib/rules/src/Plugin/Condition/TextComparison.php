@@ -83,7 +83,7 @@ class TextComparison extends RulesConditionBase {
    * @return bool
    *   The evaluation of the condition.
    */
-  protected function doEvaluate($text, $operator, $match) {
+  protected function doEvaluate(string $text, string $operator, string $match): bool {
     $operator = $operator ? $operator : 'contains';
     switch ($operator) {
       case 'starts':

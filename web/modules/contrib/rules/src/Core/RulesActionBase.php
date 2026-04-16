@@ -113,7 +113,7 @@ abstract class RulesActionBase extends PluginBase implements RulesActionInterfac
   /**
    * {@inheritdoc}
    */
-  public function autoSaveContext() {
+  public function autoSaveContext(): array {
     // Per default no context parameters will be auto saved.
     return [];
   }
@@ -121,7 +121,7 @@ abstract class RulesActionBase extends PluginBase implements RulesActionInterfac
   /**
    * {@inheritdoc}
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, bool $return_as_object = FALSE) {
     // Just deny access per default for now.
     if ($return_as_object) {
       return AccessResult::forbidden();

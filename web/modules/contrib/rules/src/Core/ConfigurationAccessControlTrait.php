@@ -13,7 +13,7 @@ trait ConfigurationAccessControlTrait {
   /**
    * Checks configuration permission.
    *
-   * @param \Drupal\Core\Session\AccountInterface $account
+   * @param \Drupal\Core\Session\AccountInterface|null $account
    *   (optional) The user for which to check access, or NULL to check access
    *   for the current user. Defaults to NULL.
    * @param bool $return_as_object
@@ -26,7 +26,7 @@ trait ConfigurationAccessControlTrait {
    *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
    *   access is either explicitly forbidden or "no opinion".
    */
-  public function checkConfigurationAccess(AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function checkConfigurationAccess(?AccountInterface $account = NULL, bool $return_as_object = FALSE) {
     if (!$account) {
       $account = \Drupal::currentUser();
     }

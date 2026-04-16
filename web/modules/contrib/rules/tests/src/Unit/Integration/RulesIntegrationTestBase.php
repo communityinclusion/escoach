@@ -20,6 +20,8 @@ use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\Context\LazyContextRepository;
 use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\Core\TypedData\TypedDataManager;
+use Drupal\Tests\UnitTestCase;
+use Drupal\Tests\rules\Unit\TestMessenger;
 use Drupal\rules\Core\ConditionManager;
 use Drupal\rules\Context\DataProcessorManager;
 use Drupal\rules\Core\RulesActionManager;
@@ -27,8 +29,6 @@ use Drupal\rules\Engine\ExpressionManager;
 use Drupal\typed_data\DataFetcher;
 use Drupal\typed_data\DataFilterManager;
 use Drupal\typed_data\PlaceholderResolver;
-use Drupal\Tests\UnitTestCase;
-use Drupal\Tests\rules\Unit\TestMessenger;
 use Prophecy\Argument;
 
 // cspell:ignore hardwiring

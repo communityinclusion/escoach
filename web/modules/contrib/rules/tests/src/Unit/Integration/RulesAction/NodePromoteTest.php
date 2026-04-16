@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Integration\RulesAction;
 
-use Drupal\node\NodeInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
+use Drupal\node\NodeInterface;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\NodePromote

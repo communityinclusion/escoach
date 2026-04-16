@@ -142,7 +142,7 @@ class UserHasEntityFieldAccess extends RulesConditionBase implements ContainerFa
    * @return bool
    *   TRUE if the user has access to the field on the entity, FALSE otherwise.
    */
-  protected function doEvaluate(AccountInterface $user, ContentEntityInterface $entity, $field, $operation) {
+  protected function doEvaluate(AccountInterface $user, ContentEntityInterface $entity, $field, $operation): bool {
     if (!$entity->hasField($field)) {
       return FALSE;
     }

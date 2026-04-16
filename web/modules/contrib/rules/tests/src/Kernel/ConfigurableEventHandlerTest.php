@@ -87,7 +87,8 @@ class ConfigurableEventHandlerTest extends RulesKernelTestBase {
     $rule1 = $this->expressionManager->createRule();
     $rule1->addAction('rules_test_debug_log',
       ContextConfig::create()
-        ->map('message', 'node.field_integer.0.value')
+        ->setValue('message', '{{ node.field_integer.0.value }}')
+        ->process('message', 'rules_tokens')
     );
     $config_entity1 = $this->storage->create([
       'id' => 'test_rule1',
@@ -102,7 +103,8 @@ class ConfigurableEventHandlerTest extends RulesKernelTestBase {
     $rule2 = $this->expressionManager->createRule();
     $rule2->addAction('rules_test_debug_log',
       ContextConfig::create()
-        ->map('message', 'node.field_integer.1.value')
+        ->setValue('message', '{{ node.field_integer.1.value }}')
+        ->process('message', 'rules_tokens')
     );
     $config_entity2 = $this->storage->create([
       'id' => 'test_rule2',

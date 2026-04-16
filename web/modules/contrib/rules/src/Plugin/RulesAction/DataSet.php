@@ -71,7 +71,7 @@ class DataSet extends RulesActionBase {
   /**
    * {@inheritdoc}
    */
-  public function autoSaveContext() {
+  public function autoSaveContext(): array {
     // Saving is done at the root of the typed data tree, for example on the
     // entity level.
     $typed_data = $this->getContext('data')->getContextData();

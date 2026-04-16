@@ -148,7 +148,7 @@ class EntityFetchByField extends RulesActionBase implements ContainerFactoryPlug
    * @param int $limit
    *   Limit on the maximum number of fetched entities.
    */
-  protected function doExecute($type, $field_name, $field_value, $limit = NULL) {
+  protected function doExecute($type, $field_name, $field_value, ?int $limit = NULL): void {
     $storage = $this->entityTypeManager->getStorage($type);
 
     // When retrieving entities, if $limit is not set there is no need to use

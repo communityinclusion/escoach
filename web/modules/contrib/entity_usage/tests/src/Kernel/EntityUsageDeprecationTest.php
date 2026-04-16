@@ -22,7 +22,7 @@ class EntityUsageDeprecationTest extends EntityKernelTestBase {
    * Ensures plugins missing source_entity_class trigger a deprecation.
    */
   public function testSourceEntityClassDeprecation(): void {
-    $this->expectDeprecation("The plugin definition 'Drupal\\entity_usage_deprecation_test\\Plugin\\EntityUsage\\Track\\DeprecatedSourceEntityClassPlugin' not defining the 'source_entity_class' property is deprecated in entity_usage:8.x-2.0-beta20 and will cause an exception in entity_usage:8.x-2.1. See https://www.drupal.org/node/3505220");
+    $this->expectDeprecation("The plugin definition 'Drupal\\entity_usage_deprecation_test\\Plugin\\EntityUsage\\Track\\DeprecatedSourceEntityClassPlugin' not defining the 'source_entity_class' property is deprecated in entity_usage:8.x-2.0-beta20 and will cause an exception in entity_usage:5.0.0. See https://www.drupal.org/node/3505220");
     $definitions = $this->container->get('plugin.manager.entity_usage.track')->getDefinitions();
     $this->assertSame(EntityInterface::class, $definitions['entity_usage_test_deprecation']['source_entity_class']);
   }

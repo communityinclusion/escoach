@@ -340,7 +340,7 @@ class RulesComponent {
    *
    * @param string $partial_selector
    *   The partial data selector.
-   * @param \Drupal\rules\Engine\ExpressionInterface $until
+   * @param \Drupal\rules\Engine\ExpressionInterface|null $until
    *   The expression in which the autocompletion will be executed. All
    *   variables in the execution metadata state up to that point are available.
    *
@@ -351,7 +351,7 @@ class RulesComponent {
    *   - value: the data selector property path.
    *   - label: the human readable label suggestion.
    */
-  public function autocomplete($partial_selector, ExpressionInterface $until = NULL) {
+  public function autocomplete(string $partial_selector, ?ExpressionInterface $until = NULL) {
     // We use the integrity check to populate the execution metadata state with
     // available variables.
     $metadata_state = $this->getMetadataState();

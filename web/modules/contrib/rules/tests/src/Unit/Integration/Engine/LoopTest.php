@@ -6,12 +6,12 @@ namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
 use Drupal\Core\Entity\TypedData\EntityDataDefinition;
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 use Drupal\node\NodeInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\rules\Exception\EvaluationException;
-use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 
 /**
  * Test Rules execution with the loop plugin.

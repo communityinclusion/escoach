@@ -7,10 +7,10 @@ namespace Drupal\Tests\rules\Unit\Integration\Engine;
 // cspell:ignore näme
 
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 
 /**
  * Test the integrity check functionality during configuration time.

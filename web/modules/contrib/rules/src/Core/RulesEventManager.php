@@ -2,7 +2,6 @@
 
 namespace Drupal\rules\Core;
 
-use Drupal\Component\Plugin\CategorizingPluginManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\CategorizingPluginManagerTrait;
@@ -19,7 +18,7 @@ use Drupal\rules\Context\ContextDefinition;
  *
  * @see \Drupal\rules\Core\RulesEventInterface
  */
-class RulesEventManager extends DefaultPluginManager implements CategorizingPluginManagerInterface {
+class RulesEventManager extends DefaultPluginManager implements RulesEventManagerInterface {
   use CategorizingPluginManagerTrait;
 
   /**
@@ -99,17 +98,9 @@ class RulesEventManager extends DefaultPluginManager implements CategorizingPlug
   }
 
   /**
-   * Gets the base name of a configured event name.
-   *
-   * For a configured event name like {EVENT_NAME}--{SUFFIX}, the base event
-   * name {EVENT_NAME} is returned.
-   *
-   * @return string
-   *   The event base name.
-   *
-   * @see \Drupal\rules\Core\RulesConfigurableEventHandlerInterface::getEventNameSuffix()
+   * {@inheritdoc}
    */
-  public function getEventBaseName($event_name) {
+  public function getEventBaseName(string $event_name): string {
     // Cut off any suffix from a configured event name.
     if (strpos($event_name, '--') !== FALSE) {
       $parts = explode('--', $event_name, 2);

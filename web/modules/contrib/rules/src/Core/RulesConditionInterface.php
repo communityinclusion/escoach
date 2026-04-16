@@ -2,8 +2,8 @@
 
 namespace Drupal\rules\Core;
 
-use Drupal\rules\Context\ContextAwarePluginInterface;
 use Drupal\Core\Condition\ConditionInterface;
+use Drupal\rules\Context\ContextAwarePluginInterface;
 use Drupal\rules\Context\ContextProviderInterface;
 
 /**
@@ -19,6 +19,6 @@ interface RulesConditionInterface extends ConditionInterface, ContextAwarePlugin
    *
    * @return $this
    */
-  public function negate($negate = TRUE);
+  public function negate(bool $negate = TRUE): static;
 
 }

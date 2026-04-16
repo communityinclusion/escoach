@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\page_manager_ui\FunctionalJavascript;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\page_manager\Entity\Page;
 
@@ -150,7 +149,7 @@ class PageManagerAdminTest extends WebDriverTestBase {
       'variant_settings[status_code]' => 200,
     ];
     $this->submitForm($edit, 'Finish');
-    $this->assertSession()->responseContains(new FormattableMarkup('The page %label has been added.', ['%label' => 'Foo']));
+    $this->assertSession()->pageTextContains('The page Foo has been added.');
     // We've gone from the add wizard to the edit wizard.
     $this->drupalGet('admin/structure/page_manager/manage/foo/general');
 

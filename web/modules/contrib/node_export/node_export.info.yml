@@ -4,7 +4,7 @@ description: 'Allows users to export content and then import into another Drupal
 core_version_requirement: ^9 || ^10 || ^11
 configure: node_export.config
 
-# Information added by Drupal.org packaging script on 2025-04-30
-version: '8.x-1.4'
+# Information added by Drupal.org packaging script on 2026-02-26
+version: '8.x-1.5'
 project: 'node_export'
-datestamp: 1746010046
+datestamp: 1772125950

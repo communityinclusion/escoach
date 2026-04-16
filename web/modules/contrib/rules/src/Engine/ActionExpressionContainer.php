@@ -63,7 +63,7 @@ abstract class ActionExpressionContainer extends ExpressionContainerBase impleme
   /**
    * {@inheritdoc}
    */
-  public function addAction($action_id, ContextConfig $config = NULL) {
+  public function addAction(string $action_id, ?ContextConfig $config = NULL) {
     return $this->addExpressionObject(
       $this->expressionManager
         ->createAction($action_id)

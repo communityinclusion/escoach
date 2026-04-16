@@ -8,6 +8,7 @@
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
@@ -231,10 +232,12 @@ function entity_usage_module_preuninstall(string $module, bool $is_syncing = FAL
   $entity_type_manager = \Drupal::service('entity_type.manager');
   $source_entity_types = $config->get('track_enabled_source_entity_types') ?? [];
   foreach ($source_entity_types as $key => $entity_type_id) {
-    $entity_type = $entity_type_manager->getDefinition($entity_type_id);
-    foreach ($source_entity_classes as $source_entity_class) {
-      if ($entity_type->entityClassImplements($source_entity_class)) {
-        continue 2;
+    $entity_type = $entity_type_manager->getDefinition($entity_type_id, FALSE);
+    if ($entity_type instanceof EntityTypeInterface) {
+      foreach ($source_entity_classes as $source_entity_class) {
+        if ($entity_type->entityClassImplements($source_entity_class)) {
+          continue 2;
+        }
       }
     }
     unset($source_entity_types[$key]);

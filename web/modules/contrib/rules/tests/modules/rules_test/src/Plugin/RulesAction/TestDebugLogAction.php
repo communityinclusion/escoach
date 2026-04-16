@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules_test\Plugin\RulesAction;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -81,7 +83,7 @@ class TestDebugLogAction extends RulesActionBase implements ContainerFactoryPlug
    * @param string $message
    *   Message string that should be logged. Defaults to "action called".
    */
-  protected function doExecute($message = NULL) {
+  protected function doExecute(?string $message = NULL) {
     if (empty($message)) {
       $message = 'action called';
     }

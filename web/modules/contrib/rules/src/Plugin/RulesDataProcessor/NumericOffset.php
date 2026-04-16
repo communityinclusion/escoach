@@ -4,9 +4,9 @@ namespace Drupal\rules\Plugin\RulesDataProcessor;
 
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\rules\Attribute\RulesDataProcessor;
 use Drupal\rules\Context\DataProcessorInterface;
 use Drupal\rules\Context\ExecutionStateInterface;
-use Drupal\rules\Attribute\RulesDataProcessor;
 
 /**
  * A data processor for applying numerical offsets.

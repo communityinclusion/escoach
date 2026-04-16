@@ -122,7 +122,7 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function autoSaveContext() {
+  public function autoSaveContext(): array {
     return $this->saveLater;
   }
 

@@ -3,7 +3,9 @@
 namespace Drupal\entity_usage\Plugin\QueueWorker;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Queue\Attribute\QueueWorker;
 use Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_usage\RecreateTrackingDataForFieldQueuer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -13,14 +15,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * A worker plugin to consume items from "entity_usage_recreate_tracking_data"
  * and update tracking info for each of them.
  *
- * @QueueWorker(
- *   id = "entity_usage_recreate_tracking_data",
- *   title = @Translation("Entity Usage Recreate Tracking Data for Field Queue"),
- *   cron = {"time" = 60}
- * )
- *
  * @see \Drupal\entity_usage\RecreateTrackingDataForFieldQueuer
  */
+#[QueueWorker(
+  id: 'entity_usage_recreate_tracking_data',
+  title: new TranslatableMarkup('Entity Usage Recreate Tracking Data for Field Queue'),
+  cron: ['time' => 60]
+)]
 class RecreateTrackingDataForFieldWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
 
   /**

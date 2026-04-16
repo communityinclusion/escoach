@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules_test\Plugin\RulesAction;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -57,7 +59,7 @@ class TestNodeAction extends RulesActionBase {
   /**
    * {@inheritdoc}
    */
-  public function autoSaveContext() {
+  public function autoSaveContext(): array {
     // The node where we changed the title should be auto-saved after the
     // execution.
     return ['node'];

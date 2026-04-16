@@ -195,7 +195,12 @@ class PageGeneralForm extends FormBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Helper function to validate the 'path' form element.
+   * 
+   * @param array $element
+   *   The form element to validate.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function validatePath(&$element, FormStateInterface $form_state) {
     $cached_values = $form_state->getTemporaryValue('wizard');

@@ -43,7 +43,7 @@ class PageVariantViewBuilder implements EntityViewBuilderInterface {
   /**
    * {@inheritdoc}
    */
-  public function resetCache(array $entities = NULL) {
+  public function resetCache(?array $entities = NULL) {
     // Intentionally empty.
   }
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Entity;
 
-use Drupal\rules\Entity\ReactionRuleConfig;
 use Drupal\Tests\rules\Unit\RulesUnitTestBase;
+use Drupal\rules\Entity\ReactionRuleConfig;
 
 /**
  * @coversDefaultClass \Drupal\rules\Entity\ReactionRuleConfig

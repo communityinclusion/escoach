@@ -64,7 +64,7 @@ abstract class ExpressionContainerBase extends ExpressionBase implements Express
   /**
    * {@inheritdoc}
    */
-  public function addExpression($plugin_id, ContextConfig $config = NULL) {
+  public function addExpression(string $plugin_id, ?ContextConfig $config = NULL) {
     return $this->addExpressionObject(
       $this->expressionManager->createInstance($plugin_id, $config ? $config->toArray() : [])
     );
@@ -98,7 +98,7 @@ abstract class ExpressionContainerBase extends ExpressionBase implements Express
   /**
    * {@inheritdoc}
    */
-  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL, $apply_assertions = TRUE) {
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ?ExpressionInterface $until = NULL, bool $apply_assertions = TRUE) {
     if ($until && $this->getUuid() === $until->getUuid()) {
       return TRUE;
     }

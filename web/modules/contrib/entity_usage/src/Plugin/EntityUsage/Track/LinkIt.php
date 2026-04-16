@@ -3,18 +3,20 @@
 namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_usage\Attribute\EntityUsageTrack;
 
 /**
  * Tracks usage of entities embedded into text fields using Linkit module.
- *
- * @EntityUsageTrack(
- *   id = "linkit",
- *   label = @Translation("LinkIt"),
- *   description = @Translation("Tracks relationships created with 'LinkIt' in formatted text fields."),
- *   field_types = {"text", "text_long", "text_with_summary"},
- *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
- * )
  */
+#[EntityUsageTrack(
+  id: 'linkit',
+  label: new TranslatableMarkup('LinkIt'),
+  description: new TranslatableMarkup("Tracks relationships created with 'LinkIt' in formatted text fields."),
+  field_types: ["text", "text_long", "text_with_summary"],
+  source_entity_class: FieldableEntityInterface::class,
+)]
 class LinkIt extends TextFieldEmbedBase {
 
   /**

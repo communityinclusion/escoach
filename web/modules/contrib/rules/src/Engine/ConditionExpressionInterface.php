@@ -15,7 +15,7 @@ interface ConditionExpressionInterface extends ExpressionInterface {
    *
    * @return $this
    */
-  public function negate($negate = TRUE);
+  public function negate(bool $negate = TRUE): static;
 
   /**
    * Determines whether condition result will be negated.
@@ -23,6 +23,6 @@ interface ConditionExpressionInterface extends ExpressionInterface {
    * @return bool
    *   Whether the condition result will be negated.
    */
-  public function isNegated();
+  public function isNegated(): bool;
 
 }

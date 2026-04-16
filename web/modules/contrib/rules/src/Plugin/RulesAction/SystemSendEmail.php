@@ -152,7 +152,7 @@ class SystemSendEmail extends RulesActionBase implements ContainerFactoryPluginI
    * @param \Drupal\Core\Language\LanguageInterface|null $language
    *   (optional) Language code.
    */
-  protected function doExecute(array $to, $subject, $message, $reply = NULL, LanguageInterface $language = NULL) {
+  protected function doExecute(array $to, string $subject, string $message, ?string $reply = NULL, ?LanguageInterface $language = NULL): void {
     // ORIG.
     $langcode = isset($language) ? $language->getId() : LanguageInterface::LANGCODE_SITE_DEFAULT;
     // @todo Is this better?

@@ -101,12 +101,12 @@ class PathHasAlias extends RulesConditionBase implements ContainerFactoryPluginI
    * @param string $path
    *   The path to check.
    * @param \Drupal\Core\Language\LanguageInterface|null $language
-   *   An optional language to look up the path in.
+   *   (optional) An optional language to look up the path in.
    *
    * @return bool
    *   TRUE if the path has an alias in the given language.
    */
-  protected function doEvaluate($path, LanguageInterface $language = NULL) {
+  protected function doEvaluate($path, ?LanguageInterface $language = NULL): bool {
     $langcode = is_null($language) ? NULL : $language->getId();
     $alias = $this->aliasManager->getAliasByPath($path, $langcode);
     // getAliasByPath() returns the path if there is no alias.

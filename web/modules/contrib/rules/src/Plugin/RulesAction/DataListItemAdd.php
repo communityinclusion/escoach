@@ -96,7 +96,7 @@ class DataListItemAdd extends RulesActionBase {
    *   - "start": Add to beginning of the list.
    *   - "end": Add to end of the list.
    */
-  protected function doExecute(array $list, $item, $unique = FALSE, $position = 'end') {
+  protected function doExecute(array $list, $item, bool $unique = FALSE, string $position = 'end'): void {
     // Optionally, only add the list item if it is not yet contained.
     if (!((bool) $unique && in_array($item, $list))) {
       if ($position === 'start') {

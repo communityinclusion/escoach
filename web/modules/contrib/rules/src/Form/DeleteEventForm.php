@@ -7,9 +7,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Core\RulesEventManager;
 use Drupal\rules\Entity\ReactionRuleConfig;
 use Drupal\rules\Ui\RulesUiHandlerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Removes an event from a rule.
@@ -77,17 +77,17 @@ class DeleteEventForm extends ConfirmFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\rules\Ui\RulesUiHandlerInterface $rules_ui_handler
-   *   The RulesUI handler of the currently active UI.
-   * @param \Drupal\rules\Entity\ReactionRuleConfig $rules_reaction_rule
-   *   The rule config object this form is for.
-   * @param string $id
-   *   The ID of the event in the rule.
+   * @param \Drupal\rules\Ui\RulesUiHandlerInterface|null $rules_ui_handler
+   *   (optional) The RulesUI handler of the currently active UI.
+   * @param \Drupal\rules\Entity\ReactionRuleConfig|null $rules_reaction_rule
+   *   (optional) The rule config object this form is for.
+   * @param string|null $id
+   *   (optional) The ID of the event in the rule.
    *
    * @return array
    *   The form structure.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiHandlerInterface $rules_ui_handler = NULL, ReactionRuleConfig $rules_reaction_rule = NULL, $id = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiHandlerInterface $rules_ui_handler = NULL, ?ReactionRuleConfig $rules_reaction_rule = NULL, ?string $id = NULL) {
     $this->rulesUiHandler = $rules_ui_handler;
     $this->reactionRule = $rules_reaction_rule;
     $this->id = $id;

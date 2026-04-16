@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\Context;
 
 use Drupal\Core\TypedData\Exception\MissingDataException;
@@ -10,9 +12,9 @@ use Drupal\rules\Exception\InvalidArgumentException;
 use Drupal\typed_data\DataFetcherTrait;
 
 /**
- * The rules execution state.
+ * The Rules execution state.
  *
- * A rule element may clone the state, so any added variables are only visible
+ * A Rule element may clone the state, so any added variables are only visible
  * for elements in the current PHP-variable-scope.
  */
 class ExecutionState implements ExecutionStateInterface {
@@ -29,7 +31,7 @@ class ExecutionState implements ExecutionStateInterface {
    * @todo Move this out of Context namespace?
    * @see https://www.drupal.org/project/rules/issues/2677094
    */
-  static protected $blocked = [];
+  protected static $blocked = [];
 
   /**
    * The known variables.
@@ -53,18 +55,6 @@ class ExecutionState implements ExecutionStateInterface {
   protected $currentlyBlocked;
 
   /**
-   * Creates the object.
-   *
-   * @param \Drupal\Core\TypedData\TypedDataInterface[] $variables
-   *   (optional) Variables to initialize this state with.
-   *
-   * @return static
-   */
-  public static function create(array $variables = []) {
-    return new static($variables);
-  }
-
-  /**
    * Constructs the object.
    *
    * @param \Drupal\Core\TypedData\TypedDataInterface[] $variables
@@ -75,9 +65,21 @@ class ExecutionState implements ExecutionStateInterface {
   }
 
   /**
+   * Creates the object.
+   *
+   * @param \Drupal\Core\TypedData\TypedDataInterface[] $variables
+   *   (optional) Variables to initialize this state with.
+   *
+   * @return static
+   */
+  public static function create(array $variables = []): static {
+    return new static($variables);
+  }
+
+  /**
    * {@inheritdoc}
    */
-  public function setVariable($name, ContextDefinitionInterface $definition, $value) {
+  public function setVariable(string $name, ContextDefinitionInterface $definition, $value): static {
     $data = $this->getTypedDataManager()->create(
       $definition->getDataDefinition(),
       $value
@@ -89,7 +91,7 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function setVariableData($name, TypedDataInterface $data) {
+  public function setVariableData(string $name, TypedDataInterface $data): static {
     $this->variables[$name] = $data;
     return $this;
   }
@@ -97,7 +99,7 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function getVariable($name) {
+  public function getVariable(string $name): TypedDataInterface {
     if (!$this->hasVariable($name)) {
       // @todo This crashes site in certain circumstances - for example if
       // you're reacting on a "Drupal is initializing" event ... Need to handle
@@ -111,14 +113,14 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function getVariableValue($name) {
+  public function getVariableValue(string $name): string {
     return $this->getVariable($name)->getValue();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function hasVariable($name) {
+  public function hasVariable(string $name): bool {
     if (!array_key_exists($name, $this->variables)) {
       // If there is no such variable, lazy-add global context variables. That
       // way we can save time fetching global context if it is not needed.
@@ -137,7 +139,7 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function removeVariable($name) {
+  public function removeVariable(string $name): static {
     if (array_key_exists($name, $this->variables)) {
       unset($this->variables[$name]);
     }
@@ -147,7 +149,7 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function fetchDataByPropertyPath($property_path, $langcode = NULL) {
+  public function fetchDataByPropertyPath(string $property_path, ?string $langcode = NULL): TypedDataInterface {
     try {
       // Support global context names as variable name by ignoring points in
       // the service name; e.g. @user.current_user_context:current_user.name.
@@ -176,7 +178,7 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function saveChangesLater($selector) {
+  public function saveChangesLater(string $selector): static {
     $this->saveLater[$selector] = TRUE;
     return $this;
   }
@@ -184,14 +186,14 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAutoSaveSelectors() {
+  public function getAutoSaveSelectors(): array {
     return array_keys($this->saveLater);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function autoSave() {
+  public function autoSave(): static {
     // Make changes permanent.
     foreach ($this->saveLater as $selector => $flag) {
       $typed_data = $this->fetchDataByPropertyPath($selector);

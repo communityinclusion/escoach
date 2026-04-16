@@ -14,11 +14,11 @@ interface ActionExpressionContainerInterface extends ActionExpressionInterface, 
    *
    * @param string $action_id
    *   The action plugin id.
-   * @param \Drupal\rules\Context\ContextConfig $config
+   * @param \Drupal\rules\Context\ContextConfig|null $config
    *   (optional) The configuration for the specified plugin.
    *
    * @return $this
    */
-  public function addAction($action_id, ContextConfig $config = NULL);
+  public function addAction(string $action_id, ?ContextConfig $config = NULL);
 
 }

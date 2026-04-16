@@ -94,7 +94,7 @@ class UserRoleAdd extends RulesActionBase {
   /**
    * {@inheritdoc}
    */
-  public function autoSaveContext() {
+  public function autoSaveContext(): array {
     if ($this->saveLater) {
       return ['user'];
     }

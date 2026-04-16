@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules_test\Plugin\RulesAction;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;

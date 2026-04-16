@@ -21,7 +21,7 @@ interface ExecutionStateInterface {
    *
    * @return $this
    */
-  public function setVariable($name, ContextDefinitionInterface $definition, $value);
+  public function setVariable(string $name, ContextDefinitionInterface $definition, $value): static;
 
   /**
    * Sets a state variable with some typed data object.
@@ -33,7 +33,7 @@ interface ExecutionStateInterface {
    *
    * @return $this
    */
-  public function setVariableData($name, TypedDataInterface $data);
+  public function setVariableData(string $name, TypedDataInterface $data): static;
 
   /**
    * Gets a variable.
@@ -48,7 +48,7 @@ interface ExecutionStateInterface {
    *   Throws an EvaluationException if the variable does not exist in the
    *   state.
    */
-  public function getVariable($name);
+  public function getVariable(string $name): TypedDataInterface;
 
   /**
    * Gets the value of a variable.
@@ -63,7 +63,7 @@ interface ExecutionStateInterface {
    *   Throws an EvaluationException if the variable does not exist in the
    *   state.
    */
-  public function getVariableValue($name);
+  public function getVariableValue(string $name);
 
   /**
    * Checks if a variable exists by name in the execution state.
@@ -74,7 +74,7 @@ interface ExecutionStateInterface {
    * @return bool
    *   TRUE if the variable exists, FALSE otherwise.
    */
-  public function hasVariable($name);
+  public function hasVariable(string $name): bool;
 
   /**
    * Removes a variable from the state if it is set.
@@ -84,7 +84,7 @@ interface ExecutionStateInterface {
    *
    * @return $this
    */
-  public function removeVariable($name);
+  public function removeVariable(string $name): static;
 
   /**
    * Returns a value as specified in the selector.
@@ -102,7 +102,7 @@ interface ExecutionStateInterface {
    * @throws \Drupal\rules\Exception\EvaluationException
    *   Throws an EvaluationException in case the selector cannot be applied.
    */
-  public function fetchDataByPropertyPath($property_path, $langcode = NULL);
+  public function fetchDataByPropertyPath(string $property_path, ?string $langcode = NULL): TypedDataInterface;
 
   /**
    * Mark a variable to be saved later when the execution is finished.
@@ -113,7 +113,7 @@ interface ExecutionStateInterface {
    *
    * @return $this
    */
-  public function saveChangesLater($selector);
+  public function saveChangesLater(string $selector): static;
 
   /**
    * Returns the list of variables that should be auto-saved after execution.
@@ -122,13 +122,13 @@ interface ExecutionStateInterface {
    *   The list of data selectors that specify the target object to be saved.
    *   Example: node.uid.entity.
    */
-  public function getAutoSaveSelectors();
+  public function getAutoSaveSelectors(): array;
 
   /**
    * Saves all variables that have been marked for auto saving.
    *
    * @return $this
    */
-  public function autoSave();
+  public function autoSave(): static;
 
 }

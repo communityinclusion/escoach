@@ -3,18 +3,20 @@
 namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_usage\Attribute\EntityUsageTrack;
 
 /**
  * Tracks usage of images embedded in WYSIWYG fields with CKEditor Image plugin.
- *
- * @EntityUsageTrack(
- *   id = "ckeditor_image",
- *   label = @Translation("CKEditor Image"),
- *   description = @Translation("Tracks relationships created with CKEditor Image widget in formatted text fields."),
- *   field_types = {"text", "text_long", "text_with_summary"},
- *   source_entity_class = "Drupal\Core\Entity\FieldableEntityInterface",
- * )
  */
+#[EntityUsageTrack(
+  id: 'ckeditor_image',
+  label: new TranslatableMarkup('CKEditor Image'),
+  description: new TranslatableMarkup("Tracks relationships created with CKEditor Image widget in formatted text fields."),
+  field_types: ["text", "text_long", "text_with_summary"],
+  source_entity_class: FieldableEntityInterface::class,
+)]
 class CkeditorImage extends TextFieldEmbedBase {
 
   /**

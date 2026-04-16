@@ -67,7 +67,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     // Register this listener for every event that is used by a reaction rule.
     $events = [];
     $callback = ['onRulesEvent', 100];
@@ -102,7 +102,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
    * @param string $event_name
    *   The event name.
    */
-  public function onRulesEvent(Event $event, $event_name) {
+  public function onRulesEvent(Event $event, $event_name): void {
     // Get event metadata and the to-be-triggered events.
     $event_definition = $this->eventManager->getDefinition($event_name);
     $handler_class = $event_definition['class'];

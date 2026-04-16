@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
 
 /**
  * Test auto saving of variables after Rules execution.

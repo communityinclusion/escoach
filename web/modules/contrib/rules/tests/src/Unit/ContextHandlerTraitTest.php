@@ -29,8 +29,8 @@ class ContextHandlerTraitTest extends RulesUnitTestBase {
     $this->expectException(EvaluationException::class);
     $this->expectExceptionMessage("Required context 'test' is missing for plugin 'testplugin'");
 
-    // Set 'getContextValue' as mocked method.
-    $trait = $this->getMockForTrait(ContextHandlerTrait::class, [], '', TRUE, TRUE, TRUE, ['getContextValue']);
+    // Create an 'instance' of our trait.
+    $trait = new ContextHandlerTraitMockableClass();
     $context_definition = $this->prophesize(ContextDefinitionInterface::class);
 
     // Let the trait work with an empty configuration.
@@ -50,11 +50,26 @@ class ContextHandlerTraitTest extends RulesUnitTestBase {
 
     $state = $this->prophesize(ExecutionStateInterface::class);
 
-    // Make the 'mapContext' method visible.
+    // Make the 'prepareContext' method visible.
     $reflection = new \ReflectionClass($trait);
     $method = $reflection->getMethod('prepareContext');
     $method->setAccessible(TRUE);
     $method->invokeArgs($trait, [$plugin->reveal(), $state->reveal()]);
   }
+
+}
+
+/**
+ * A class using the ContextHandlerTrait for mocking purposes.
+ */
+class ContextHandlerTraitMockableClass {
+  use ContextHandlerTrait;
+
+  /**
+   * The plugin configuration. Needed by the trait methods.
+   *
+   * @var array
+   */
+  public $configuration;
 
 }

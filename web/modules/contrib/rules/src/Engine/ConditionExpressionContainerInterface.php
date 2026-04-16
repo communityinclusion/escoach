@@ -20,6 +20,6 @@ interface ConditionExpressionContainerInterface extends ConditionExpressionInter
    * @return \Drupal\rules\Core\RulesConditionInterface
    *   The created condition.
    */
-  public function addCondition($condition_id, ContextConfig $config = NULL);
+  public function addCondition(string $condition_id, ?ContextConfig $config = NULL);
 
 }

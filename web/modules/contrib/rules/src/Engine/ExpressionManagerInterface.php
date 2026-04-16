@@ -21,50 +21,50 @@ interface ExpressionManagerInterface extends PluginManagerInterface {
   /**
    * Creates a new rule.
    *
-   * @param \Drupal\rules\Context\ContextConfig $configuration
+   * @param \Drupal\rules\Context\ContextConfig|null $configuration
    *   (optional) The context configuration used to create the plugin instance.
    *
    * @return \Drupal\rules\Engine\RuleExpressionInterface
    *   The created rule.
    */
-  public function createRule(ContextConfig $configuration = NULL);
+  public function createRule(?ContextConfig $configuration = NULL);
 
   /**
    * Creates a new action set.
    *
-   * @param \Drupal\rules\Context\ContextConfig $configuration
+   * @param \Drupal\rules\Context\ContextConfig|null $configuration
    *   (optional) The context configuration used to create the plugin instance.
    *
    * @return \Drupal\rules\Plugin\RulesExpression\ActionSetExpression
    *   The created action set.
    */
-  public function createActionSet(ContextConfig $configuration = NULL);
+  public function createActionSet(?ContextConfig $configuration = NULL);
 
   /**
    * Creates a new action expression.
    *
    * @param string $id
    *   The action plugin id.
-   * @param \Drupal\rules\Context\ContextConfig $configuration
+   * @param \Drupal\rules\Context\ContextConfig|null $configuration
    *   (optional) The context configuration used to create the plugin instance.
    *
    * @return \Drupal\rules\Engine\ActionExpressionInterface
    *   The created action expression.
    */
-  public function createAction($id, ContextConfig $configuration = NULL);
+  public function createAction(string $id, ?ContextConfig $configuration = NULL);
 
   /**
    * Creates a new condition expression.
    *
    * @param string $id
    *   The condition plugin id.
-   * @param \Drupal\rules\Context\ContextConfig $configuration
+   * @param \Drupal\rules\Context\ContextConfig|null $configuration
    *   (optional) The context configuration used to create the plugin instance.
    *
    * @return \Drupal\rules\Engine\ConditionExpressionInterface
    *   The created condition expression.
    */
-  public function createCondition($id, ContextConfig $configuration = NULL);
+  public function createCondition(string $id, ?ContextConfig $configuration = NULL);
 
   /**
    * Creates a new 'and' condition container.

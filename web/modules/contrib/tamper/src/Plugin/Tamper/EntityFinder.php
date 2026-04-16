@@ -11,6 +11,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\tamper\Attribute\Tamper;
+use Drupal\tamper\ItemUsage;
 use Drupal\tamper\SourceDefinitionInterface;
 use Drupal\tamper\TamperBase;
 use Drupal\tamper\TamperableItemInterface;
@@ -18,16 +21,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the entity finder plugin.
- *
- * @Tamper(
- *   id = "entity_finder",
- *   label = @Translation("Entity Finder"),
- *   description = @Translation("Finds an entity based on columns and fields. Returns the ID of the entity."),
- *   category = @Translation("Other"),
- *   handle_multiples = TRUE,
- *   itemUsage = "ignored"
- * )
  */
+#[Tamper(
+  id: 'entity_finder',
+  label: new TranslatableMarkup('Entity Finder'),
+  description: new TranslatableMarkup('Finds an entity based on columns and fields. Returns the ID of the entity.'),
+  category: new TranslatableMarkup('Other'),
+  handle_multiples: TRUE,
+  itemUsage: ItemUsage::IGNORED,
+)]
 class EntityFinder extends TamperBase implements ContainerFactoryPluginInterface {
 
   const SETTING_ENTITY_TYPE = 'entity_type';

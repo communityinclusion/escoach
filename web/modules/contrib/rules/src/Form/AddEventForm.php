@@ -7,8 +7,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Core\RulesConfigurableEventHandlerInterface;
 use Drupal\rules\Core\RulesEventManager;
-use Drupal\rules\Ui\RulesUiHandlerInterface;
 use Drupal\rules\Entity\ReactionRuleConfig;
+use Drupal\rules\Ui\RulesUiHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -73,7 +73,7 @@ class AddEventForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $rules_reaction_rule = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?ReactionRuleConfig $rules_reaction_rule = NULL) {
     $this->reactionRule = $rules_reaction_rule;
     $form = $this->buildEventForm($form, $form_state);
 

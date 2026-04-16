@@ -87,7 +87,7 @@ class UserHasRole extends RulesConditionBase {
    * @return bool
    *   TRUE if the user has the role(s).
    */
-  protected function doEvaluate(UserInterface $user, array $roles, $operation = 'AND') {
+  protected function doEvaluate(UserInterface $user, array $roles, string $operation = 'AND'): bool {
 
     $rids = array_map(function ($role) {
       return $role->id();

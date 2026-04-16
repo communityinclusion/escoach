@@ -104,7 +104,7 @@ class UserBlock extends RulesActionBase implements ContainerFactoryPluginInterfa
   /**
    * {@inheritdoc}
    */
-  public function autoSaveContext() {
+  public function autoSaveContext(): array {
     if ($this->saveLater) {
       return ['user'];
     }

@@ -6,18 +6,17 @@ use Drupal\Core\Plugin\Context\ContextDefinitionInterface as CoreContextDefiniti
 use Drupal\Core\Plugin\ContextAwarePluginInterface as CoreContextAwarePluginInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\rules\Context\ContextDefinitionInterface as RulesContextDefinitionInterface;
-//@codingStandardsIgnoreStart
+// phpcs:disable Drupal.Classes.UnusedUseStatement.UnusedUse
 use Drupal\rules\Context\ContextProviderInterface;
-//@codingStandardsIgnoreEnd
-use Drupal\rules\Exception\IntegrityException;
+// phpcs:enable Drupal.Classes.UnusedUseStatement.UnusedUse
 use Drupal\rules\Engine\IntegrityViolation;
 use Drupal\rules\Engine\IntegrityViolationList;
+use Drupal\rules\Exception\IntegrityException;
 
 /**
  * Extends the context handler trait with support for checking integrity.
  */
 trait ContextHandlerIntegrityTrait {
-
   use ContextHandlerTrait;
 
   /**
@@ -133,7 +132,7 @@ trait ContextHandlerIntegrityTrait {
     // @todo Add support for matching based upon type-inheritance.
     $target_type = $context_definition->getDataDefinition()->getDataType();
 
-    // Special case any and entity target types for now.
+    // Special case 'any' and 'entity' target types for now.
     if ($target_type == 'any' || ($target_type == 'entity' && strpos($provided->getDataType(), 'entity:') !== FALSE)) {
       return;
     }

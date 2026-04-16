@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\rules\Unit\Integration\Condition;
 
-use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 use Prophecy\Argument;
 
 /**

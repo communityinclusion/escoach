@@ -2,8 +2,8 @@
 
 namespace Drupal\rules\Context;
 
-use Drupal\Core\Plugin\Context\EntityContextDefinition as CoreEntityContextDefinition;
 use Drupal\Component\Plugin\Exception\ContextException;
+use Drupal\Core\Plugin\Context\EntityContextDefinition as CoreEntityContextDefinition;
 
 /**
  * Extends the core entity context definition class with useful methods.

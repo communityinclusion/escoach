@@ -137,14 +137,14 @@ class RuleExpression extends ExpressionBase implements RuleExpressionInterface, 
   /**
    * {@inheritdoc}
    */
-  public function addCondition($condition_id, ContextConfig $config = NULL) {
+  public function addCondition(string $condition_id, ?ContextConfig $config = NULL) {
     return $this->conditions->addCondition($condition_id, $config);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getConditions() {
+  public function getConditions(): ConditionExpressionContainerInterface {
     return $this->conditions;
   }
 
@@ -159,8 +159,9 @@ class RuleExpression extends ExpressionBase implements RuleExpressionInterface, 
   /**
    * {@inheritdoc}
    */
-  public function addAction($action_id, ContextConfig $config = NULL) {
-    return $this->actions->addAction($action_id, $config);
+  public function addAction(string $action_id, ?ContextConfig $config = NULL): static {
+    $this->actions->addAction($action_id, $config);
+    return $this;
   }
 
   /**
@@ -197,7 +198,7 @@ class RuleExpression extends ExpressionBase implements RuleExpressionInterface, 
   /**
    * {@inheritdoc}
    */
-  public function addExpression($plugin_id, ContextConfig $config = NULL) {
+  public function addExpression(string $plugin_id, ?ContextConfig $config = NULL): static {
     return $this->addExpressionObject(
       $this->expressionManager->createInstance($plugin_id, $config ? $config->toArray() : [])
     );
@@ -257,7 +258,7 @@ class RuleExpression extends ExpressionBase implements RuleExpressionInterface, 
   /**
    * {@inheritdoc}
    */
-  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL, $apply_assertions = TRUE) {
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ?ExpressionInterface $until = NULL, bool $apply_assertions = TRUE) {
     // @todo If the rule is nested, we may not pass assertions to following
     // expressions as we do not know whether the rule fires at all. Should we
     // clone the metadata state to ensure modifications stay local?

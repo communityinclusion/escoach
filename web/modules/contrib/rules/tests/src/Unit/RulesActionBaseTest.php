@@ -23,10 +23,7 @@ class RulesActionBaseTest extends RulesUnitTestBase {
     // Set the expected exception class. There is no message to check for.
     $this->expectException(InvalidPluginDefinitionException::class);
 
-    $rules_action_base = $this->getMockForAbstractClass(
-      RulesActionBase::class,
-      [[], '', '']
-    );
+    $rules_action_base = new RulesActionBaseTestStub([], '', '');
     $rules_action_base->summary();
   }
 
@@ -36,10 +33,7 @@ class RulesActionBaseTest extends RulesUnitTestBase {
    * @covers ::summary
    */
   public function testSummaryParsingTheLabelAnnotation(): void {
-    $rules_action_base = $this->getMockForAbstractClass(
-      RulesActionBase::class,
-      [[], '', ['label' => 'something']]
-    );
+    $rules_action_base = new RulesActionBaseTestStub([], '', ['label' => 'something']);
     $this->assertEquals('something', $rules_action_base->summary());
   }
 
@@ -51,11 +45,15 @@ class RulesActionBaseTest extends RulesUnitTestBase {
   public function testTranslatedLabel(): void {
     $translation_wrapper = $this->prophesize(TranslatableMarkup::class);
     $translation_wrapper->__toString()->willReturn('something');
-    $rules_action_base = $this->getMockForAbstractClass(
-      RulesActionBase::class,
-      [[], '', ['label' => $translation_wrapper->reveal()]]
-    );
+    $rules_action_base = new RulesActionBaseTestStub([], '', ['label' => $translation_wrapper->reveal()]);
     $this->assertEquals('something', $rules_action_base->summary());
   }
+
+}
+
+/**
+ * Class providing a concrete class extending RulesActionBase.
+ */
+class RulesActionBaseTestStub extends RulesActionBase {
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\Session\AccountInterface;
@@ -12,7 +14,7 @@ class ViewEditOptions extends OptionsProviderBase {
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     return [
       'view' => $this->t('View'),
       'edit' => $this->t('Edit'),

@@ -24,7 +24,7 @@ class RulesExpression extends Plugin {
    *   (optional) The class name of the form for displaying/editing this
    *   expression.
    * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
-   *   (optional) A short description of the expression.
+   *   (optional) A short description of the expression, for use in the UI.
    * @param class-string|null $deriver
    *   (optional) The deriver class.
    */

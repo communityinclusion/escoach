@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules\TypedData\Options;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -57,7 +59,7 @@ class EntityBundleOptions extends OptionsProviderBase implements ContainerInject
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     $options = [];
 
     // Load all the entity types.

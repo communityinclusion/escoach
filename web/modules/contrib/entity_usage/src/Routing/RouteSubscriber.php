@@ -45,9 +45,15 @@ class RouteSubscriber extends RouteSubscriberBase {
    * {@inheritdoc}
    */
   protected function alterRoutes(RouteCollection $collection): void {
-    $configured_types = $this->config->get('entity_usage.settings')->get('local_task_enabled_entity_types');
+    // If routes are rebuilt during a module install in a kernel test the
+    // configuration will not exist so a default value is used.
+    $configured_types = $this->config->get('entity_usage.settings')->get('local_task_enabled_entity_types') ?? [];
 
-    foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
+    foreach ($configured_types as $entity_type_id) {
+      $entity_type = $this->entityTypeManager->getDefinition($entity_type_id, FALSE);
+      if (!$entity_type) {
+        continue;
+      }
       // We prefer the canonical template, but we also allow edit-form templates
       // on entities that don't have canonical (like views, etc).
       if ($entity_type->hasLinkTemplate('canonical')) {
@@ -56,7 +62,7 @@ class RouteSubscriber extends RouteSubscriberBase {
       elseif ($entity_type->hasLinkTemplate('edit-form')) {
         $template = $entity_type->getLinkTemplate('edit-form');
       }
-      if (empty($template) || !in_array($entity_type_id, $configured_types, TRUE)) {
+      if (empty($template)) {
         continue;
       }
       $options = [

@@ -3,11 +3,11 @@
 namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules\Ui\RulesUiHandlerInterface;
 use Drupal\rules\Engine\ExpressionContainerInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\rules\Exception\LogicException;
+use Drupal\rules\Ui\RulesUiHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -46,7 +46,7 @@ class AddExpressionForm extends EditExpressionForm {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiHandlerInterface $rules_ui_handler = NULL, $uuid = NULL, $expression_id = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiHandlerInterface $rules_ui_handler = NULL, $uuid = NULL, $expression_id = NULL) {
     $this->expressionId = $expression_id;
     $this->uuid = $uuid;
 

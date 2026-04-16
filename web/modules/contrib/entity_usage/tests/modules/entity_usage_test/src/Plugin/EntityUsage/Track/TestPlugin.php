@@ -2,23 +2,23 @@
 
 namespace Drupal\entity_usage_test\Plugin\EntityUsage\Track;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_usage\Attribute\EntityUsageTrack;
 use Drupal\entity_usage\EntityUsageTrackBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Tests entity usage tracking.
- *
- * @EntityUsageTrack(
- *   id = "entity_usage_test",
- *   label = @Translation("Entity Usage test"),
- *   field_types = {
- *     "text_long",
- *   },
- *   source_entity_class = "Drupal\Core\Entity\EntityInterface"
- * )
  */
+#[EntityUsageTrack(
+  id: 'entity_usage_test',
+  label: new TranslatableMarkup('Entity Usage test'),
+  field_types: ['text_long'],
+  source_entity_class: EntityInterface::class,
+)]
 class TestPlugin extends EntityUsageTrackBase {
 
   /**

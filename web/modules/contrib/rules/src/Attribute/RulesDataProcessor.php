@@ -26,7 +26,7 @@ class RulesDataProcessor extends Plugin {
    * @param array $types
    *   (optional) The data types this data processor can be applied to.
    * @param \Drupal\Core\StringTranslation\TranslatableMarkup|null $description
-   *   (optional) A short description of the data processor.
+   *   (optional) A short description of the data processor, for use in the UI.
    * @param class-string|null $deriver
    *   (optional) The deriver class.
    */

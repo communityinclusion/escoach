@@ -1,4 +1,3 @@
-
 rules_test_ui_embed.settings:
   path: '/admin/config/user-interface/css'
   defaults:

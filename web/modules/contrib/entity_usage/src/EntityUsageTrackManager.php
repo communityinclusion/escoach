@@ -7,6 +7,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\entity_usage\Annotation\EntityUsageTrack as AnnotationEntityUsageTrack;
+use Drupal\entity_usage\Attribute\EntityUsageTrack as AttributeEntityUsageTrack;
 
 /**
  * Manages entity_usage track plugins.
@@ -34,7 +36,15 @@ class EntityUsageTrackManager extends DefaultPluginManager {
    *   The module handler.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/EntityUsage/Track', $namespaces, $module_handler, 'Drupal\entity_usage\EntityUsageTrackInterface', 'Drupal\entity_usage\Annotation\EntityUsageTrack');
+    parent::__construct(
+      'Plugin/EntityUsage/Track',
+      $namespaces,
+      $module_handler,
+      EntityUsageTrackInterface::class,
+      AttributeEntityUsageTrack::class,
+      // @todo Remove this parameter if not supporting BC annotation plugins.
+      AnnotationEntityUsageTrack::class,
+    );
     $this->alterInfo('entity_usage_track_info');
     $this->setCacheBackend($cache_backend, 'entity_usage_track_plugins');
   }
@@ -77,7 +87,7 @@ class EntityUsageTrackManager extends DefaultPluginManager {
   public function processDefinition(&$definition, $plugin_id): void {
     parent::processDefinition($definition, $plugin_id);
     if (!isset($definition['source_entity_class'])) {
-      @trigger_error(sprintf("The plugin definition '%s' not defining the 'source_entity_class' property is deprecated in entity_usage:8.x-2.0-beta20 and will cause an exception in entity_usage:8.x-2.1. See https://www.drupal.org/node/3505220", $definition['class']), E_USER_DEPRECATED);
+      @trigger_error(sprintf("The plugin definition '%s' not defining the 'source_entity_class' property is deprecated in entity_usage:8.x-2.0-beta20 and will cause an exception in entity_usage:5.0.0. See https://www.drupal.org/node/3505220", $definition['class']), E_USER_DEPRECATED);
       $definition['source_entity_class'] = EntityInterface::class;
     }
   }

@@ -50,7 +50,7 @@ class NodeIsSticky extends RulesConditionBase {
    * @return bool
    *   TRUE if the node is sticky.
    */
-  protected function doEvaluate(NodeInterface $node) {
+  protected function doEvaluate(NodeInterface $node): bool {
     return $node->isSticky();
   }
 

@@ -28,12 +28,12 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
   protected $rulesUiHandler;
 
   /**
-   * Constructs a new object of this class.
+   * Constructs a new reaction rule edit form.
    *
    * @param \Drupal\rules\Engine\ExpressionManagerInterface $expression_manager
    *   The expression manager.
    * @param \Drupal\rules\Core\RulesEventManager $event_manager
-   *   The event plugin manager.
+   *   The Rules event plugin manager.
    */
   public function __construct(ExpressionManagerInterface $expression_manager, RulesEventManager $event_manager) {
     parent::__construct($expression_manager);
@@ -53,7 +53,7 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, RulesUiConfigHandler $rules_ui_handler = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?RulesUiConfigHandler $rules_ui_handler = NULL) {
     // Overridden so that we can receive further route parameters.
     $this->rulesUiHandler = $rules_ui_handler;
     return parent::buildForm($form, $form_state);
@@ -167,18 +167,19 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): int {
     $this->rulesUiHandler->getForm()->submitForm($form, $form_state);
     $component = $this->rulesUiHandler->getComponent();
     $this->entity->updateFromComponent($component);
 
     // Persist changes by saving the entity.
-    parent::save($form, $form_state);
+    $return = parent::save($form, $form_state);
 
     // Remove the temporarily stored component; it has been persisted now.
     $this->rulesUiHandler->clearTemporaryStorage();
 
     $this->messenger()->addMessage($this->t('Reaction rule %label has been updated.', ['%label' => $this->entity->label()]));
+    return $return;
   }
 
   /**

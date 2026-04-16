@@ -15,12 +15,12 @@ config_version: '3'
 component:
   context_definitions:
     user:
-      type: 'entity:user'
+      type: entity:user
       label: User
       description: 'The user whose mail address to print.'
   provided_context_definitions:
     concatenated:
-      type: 'string'
+      type: string
       label: Concatenated result
       description: 'The concatenated text.'
   expression:

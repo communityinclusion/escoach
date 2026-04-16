@@ -28,7 +28,7 @@ class PublicFileIntegration implements EventSubscriberInterface {
     $parsed = parse_url($baseUrl);
 
     if (isset($parsed['path'])) {
-      $this->publicFilePattern = '{^' . preg_quote($parsed['path'], '{}') . '/}';
+      $this->publicFilePattern = '{^' . preg_quote(rtrim($parsed['path'], '/'), '{}') . '/}';
     }
     else {
       throw new \LogicException('The public stream wrapper does not provide a valid external URL.');

@@ -3,8 +3,8 @@
 namespace Drupal\rules\Plugin\RulesExpression;
 
 use Drupal\Core\Logger\LoggerChannelInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\rules\Attribute\RulesExpression;
 use Drupal\rules\Context\ContextHandlerIntegrityTrait;
 use Drupal\rules\Context\DataProcessorManager;
@@ -147,7 +147,7 @@ class ConditionExpression extends ExpressionBase implements ConditionExpressionI
   /**
    * {@inheritdoc}
    */
-  public function negate($negate = TRUE) {
+  public function negate(bool $negate = TRUE): static {
     $this->configuration['negate'] = $negate;
     return $this;
   }
@@ -155,7 +155,7 @@ class ConditionExpression extends ExpressionBase implements ConditionExpressionI
   /**
    * {@inheritdoc}
    */
-  public function isNegated() {
+  public function isNegated(): bool {
     return !empty($this->configuration['negate']);
   }
 
@@ -215,7 +215,7 @@ class ConditionExpression extends ExpressionBase implements ConditionExpressionI
   /**
    * {@inheritdoc}
    */
-  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL, $apply_assertions = TRUE) {
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ?ExpressionInterface $until = NULL, bool $apply_assertions = TRUE) {
     if ($until && $this->getUuid() === $until->getUuid()) {
       return TRUE;
     }

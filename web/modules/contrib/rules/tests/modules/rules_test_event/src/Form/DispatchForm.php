@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\rules_test_event\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules_test_event\Event\PlainEvent;
 use Drupal\rules_test_event\Event\GenericEvent;
 use Drupal\rules_test_event\Event\GetterEvent;
+use Drupal\rules_test_event\Event\PlainEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -55,9 +57,9 @@ class DispatchForm extends FormBase {
     $form['event'] = [
       '#type' => 'radios',
       '#options' => [
-        0 => $this->t('PlainEvent'),
-        1 => $this->t('GenericEvent'),
-        2 => $this->t('GetterEvent'),
+        'plain' => $this->t('PlainEvent'),
+        'generic' => $this->t('GenericEvent'),
+        'getter' => $this->t('GetterEvent'),
       ],
       '#description' => $this->t('Choose Event to dispatch for testing.'),
     ];
@@ -73,26 +75,20 @@ class DispatchForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Event object type selected via the form radio buttons.
     $choice = $form_state->getValue('event');
-    var_dump($choice);
-    switch ($choice) {
-      case 0:
-        $event = new PlainEvent();
-        break;
 
-      case 1:
-        $event = new GenericEvent('Test subject', [
-          'publicProperty' => 'public property',
-          'protectedProperty' => 'protected property',
-          'privateProperty' => 'private property',
-        ]);
-        break;
+    $event = match($choice) {
+      'plain'   => new PlainEvent(),
+      'generic' => new GenericEvent('Test subject', [
+        'publicProperty' => 'public property',
+        'protectedProperty' => 'protected property',
+        'privateProperty' => 'private property',
+      ]),
+      'getter'  => new GetterEvent(),
+    };
 
-      case 2:
-        $event = new GetterEvent();
-        break;
-    }
-
+    // Dispatch the chosen event.
     $this->dispatcher->dispatch($event, $event::EVENT_NAME);
   }
 

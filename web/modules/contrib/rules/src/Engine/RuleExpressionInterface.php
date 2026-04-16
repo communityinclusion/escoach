@@ -14,13 +14,13 @@ interface RuleExpressionInterface extends ExpressionContainerInterface, ActionEx
    *
    * @param string $condition_id
    *   The condition plugin id.
-   * @param \Drupal\rules\Context\ContextConfig $config
+   * @param \Drupal\rules\Context\ContextConfig|null $config
    *   (optional) The configuration for the specified plugin.
    *
    * @return \Drupal\rules\Core\RulesConditionInterface
    *   The created condition.
    */
-  public function addCondition($condition_id, ContextConfig $config = NULL);
+  public function addCondition(string $condition_id, ?ContextConfig $config = NULL);
 
   /**
    * Returns the conditions container of this rule.
@@ -45,12 +45,12 @@ interface RuleExpressionInterface extends ExpressionContainerInterface, ActionEx
    *
    * @param string $action_id
    *   The action plugin id.
-   * @param \Drupal\rules\Context\ContextConfig $config
+   * @param \Drupal\rules\Context\ContextConfig|null $config
    *   (optional) The configuration for the specified plugin.
    *
    * @return $this
    */
-  public function addAction($action_id, ContextConfig $config = NULL);
+  public function addAction(string $action_id, ?ContextConfig $config = NULL);
 
   /**
    * Returns the actions of this rule.

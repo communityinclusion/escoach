@@ -115,7 +115,7 @@ class NodeExport {
       );
     }
     else {
-      $message = $this->t('Finished with an error.');
+      $message = t('Finished with an error.');
     }
     $file = NodeExport::export($results, 'json', TRUE);
     if ($file) {

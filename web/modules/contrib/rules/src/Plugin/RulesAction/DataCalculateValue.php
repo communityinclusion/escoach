@@ -84,7 +84,7 @@ class DataCalculateValue extends RulesActionBase {
    * @param float $input_2
    *   The second input value.
    */
-  protected function doExecute($input_1, $operator, $input_2) {
+  protected function doExecute($input_1, string $operator, $input_2): void {
     switch ($operator) {
       case '+':
         $result = $input_1 + $input_2;

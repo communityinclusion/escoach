@@ -8,8 +8,8 @@ use Drupal\Core\Entity\EntityStorageBase;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\TypedData\FieldItemDataDefinition;
 use Drupal\Core\TypedData\DataDefinitionInterface;
-use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesEntityIntegrationTestBase;
+use Drupal\rules\Context\ContextDefinitionInterface;
 use Prophecy\Argument;
 
 /**

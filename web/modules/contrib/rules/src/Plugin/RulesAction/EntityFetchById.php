@@ -2,12 +2,12 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
-use Drupal\rules\Core\RulesActionBase;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Core\Attribute\RulesAction;
+use Drupal\rules\Core\RulesActionBase;
 use Drupal\rules\TypedData\Options\EntityTypeOptions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

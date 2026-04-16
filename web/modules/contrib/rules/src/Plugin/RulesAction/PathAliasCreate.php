@@ -2,8 +2,8 @@
 
 namespace Drupal\rules\Plugin\RulesAction;
 
-use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\rules\Context\ContextDefinition;
@@ -112,10 +112,10 @@ class PathAliasCreate extends RulesActionBase implements ContainerFactoryPluginI
    *   The existing path that should be aliased.
    * @param string $alias
    *   The alias path that should be created.
-   * @param \Drupal\Core\Language\LanguageInterface $language
+   * @param \Drupal\Core\Language\LanguageInterface|null $language
    *   (optional) The language.
    */
-  protected function doExecute($source, $alias, LanguageInterface $language = NULL) {
+  protected function doExecute($source, $alias, ?LanguageInterface $language = NULL) {
     $langcode = isset($language) ? $language->getId() : LanguageInterface::LANGCODE_NOT_SPECIFIED;
     $path_alias = $this->aliasStorage->create([
       'path' => $source,

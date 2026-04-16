@@ -126,9 +126,9 @@ class RulesDebugLog implements LoggerInterface {
     // Container for all log entries.
     $build = [
       '#type' => 'details',
-      // @codingStandardsIgnoreStart
+      // phpcs:disable Drupal.Semantics.FunctionT.ConcatString
       '#title' => $this->t('Rules evaluation log') . '<span class="rules-debug-open-all">-Open all-</span>',
-      // @codingStandardsIgnoreEnd
+      // phpcs:enable Drupal.Semantics.FunctionT.ConcatString
       '#attributes' => ['class' => ['rules-debug-log']],
     ];
 
@@ -138,14 +138,14 @@ class RulesDebugLog implements LoggerInterface {
       // evaluation may be opened or closed.
       $build[$line] = [
         '#type' => 'details',
-        // @codingStandardsIgnoreStart
         // Need to filter out context keys that aren't recognized as
         // placeholders for t(), because Drupal core no longer supports these.
+        // phpcs:disable Drupal.Semantics.FunctionT.NotLiteralString
         '#title' => $this->t(
           $this->logs[$line]['message'],
           $this->filterContext($this->logs[$line]['context'])
         ),
-        // @codingStandardsIgnoreEnd
+        // phpcs:enable Drupal.Semantics.FunctionT.NotLiteralString
       ];
       // $line is modified inside renderHelper().
       $thisline = $line;
@@ -181,14 +181,14 @@ class RulesDebugLog implements LoggerInterface {
         }
         $build[$line] = [
           '#type' => 'details',
-          // @codingStandardsIgnoreStart
           // Need to filter out context keys that aren't recognized as
           // placeholders for t(), because Drupal core no longer supports these.
+          // phpcs:disable Drupal.Semantics.FunctionT.NotLiteralString
           '#title' => $this->t(
             $this->logs[$line]['message'],
             $this->filterContext($this->logs[$line]['context'])
           ) . ' [' . $link . ']',
-          // @codingStandardsIgnoreEnd
+          // phpcs:enable Drupal.Semantics.FunctionT.NotLiteralString
         ];
         $thisline = $line;
         $build[$thisline][] = $this->renderHelper($line);
@@ -208,14 +208,14 @@ class RulesDebugLog implements LoggerInterface {
           '#starttime' => $startTime,
           '#timestamp' => $this->logs[$line]['timestamp'],
           '#level' => $this->logs[$line]['level'],
-          // @codingStandardsIgnoreStart
           // Need to filter out context keys that aren't recognized as
           // placeholders for t(), because Drupal core no longer supports these.
+          // phpcs:disable Drupal.Semantics.FunctionT.NotLiteralString
           '#text' => $this->t(
             $this->logs[$line]['message'],
             $this->filterContext($this->logs[$line]['context'])
           ),
-          // @codingStandardsIgnoreEnd
+          // phpcs:enable Drupal.Semantics.FunctionT.NotLiteralString
           '#link' => $link,
         ];
 
