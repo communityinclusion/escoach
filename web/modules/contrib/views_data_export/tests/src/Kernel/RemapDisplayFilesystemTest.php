@@ -93,7 +93,7 @@ final class RemapDisplayFilesystemTest extends KernelTestBase {
     ]);
 
     $sandbox = [];
-    views_data_export_post_update_remap_display_filesystem($sandbox);
+    views_data_export_post_update_remap_display_filesystem_redux($sandbox);
 
     $options = View::load('publicly_stored_data_export')->getDisplay('export_1')['display_options'];
 
@@ -112,7 +112,7 @@ final class RemapDisplayFilesystemTest extends KernelTestBase {
     ]);
 
     $sandbox = [];
-    views_data_export_post_update_remap_display_filesystem($sandbox);
+    views_data_export_post_update_remap_display_filesystem_redux($sandbox);
 
     $options = View::load('privately_stored_data_export')->getDisplay('export_1')['display_options'];
 
@@ -131,7 +131,7 @@ final class RemapDisplayFilesystemTest extends KernelTestBase {
     ]);
 
     $sandbox = [];
-    views_data_export_post_update_remap_display_filesystem($sandbox);
+    views_data_export_post_update_remap_display_filesystem_redux($sandbox);
 
     $options = View::load('null_stored_data_export')->getDisplay('export_1')['display_options'];
 
@@ -150,7 +150,7 @@ final class RemapDisplayFilesystemTest extends KernelTestBase {
     $this->createTestView('no_stored_data_export_without_private_filesystem', []);
 
     $sandbox = [];
-    views_data_export_post_update_remap_display_filesystem($sandbox);
+    views_data_export_post_update_remap_display_filesystem_redux($sandbox);
 
     $options = View::load('no_stored_data_export_without_private_filesystem')->getDisplay('export_1')['display_options'];
     $this->assertEquals('public', $options['export_filesystem']);
@@ -166,7 +166,7 @@ final class RemapDisplayFilesystemTest extends KernelTestBase {
     $this->container->get('kernel')->rebuildContainer();
 
     $sandbox = [];
-    views_data_export_post_update_remap_display_filesystem($sandbox);
+    views_data_export_post_update_remap_display_filesystem_redux($sandbox);
 
     $options = View::load('no_stored_data_export_with_private_filesystem')->getDisplay('export_1')['display_options'];
 

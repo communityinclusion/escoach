@@ -896,6 +896,7 @@ class DataExport extends RestExport {
     }
 
     // Workaround for XLS/XLSX.
+    // @todo move this code to the xls_serialization module somehow.
     if ($context['sandbox']['progress'] != 0 && ($output_format == 'xls' || $output_format == 'xlsx')) {
       $vdeFileRealPath = \Drupal::service('file_system')->realpath($context['sandbox']['vde_file']);
       $previousExcel = IOFactory::load($vdeFileRealPath);
@@ -918,6 +919,12 @@ class DataExport extends RestExport {
 
       $objWriter = IOFactory::createWriter($previousExcel, ucfirst($output_format));
       $objWriter->save($vdeFileRealPath);
+
+      // Break circular references so PHP's garbage collector can reclaim memory
+      // between batch iterations.
+      $currentExcel->disconnectWorksheets();
+      $previousExcel->disconnectWorksheets();
+      unset($currentExcel, $previousExcel, $objWriter);
     }
     // Write rendered rows to output file.
     elseif (file_put_contents($context['sandbox']['vde_file'], $string, FILE_APPEND) === FALSE) {

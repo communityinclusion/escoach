@@ -1,8 +1,9 @@
 /**
  * @file
- * Contains the definition of the behaviour recaptcha.
+ * Contains the definition of the behavior recaptcha.
  */
 
+/* global grecaptcha */
 (function ($, Drupal) {
   Drupal.behaviors.recaptcha = {
     attach(context) {

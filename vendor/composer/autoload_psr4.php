@@ -95,7 +95,7 @@ return array(
     'DrupalPractice\\' => array($vendorDir . '/drupal/coder/coder_sniffer/DrupalPractice'),
     'DrupalFinder\\' => array($vendorDir . '/webflo/drupal-finder/src'),
     'DrupalCodeGenerator\\' => array($vendorDir . '/chi-teck/drupal-code-generator/src'),
-    'Doctrine\\Persistence\\' => array($vendorDir . '/doctrine/persistence/src/Persistence'),
+    'Doctrine\\Persistence\\' => array($vendorDir . '/doctrine/persistence/src'),
     'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/src'),
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/src'),
     'Doctrine\\Common\\Collections\\' => array($vendorDir . '/doctrine/collections/src'),

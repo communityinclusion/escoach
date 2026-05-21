@@ -151,8 +151,8 @@ function entity_usage_form_alter(array &$form, FormStateInterface $form_state, s
   // As we now depend on usage data these forms are uncacheable.
   $metadata = $metadata->setCacheMaxAge(0);
   $metadata->applyTo($form);
-  $usage_data = \Drupal::service('entity_usage.usage')->listSources($entity);
-  if (empty($usage_data)) {
+  // If there are no usages, there is nothing to do.
+  if (empty(\Drupal::service('entity_usage.usage')->listSources($entity, TRUE, 1))) {
     return;
   }
 

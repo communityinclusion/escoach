@@ -58,6 +58,12 @@ class HtmlLink extends TextFieldEmbedBase implements EntityUsageTrackUrlUpdateIn
       try {
         // Get the href value of the <a> element.
         $href = $element->getAttribute('href');
+
+        // Skip empty, anchor-only, and whitespace-only links.
+        if (trim($href) === '' || str_starts_with(trim($href), '#')) {
+          continue;
+        }
+
         $entity_info = $this->urlToEntity->findEntityIdByUrl($href);
         // If no entity info could be retrieved from this URL, skip this link.
         if (empty($entity_info)) {

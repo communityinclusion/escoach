@@ -73,7 +73,6 @@ class EntityReference extends EntityUsageTrackBase implements EntityUsageTrackMu
     }
     else {
       foreach ($field as $item) {
-        /** @var \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem $item */
         $item_value = $item->get('target_id')->getValue();
         if (!empty($item_value)) {
           $entity_ids[] = $item_value;

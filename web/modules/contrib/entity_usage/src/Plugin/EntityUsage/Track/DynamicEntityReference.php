@@ -59,7 +59,6 @@ class DynamicEntityReference extends EntityUsageTrackBase implements EntityUsage
     }
 
     foreach ($iterable as $item) {
-      /** @var \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem $item */
       $item_value = $item->get('target_id')->getValue();
       $target_type_id = $item->get('target_type')->getValue();
 

@@ -535,7 +535,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    *   The entity type ID.
    * @param array $ids
    *   An array of entity IDs, can be revision or UUIDs as well.
-   * @param string $idField
+   * @param 'revision'|'id'|'uuid' $idField
    *   The ID field; 'uuid', 'revision' or 'id'.
    *
    * @return string[]
@@ -548,12 +548,15 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
       return [];
     }
     $storage = $this->entityTypeManager->getStorage($entityTypeId);
-    $ids = $storage->getQuery()
+    $query = $storage->getQuery()
       ->accessCheck(FALSE)
-      ->condition($storage->getEntityType()->getKey($idField), $ids, 'IN')
-      ->execute();
+      ->condition($storage->getEntityType()->getKey($idField), $ids, 'IN');
 
-    return array_map(fn ($id) => $entityTypeId . '|' . $id, $ids);
+    if ('revision' === $idField) {
+      $query->allRevisions();
+    }
+
+    return array_map(fn ($id) => $entityTypeId . '|' . $id, $query->execute());
   }
 
   /**

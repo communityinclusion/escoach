@@ -29,7 +29,9 @@ class RecaptchaJavascriptTest extends WebDriverTestBase {
   protected $defaultTheme = 'stark';
 
   // These are test keys that will always validate.
+  // cspell:disable-next-line
   protected const SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+  // cspell:disable-next-line
   protected const SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
 
   /**
@@ -114,7 +116,7 @@ class RecaptchaJavascriptTest extends WebDriverTestBase {
    * Click the captcha checkbox element and wait for it to be validated.
    *
    * @param int $timeout
-   *   The time to wait for the recaptcha to get validated (in miliseconds).
+   *   The time to wait for the recaptcha to get validated (in milliseconds).
    *
    * @throws \Behat\Mink\Exception\DriverException
    * @throws \Behat\Mink\Exception\UnsupportedDriverActionException
