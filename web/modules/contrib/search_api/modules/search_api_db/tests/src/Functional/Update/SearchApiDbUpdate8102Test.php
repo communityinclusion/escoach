@@ -1,9 +1,10 @@
 <?php
 
-namespace Drupal\search_api_db\Tests\Update;
+namespace Drupal\Tests\search_api_db\Functional\Update;
 
 use Drupal\FunctionalTests\Update\UpdatePathTestBase;
-use Drupal\search_api_db\Tests\DatabaseTestsTrait;
+use Drupal\Tests\search_api_db\DatabaseTestsTrait;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests whether search_api_db_update_8102() works correctly.
@@ -13,6 +14,7 @@ use Drupal\search_api_db\Tests\DatabaseTestsTrait;
  *
  * @see https://www.drupal.org/node/2884451
  */
+#[RunTestsInSeparateProcesses]
 class SearchApiDbUpdate8102Test extends UpdatePathTestBase {
 
   use DatabaseTestsTrait;
@@ -46,8 +48,8 @@ class SearchApiDbUpdate8102Test extends UpdatePathTestBase {
     $core_dump_file = glob(DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-*.bare.standard.php.gz')[0];
     $this->databaseDumpFiles = [
       $core_dump_file,
-      __DIR__ . '/../../../tests/fixtures/update/search-api-db-base.php',
-      __DIR__ . '/../../../tests/fixtures/update/search-api-db-update-8102.php',
+      __DIR__ . '/../../../fixtures/update/search-api-db-base.php',
+      __DIR__ . '/../../../fixtures/update/search-api-db-update-8102.php',
     ];
   }
 

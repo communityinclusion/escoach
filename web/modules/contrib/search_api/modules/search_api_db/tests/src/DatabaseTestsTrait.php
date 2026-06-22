@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\search_api_db\Tests;
+namespace Drupal\Tests\search_api_db;
 
 use Drupal\Core\Database\SchemaObjectExistsException;
 
