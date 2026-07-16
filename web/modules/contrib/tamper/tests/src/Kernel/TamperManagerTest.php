@@ -72,6 +72,9 @@ class TamperManagerTest extends KernelTestBase {
       'provider' => 'tamper_test',
       'class' => AttributeTamperPlugin::class,
     ];
+    // Attribute discovery adds a 'dependencies' key listing the plugin's class
+    // hierarchy (added in drupal:11.3.0). It is not relevant to this test.
+    unset($definitions['attribute_tamper']['dependencies']);
     $this->assertEquals($expected, $definitions['attribute_tamper']);
   }
 

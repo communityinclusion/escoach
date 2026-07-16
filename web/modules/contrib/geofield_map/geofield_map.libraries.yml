@@ -84,13 +84,13 @@ geocoder:
 # External Marker Clusterer
 marker_cluster:
   remote: https://cdnjs.com/libraries/js-marker-clusterer
-  version: 1.0.0
+  version: 1.2.10
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0
     gpl-compatible: true
   js:
-    https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js: { type: external }
+    https://unpkg.com/@googlemaps/markerclustererplus@1.2.10/dist/index.min.js: { type: external, minified: true }
   dependencies:
     - geofield_map/geofield_map_gmap_formatter
 

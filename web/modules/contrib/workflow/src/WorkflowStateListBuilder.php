@@ -6,6 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Config\Entity\DraggableListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\workflow\Entity\WorkflowState;
 
 /**
@@ -29,6 +30,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
 
     $wid = $workflow->id();
     $entities = parent::load();
+    /** @var \Drupal\workflow\Entity\WorkflowState $entity */
     foreach ($entities as $key => $entity) {
       if ($entity->getWorkflowId() != $wid) {
         unset($entities[$key]);
@@ -54,16 +56,20 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     // Some columns are not welcome in the list.
     // $header['module'] = $this->t('Module');
     // $header['wid'] = $this->t('Workflow');
-    // $header['sysid'] = $this->t('Sysid');
     // Add separate empty column for Drag handle for UX reasons.
     $header['drag_handle'] = '';
     // Column 'label' is manipulated in parent::buildForm(). Use 'label_new'.
     $header['label_new'] = $this->t('Label');
     $header['id'] = $this->t('ID');
-    $header['sysid'] = '';
     $header['status'] = $this->t('Active');
     $header['reassign'] = $this->t('Reassign');
     $header['count'] = $this->t('Count');
+    // Settings for single state.
+    $help_text = $this->t('Widget settings when user has only 1 single state option.');
+    $header['single_state_widget'] = Markup::create(
+      $this->t('Single state settings')
+      . " <span class='help-text' title='$help_text'>ⓘ</span>"
+    );
 
     // The parent::buildHeader() adds a column for the possible actions
     // and inserts 'edit' and 'delete' links as defined for the entity type.
@@ -90,7 +96,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     // Build select options for reassigning states.
     // We put a blank state first for validation.
     $state_options = ['' => ' '];
-    $state_options += workflow_get_workflow_state_names($wid, FALSE);
+    $state_options += workflow_allowed_workflow_state_names($wid, FALSE);
 
     // Make it impossible to reassign to the same state that is disabled.
     $current_state_options = [];
@@ -141,17 +147,13 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
         // 'source' => ['label_new'],
         'source' => ['states', $state->id(), 'label_new'],
         // Add '()' characters from exclusion list since creation state has it.
-        // 'replace_pattern' =>'([^a-z0-9_]+)|(^custom$)',
+        // 'replace_pattern' =>'([^a-z0-9_]+)|(^custom$)', .
         'replace_pattern' => '[^a-z0-9_()]+',
         'error' => $this->t(
           'The machine-readable name must be unique, and can only contain
           lowercase letters, numbers, and underscores.'
         ),
       ],
-    ];
-    $row['sysid'] = [
-      '#type' => 'value',
-      '#value' => $state->sysid,
     ];
     $row['status'] = [
       '#type' => 'checkbox',
@@ -167,6 +169,20 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
       '#type' => 'value',
       '#value' => $count,
       '#markup' => $count,
+    ];
+
+    // Settings for single state.
+    // Configuration to show/hide workflow widget even when there's only a single
+    // state option.
+    $row['single_state_widget'] = [
+      '#type' => 'select',
+      '#options' => [
+        '' => $this->t('Display state widget (default)'),
+        'item' => $this->t('Display state formatter'),
+        'hidden' => $this->t('Hide state widget'),
+        'hide_fieldset' => $this->t('Hide complete field'),
+      ],
+      '#default_value' => $state->get('single_state_widget'),
     ];
 
     $row += parent::buildRow($entity);
@@ -214,7 +230,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     $wid = $workflow->id();
     // Build select options for reassigning states.
     // We put a blank state first for validation.
-    $state_options = workflow_get_workflow_state_names($wid, FALSE);
+    $state_options = workflow_allowed_workflow_state_names($wid, FALSE);
     // Is this the last state available?
     $form['#last_mohican'] = (count($state_options) == 1);
 
@@ -222,7 +238,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     $form['entities']['#suffix'] = '</div>';
     // Add an empty WorkflowState (It must NOT be saved to DB) to the list.
     if ($form_state->getTriggeringElement()['#name'] ?? '' === 'add_state') {
-      $sid = NULL;
+      $sid = '';
       $placeholder = $workflow->createState($sid, FALSE);
       $placeholder->set('label', '');
       $this->entities['placeholder'] = $placeholder;
@@ -259,7 +275,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     // This is what EntityListBuilder::getOperations() does:
     // $operations = $this->getDefaultOperations($entity);
     // $operations += $this->moduleHandler()->invokeAll('entity_operation', [$entity]);
-    // $this->moduleHandler->alter('entity_operation', $operations, $entity);
+    // $this->moduleHandler->alter('entity_operation', $operations, $entity); .
 
     // In D8, the interface of below hook_workflow_operations has changed a bit.
     // @see EntityListBuilder::getOperations, workflow_operations, workflow.api.php.
@@ -278,13 +294,15 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
       $state = $this->entities[$sid] ?? NULL;
 
       // State is de-activated (reassigning current content).
-      if ($state && $state->isActive() && !$value['status']) {
+      if ($state?->isActive() && !$value['status']) {
         $args = ['%state' => $state->label()];
         // Does that state have content in it?
         if (!$form['#last_mohican'] && $value['count'] > 0 && empty($value['reassign'])) {
-          $message = 'The %state state has content; you must
-              reassign the content to another state.';
-          $form_state->setErrorByName("states'][$sid]['reassign'", $this->t($message, $args));
+          $message = $this->t(
+            'The %state state has content; you must
+              reassign the content to another state.',
+            $args);
+          $form_state->setErrorByName("states'][$sid]['reassign'", $message);
         }
       }
     }
@@ -322,7 +340,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
 
       /** @var \Drupal\workflow\Entity\WorkflowState $state */
       $state = $this->entities[$sid];
-      if ($state && $state->isActive() && !$value['status'] && $sid) {
+      if ($state?->isActive() && !$value['status'] && $sid) {
         // State is deactivated, reassigning current content.
         $new_sid = $value['reassign'];
         $new_state = WorkflowState::load($new_sid);
@@ -330,25 +348,32 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
         $args = [
           '%workflow' => $workflow->label(),
           '%old_state' => $state->label(),
-          '%new_state' => isset($new_state) ? $new_state->label() : '',
+          '%new_state' => $new_state?->label() ?? '',
         ];
 
         if ($value['count'] > 0) {
           if ($form['#last_mohican']) {
             // Do not reassign to new state.
             $new_sid = NULL;
-            $message = 'Removing workflow states from content in the %workflow.';
-            $this->messenger()->addStatus($this->t($message, $args));
-            $message = 'Since you have deleted the last available
+            $message = $this->t(
+              'Removing workflow states from content in the %workflow.',
+              $args);
+            $this->messenger()->addStatus($message);
+
+            $message = $this->t(
+              'Since you have deleted the last available
                 workflow state in this workflow, all content items
                 which with this %workflow workflow have their workflow state
-                removed.';
-            $this->messenger()->addWarning($this->t($message, $args));
+                removed.',
+              $args);
+            $this->messenger()->addWarning($message);
           }
           else {
             // Prepare the state delete function.
-            $message = 'Reassigning content from %old_state to %new_state.';
-            $this->messenger()->addStatus($this->t($message, $args));
+            $message = $this->t(
+              'Reassigning content from %old_state to %new_state.',
+              $args);
+            $this->messenger()->addStatus($message);
           }
         }
         // Delete old State without orphaning content by moving it to new State.
@@ -360,18 +385,18 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
       }
 
       $max_weight = max($max_weight, $state->get($this->weightKey));
-      $weight = $value['weight'];
-      if ($value['sysid'] == WORKFLOW_CREATION_STATE) {
+      $weight = match (TRUE) {
         // Assure Creation state is first in line.
-        $weight = $creation_weight;
-      }
-      elseif ($state->isNew()) {
+        $state->isCreationState() => $creation_weight,
         // Set proper weight to the new state, adding as last.
-        $weight = $max_weight + 1;
-      }
-      $state->set($this->weightKey, $weight);
+        $state->isNew() => $max_weight + 1,
+        default => $value['weight'],
+      };
+
       $state->set('label', $value['label_new']);
+      $state->set($this->weightKey, $weight);
       $state->set('status', $value['status']);
+      $state->set('single_state_widget', $value['single_state_widget']);
 
       try {
         $state->save();
@@ -394,6 +419,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
    *   The form state.
    *
    * @return array
+   *   The callback function.
    */
   public function addStateCallback(array &$form, FormStateInterface $form_state) {
     return $form['entities'];
@@ -422,10 +448,7 @@ class WorkflowStateListBuilder extends DraggableListBuilder {
     $state_names = array_map('strtolower', $state_names);
     $result = array_unique(array_diff_assoc($state_names, array_unique($state_names)));
 
-    if (in_array($name, $result)) {
-      return TRUE;
-    }
-    return FALSE;
+    return in_array($name, $result) ? TRUE : FALSE;
   }
 
 }

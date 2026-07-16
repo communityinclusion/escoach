@@ -5,17 +5,20 @@ namespace Drupal\workflow;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\workflow\Entity\WorkflowTransition;
 
 /**
  * Defines a class to build a draggable listing of Workflow State entities.
  *
- * @deprecated use View 'Workflow Entity history' in WorkflowTransitionListController.
+ * @deprecated in workflow:1.8.0 and is removed from workflow:3.0.0.
+ * Use View 'Workflow Entity history' in WorkflowTransitionListController.
  * @see \Drupal\workflow\Entity\WorkflowState
  */
 class WorkflowTransitionListBuilder extends EntityListBuilder {
 
-  const WORKFLOW_MARK_STATE_IS_DELETED = '*';
+  private const WORKFLOW_MARK_STATE_IS_DELETED = '*';
 
   /**
    * A variable to pass the entity of a transition to the ListBuilder.
@@ -44,6 +47,20 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
   protected $footerNeeded = FALSE;
 
   /**
+   * Constructs a new EntityListBuilder object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The entity storage class.
+   */
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage) {
+    parent::__construct($entity_type, $storage);
+
+    $this->limit = \Drupal::config('workflow.settings')->get('workflow_states_per_page');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function load() {
@@ -52,11 +69,9 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
     $entity_type = $entity->getEntityTypeId();
     $entity_id = $entity->id();
     $field_name = workflow_url_get_field_name();
-
-    // @todo D8: document $limit. Should be used in pager, not in load().
-    // N.B. Using the provided default History view is recommended.
-    $this->limit = \Drupal::config('workflow.settings')->get('workflow_states_per_page');
+    // @todo D8: get pager limit working.
     $limit = $this->limit;
+    $limit = 300;
     // Get Transitions with highest timestamp first.
     $entities = WorkflowTransition::loadMultipleByProperties($entity_type, [$entity_id], [], $field_name, '', $limit, 'DESC');
     return $entities;
@@ -78,8 +93,8 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
     if ($this->showColumnFieldname($entity)) {
       $header['field_name'] = $this->t('Field name');
     }
-    $header['from_state'] = $this->t('From State');
-    $header['to_state'] = $this->t('To State');
+    $header['from_state'] = $this->t('From state');
+    $header['to_state'] = $this->t('To state');
     $header['user_name'] = $this->t('By');
     $header['comment'] = $this->t('Comment');
     return $header + parent::buildHeader();
@@ -177,36 +192,14 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
    * Builds the entity listing as renderable array for table.html.twig.
    */
   public function render() {
-    $build = [];
+    $build = parent::render();
 
-    // @todo D8: get pager working.
-    $this->limit = \Drupal::config('workflow.settings')->get('workflow_states_per_page'); // @todo D8-port.
-    // $output .= theme('pager', array('tags' => $limit)); // @todo D8-port.
-
-    $build += parent::render();
-
-    // Add a footer. This is not yet added in EntityListBuilder::render()
+    // Add a footer. This is not yet added in EntityListBuilder::render().
     if ($this->footerNeeded) {
-      // @todo D8-port: test this.
-      // Two variants. First variant is official, but I like 2nd better.
-      /*
-      $build['table']['#footer'] = [
-        [
-          'class' => ['footer-class'],
-          'data' => [
-            [
-              'data' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' '
-                . $this->t('State is no longer available.'),
-              'colspan' => count($build['table']['#header']),
-            ],
-          ],
-        ],
-      ];
-       */
       $build['workflow_footer'] = [
-        '#markup' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' '
-          . $this->t('State is no longer available.'),
-        '#weight' => 500, // @todo Make this better.
+        '#markup' => self::WORKFLOW_MARK_STATE_IS_DELETED . ' = '
+        . $this->t('State is no longer available.'),
+        '#weight' => 500,
       ];
     }
 
@@ -251,10 +244,10 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
   /**
    * Gets the target entity.
    *
-   * @return \Drupal\Core\Entity\EntityInterface
-   *   The entity.
+   * @return \Drupal\Core\Entity\RevisionableInterface
+   *   The (possibly revisionable) entity containing the workflow.
    */
-  public function getTargetEntity() {
+  public function getTargetEntity(): ?EntityInterface {
     return $this->workflowEntity;
   }
 
@@ -262,13 +255,13 @@ class WorkflowTransitionListBuilder extends EntityListBuilder {
    * Determines if the column 'Field name' must be shown.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity.
+   *   The entity at hand.
    *
    * @return bool
    *   The requested result.
    */
   protected function showColumnFieldname(EntityInterface $entity) {
-    if (is_null($this->showColumnFieldname)) {
+    if ($this->showColumnFieldname === NULL) {
       // @todo Also remove when field_name is set in route??
       if (count(_workflow_info_fields($entity)) > 1) {
         $this->showColumnFieldname = TRUE;

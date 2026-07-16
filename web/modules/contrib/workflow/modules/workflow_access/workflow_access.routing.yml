@@ -1,6 +1,5 @@
 # Declaration of Workflow Access routings.
 
-### Workflow settings form
 workflow.access.settings:
   path: '/admin/config/workflow/workflow/access'
   defaults:

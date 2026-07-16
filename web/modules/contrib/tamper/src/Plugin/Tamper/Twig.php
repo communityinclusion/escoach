@@ -3,14 +3,13 @@
 namespace Drupal\tamper\Plugin\Tamper;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Template\TwigEnvironment;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\tamper\Attribute\Tamper;
 use Drupal\tamper\ItemUsage;
 use Drupal\tamper\TamperableItemInterface;
 use Drupal\tamper\TamperBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Plugin implementation for rendering using Twig.
@@ -25,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   category: new TranslatableMarkup('Other'),
   itemUsage: ItemUsage::REQUIRED,
 )]
-class Twig extends TamperBase implements ContainerFactoryPluginInterface {
+class Twig extends TamperBase {
 
   const SETTING_TEMPLATE = 'template';
 
@@ -47,13 +46,26 @@ class Twig extends TamperBase implements ContainerFactoryPluginInterface {
   protected $twigEnvironment;
 
   /**
-   * {@inheritdoc}
+   * Constructs a Twig plugin.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Template\TwigEnvironment $twig_environment
+   *   The twig environment.
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = new static($configuration, $plugin_id, $plugin_definition, $configuration['source_definition']);
-    $instance->setTwigEnvironment($container->get('twig'));
-
-    return $instance;
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    #[Autowire(service: 'twig')]
+    TwigEnvironment $twig_environment,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->twigEnvironment = $twig_environment;
   }
 
   /**

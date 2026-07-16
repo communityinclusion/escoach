@@ -2,6 +2,8 @@
 
 namespace Drupal\geofield_map\Plugin\GeofieldMapThemer;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield_map\Attribute\MapThemer;
 use Drupal\geofield_map\MapThemerBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\geofield_map\Plugin\views\style\GeofieldGoogleMapViewStyle;
@@ -15,31 +17,30 @@ use Drupal\geofield_map\Services\MarkerIconService;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
- * Style plugin to render a View output as a Leaflet map.
+ * Map Themer plugin based on Entity Types & Images Selection.
  *
  * @ingroup geofield_map_themers_plugins
  *
  * Attributes set below end up in the $this->definition[] array.
- *
- * @MapThemer(
- *   id = "geofieldmap_entity_type_url",
- *   name = @Translation("Entity Type (geofield_map) - Image Select"),
- *   description = "This Geofield Map Themer allows the Image Selection of
- * different Marker Icons based on Entity Types/Bundles.",
- *   context = {"ViewStyle"},
- *   weight = 2,
- *   markerIconSelection = {
- *    "type" = "file_uri",
- *    "configSyncCompatibility" = TRUE,
- *   },
- *   defaultSettings = {
- *    "values" = {},
- *    "legend" = {
- *      "class" = "entity-type",
- *     },
- *   }
- * )
  */
+#[MapThemer(
+  id: "geofieldmap_entity_type_url",
+  name: new TranslatableMarkup("Entity Type - Image Select"),
+  description: new TranslatableMarkup("This Geofield Map Themer allows
+  the Image Selection of different Marker Icons based on Entity Types/Bundles."),
+  context: ["ViewStyle"],
+  weight: 2,
+  markerIconSelection: [
+    "type" => "file_uri",
+    "configSyncCompatibility"  => TRUE,
+  ],
+  defaultSettings: [
+    "values" => [],
+    "legend" => [
+      "class" => "entity-type",
+    ],
+  ],
+)]
 class EntityTypeThemerUrl extends MapThemerBase {
 
   /**
@@ -77,7 +78,7 @@ class EntityTypeThemerUrl extends MapThemerBase {
     RendererInterface $renderer,
     EntityTypeManagerInterface $entity_manager,
     MarkerIconService $marker_icon_service,
-    EntityTypeBundleInfoInterface $entity_type_bundle_info
+    EntityTypeBundleInfoInterface $entity_type_bundle_info,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $translation_manager, $renderer, $entity_manager, $marker_icon_service);
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
@@ -134,10 +135,10 @@ class EntityTypeThemerUrl extends MapThemerBase {
       'header' => [
         'label' => $this->t('@entity type Type/Bundle', ['@entity type' => $entity_type]),
         'label_alias' => Markup::create($this->t('Label Alias @description', [
-          '@description' => $this->renderer->renderPlain($label_alias_upload_help),
+          '@description' => $this->renderer->renderInIsolation($label_alias_upload_help),
         ])),
         'marker_icon' => Markup::create($this->t('Marker Icon @file_select_help', [
-          '@file_select_help' => $this->renderer->renderPlain($file_select_help),
+          '@file_select_help' => $this->renderer->renderInIsolation($file_select_help),
         ])),
         'image_style' => '',
       ],
@@ -167,15 +168,15 @@ class EntityTypeThemerUrl extends MapThemerBase {
           'markup' => $label_value,
         ],
         'weight' => [
-          'value' => isset($default_element[$bundle]['weight']) ? $default_element[$bundle]['weight'] : $k,
+          'value' => $default_element[$bundle]['weight'] ?? $k,
           'class' => $table_settings['tabledrag_group'],
         ],
         'label_alias' => [
-          'value' => isset($default_element[$bundle]['label_alias']) ? $default_element[$bundle]['label_alias'] : '',
+          'value' => $default_element[$bundle]['label_alias'] ?? '',
         ],
         'icon_file_uri' => $icon_file_uri,
         'legend_exclude' => [
-          'value' => isset($default_element[$bundle]['legend_exclude']) ? $default_element[$bundle]['legend_exclude'] : (count($view_bundles) > 10 ? TRUE : FALSE),
+          'value' => $default_element[$bundle]['legend_exclude'] ?? (count($view_bundles) > 10 ? TRUE : FALSE),
         ],
         'attributes' => ['class' => ['draggable']],
       ];
@@ -206,7 +207,7 @@ class EntityTypeThemerUrl extends MapThemerBase {
   public function getLegend(array $map_theming_values, array $configuration = []) {
     $legend = $this->defaultLegendHeader($configuration);
     // Get the icon image width, as result of the Legend configuration.
-    $icon_width = isset($configuration['markers_width']) ? $configuration['markers_width'] : 50;
+    $icon_width = $configuration['markers_width'] ?? 50;
 
     foreach ($map_theming_values as $bundle => $value) {
       $icon_file_uri = !empty($value['icon_file']) && $value['icon_file'] != 'none' ? $value['icon_file'] : NULL;
@@ -216,7 +217,7 @@ class EntityTypeThemerUrl extends MapThemerBase {
       if (!empty($value['legend_exclude']) || (empty($icon_file_uri) && !$this->renderDefaultLegendIcon())) {
         continue;
       }
-      $label = isset($value['label']) ? $value['label'] : $bundle;
+      $label = $value['label'] ?? $bundle;
       $legend['table'][$bundle] = [
         'value' => [
           '#type' => 'container',

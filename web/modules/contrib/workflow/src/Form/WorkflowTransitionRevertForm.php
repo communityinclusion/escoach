@@ -6,7 +6,6 @@ use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\workflow\Entity\WorkflowTransition;
 use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
 /**
@@ -32,7 +31,7 @@ class WorkflowTransitionRevertForm extends EntityConfirmFormBase {
     $state = $transition->getFromState();
 
     if (!$state) {
-      \Drupal::logger('workflow_revert')->error('Invalid state', []);
+      $this->logger('workflow_revert')->error('Invalid state', []);
       $message = $this->t('Invalid transition. Your information has been recorded.');
       $this->messenger()->addError($message);
       return [];
@@ -42,7 +41,7 @@ class WorkflowTransitionRevertForm extends EntityConfirmFormBase {
       'Are you sure you want to revert %title to the "@state" state?',
       [
         '@state' => $state->label(),
-        '%title' => $transition->label(),
+        '%title' => $transition->label() ?? '',
       ]
     );
     return $question;
@@ -71,58 +70,54 @@ class WorkflowTransitionRevertForm extends EntityConfirmFormBase {
    * is an indicator that the Transition is not completely a complete Entity.
    */
   protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
-    return $this->entity;
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $entity */
+    $this->revertTransition($entity);
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
-    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $entity */
-    $entity = $this->entity;
-    $transition = $this->createRevertedTransition($entity);
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
+    $transition = $this->entity;
 
     // The entity will be updated when the transition is executed. Keep the
     // original one for the confirmation message.
     $previous_sid = $transition->getToSid();
 
     // Force the transition because it's probably not valid.
-    $transition->force(TRUE);
-    $new_sid = workflow_execute_transition($transition, TRUE);
+    $new_sid = $transition->executeAndUpdateEntity(TRUE);
 
-    $comment = ($previous_sid == $new_sid)
+    $message = ($previous_sid == $new_sid)
       ? $this->t('State is reverted.')
       : $this->t('State could not be reverted.');
-    $this->messenger()->addMessage($comment);
+    $this->messenger()->addMessage($message);
 
     $form_state->setRedirectUrl($this->getUrl($transition));
   }
 
   /**
-   * Prepares a transition to be reverted.
+   * Reverts the given transition.
    *
    * @param \Drupal\workflow\Entity\WorkflowTransitionInterface $transition
-   *   The transition to be reverted.
-   *
-   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
-   *   The prepared transition ready to be stored.
+   *   The transition to be reverted, changed by reference.
    */
-  protected function createRevertedTransition(WorkflowTransitionInterface $transition) {
-    $user = \Drupal::currentUser();
-
-    $entity = $transition->getTargetEntity();
-    $field_name = $transition->getFieldName();
-    $current_sid = workflow_node_current_state($entity, $field_name);
-    $previous_sid = $transition->getFromSid();
+  protected function revertTransition(WorkflowTransitionInterface $transition) {
+    $from_sid = $transition->getFromSid();
+    $to_sid = $transition->getToSid();
+    // Use global user, since revert() is a UI-only function.
+    $user = workflow_current_user();
+    $timestamp = $transition->getDefaultRequestTime();
     $comment = $this->t('State reverted.');
-    $time = \Drupal::time()->getRequestTime();
 
-    $transition = WorkflowTransition::create([$current_sid, 'field_name' => $field_name]);
-    $transition->setTargetEntity($entity);
-    $transition->setValues($previous_sid, $user->id(), $time, $comment);
-
-    return $transition;
+    // Refresh Transition and revert states.
+    // Transition has been cloned already in calling function,
+    // but still must be marked as 'new'.
+    $transition->set('from_sid', $to_sid)
+      ->setValues($from_sid, $user->id(), $timestamp, $comment)
+      ->enforceIsNew(TRUE)
+      ->set('hid', '')
+      ->setExecuted(FALSE);
   }
 
   /**

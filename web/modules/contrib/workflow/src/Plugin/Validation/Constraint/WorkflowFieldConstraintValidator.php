@@ -5,23 +5,17 @@ namespace Drupal\workflow\Plugin\Validation\Constraint;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\user\UserStorageInterface;
+use Drupal\workflow\Entity\WorkflowManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 /**
- * Validates the CommentName constraint.
+ * Validates the fieldnameOnComment constraint.
  *
  * @see https://drupalwatchdog.com/volume-5/issue-2/introducing-drupal-8s-entity-validation-api
  */
 class WorkflowFieldConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
-
-  /**
-   * Validator 2.5 and upwards compatible execution context.
-   *
-   * @var \Symfony\Component\Validator\Context\ExecutionContextInterface
-   */
-  protected $context;
 
   /**
    * User storage handler.
@@ -50,8 +44,8 @@ class WorkflowFieldConstraintValidator extends ConstraintValidator implements Co
   /**
    * {@inheritdoc}
    */
-  public function validate($entity, Constraint $constraint) {
-    // Workflow field name on CommentForm has special requirements.
+  public function validate($entity, Constraint $constraint): void {
+    // CommentWithWorkflow has special requirements.
     /** @var \Drupal\field\Entity\FieldStorageConfig $field_storage */
     $field_storage = $entity->getFieldDefinition()->getFieldStorageDefinition();
     if (!$this->isValidFieldname($field_storage)) {
@@ -62,7 +56,7 @@ class WorkflowFieldConstraintValidator extends ConstraintValidator implements Co
   }
 
   /**
-   * Checks if the proposed field name is valid.
+   * Checks if the proposed field name on CommentWithWorkflow is valid.
    *
    * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage
    *   The field definition.
@@ -70,17 +64,18 @@ class WorkflowFieldConstraintValidator extends ConstraintValidator implements Co
    * @return bool
    *   TRUE if the field name is OK, else FALSE.
    */
-  protected function isValidFieldname(FieldStorageDefinitionInterface $field_storage) {
-    if ($field_storage->getTargetEntityTypeId() !== 'comment') {
+  protected function isValidFieldname(FieldStorageDefinitionInterface $field_storage): bool {
+    // Do only check upon CommentWithWorkflow.
+    if (!WorkflowManager::isTargetCommentEntity($field_storage)) {
       return TRUE;
     }
 
-    $field_name = $field_storage->getName();
     // A 'comment' field name MUST be equal to content field name.
     // @todo Fix field on a non-relevant entity_type.
     $comment_field_name_ok = FALSE;
+    $field_name = $field_storage->getName();
     foreach (_workflow_info_fields() as $info) {
-      if (($info->getName() == $field_name) && ($info->getTargetEntityTypeId() !== 'comment')) {
+      if (($info->getName() == $field_name) && !WorkflowManager::isTargetCommentEntity($info)) {
         $comment_field_name_ok = TRUE;
       }
     }

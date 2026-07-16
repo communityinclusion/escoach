@@ -325,7 +325,7 @@ trait GeofieldMapFieldTrait {
    *
    * @param mixed $item
    *   The Geofield Data Value.
-   * @param int|null $entity_id
+   * @param string|int|null $entity_id
    *   The Entity Id.
    *   This could be null in Layout Builder preview.
    *   (@see https://www.drupal.org/project/geofield_map/issues/3471769).
@@ -340,7 +340,7 @@ trait GeofieldMapFieldTrait {
    * @return array
    *   The datum for the current feature, including Geojson and additional data.
    */
-  protected function getGeoJsonData(mixed $item, ?int $entity_id, string $description = NULL, string $tooltip = NULL, array $additional_data = NULL) {
+  protected function getGeoJsonData(mixed $item, string|int|null $entity_id, ?string $description = NULL, ?string $tooltip = NULL, ?array $additional_data = NULL) {
 
     $datum = [];
     $value = ($item instanceof GeofieldItem) ? $item->value : $item;
@@ -582,15 +582,15 @@ trait GeofieldMapFieldTrait {
         '#type' => 'number',
         '#min' => $settings['map_zoom_and_pan']['zoom']['min'],
         '#max' => $settings['map_zoom_and_pan']['zoom']['max'],
-        '#title' => $this->t('Start Zoom'),
+        '#title' => $this->t('Initial Zoom'),
         '#default_value' => $settings['map_zoom_and_pan']['zoom']['initial'],
-        '#description' => $this->t('The Initial Zoom level of the Map.<br>Admitted values usually range from 0 (the whole world) to 20 - 22, depending on the max zoom supported by the specific Map Tile in use.<br>As a reference consider Zoom 5 for a large country, 10 for a city, 15 for a road or a district, etc.'),
+        '#description' => $this->t('The initial Zoom level for the Map in case of a Single Marker or when Forced (or when empty).<br><u>In case of multiple Markers/Features, the initial Zoom will automatically set so to extend the Map to the boundaries of all of them.</u><br>Admitted values usually range from 0 (the whole world) to 20 - 22, depending on the max zoom supported by the specific Map Tile in use.<br>As a reference consider Zoom 5 for a large country, 10 for a city, 15 for a road or a district, etc.'),
         '#element_validate' => [[get_class($this), 'zoomLevelValidate']],
       ],
       'force' => [
         '#type' => 'checkbox',
-        '#title' => $this->t('Force the Start Zoom'),
-        '#description' => $this->t('In case of multiple GeoMarkers, the Map will naturally focus zoom on the input Geofields bounds.<br>This option will instead force the Map Zoom on the input Start Zoom value'),
+        '#title' => $this->t('Force the Initial Zoom'),
+        '#description' => $this->t('This forces the Initial Zoom level also in case of multiple Markers/Features.'),
         '#default_value' => $settings['map_zoom_and_pan']['zoom']['force'] ?? NULL,
         '#return_value' => 1,
         '#states' => [
@@ -622,7 +622,7 @@ trait GeofieldMapFieldTrait {
         '#max' => 3,
         '#min' => -3,
         '#step' => 1,
-        '#description' => $this->t('Value that might/will be added to default Fit Markers Bounds Zoom. (-3 / +3)'),
+        '#description' => $this->t('Use this selector (-5 | +5) to <u>zoom in or out on the Initial Zoom level, in case of multiple Markers/Features on the Map</u>.<br>Example: -2 will zoom out, adding padding around the markers, while 2 will zoom in, leaving out peripheral markers.<br>Note: This will still be constrained according with your Max & Min Zoom settings.'),
         '#default_value' => $settings['map_zoom_and_pan']['zoom']['finer'] ?? $this->defaultSettings['map_zoom_and_pan']['zoom']['finer'],
         '#states' => [
           'invisible' => [

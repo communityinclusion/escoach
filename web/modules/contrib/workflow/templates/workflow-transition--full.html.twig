@@ -53,12 +53,12 @@
   <div class="status">
 
     <div{{ field_attributes.addClass(field_classes) }}>
-      <div{{ label_attributes.addClass(label_classes) }}>{% trans %}From State{% endtrans %}</div>
+      <div{{ label_attributes.addClass(label_classes) }}>{% trans %}From state{% endtrans %}</div>
       <div{{ value_attributes.addClass(value_classes) }}>{{ from_state.label }}</div>
     </div>
 
     <div{{ field_attributes.addClass(field_classes) }}>
-      <div{{ label_attributes.addClass(title_classes) }}>{% trans %}To State{% endtrans %}</div>
+      <div{{ label_attributes.addClass(title_classes) }}>{% trans %}To state{% endtrans %}</div>
       <div{{ value_attributes.addClass(item_classes) }}>{{ to_state.label }}</div>
     </div>
 
@@ -73,7 +73,7 @@
     </div>
 
     {% if comment %}
-      <div{{ field_attributes.addfield_classes) }}>
+     <div{{ field_attributes.addClass(field_classes) }}>
         <div{{ label_attributes.addClass(title_classes) }}>{% trans %}Comment{% endtrans %}</div>
         <div{{ value_attributes.addClass(item_classes) }}>{{ comment }}</div>
       </div>

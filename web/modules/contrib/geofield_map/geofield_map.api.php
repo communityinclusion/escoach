@@ -74,7 +74,7 @@ function hook_geofield_map_googlemap_formatter_alter(array &$map_settings, Field
  * @param \Drupal\views\Plugin\views\row\RowPluginBase $rowPlugin
  *   (optional) The row plugin used for rendering the feature.
  */
-function hook_geofield_map_views_feature_alter(array &$feature, ResultRow $row, RowPluginBase $rowPlugin = NULL) {
+function hook_geofield_map_views_feature_alter(array &$feature, ResultRow $row, ?RowPluginBase $rowPlugin = NULL) {
   // Make custom alterations to $feature,
   // eventually using the $row and $rowPlugin contexts.
 }

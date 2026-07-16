@@ -4,3 +4,7 @@ services:
     arguments: []
     tags:
       - { name: event_subscriber }
+
+  Drupal\workflow_devel\Hook\WorkflowDevelHooks:
+    class: Drupal\workflow_devel\Hook\WorkflowDevelHooks
+    autowire: true

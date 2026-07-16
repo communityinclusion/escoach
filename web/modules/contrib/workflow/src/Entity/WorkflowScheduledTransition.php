@@ -37,6 +37,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "id" = "tid",
  *     "bundle" = "wid",
  *     "langcode" = "langcode",
+ *     "owner" = "uid",
  *   },
  * )
  */
@@ -49,15 +50,15 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     parent::__construct($values, $entity_type_id, $bundle, $translations);
 
     // This transition is scheduled.
-    $this->isScheduled = TRUE;
+    $this->schedule(TRUE);
     // This transition is not executed.
-    $this->isExecuted = FALSE;
+    $this->setExecuted(FALSE);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setValues($to_sid, $uid = NULL, $scheduled = NULL, $comment = '', $force_create = FALSE) {
+  public function setValues($to_sid, $uid = NULL, $scheduled = NULL, $comment = NULL, $force_create = FALSE): WorkflowTransitionInterface {
     return parent::setValues($to_sid, $uid, $scheduled, $comment, $force_create);
   }
 
@@ -89,28 +90,35 @@ class WorkflowScheduledTransition extends WorkflowTransition {
   /**
    * {@inheritdoc}
    *
-   * Saves a scheduled transition. If the transition is executed, save in history.
+   * Saves a scheduled transition. If transition is executed, save in history.
    */
   public function save() {
-    $entity = $this->getTargetEntity();
+
     if ($this->isExecuted()) {
+      // Convert/cast/wrap Transition to ScheduledTransition or v.v.
       $transition = $this->createDuplicate(WorkflowTransition::class);
-      $transition->setTimestamp(\Drupal::time()->getRequestTime());
+      $transition
+        // Set the timestamp to the current moment of execution.
+        // Timestamp also determines $transition::isScheduled();
+        ->setTimestamp($transition->getDefaultRequestTime())
+        // Update targetEntity's WorkflowField and ChangedTime.
+        ->setEntityWorkflowField()
+        // @todo Add setEntityChangedTime() on node (not on comment).
+        ->setEntityChangedTime();
+
       $result = $transition->save();
     }
     else {
       $result = parent::save();
-    }
 
-    // Create user message.
-    if ($state = $this->getToState()) {
+      // Create user message.
       $entity = $this->getTargetEntity();
-      $message = '%entity_title scheduled for state change to %state_name on %scheduled_date';
+      $message = '%entity_title scheduled for state change to %state_name on %timestamp';
       $args = [
         '%entity_title' => $entity->label(),
-        '%state_name' => $state->label(),
-        '%scheduled_date' => $this->getTimestampFormatted(),
-        'link' => ($this->getTargetEntityId() && $this->getTargetEntity()->hasLinkTemplate('canonical')) ? $this->getTargetEntity()->toLink($this->t('View'))->toString() : '',
+        '%state_name' => $this->getToState()?->label(),
+        '%timestamp' => $this->getTimestampFormatted(),
+        'link' => ($entity->id() && $entity->hasLinkTemplate('canonical')) ? $entity->toLink($this->t('View'))->toString() : '',
       ];
       \Drupal::logger('workflow')->notice($message, $args);
       $this->messenger()->addStatus($this->t($message, $args));
@@ -122,7 +130,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
   /**
    * {@inheritdoc}
    */
-  public static function loadByProperties($entity_type_id, $entity_id, array $revision_ids = [], $field_name = '', $langcode = '', $sort = 'ASC', $transition_type = 'workflow_scheduled_transition') {
+  public static function loadByProperties($entity_type_id, $entity_id, array $revision_ids = [], $field_name = '', $langcode = '', $sort = 'ASC', $transition_type = 'workflow_scheduled_transition'): ?WorkflowTransitionInterface {
     // N.B. $transition_type is set as parameter default.
     return parent::loadByProperties($entity_type_id, $entity_id, $revision_ids, $field_name, $langcode, $sort, $transition_type);
   }
@@ -130,46 +138,19 @@ class WorkflowScheduledTransition extends WorkflowTransition {
   /**
    * {@inheritdoc}
    */
-  public static function loadMultipleByProperties($entity_type_id, array $entity_ids, array $revision_ids = [], $field_name = '', $langcode = '', $limit = NULL, $sort = 'ASC', $transition_type = 'workflow_scheduled_transition') {
+  public static function loadMultipleByProperties($entity_type_id, array $entity_ids, array $revision_ids = [], $field_name = '', $langcode = '', $limit = NULL, $sort = 'ASC', $transition_type = 'workflow_scheduled_transition'): array {
     // N.B. $transition_type is set as parameter default.
     return parent::loadMultipleByProperties($entity_type_id, $entity_ids, $revision_ids, $field_name, $langcode, $limit, $sort, $transition_type);
   }
 
   /**
-   * Given a time frame, get all scheduled transitions.
+   * {@inheritdoc}
    *
-   * @param int $start
-   * @param int $end
-   * @param string $from_sid
-   * @param string $to_sid
-   *
-   * @return WorkflowScheduledTransition[]
-   *   An array of transitions.
+   * @todo Get $transition_type from annotation.
    */
-  public static function loadBetween($start = 0, $end = 0, $from_sid = '', $to_sid = '') {
-    $transition_type = 'workflow_scheduled_transition'; // @todo Get this from annotation.
-
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
-    $query = \Drupal::entityQuery($transition_type)
-      ->sort('timestamp', 'ASC')
-      ->accessCheck(FALSE)
-      ->addTag($transition_type);
-    if ($start) {
-      $query->condition('timestamp', $start, '>');
-    }
-    if ($end) {
-      $query->condition('timestamp', $end, '<');
-    }
-    if ($from_sid) {
-      $query->condition('from_sid', $from_sid, '=');
-    }
-    if ($to_sid) {
-      $query->condition('to_sid', $from_sid, '=');
-    }
-
-    $ids = $query->execute();
-    $transitions = $ids ? self::loadMultiple($ids) : [];
-    return $transitions;
+  public static function loadBetween($start = 0, $end = 0, $from_sid = '', $to_sid = '', $type = ''): array {
+    $transition_type = 'workflow_scheduled_transition';
+    return parent::loadBetween($start, $end, $from_sid, $to_sid, $transition_type);
   }
 
   /**
@@ -179,8 +160,9 @@ class WorkflowScheduledTransition extends WorkflowTransition {
   /**
    * Create a default comment (on scheduled transition w/o comment).
    */
-  public function addDefaultComment() {
+  public function addDefaultComment(): static {
     $this->setComment($this->t('Scheduled by user @uid.', ['@uid' => $this->getOwnerId()]));
+    return $this;
   }
 
   /**
@@ -188,7 +170,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
    *
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
     $fields = [];
 
     // Add the specific ID-field on top (tid vs. hid).

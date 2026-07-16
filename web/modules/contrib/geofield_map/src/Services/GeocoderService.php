@@ -5,7 +5,10 @@ namespace Drupal\geofield_map\Services;
 use Drupal\Component\Serialization\Json;
 
 /**
- * Class GeocoderService.
+ * Provides geocoder settings for JS integration.
+ *
+ * This service filters and prepares geocoder settings for use in JavaScript,
+ * ensuring only enabled providers are included.
  */
 class GeocoderService {
 

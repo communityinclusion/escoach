@@ -4,6 +4,8 @@ namespace Drupal\workflow\Form;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\workflow\Entity\WorkflowInterface;
+use Drupal\workflow\Entity\WorkflowRole;
 
 /**
  * Defines a class to build a listing of Workflow Config Transitions entities.
@@ -29,7 +31,7 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
     $header = [];
 
     $workflow = $this->workflow;
-    $states = $workflow->getStates($all = 'CREATION');
+    $states = $workflow->getStates(WorkflowInterface::ACTIVE_CREATION_STATES);
     if ($states) {
       $header['label_new'] = $this->t('From \ To');
 
@@ -56,7 +58,7 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
    *         2        => 1,
    *       ]
    *     ]
-   *   means the transition from state 18 to state 20 can be executed by
+   *   means the transition From state 18 to state 20 can be executed by
    *   the content author or a user in role 2. The $transitions array should
    *   contain ALL transitions for the workflow.
    */
@@ -70,18 +72,18 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
       $from_state = $entity;
       $from_sid = $from_state->id();
 
-      $states = $workflow->getStates($all = 'CREATION');
+      $states = $workflow->getStates(WorkflowInterface::ACTIVE_CREATION_STATES);
       if ($states) {
-        // Only get the roles with proper permission + Author role.
+        // Only get the roles with proper permission + 'author' role.
         $type_id = $workflow->id();
-        $roles = workflow_get_user_role_names("create $type_id workflow_transition");
+        $roles = workflow_allowed_user_role_names("create $type_id workflow_transition");
         // Prepare default value for 'stay_on_this_state'.
         // array_combine(array_keys($roles), array_keys($roles));
         $allow_all_roles = [];
 
         foreach ($states as $state) {
           $row['to'] = [
-            '#type' => 'value',
+            '#type' => 'markup',
             '#markup' => $this->t('@label', ['@label' => $from_state->label()]),
           ];
 
@@ -91,7 +93,7 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
               continue;
             }
             // Only allow transitions from $from_state.
-            if ($state->id() <> $from_state->id()) {
+            if ($state->id() !== $from_state->id()) {
               continue;
             }
             $to_sid = $to_state->id();
@@ -133,21 +135,30 @@ class WorkflowConfigTransitionRoleForm extends WorkflowConfigTransitionFormBase 
     }
 
     // Make sure 'author' is checked for (creation) -> [something].
-    $creation_state = $this->workflow->getCreationState();
+    $creation_state = $this->getWorkflow()->getCreationState();
+    $creation_state_id = $creation_state->id();
     $author_has_permission = FALSE;
-    foreach ($form_state->getValue($this->entitiesKey) as $from_sid => $to_data) {
-      foreach ($to_data as $to_sid => $transition_data) {
-        if (empty($transition_data['roles'][WORKFLOW_ROLE_AUTHOR_RID])) {
-          continue;
-        }
-        if ($from_sid == $creation_state->id() && $from_sid != $to_sid) {
-          $author_has_permission = TRUE;
-          break;
-        }
+    $values = $form_state->getValue($this->entitiesKey)[$creation_state_id];
+    foreach ($values as $to_sid => $transition_data) {
+      if ($to_sid == $creation_state_id) {
+        // This should never be the case, but test anyway.
+        continue;
+      }
+
+      // Get list of roles that are allowed for this transition.
+      $roles = $transition_data['roles'];
+      $roles = array_filter($roles);
+      // 'author' role is not required anymore, but 'any' role is required.
+      // @see https://www.drupal.org/project/workflow/issues/359834
+      if (isset($roles[WorkflowRole::AUTHOR_RID])) {
+        // continue; .
+      }
+      if (!empty($roles)) {
+        $author_has_permission = TRUE;
       }
     }
     if (!$author_has_permission) {
-      $form_state->setErrorByName('id', $this->t('Please give the author permission to go from %creation to at least one state!',
+      $form_state->setErrorByName('id', $this->t('At least one role must have permission to go from %creation to another state.',
         ['%creation' => $creation_state->label()]));
     }
 

@@ -1,10 +1,10 @@
-﻿langcode: en
+uuid: 8607beaa-3d48-4a16-ad54-d4201f8d9c1e
+langcode: en
 status: true
 dependencies:
   module:
+    - options
     - workflow
-    - views
-core_version_requirement: '>=8'
 id: workflow_entity_history
 label: 'Workflow Entity history'
 module: views
@@ -72,7 +72,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
           type: number_integer
           settings:
             thousand_separator: ''
@@ -138,21 +137,11 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
           type: timestamp
           settings:
             date_format: medium
             custom_date_format: ''
             timezone: ''
-            tooltip:
-              date_format: ''
-              custom_date_format: ''
-            time_diff:
-              enabled: false
-              future_format: '@interval hence'
-              past_format: '@interval ago'
-              granularity: 2
-              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -163,136 +152,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        from_sid:
-          id: from_sid
-          table: workflow_transition_history
-          field: from_sid
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: workflow_transition
-          entity_field: from_sid
-          plugin_id: workflow_state
-          label: 'From state'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
-          settings:
-            link: ''
-          group_column: target_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: 0
-        to_sid:
-          id: to_sid
-          table: workflow_transition_history
-          field: to_sid
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: workflow_transition
-          entity_field: to_sid
-          plugin_id: workflow_state
-          label: 'To state'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
-          settings:
-            link: ''
-          group_column: target_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: 0
         field_name:
           id: field_name
           table: workflow_transition_history
@@ -344,7 +203,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
           type: string
           settings:
             link_to_entity: false
@@ -358,6 +216,108 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        from_sid:
+          id: from_sid
+          table: workflow_transition_history
+          field: from_sid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: workflow_transition
+          entity_field: from_sid
+          plugin_id: field
+          label: 'From state'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+        to_sid:
+          id: to_sid
+          table: workflow_transition_history
+          field: to_sid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: workflow_transition
+          entity_field: to_sid
+          plugin_id: field
+          label: 'To state'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
         uid:
           id: uid
           table: workflow_transition_history
@@ -409,7 +369,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: target_id
           type: entity_reference_label
           settings:
             link: true
@@ -586,7 +545,7 @@ display:
           entity_type: workflow_transition
           entity_field: entity_type
           plugin_id: string
-          default_action: empty
+          default_action: ignore
           exception:
             value: all
             title_enable: false
@@ -652,6 +611,46 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
+        field_name:
+          id: field_name
+          table: workflow_transition_history
+          field: field_name
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: workflow_transition
+          entity_field: field_name
+          plugin_id: string
+          default_action: ignore
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: false
+          title: ''
+          default_argument_type: fixed
+          default_argument_options:
+            argument: ''
+          summary_options:
+            base_path: ''
+            count: true
+            override: false
+            items_per_page: 25
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: false
+          validate:
+            type: none
+            fail: 'not found'
+          validate_options: {  }
+          glossary: false
+          limit: 0
+          case: none
+          path_case: none
+          transform_dash: false
+          break_phrase: false
       filters: {  }
       style:
         type: table

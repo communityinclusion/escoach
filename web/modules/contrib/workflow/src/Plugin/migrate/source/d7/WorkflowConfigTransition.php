@@ -19,8 +19,10 @@ class WorkflowConfigTransition extends FieldableEntity {
    * {@inheritdoc}
    */
   public function prepareRow(Row $row) {
+    $result = TRUE;
     $roles = $row->getSourceProperty('roles');
     $row->setSourceProperty('roles', unserialize($roles));
+    return $result;
   }
 
   /**

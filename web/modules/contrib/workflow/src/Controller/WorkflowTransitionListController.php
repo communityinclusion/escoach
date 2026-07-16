@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Defines a controller to list Transition on entity's Workflow history tab.
  */
 class WorkflowTransitionListController extends EntityListController implements ContainerInjectionInterface {
-
   /**
    * The date formatter service.
    *
@@ -51,6 +50,8 @@ class WorkflowTransitionListController extends EntityListController implements C
    *   The renderer service.
    */
   public function __construct(DateFormatterInterface $date_formatter, ModuleHandlerInterface $module_handler, RendererInterface $renderer) {
+    // @todo Use AutowireTrait:
+    // @see https://www.drupal.org/list-changes/drupal/published?keywords_description=date.formatter&to_branch=&version=&created_op=%3E%3D&created%5Bvalue%5D=&created%5Bmin%5D=&created%5Bmax%5D=
     // These parameters are taken from some random other controller.
     $this->dateFormatter = $date_formatter;
     $this->moduleHandler = $module_handler;
@@ -71,13 +72,13 @@ class WorkflowTransitionListController extends EntityListController implements C
   /**
    * Shows a list of an entity's state transitions, but only if WorkflowHistoryAccess::access() allows it.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $node
+   * @param \Drupal\Core\Entity\EntityInterface|null $node
    *   A node object.
    *
    * @return array
    *   An array as expected by drupal_render().
    */
-  public function historyOverview(EntityInterface $node = NULL) {
+  public function historyOverview(?EntityInterface $node = NULL) {
     $form = [];
 
     // @todo D8: make Workflow History tab happen for every entity_type.
@@ -104,15 +105,18 @@ class WorkflowTransitionListController extends EntityListController implements C
      * Step 1: generate the Transition Form.
      */
     // Add the WorkflowTransitionForm to the page.
-    $form = WorkflowTransitionForm::createInstance($entity, $field_name, []);
+    $transition = $entity->{$field_name}->getDefaultTransition();
+    $form = WorkflowTransitionForm::getForm($transition);
 
     /*
      * Step 2: generate the Transition History List.
      */
+    $use_views_instead_of_list_builder = TRUE;
     $view = NULL;
-    if ($this->moduleHandler->moduleExists('views')) {
+    if ($use_views_instead_of_list_builder == TRUE
+    && $this->moduleHandler->moduleExists('views')) {
       $view = Views::getView('workflow_entity_history');
-      if (is_object($view) && $view->storage->status()) {
+      if ($view?->storage?->status()) {
         // Add the history list from configured Views display.
         $args = [
           $entity->getEntityTypeId(),
@@ -124,8 +128,12 @@ class WorkflowTransitionListController extends EntityListController implements C
         $view->execute();
         $form['table'] = $view->buildRenderable();
       }
+      else {
+        // The view is disabled.
+        // @todo Generate a warning.
+      }
     }
-    if (!is_object($view)) {
+    if (!$view?->storage?->status()) {
       // @deprecated. Use the Views display above.
       // Add the history list from programmed WorkflowTransitionListController.
       $entity_type_id = 'workflow_transition';
@@ -156,13 +164,13 @@ class WorkflowTransitionListController extends EntityListController implements C
     // Copied from RevisionOverviewForm (diff module).
     if ($entity = workflow_url_get_entity()) {
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
-      $langname = $entity->language()->getName();
+      $name = $entity->language()->getName();
       $languages = $entity->getTranslationLanguages();
       $has_translations = (count($languages) > 1);
 
       $title = $has_translations
-        ? $this->t('@langname Workflow history for %title', [
-          '@langname' => $langname,
+        ? $this->t('@name Workflow history for %title', [
+          '@name' => $name,
           '%title' => $entity->label(),
         ])
         : $this->t('Workflow history for %title', [
@@ -184,24 +192,33 @@ class WorkflowTransitionListController extends EntityListController implements C
   public static function addRevertOperation(WorkflowTransitionInterface $transition) {
     $operations = [];
 
+    // Create a single cache key instead of deep array nesting.
     $entity_type_id = $transition->getTargetEntityTypeId();
     $entity_id = $transition->getTargetEntityId();
     $field_name = $transition->getFieldName();
+    $cache_key = "{$entity_type_id}:{$entity_id}:{$field_name}";
 
     // Only add 'revert' to the first row. Skip all following records.
-    static $first;
-    if (!($first[$entity_type_id][$entity_id][$field_name] ?? TRUE)) {
+    static $first = [];
+    if (!($first[$cache_key] ?? TRUE)) {
       return $operations;
     }
 
-    if (!$transition->isRevertable()) {
+    if (!$transition->hasStateChange()) {
+      // This is a transition with only a comment. Look for an older one.
+      return $operations;
+    }
+
+    if (!$transition->isRevertible()) {
       // Some states are not fit to revert to.
       // In each of these cases, prohibit to revert to an even older state.
-      $first[$entity_type_id][$entity_id][$field_name] = FALSE;
+      $first[$cache_key] = FALSE;
       return $operations;
     }
 
-    $user = workflow_current_user();
+    static $user = NULL;
+    // Avoid PHP8.2 Error: Constant expression contains invalid operations.
+    $user ??= workflow_current_user();
     if ($transition->access('revert', $user, FALSE)) {
       // User has access to revert to a previous state,
       // and the operation is not vetoed by other module.
@@ -213,16 +230,18 @@ class WorkflowTransitionListController extends EntityListController implements C
           ['workflow_transition' => $transition->id()]
         ),
         'query' => \Drupal::destination()->getAsArray(),
-        'weight' => 50,
+        // To make the operation more visible in new dropbuttons,
+        // add a weight less then 10, which is weight of 'edit' operation.
+        'weight' => 8,
       ];
 
-      // No need to read the following records.
-      $first[$entity_type_id][$entity_id][$field_name] = FALSE;
-      return $operations;
     }
+    // If user only has 'Revert own Workflow state transition' permission,
+    // no revertible transitions may exist.
+    // Anyhow, no need to read the following records.
+    $first[$cache_key] = FALSE;
 
     return $operations;
   }
-
 
 }

@@ -32,11 +32,11 @@ class StrToTime extends TamperBase {
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
-    $config = parent::defaultConfiguration();
-    $config[self::SETTING_DATE_FORMAT] = '';
-    $config[self::SETTING_FALLBACK] = FALSE;
-    return $config;
+  public function defaultConfiguration(): array {
+    return [
+      static::SETTING_DATE_FORMAT => '',
+      static::SETTING_FALLBACK => FALSE,
+    ] + parent::defaultConfiguration();
   }
 
   /**

@@ -3,18 +3,23 @@
 namespace Drupal\workflow\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Psr\Log\LoggerInterface;
+use Drupal\workflow\Entity\WorkflowInterface;
+use Drupal\workflow\WorkflowTypeAttributeInterface;
+use Drupal\workflow\WorkflowTypeAttributeTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a class to build a draggable listing of Workflow Config Transitions entities.
+ * Defines a class to build a draggable list of Workflow Config Transitions.
  *
  * @see \Drupal\workflow\Entity\WorkflowConfigTransition
  */
-abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
+abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase implements WorkflowTypeAttributeInterface {
+
+  use WorkflowTypeAttributeTrait;
 
   /**
    * The key to use for the form element containing the entities.
@@ -38,28 +43,14 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
   protected $entities = [];
 
   /**
-   * The workflow object.
-   *
-   * @var \Drupal\workflow\Entity\Workflow
-   */
-  protected $workflow;
-
-  /**
-   * The messenger / logger service.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected $logger;
-
-  /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, LoggerInterface $logger) {
-    // N.B. The $this->type and $this->entitiesKey must be set in the var section.
-    parent::__construct($config_factory);
-    $this->logger = $logger;
-    // Get the Workflow from the page.
-    $this->workflow = workflow_url_get_workflow();
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typed_config_manager) {
+    // N.B. $this->type and $this->entitiesKey must be set in the var section.
+    parent::__construct($config_factory, $typed_config_manager);
+    // Get the Workflow from the page, accommodating WorkflowTypeAttributeTrait.
+    $workflow = workflow_url_get_workflow();
+    $this->setWorkflow($workflow);
   }
 
   /**
@@ -68,15 +59,16 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('logger.factory')->get('workflow')
-    );
+      $container->get('config.typed')
+     );
   }
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'workflow_config_transition_' . $this->type . '_form';
+    $form_type = $this->type;
+    return "workflow_config_transition_{$form_type}_form";
   }
 
   /**
@@ -88,8 +80,8 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
     $entities = [];
 
     $entity_type = $this->entitiesKey;
-    $workflow = $this->workflow;
-    $states = $workflow->getStates($all = 'CREATION');
+    $workflow = $this->getWorkflow();
+    $states = $workflow->getStates(WorkflowInterface::ACTIVE_CREATION_STATES);
 
     if ($states) {
       /** @var \Drupal\workflow\Entity\WorkflowState $from_state */
@@ -113,7 +105,7 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
                 continue;
               }
               // Only allow transitions from $from_state.
-              if ($to_sid <> $from_sid) {
+              if ($to_sid !== $from_sid) {
                 // continue.
               }
 
@@ -129,7 +121,7 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
 
         default:
           $this->messenger()->addError($this->t('Improper type provided in load method.'));
-          $this->logger->notice('Improper type provided in load method.', []);
+          $this->getLogger('workflow')->notice('Improper type provided in load method.', []);
       }
     }
     return $entities;
@@ -159,7 +151,7 @@ abstract class WorkflowConfigTransitionFormBase extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = [];
-    if (!$this->workflow) {
+    if (!$this->getWorkflow()) {
       return $form;
     }
 

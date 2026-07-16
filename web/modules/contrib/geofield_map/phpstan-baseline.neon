@@ -1,0 +1,583 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: Function svg_image_get_image_file_dimensions not found.
+			identifier: function.notFound
+			count: 1
+			path: geofield_map.module
+
+		-
+			rawMessage: Function svg_image_is_file_svg not found.
+			identifier: function.notFound
+			count: 2
+			path: geofield_map.module
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield\Plugin\Field\FieldType\GeofieldItem::$value.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$config.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$defaultSettings.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$emptyMapOptions.
+			identifier: property.notFound
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$entityDisplay.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$entityDisplayRepository.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$entityFieldManager.
+			identifier: property.notFound
+			count: 3
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$entityType.
+			identifier: property.notFound
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$googleMapsService.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$moduleHandler.
+			identifier: property.notFound
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleEmbedMapFormatter::$viewFields.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\TypedData\TraversableTypedDataInterface::getEntity().'
+			identifier: method.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: 'Call to method out() on an unknown class Geometry.'
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: 'Call to method providersPluginsTableList() on an unknown class Drupal\geocoder\ProviderPluginManager.'
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Class Geometry not found.
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: PHPDoc tag @var for variable $geocoder_provider contains unknown class Drupal\geocoder\ProviderPluginManager.
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: 'PHPDoc tag @var has invalid value (\\Drupal\Core\Field\BaseFieldDefinition $fields_configurations[$k]): Unexpected token "\\\\Drupal\\Core\\Field\\BaseFieldDefinition", expected type at offset 9 on line 1'
+			identifier: phpDoc.parseError
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: 'Variable $info_window_source_options in empty() always exists and is not falsy.'
+			identifier: empty.variable
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleEmbedMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield\Plugin\Field\FieldType\GeofieldItem::$value.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$config.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$defaultSettings.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$emptyMapOptions.
+			identifier: property.notFound
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$entityDisplay.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$entityDisplayRepository.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$entityFieldManager.
+			identifier: property.notFound
+			count: 3
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$entityType.
+			identifier: property.notFound
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$googleMapsService.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$moduleHandler.
+			identifier: property.notFound
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map_extras\Plugin\Field\FieldFormatter\GeofieldGoogleStaticMapFormatter::$viewFields.
+			identifier: property.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: 'Call to method out() on an unknown class Geometry.'
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: 'Call to method providersPluginsTableList() on an unknown class Drupal\geocoder\ProviderPluginManager.'
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: Class Geometry not found.
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: PHPDoc tag @var for variable $geocoder_provider contains unknown class Drupal\geocoder\ProviderPluginManager.
+			identifier: class.notFound
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: 'PHPDoc tag @var has invalid value (\\Drupal\Core\Field\BaseFieldDefinition $fields_configurations[$k]): Unexpected token "\\\\Drupal\\Core\\Field\\BaseFieldDefinition", expected type at offset 9 on line 1'
+			identifier: phpDoc.parseError
+			count: 2
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: 'Variable $info_window_source_options in empty() always exists and is not falsy.'
+			identifier: empty.variable
+			count: 1
+			path: modules/geofield_map_extras/src/Plugin/Field/FieldFormatter/GeofieldGoogleStaticMapFormatter.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\Entity\EntityDisplayRepositoryInterface::renderInIsolation().'
+			identifier: method.notFound
+			count: 1
+			path: src/MapThemerBase.php
+
+		-
+			rawMessage: Variable $mapThemerPlugin in PHPDoc tag @var does not match assigned variable $plugin.
+			identifier: varTag.differentVariable
+			count: 1
+			path: src/Plugin/Block/GeofieldMapLegend.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield\Plugin\Field\FieldType\GeofieldItem::$value.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldFormatter\GeofieldGoogleMapFormatter::$entityDisplay.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldFormatter\GeofieldGoogleMapFormatter::$entityType.
+			identifier: property.notFound
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldFormatter\GeofieldGoogleMapFormatter::$viewFields.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\Entity\EntityDisplayRepositoryInterface::renderInIsolation().'
+			identifier: method.notFound
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\TypedData\TranslatableInterface::bundle().'
+			identifier: method.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\TypedData\TranslatableInterface::getEntityTypeId().'
+			identifier: method.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\TypedData\TranslatableInterface::id().'
+			identifier: method.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\TypedData\TranslatableInterface::label().'
+			identifier: method.notFound
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Call to method out() on an unknown class Geometry.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Call to method providersPluginsTableList() on an unknown class Drupal\geocoder\ProviderPluginManager.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: Class Geometry not found.
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: Constructor of class Drupal\geofield_map\Plugin\Field\FieldFormatter\GeofieldGoogleMapFormatter has an unused parameter $string_translation.
+			identifier: constructor.unusedParameter
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: PHPDoc tag @var for variable $geocoder_provider contains unknown class Drupal\geocoder\ProviderPluginManager.
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'PHPDoc tag @var has invalid value (\\Drupal\Core\Field\BaseFieldDefinition $fields_configurations[$k]): Unexpected token "\\\\Drupal\\Core\\Field\\BaseFieldDefinition", expected type at offset 9 on line 1'
+			identifier: phpDoc.parseError
+			count: 2
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: 'Variable $info_window_source_options in empty() always exists and is not falsy.'
+			identifier: empty.variable
+			count: 1
+			path: src/Plugin/Field/FieldFormatter/GeofieldGoogleMapFormatter.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\Core\TypedData\TypedDataInterface::$value.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield\Plugin\Field\FieldType\GeofieldItem::$value.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget::$defaultSettings.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget::$emptyMapOptions.
+			identifier: property.notFound
+			count: 2
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget::$entityDisplay.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget::$entityDisplayRepository.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget::$entityType.
+			identifier: property.notFound
+			count: 2
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget::$googleMapsService.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget::$viewFields.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: 'Call to method out() on an unknown class Geometry.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: 'Call to method providersPluginsTableList() on an unknown class Drupal\geocoder\ProviderPluginManager.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Class Geometry not found.
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: Constructor of class Drupal\geofield_map\Plugin\Field\FieldWidget\GeofieldMapWidget has an unused parameter $string_translation.
+			identifier: constructor.unusedParameter
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: PHPDoc tag @param for parameter $geophp_wrapper with type Drupal\geofield\GeoPHP\GeoPHPInterface|null is not subtype of native type Drupal\geofield\GeoPHP\GeoPHPInterface.
+			identifier: parameter.phpDocType
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: PHPDoc tag @param for parameter $wkt_generator with type Drupal\geofield\WktGeneratorInterface|null is not subtype of native type Drupal\geofield\WktGeneratorInterface.
+			identifier: parameter.phpDocType
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: PHPDoc tag @var for variable $geocoder_provider contains unknown class Drupal\geocoder\ProviderPluginManager.
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: 'PHPDoc tag @var has invalid value (\\Drupal\Core\Field\BaseFieldDefinition $fields_configurations[$k]): Unexpected token "\\\\Drupal\\Core\\Field\\BaseFieldDefinition", expected type at offset 9 on line 1'
+			identifier: phpDoc.parseError
+			count: 2
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: 'Variable $geofield_item in empty() always exists and is not falsy.'
+			identifier: empty.variable
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: 'Variable $info_window_source_options in empty() always exists and is not falsy.'
+			identifier: empty.variable
+			count: 1
+			path: src/Plugin/Field/FieldWidget/GeofieldMapWidget.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\Entity\EntityDisplayRepositoryInterface::renderInIsolation().'
+			identifier: method.notFound
+			count: 2
+			path: src/Plugin/GeofieldMapThemer/EntityTypeThemerUrl.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\Entity\EntityDisplayRepositoryInterface::renderInIsolation().'
+			identifier: method.notFound
+			count: 2
+			path: src/Plugin/GeofieldMapThemer/ListFieldThemerUrl.php
+
+		-
+			rawMessage: Variable $field_storage in PHPDoc tag @var does not exist.
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/Plugin/GeofieldMapThemer/ListFieldThemerUrl.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\Entity\EntityDisplayRepositoryInterface::renderInIsolation().'
+			identifier: method.notFound
+			count: 2
+			path: src/Plugin/GeofieldMapThemer/TaxonomyTermThemerUrl.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield\Plugin\Field\FieldType\GeofieldItem::$value.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\geofield_map\Plugin\views\style\GeofieldGoogleMapViewStyle::$entityDisplayRepository.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\Entity\EntityDisplayRepositoryInterface::executeInRenderContext().'
+			identifier: method.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Call to an undefined method Drupal\Core\Entity\EntityDisplayRepositoryInterface::renderInIsolation().'
+			identifier: method.notFound
+			count: 2
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Call to method getEntityTypeId() on an unknown class Drupal\search_api\Datasource\DatasourceInterface.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Call to method out() on an unknown class Geometry.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Call to method providersPluginsTableList() on an unknown class Drupal\geocoder\ProviderPluginManager.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Call to static method load() on an unknown class Drupal\search_api\Entity\Index.'
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: Class Drupal\search_api\Datasource\DatasourceInterface not found.
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: Class Geometry not found.
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: PHPDoc tag @var for variable $geocoder_provider contains unknown class Drupal\geocoder\ProviderPluginManager.
+			identifier: class.notFound
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'PHPDoc tag @var has invalid value (\\Drupal\Core\Field\BaseFieldDefinition $fields_configurations[$k]): Unexpected token "\\\\Drupal\\Core\\Field\\BaseFieldDefinition", expected type at offset 9 on line 1'
+			identifier: phpDoc.parseError
+			count: 2
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Variable $description_field_entity in isset() always exists and is not nullable.'
+			identifier: isset.variable
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Variable $field_storage_definition in isset() always exists and is not nullable.'
+			identifier: isset.variable
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Variable $info_window_source_options in empty() always exists and is not falsy.'
+			identifier: empty.variable
+			count: 1
+			path: src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+
+		-
+			rawMessage: 'Cannot call method get() on array.'
+			identifier: method.nonObject
+			count: 7
+			path: src/Services/MarkerIconService.php
+
+		-
+			rawMessage: 'Class Drupal\file\Entity\File referenced with incorrect case: Drupal\file\Entity\file.'
+			identifier: class.nameCase
+			count: 4
+			path: src/Services/MarkerIconService.php
+
+		-
+			rawMessage: Function svg_image_is_file_svg not found.
+			identifier: function.notFound
+			count: 1
+			path: src/Services/MarkerIconService.php
+
+		-
+			rawMessage: Variable $file in PHPDoc tag @var does not exist.
+			identifier: varTag.variableNotFound
+			count: 2
+			path: src/Services/MarkerIconService.php

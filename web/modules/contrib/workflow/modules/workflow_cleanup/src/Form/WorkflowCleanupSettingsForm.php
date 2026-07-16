@@ -32,15 +32,12 @@ class WorkflowCleanupSettingsForm extends FormBase {
 
     $states = WorkflowState::loadMultiple();
     foreach ($states as $state) {
-      // Does the associated workflow exist?
       if (!$state->getWorkflow()) {
+        // The associated workflow does not exist.
         $orphans[$state->id()] = $state;
       }
-      else {
-        // Is the state still active?
-        if (!$state->isActive()) {
-          $inactive[$state->id()] = $state;
-        }
+      elseif (!$state->isActive()) {
+        $inactive[$state->id()] = $state;
       }
     }
 
@@ -50,7 +47,8 @@ class WorkflowCleanupSettingsForm extends FormBase {
     $form['no_workflow'] = [
       '#type' => 'details',
       '#title' => $this->t('Orphaned States'),
-      '#open' => TRUE, // Controls the HTML5 'open' attribute. Defaults to FALSE.
+      // '#open' Controls HTML5 'details' 'open' attribute. Defaults to FALSE.
+      '#open' => TRUE,
       '#description' => $this->t(
         'These states no longer belong to an existing workflow.'
       ),
@@ -67,7 +65,8 @@ class WorkflowCleanupSettingsForm extends FormBase {
     $form['inactive'] = [
       '#type' => 'details',
       '#title' => $this->t('Inactive (Deleted) States'),
-      '#open' => TRUE, // Controls the HTML5 'open' attribute. Defaults to FALSE.
+      // '#open' Controls HTML5 'details' 'open' attribute. Defaults to FALSE.
+      '#open' => TRUE,
       '#description' => $this->t(
         'These states belong to a workflow, but have been marked inactive (deleted).'
       ),

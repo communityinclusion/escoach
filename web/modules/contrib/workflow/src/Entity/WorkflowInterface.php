@@ -14,13 +14,20 @@ use Drupal\Core\Session\AccountInterface;
  */
 interface WorkflowInterface extends EntityInterface {
 
+  // In getStates(), return all states including Creation and Inactive.
+  public const ALL_STATES = TRUE;
+  // In getStates(), return only Active states, not Creation.
+  public const ACTIVE_STATES = FALSE;
+  // In getStates(), return the Active states, including Creation.
+  public const ACTIVE_CREATION_STATES = 'CREATION';
+
   /**
-   * Returns the workflow id.
+   * Gets the Workflow ID of this object.
    *
    * @return string
-   *   $wid
+   *   Workflow ID.
    */
-  public function getWorkflowId();
+  public function getWorkflowId(): ?string;
 
   /**
    * Validate the workflow. Generate a message if not correct.
@@ -31,7 +38,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return bool
    *   $is_valid
    */
-  public function isValid();
+  public function isValid(): bool;
 
   /**
    * Returns if the Workflow may be deleted.
@@ -39,7 +46,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return bool
    *   TRUE if a Workflow may safely be deleted.
    */
-  public function isDeletable();
+  public function isDeletable(): bool;
 
   /**
    * Creates the initial state for a new Workflow.
@@ -47,7 +54,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return \Drupal\workflow\Entity\WorkflowState
    *   The initial state.
    */
-  public function createCreationState();
+  public function createCreationState(): WorkflowState;
 
   /**
    * Create a new state for this workflow.
@@ -63,7 +70,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return \Drupal\workflow\Entity\WorkflowState
    *   The new state.
    */
-  public function createState($sid, $save = TRUE);
+  public function createState($sid, $save = TRUE): WorkflowState;
 
   /**
    * Gets the initial state for a newly created entity.
@@ -71,7 +78,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return \Drupal\workflow\Entity\WorkflowState
    *   The initial state.
    */
-  public function getCreationState();
+  public function getCreationState(): WorkflowState;
 
   /**
    * Gets the ID of the initial state for a newly created entity.
@@ -79,7 +86,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return string
    *   The ID of the state.
    */
-  public function getCreationSid();
+  public function getCreationSid(): string;
 
   /**
    * Gets the first valid state ID, after the creation state.
@@ -99,7 +106,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return string
    *   A State ID.
    */
-  public function getFirstSid(EntityInterface $entity, $field_name, AccountInterface $user, $force = FALSE);
+  public function getFirstSid(EntityInterface $entity, $field_name, AccountInterface $user, $force = FALSE): string;
 
   /**
    * Returns the next state for the current state.
@@ -118,23 +125,26 @@ interface WorkflowInterface extends EntityInterface {
    *
    * @usage Is used in VBO Bulk actions.
    */
-  public function getNextSid(EntityInterface $entity, $field_name, AccountInterface $user, $force = FALSE);
+  public function getNextSid(EntityInterface $entity, $field_name, AccountInterface $user, $force = FALSE): string;
 
   /**
    * Gets all states for a given workflow.
    *
    * @param mixed $all
    *   Indicates to which states to return.
-   *   - TRUE = all, including Creation and Inactive;
-   *   - FALSE = only Active states, not Creation;
-   *   - 'CREATION' = only Active states, including Creation.
+   *   - WorkflowInterface::ALL_STATES = TRUE
+   *     = all states, including Creation and Inactive;
+   *   - WorkflowInterface::ACTIVE_STATES = FALSE
+   *     = only Active states, not Creation;
+   *   - WorkflowInterface::ACTIVE_CREATION_STATES = 'CREATION'
+   *     = Active states, including Creation.
    * @param bool $reset
    *   An option to refresh all caches.
    *
    * @return \Drupal\workflow\Entity\WorkflowState[]
    *   An array of WorkflowState objects.
    */
-  public function getStates($all = FALSE, $reset = FALSE);
+  public function getStates($all = WorkflowInterface::ACTIVE_STATES, bool $reset = FALSE): array;
 
   /**
    * Gets a state for a given workflow.
@@ -142,32 +152,25 @@ interface WorkflowInterface extends EntityInterface {
    * @param string $sid
    *   A state ID.
    *
-   * @return \Drupal\workflow\Entity\WorkflowState
+   * @return \Drupal\workflow\Entity\WorkflowState|null
    *   A WorkflowState object.
    */
-  public function getState($sid);
+  public function getState($sid): ?WorkflowState;
 
   /**
    * Creates a Transition for this workflow.
    *
    * @param string $from_sid
-   *   The From State ID.
+   *   The From state ID.
    * @param string $to_sid
-   *   The To State ID.
+   *   The To state ID.
    * @param array $values
    *   The list of new values.
    *
    * @return \Drupal\workflow\Entity\WorkflowConfigTransitionInterface
-   *   The created Transition.
+   *   The created Config Transition.
    */
-  public function createTransition($from_sid, $to_sid, array $values = []);
-
-  /**
-   * Sorts all Transitions for this workflow, according to State weight.
-   *
-   * This is only needed for the Admin UI.
-   */
-  public function sortTransitions();
+  public function createTransition($from_sid, $to_sid, array $values = []): WorkflowConfigTransitionInterface;
 
   /**
    * Loads all allowed ConfigTransitions for this workflow.
@@ -181,7 +184,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
    *   A list of Config Transitions.
    */
-  public function getTransitions(array $ids = NULL, array $conditions = []);
+  public function getTransitions(?array $ids = NULL, array $conditions = []): array;
 
   /**
    * Loads all allowed ConfigTransitions for this workflow, filtered by ID.
@@ -192,20 +195,20 @@ interface WorkflowInterface extends EntityInterface {
    * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
    *   A list of Config Transitions.
    */
-  public function getTransitionsById($tid);
+  public function getTransitionsById($tid): array;
 
   /**
    * Get a specific transition.
    *
    * @param string $from_sid
-   *   The From State ID.
+   *   The From state ID.
    * @param string $to_sid
-   *   The To State ID.
+   *   The To state ID.
    *
    * @return \Drupal\workflow\Entity\WorkflowConfigTransition[]
    *   A list of Config Transitions.
    */
-  public function getTransitionsByStateId($from_sid, $to_sid);
+  public function getTransitionsByStateId($from_sid, $to_sid): array;
 
   /*
    * The following are copied from PluginSettingsInterface.php.
@@ -217,7 +220,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return array
    *   A list of default settings, keyed by the setting name.
    */
-  public static function defaultSettings();
+  public static function defaultSettings(): array;
 
   /**
    * Returns the array of settings, including defaults for missing settings.
@@ -225,7 +228,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return array
    *   The array of settings.
    */
-  public function getSettings();
+  public function getSettings(): array;
 
   /**
    * Returns the value of a setting, or its default value if absent.
@@ -236,7 +239,7 @@ interface WorkflowInterface extends EntityInterface {
    * @return mixed
    *   The setting value.
    */
-  public function getSetting($key);
+  public function getSetting($key): mixed;
 
   /**
    * Sets the settings for the plugin.
@@ -247,7 +250,7 @@ interface WorkflowInterface extends EntityInterface {
    *
    * @return $this
    */
-  public function setSettings(array $settings);
+  public function setSettings(array $settings): static;
 
   /**
    * Sets the value of a setting for the plugin.
@@ -259,6 +262,6 @@ interface WorkflowInterface extends EntityInterface {
    *
    * @return $this
    */
-  public function setSetting($key, $value);
+  public function setSetting($key, $value): static;
 
 }

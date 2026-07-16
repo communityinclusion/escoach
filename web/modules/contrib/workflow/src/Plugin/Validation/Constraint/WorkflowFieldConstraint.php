@@ -9,7 +9,7 @@ use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
  *
  * @see https://drupalwatchdog.com/volume-5/issue-2/introducing-drupal-8s-entity-validation-api
  *
- * @todo D8: CommentForm & constraints on Field. Show allowed field names.
+ * @todo D8: CommentWithWorkflow & Field constraints. Show allowed field names.
  *
  * @Constraint(
  *   id = "WorkflowField",

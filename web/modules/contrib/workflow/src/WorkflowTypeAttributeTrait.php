@@ -8,8 +8,8 @@ use Drupal\workflow\Entity\WorkflowInterface;
 /**
  * Wrapper methods for Workflow* objects.
  *
- * Using this trait will add getWorkflow(), getWorkflowID() and setWorkflow()
- * methods to the class.
+ * This adds getWorkflow(), getWorkflowId(), setWorkflow(), setWorkflowId()
+ * methods to the class, implementing WorkflowTypeAttributeInterface.
  *
  * @ingroup workflow
  */
@@ -33,28 +33,23 @@ trait WorkflowTypeAttributeTrait {
   protected $workflow = NULL;
 
   /**
-   * Sets the Workflow.
-   *
-   * @param \Drupal\workflow\Entity\WorkflowInterface $workflow
-   *   The Workflow object.
+   * {@inheritdoc}
    */
-  public function setWorkflow(WorkflowInterface $workflow = NULL) {
+  public function setWorkflow(?WorkflowInterface $workflow = NULL): static {
     $this->wid = '';
     $this->workflow = NULL;
     if ($workflow) {
       $this->wid = $workflow->id();
       $this->workflow = $workflow;
     }
+    return $this;
   }
 
   /**
-   * Returns the Workflow object of this object.
-   *
-   * @return \Drupal\workflow\Entity\Workflow
-   *   Workflow object.
+   * {@inheritdoc}
    */
-  public function getWorkflow() {
-    if (!empty($this->workflow)) {
+  public function getWorkflow(): ?WorkflowInterface {
+    if ($this->workflow) {
       return $this->workflow;
     }
 
@@ -66,42 +61,41 @@ trait WorkflowTypeAttributeTrait {
   }
 
   /**
-   * Sets the Workflow ID of this object.
-   *
-   * @param string $wid
-   *   The Workflow ID.
-   *
-   * @return object
-   *   The Workflow object.
+   * {@inheritdoc}
    */
-  public function setWorkflowId($wid) {
+  public function setWorkflowId($wid): static {
     $this->wid = $wid;
     $this->workflow = NULL;
     return $this;
   }
 
   /**
-   * Returns the Workflow ID of this object.
-   *
-   * @return string
-   *   Workflow ID.
+   * {@inheritdoc}
    */
-  public function getWorkflowId() {
-    /** @var \Drupal\Core\Entity\ContentEntityBase $this */
+  public function getWorkflowId(): ?string {
     if (!empty($this->wid)) {
       return $this->wid;
     }
 
-    $value = $this->get('wid');
-    if (is_string($value)) {
-      $this->wid = $value;
+    try {
+      $value = $this->get('wid');
+      $wid = match (TRUE) {
+        // 'entity_reference' in WorkflowTransition.
+        is_object($value) => $value->{'target_id'} ?? '',
+        // 'list_string' in WorkflowTransition.
+        is_string($value) => $value,
+      };
+
+      if (empty($wid)) {
+        // Field name can be empty when attaching fields to WT in Field UI.
+        if ($field_name = $this->getFieldName()) {
+          $state = $this->getFromState();
+          $wid = $state?->getWorkflowId();
+        }
+      }
+      return $this->wid = $wid;
     }
-    elseif (is_object($value)) {
-      // In WorkflowTransition.
-      $wid = $value->getValue()[0]['target_id'] ?? '';
-      $this->wid = $wid;
-    }
-    else {
+    catch (\UnhandledMatchError $e) {
       workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', '');
     }
 

@@ -2,26 +2,28 @@
 
 namespace Drupal\geofield_map\Plugin\LeafletTileLayerPlugin;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield_map\Attribute\LeafletTileLayerPlugin;
 use Drupal\geofield_map\LeafletTileLayerPluginBase;
 
 /**
  * Provides an Stamen_Watercolor Leaflet TileLayer Plugin.
- *
- * @LeafletTileLayerPlugin(
- *   id = "Stamen_Watercolor",
- *   label = "Stamen Watercolor",
- *   url = "http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}",
- *   options = {
- *     "minZoom" = 1,
- *     "maxZoom" = 16,
- *     "ext" = "png",
- *     "subdomains" = "abcd",
- *     "attribution" = "Map tiles by
- *   <a href='http://stamen.com'>Stamen Design</a>,
- *   <a href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>
- *   &mdash; Map data &copy;
- *   <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
- *   }
- * )
  */
+#[LeafletTileLayerPlugin(
+  id: "Stamen_Watercolor",
+  label: new TranslatableMarkup("Stamen Watercolor"),
+  url: "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}{r}.{ext}",
+  options: [
+    "minZoom" => 0,
+    "maxZoom" => 20,
+    "subdomains" => "abcd",
+    "attribution" => "&copy; <a href='https://www.stadiamaps.com/'
+target='_blank'>Stadia Maps</a> &copy; <a href='https://www.stamen.com/'
+target='_blank'>Stamen Design</a> &copy; <a href='https://openmaptiles.org/'
+target='_blank''>OpenMapTiles</a> &copy;
+<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>
+contributors",
+    "ext" => "png",
+  ],
+)]
 class StamenWatercolor extends LeafletTileLayerPluginBase {}

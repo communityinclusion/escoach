@@ -1,8 +1,7 @@
 # Geofield Map
 
-Geofield Map is an advanced, complete and easy-to-use Geo Mapping solution for Drupal 8+,
-based on and fully compatible with the
-[Geofield](https://www.drupal.org/project/geofield "Geofield") module,
+Geofield Map is an advanced, complete and easy-to-use Geo Mapping solution for 
+Drupal 8+, based on and fully compatible with the [Geofield](https://www.drupal.org/project/geofield "Geofield") module,
 that **lets you manage the Geofield with an interactive Map both in back-end
 and in the front-end.** It represents the perfect solution to:
 
@@ -49,21 +48,23 @@ module.
 
    `/admin/config/system/geofield_map_settings`
 
-2. accessible to every user role granted the `Configure Geofield Map` permission.
+2. accessible to every user role granted the `Configure Geofield Map` 
+   permission.
 
 ### **Basic Use**
 
 Geofield Map module needs the following setups:
 
 - **Geofield Widget**: In a Content Type including a Geofield Field, go to
-  "Manage form display" and select "Geofield Map" as Geofield Widget. Specify the
-  Widget further settings for both Google or Leaflet Map types;
-- **Geofield Google Map Formatter**: In a Content Type including a Geofield Field,
-  go to "Manage display" and select "Geofield Google Map" as Geofield field
-  Formatter. Specify the Formatter further settings for specific personalization;
-- **Geofield Map Views**: In a View Display select the Geofield Google Map Format,
-  and be sure to add a Geofield type field in the fields list. Specify the View
-  Format settings for specific personalization;
+  "Manage form display" and select "Geofield Map" as Geofield Widget. Specify 
+  the Widget further settings for both Google or Leaflet Map types;
+- **Geofield Google Map Formatter**: In a Content Type including a Geofield 
+  Field, go to "Manage display" and select "Geofield Google Map" as Geofield 
+  field Formatter. Specify the Formatter further settings for specific
+  personalization;
+- **Geofield Map Views**: In a View Display select the Geofield Google Map 
+  Format, and be sure to add a Geofield type field in the fields list. Specify 
+  the View Format settings for specific personalization;
 
 ## **Technical Functionalities and specifications**
 
@@ -128,8 +129,8 @@ to manage overlapping markers;
   addresses Geocoding via the
   [Google Maps Places Autocomplete Service](https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete).
 - GeofieldMapWidget uses Leaflet MapTypes/Tiles pre-defined as
-  LeafletTileLayers D8+ plugins, but any third party module is able to define and
-  add its new LeafletTileLayer Plugins;
+  LeafletTileLayers D8+ plugins, but any third party module is able to define 
+  and add its new LeafletTileLayer Plugins;
 - As default (configurable) option, eventual overlapping markers will be
   Spiderfied, with the support of the
   [Overlapping Marker Spiderfier Library (for Google Maps)](https://github.com/jawj/OverlappingMarkerSpiderfier#overlapping-marker-spiderfier-for-google-maps-api-v3 "Overlapping Marker Spiderfier Library (for Google Maps)");
@@ -144,9 +145,9 @@ to manage overlapping markers;
 
 ### **Geofield Map Dynamic Markers Theming & Legends Specifications**
 
-Geofield Map (since 2.x release) introduces the MapThemer Plugin system that allows the
-definition of MapThemer Plugins able to dynamically differentiate Map
-Features/Markers based on Contents Types, Taxonomy Terms, Values, etc. Each
+Geofield Map (since 2.x release) introduces the MapThemer Plugin system that
+allows the definition of MapThemer Plugins able to dynamically differentiate 
+Map Features/Markers based on Contents Types, Taxonomy Terms, Values, etc. Each
 Plugin Type provides the automatic definition of a related Legend Build, that
 is able to fill the definition of a Custom GeofieldMapLegend block.
 
@@ -163,9 +164,9 @@ defined:
   List (Options) Type fields in View;
 
 As Drupal 8+ Plugin system based, the Geofield MapThemers Plugin and Legend
-block system is fully extendable and overridable. You, as Drupal 8+ developer, are
-free to override and extend the existing ones, or create your custom MapThemer
-based on your specific needs and logics.
+block system is fully extendable and overridable. You, as Drupal 8+ developer,
+are free to override and extend the existing ones, or create your custom 
+MapThemer based on your specific needs and logics.
 
 #### How to configure and use.
 
@@ -205,6 +206,8 @@ contextual rules.
    module integration is not enabled), all performed client-side by js.
   It might/should be restricted using the
   [Website Domain / HTTP referrers method](https://developers.google.com/maps/documentation/javascript/get-api-key#key-restrictions).
+  Note: The [Key module](https://www.drupal.org/project/key) is supported. When installed you can store the Gmap Api
+  Key into it and use the corresponding key id.
 
 
 ## Maintainers

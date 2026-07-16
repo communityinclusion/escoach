@@ -7,7 +7,7 @@ use Drupal\workflow\Event\WorkflowTransitionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Reacts to changes on Workflowtransitions.
+ * Reacts to changes on WorkflowTransitions.
  */
 class WorkflowTransitionSubscriber implements EventSubscriberInterface {
 
@@ -44,12 +44,15 @@ class WorkflowTransitionSubscriber implements EventSubscriberInterface {
       case "permit_status_workflow_pending":
         // $this->onPendingTransition($event);
         break;
+
       case "permit_status_workflow_open":
         // $this->onOpenTransition($event);
         break;
+
       case "permit_status_workflow_approved":
         // $this->onApprovedTransition($event);
         break;
+
       case "permit_status_workflow_declined":
         // $this->onDeclinedTransition($event);
         break;

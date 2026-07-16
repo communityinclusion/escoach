@@ -6,7 +6,6 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\workflow\Entity\WorkflowManager;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -35,46 +34,58 @@ class WorkflowHistoryAccess implements AccessInterface {
       return AccessResult::forbidden();
     }
 
-    $entity_id = $entity->id();
+    // Create a single cache key instead of deep array nesting.
+    $uid = $account?->id() ?? -1;
     $entity_type = $entity->getEntityTypeId();
+    $entity_id = $entity->id();
     $entity_bundle = $entity->bundle();
-    $field_name = workflow_url_get_parameter('field_name'); // @todo This doesn't work.
+    // @todo Url may specify field name, E.g., /node/60/workflow/field_workflow.
+    $field_name = workflow_url_get_field_name();
+    $cache_key = "{$uid}:{$entity_type}:{$entity_id}:{$field_name}";
 
-    $uid = ($account) ? $account->id() : -1;
-    if (isset($access[$uid][$entity_type][$entity_id][$field_name ? $field_name : 'no_field'])) {
-      return $access[$uid][$entity_type][$entity_id][$field_name ? $field_name : 'no_field'];
+    // Read cache with initial key. Field_name may be empty.
+    if ($access_result = $access[$cache_key] ?? NULL) {
+      return $access_result;
     }
 
-    // When having multiple workflows per bundle,
-    // use Views display 'Workflow history per entity' instead!
+    // N.B. This only works for 1 workflow_field per entity!
+    // N.B. For multiple workflow_fields per bundle, use Views instead!
+    // N.B. Keep aligned between WorkflowState, ~Transition, ~HistoryAccess.
+    // @todo Use proper 'WORKFLOW_TYPE' permissions for workflow_tab_access.
+    $is_owner = workflow_current_user($account)->isOwner($entity);
     $fields = _workflow_info_fields($entity, $entity_type, $entity_bundle, $field_name);
-    if (!$fields) {
-      return AccessResult::forbidden();
-    }
 
     $access_result = AccessResult::forbidden();
+    if (empty($fields)) {
+      // Save the result if no valid fields exist.
+      $access[$cache_key] = $access_result;
+      return $access_result;
+    }
 
-    // N.B. Keep aligned between WorkflowState, ~Transition, ~HistoryAccess.
-    // Determine if user is owner of the entity.
-    $is_owner = WorkflowManager::isOwner($account, $entity);
-
-    /*
-     * Determine if user has Access. Fill the cache.
-     */
-    // Note: for multiple workflow_fields per bundle, use Views instead!
-    // @todo Use proper 'WORKFLOW_TYPE' permissions for workflow_tab_access.
     foreach ($fields as $definition) {
+      // Note: Field name may have been altered/set, if empty initially.
+      $field_name = $definition->getName();
+      $cache_key = "{$uid}:{$entity_type}:{$entity_id}:{$field_name}";
+
+      // Read cache with updated key.
+      if ($access_result = $access[$cache_key] ?? NULL) {
+        return $access_result;
+      }
+
       $type_id = $definition->getSetting('workflow_type');
-      if ($account->hasPermission("access any $type_id workflow_transion overview")) {
-        $access_result = AccessResult::allowed();
-      }
-      elseif ($is_owner && $account->hasPermission("access own $type_id workflow_transion overview")) {
-        $access_result = AccessResult::allowed();
-      }
-      elseif ($account->hasPermission('administer nodes')) {
-        $access_result = AccessResult::allowed();
-      }
-      $access[$uid][$entity_type][$entity_id][$field_name ? $field_name : 'no_field'] = $access_result;
+      $access_result = match (TRUE) {
+        $account->hasPermission("access any $type_id workflow_transion overview")
+        => AccessResult::allowed(),
+        $is_owner && $account->hasPermission("access own $type_id workflow_transion overview")
+        => AccessResult::allowed(),
+        $account->hasPermission('administer nodes')
+        => AccessResult::allowed(),
+        default
+        => AccessResult::forbidden(),
+      };
+
+      // Save the result for the identified field.
+      $access[$cache_key] = $access_result;
     }
 
     return $access_result;

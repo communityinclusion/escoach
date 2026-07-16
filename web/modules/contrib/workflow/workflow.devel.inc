@@ -34,12 +34,13 @@ function workflow_debug($class_name, $function_name, $line_nr = '', $value1 = ''
   }
 
   $class_name_elements = explode("\\", $class_name);
-  $output = 'Testing... function ' . end($class_name_elements) . '::' . $function_name . '/' . $line_nr;
+  $class_name = end($class_name_elements);
+  $output = "Testing... function {$class_name}::{$function_name}/{$line_nr}";
   if ($value1) {
-    $output .= ' = ' . $value1;
+    $output .= " = $value1";
   }
   if ($value2) {
-    $output .= ' > ' . $value2;
+    $output .= " > $value2";
   }
   \Drupal::messenger()->addWarning($output, TRUE);
 }

@@ -118,9 +118,9 @@ class Deprecation
             return;
         }
 
-        set_error_handler(function () {});
+        set_error_handler(static function () {});
         try {
-            $parsedMsg = unserialize($this->message);
+            $parsedMsg = unserialize($this->message, ['allowed_classes' => false]);
         } finally {
             restore_error_handler();
         }

@@ -7,7 +7,7 @@ core_version_requirement: '>=8'
 dependencies:
   - workflow:workflow
 
-# Information added by Drupal.org packaging script on 2024-06-05
-version: '8.x-1.8'
+# Information added by Drupal.org packaging script on 2026-01-05
+version: '2.2.2'
 project: 'workflow'
-datestamp: 1717579631
+datestamp: 1767609688

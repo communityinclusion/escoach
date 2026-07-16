@@ -23,6 +23,7 @@ use Drupal\geofield_map\LeafletTileLayerPluginManager;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\geofield_map\Services\GeocoderService;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Plugin implementation of the 'geofield_map' widget.
@@ -189,7 +190,7 @@ class GeofieldMapWidget extends GeofieldLatLonWidget implements ContainerFactory
     LeafletTileLayerPluginManager $leaflet_tile_manager,
     AccountInterface $current_user,
     ModuleHandlerInterface $module_handler,
-    GeocoderService $geofield_map_geocoder
+    GeocoderService $geofield_map_geocoder,
   ) {
     parent::__construct(
       $plugin_id,
@@ -236,6 +237,20 @@ class GeofieldMapWidget extends GeofieldLatLonWidget implements ContainerFactory
       $container->get('module_handler'),
       $container->get('geofield_map.geocoder')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function flagErrors(FieldItemListInterface $items, ConstraintViolationListInterface $violations, array $form, FormStateInterface $form_state): void {
+    foreach ($violations as $violation) {
+      if ($violation->getMessageTemplate() == 'This value should not be null.') {
+        $form_state->setErrorByName($items->getName(), $this->t('No location has been set yet for required field "%field".', [
+          '%field' => $items->getFieldDefinition()->getLabel(),
+        ]));
+      }
+    }
+    parent::flagErrors($items, $violations, $form, $form_state);
   }
 
   /**
@@ -764,12 +779,20 @@ class GeofieldMapWidget extends GeofieldLatLonWidget implements ContainerFactory
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
 
-    /* @var \Drupal\geofield\Plugin\Field\FieldType\GeofieldItem $geofield_item */
+    /** @var \Drupal\geofield\Plugin\Field\FieldType\GeofieldItem $geofield_item */
     $geofield_item = $items->getValue()[$delta];
     if (empty($geofield_item) || $geofield_item['geo_type'] == 'Point') {
 
       $gmap_api_key = $this->getGmapApiKey();
-
+      // If api key is the id of a key stored in the key module, load that.
+      if ($this->moduleHandler->moduleExists('key')) {
+        $keyRepository = \Drupal::service('key.repository');
+        $key = $keyRepository->getKey($gmap_api_key);
+        if ($key) {
+          $gmap_api_key = $key->getKeyValue();
+        };
+      }
+      
       $latlon_value = [];
 
       foreach ($this->components as $component) {

@@ -6,6 +6,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\user\PermissionHandlerInterface;
 use Drupal\workflow\Entity\Workflow;
 use Drupal\workflow\Entity\WorkflowInterface;
+use Drupal\workflow\Entity\WorkflowRole;
 
 /**
  * Provides dynamic permissions for workflows of different types.
@@ -17,16 +18,16 @@ class WorkflowPermissions implements PermissionHandlerInterface {
   /**
    * A permissions callback.
    *
-   * @see workflow.permissions.yml
-   *
-   * @param \Drupal\workflow\Entity\WorkflowInterface $workflow
+   * @param \Drupal\workflow\Entity\WorkflowInterface|null $workflow
    *   (Optional) workflow object.
-
+   *
    * @return array
    *   An array of permissions per workflow type.
-   *   @see \Drupal\user\PermissionHandlerInterface::getPermissions()
+   *
+   * @see \Drupal\user\PermissionHandlerInterface::getPermissions()
+   * @see workflow.permissions.yml
    */
-  public function getPermissions(WorkflowInterface $workflow = NULL) {
+  public function getPermissions(?WorkflowInterface $workflow = NULL) {
     $perms = [];
     // Generate workflow permissions for all workflow types.
     foreach (Workflow::loadMultiple($workflow ? [$workflow->id()] : NULL) as $type) {
@@ -53,7 +54,7 @@ class WorkflowPermissions implements PermissionHandlerInterface {
     return [
       // D7->D8-Conversion of the 'User 1 is special' permission (@see NodePermissions::bypass node access).
       "bypass $type_id workflow_transition access" => [
-        'title' => $this->t('%type_name: Bypass transition access control', $type_params),
+        'title' => $this->t('%type_name: Bypass Workflow transition access control', $type_params),
         'description' => $this->t('View, edit and delete all transitions regardless of permission restrictions.'),
         'restrict access' => TRUE,
         'dependencies' => [
@@ -74,7 +75,7 @@ class WorkflowPermissions implements PermissionHandlerInterface {
       ],
       // D7->D8-Conversion of 'schedule workflow transitions' permission to "schedule $type_id transition" (@see NodePermissions::create content).
       "schedule $type_id workflow_transition" => [
-        'title' => $this->t('%type_name: Schedule state transition', $type_params),
+        'title' => $this->t('%type_name: Schedule Workflow state transition', $type_params),
         'description' => $this->t('Role is enabled to schedule state transitions.'),
         'dependencies' => [
           'config' => ["workflow.workflow.$type_id"],
@@ -103,9 +104,9 @@ class WorkflowPermissions implements PermissionHandlerInterface {
           'config' => ["workflow.workflow.$type_id"],
         ],
       ],
-      // D7->D8-Conversion of 'edit workflow comment' to "edit own/any $type_id transition"
+      // D7->D8-Conversion of 'edit workflow comment' to "edit own/any $type_id transition".
       "edit own $type_id workflow_transition" => [
-        'title' => $this->t('%type_name: Edit own comments', $type_params),
+        'title' => $this->t('%type_name: Edit own Workflow comments', $type_params),
         'description' => $this->t('Edit the comment of own executed state transitions.'),
         'restrict access' => TRUE,
         'dependencies' => [
@@ -113,7 +114,7 @@ class WorkflowPermissions implements PermissionHandlerInterface {
         ],
       ],
       "edit any $type_id workflow_transition" => [
-        'title' => $this->t('%type_name: Edit any comments', $type_params),
+        'title' => $this->t('%type_name: Edit any Workflow comments', $type_params),
         'description' => $this->t('Edit the comment of any executed state transitions.'),
         'restrict access' => TRUE,
         'dependencies' => [
@@ -131,7 +132,7 @@ class WorkflowPermissions implements PermissionHandlerInterface {
        */
       // D7->D8-Conversion of 'revert workflow' permission to "revert any/own $type_id transition".
       "revert own $type_id workflow_transition" => [
-        'title' => $this->t('%type_name: Revert own state transition', $type_params),
+        'title' => $this->t('%type_name: Revert own Workflow state transition', $type_params),
         'description' => $this->t('Allow user to revert own last executed state transition on entity.'),
         'restrict access' => TRUE,
         'dependencies' => [
@@ -139,7 +140,7 @@ class WorkflowPermissions implements PermissionHandlerInterface {
         ],
       ],
       "revert any $type_id workflow_transition" => [
-        'title' => $this->t('%type_name: Revert any state transition', $type_params),
+        'title' => $this->t('%type_name: Revert any Workflow state transition', $type_params),
         'description' => $this->t('Allow user to revert any last executed state transition on entity.'),
         'restrict access' => TRUE,
         'dependencies' => [
@@ -157,8 +158,7 @@ class WorkflowPermissions implements PermissionHandlerInterface {
   }
 
   /**
-   * Implements hook_ENTITY_TYPE_insert() for 'workflow_type'.
-   * Implements hook_ENTITY_TYPE_delete() for 'workflow_type'.
+   * Implements hook_ENTITY_TYPE_insert()/delete() for 'workflow_type'.
    *
    * Grant/Revoke all roles to participate in a Workflow by default.
    *
@@ -169,23 +169,20 @@ class WorkflowPermissions implements PermissionHandlerInterface {
    */
   public function changeRolePermissions(WorkflowInterface $workflow, bool $grant) {
     $type_id = $workflow->id();
-    $roles = workflow_get_user_role_names();
-    unset($roles[WORKFLOW_ROLE_AUTHOR_RID]);
+    $roles = workflow_allowed_user_role_names();
+    unset($roles[WorkflowRole::AUTHOR_RID]);
 
     foreach ($roles as $rid => $role) {
       if ($grant) {
         // Enable a default 'participate' permission for all roles.
         $permissions = ["create $type_id workflow_transition" => $grant];
-        user_role_change_permissions($rid, $permissions);
       }
       else {
         // Disable all permissions for all roles.
-        // Disable all permissions for all roles.
         $permissions = $this->getPermissions($workflow);
         $permissions = array_map(fn($permissions) => $grant, $permissions);
-
-        user_role_change_permissions($rid, $permissions);
       }
+      user_role_change_permissions($rid, $permissions);
     }
   }
 

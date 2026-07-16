@@ -25,14 +25,14 @@ class WorkflowTypeForm extends EntityForm {
          when the workflow status is shown during editing of content.'
       ),
       '#title' => $this->t('Label'),
-      '#default_value' => $this->entity->label(),
+      '#default_value' => $workflow->label(),
       '#required' => TRUE,
     ];
 
     $form['id'] = [
       '#type' => 'machine_name',
-      '#default_value' => $this->entity->id(),
-      '#disabled' => !$this->entity->isNew(),
+      '#default_value' => $workflow->id(),
+      '#disabled' => !$workflow->isNew(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#size' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#required' => TRUE,
@@ -42,7 +42,7 @@ class WorkflowTypeForm extends EntityForm {
       ),
       '#machine_name' => [
         // Add local helper function 'exists' at the bottom of this class.
-         'exists' => [$this, 'exists'],
+        'exists' => [$this, 'exists'],
         'source' => ['label'],
         'replace_pattern' => '([^a-z0-9_]+)|(^custom$)',
         'error' => $this->t(
@@ -56,7 +56,8 @@ class WorkflowTypeForm extends EntityForm {
     $form['permissions'] = [
       '#type' => 'details',
       '#title' => $this->t('Workflow permissions'),
-      '#open' => TRUE, // Controls HTML5 'open' attribute. Defaults to FALSE.
+      // '#open' Controls HTML5 'details' 'open' attribute. Defaults to FALSE.
+      '#open' => FALSE,
       '#description' => $this->t(
         'To enable further Workflow functionality, go to the
          /admin/people/permissions page and select any roles that should
@@ -99,7 +100,8 @@ class WorkflowTypeForm extends EntityForm {
     $form['basic'] = [
       '#type' => 'details',
       '#title' => $this->t('Workflow form settings'),
-      '#open' => TRUE, // Controls HTML5 'open' attribute. Defaults to FALSE.
+      // '#open' Controls HTML5 'details' 'open' attribute. Defaults to FALSE.
+      '#open' => TRUE,
     ];
     $form['basic']['fieldset'] = [
       '#type' => 'select',
@@ -111,35 +113,28 @@ class WorkflowTypeForm extends EntityForm {
       '#title' => $this->t('Show the form in a fieldset?'),
       '#default_value' => $workflow->getSetting('fieldset'),
     ];
+    $form['basic']['name_as_title'] = [
+      '#type' => 'checkbox',
+      '#attributes' => ['class' => ['container-inline']],
+      '#title' => $this->t(
+        'Use the workflow name as the title of the fieldset'
+      ),
+      '#default_value' => $workflow->getSetting('name_as_title'),
+      '#description' => $this->t(
+        'The workflow section of the editing form is in its own fieldset.
+         Checking the box will add the workflow name as a title to the fieldset.'
+      ),
+    ];
     $form['basic']['options'] = [
       '#type' => 'select',
       '#title' => $this->t('How to show the available states'),
       '#required' => FALSE,
       '#default_value' => $workflow->getSetting('options'),
       // '#multiple' => TRUE / FALSE,
-      '#options' => [
-        // These options are taken from options.module.
-        'select' => $this->t('Select list'),
-        'radios' => $this->t('Radio buttons'),
-        'buttons' => $this->t('Action buttons'),
-        'dropbutton' => $this->t('Drop button'),
-      ],
+      '#options' => WorkflowTypeForm::getStateWidgetOptions(),
       '#description' => $this->t(
         'The Widget shows all available states.
          Decide which is the best way to show them.'
-      ),
-    ];
-    $form['basic']['name_as_title'] = [
-      '#type' => 'checkbox',
-      '#attributes' => ['class' => ['container-inline']],
-      '#title' => $this->t(
-        'Use the workflow name as the title of the workflow form'
-      ),
-      '#default_value' => $workflow->getSetting('name_as_title'),
-      '#description' => $this->t(
-        'The workflow section of the editing form is in its own fieldset.
-         Checking the box will add the workflow name as the title of workflow
-         section of the editing form.'
       ),
     ];
     $form['basic']['schedule_enable'] = [
@@ -164,8 +159,8 @@ class WorkflowTypeForm extends EntityForm {
       '#title' => $this->t('Always update the entity last updated timestamp'),
       '#description' => $this->t('Entity last updated timestamp is always
         updated as long as transition is allowed. This setting is useful to
-        indicate that the entity is updated even when transition sid remains
-        the same.'),
+        indicate that the entity is updated even when workflow state value
+        does not change.'),
       '#required' => FALSE,
       '#default_value' => $workflow->getSetting('always_update_entity'),
     ];
@@ -190,16 +185,17 @@ class WorkflowTypeForm extends EntityForm {
 
     $form['watchdog'] = [
       '#type' => 'details',
-      '#title' => $this->t('Watchdog'),
+      '#title' => $this->t('Logger'),
+      // '#open' Controls HTML5 'details' 'open' attribute. Defaults to FALSE.
+      '#open' => TRUE,
       '#description' => $this->t(
-        'Informational watchdog messages can be logged when a transition is
-         executed (state of a node is changed).'
+        'Informational messages can be logged when a transition is
+         executed (state of an entity has changed).'
       ),
-      '#open' => TRUE, // Controls HTML5 'open' attribute. Defaults to FALSE.
     ];
     $form['watchdog']['watchdog_log'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Log watchdog messages upon state change'),
+      '#title' => $this->t('Log messages upon state change'),
       '#default_value' => $workflow->getSetting('watchdog_log'),
       '#description' => '',
     ];
@@ -208,9 +204,22 @@ class WorkflowTypeForm extends EntityForm {
   }
 
   /**
+   * Returns the list of state widget options.
+   */
+  public static function getStateWidgetOptions(): array {
+    return [
+      // These options are taken from options.module.
+      'select' => t('Select list'),
+      'radios' => t('Radio buttons'),
+      'buttons' => t('Action buttons'),
+      'dropbutton' => t('Drop button'),
+    ];
+  }
+
+  /**
    * {@inheritdoc}
    */
-  protected function actions(array $form, FormStateInterface $form_state) {
+  protected function actions(array $form, FormStateInterface $form_state): array {
     $actions = parent::actions($form, $form_state);
     // $actions['submit']['#value'] = $this->t('Save');
     return $actions;
@@ -219,8 +228,8 @@ class WorkflowTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
+  public function save(array $form, FormStateInterface $form_state): int {
+    /** @var \Drupal\workflow\Entity\Workflow $workflow */
     $workflow = $this->entity;
 
     // Prevent leading and trailing spaces.
@@ -266,7 +275,8 @@ class WorkflowTypeForm extends EntityForm {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state): void {
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
     $workflow = $this->entity;
     $name = $workflow->id();
 
@@ -288,8 +298,10 @@ class WorkflowTypeForm extends EntityForm {
    * @return bool
    *   TRUE if an entity with the same name already exists, FALSE otherwise.
    */
-  public function exists($id) {
-    $type = $this->entity->getEntityTypeId();
+  public function exists($id): bool {
+    /** @var \Drupal\workflow\Entity\WorkflowInterface $workflow */
+    $workflow = $this->entity;
+    $type = $workflow->getEntityTypeId();
 
     return (bool) $this->entityTypeManager->getStorage($type)->load($id);
   }

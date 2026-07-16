@@ -50,7 +50,7 @@ workflow.workflow.*:
           label: 'Show comment on the Content edit form'
         watchdog_log:
           type: integer
-          label: 'Log watchdog messages upon state change'
+          label: 'Log messages upon state change'
 
 field.storage_settings.workflow:
   type: mapping
@@ -79,3 +79,37 @@ field.storage_settings.workflow:
 field.field_settings.workflow:
   type: mapping
   label: 'Workflow settings'
+
+action.configuration.workflow_node_next_state_action:
+  type: mapping
+  label: 'Configuration for the Change entity to next Workflow state action'
+  mapping:
+    field_name:
+      type: string
+      label: 'The field name of the entity'
+    to_sid:
+      type: string
+      label: 'The the new state ID'
+    comment:
+      type: string
+      label: 'The comment to add to the transition'
+    force:
+      type: boolean
+      label: 'Indicator if the transition must be forced, even if not allowed'
+
+action.configuration.workflow_node_given_state_action:
+  type: mapping
+  label: 'Configuration for the Change entity to new Workflow state action'
+  mapping:
+    field_name:
+      type: string
+      label: 'The field name of the entity'
+    to_sid:
+      type: string
+      label: 'The the new state ID'
+    comment:
+      type: string
+      label: 'The comment to add to the transition'
+    force:
+      type: boolean
+      label: 'Indicator if the transition must be forced, even if not allowed'

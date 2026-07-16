@@ -6,56 +6,91 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Hook\Attribute\LegacyHook;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\workflow\Controller\WorkflowTransitionListController;
-use Drupal\workflow\Entity\WorkflowManager;
-use Drupal\workflow\WorkflowPermissions;
+use Drupal\workflow\Hook\WorkflowEntityHooks;
+use Drupal\workflow\Hook\WorkflowTypeFormHooks;
 
 /**********************************************************************
  * CRUD hooks.
  */
 
 /**
+ * Implements hook_entity_presave().
+ */
+#[LegacyHook]
+function workflow_entity_presave(EntityInterface $entity): void {
+  \Drupal::service(WorkflowEntityHooks::class)->entityPreSave($entity);
+}
+
+/**
  * Implements hook_entity_insert().
  */
-function workflow_entity_insert(EntityInterface $entity) {
-  _workflow_execute_transitions($entity);
+#[LegacyHook]
+function workflow_entity_insert(EntityInterface $entity): void {
+  \Drupal::service(WorkflowEntityHooks::class)->entityInsert($entity);
 }
 
 /**
  * Implements hook_entity_update().
  */
-function workflow_entity_update(EntityInterface $entity) {
-  _workflow_execute_transitions($entity);
+#[LegacyHook]
+function workflow_entity_update(EntityInterface $entity): void {
+  \Drupal::service(WorkflowEntityHooks::class)->entityUpdate($entity);
 }
 
 /**
  * Implements hook_entity_delete().
  *
- * Delete the corresponding workflow table records.
+ * Deletes the corresponding workflow table records.
  */
-function workflow_entity_delete(EntityInterface $entity) {
-  WorkflowManager::entityDelete($entity);
+#[LegacyHook]
+function workflow_entity_delete(EntityInterface $entity): void {
+  \Drupal::service(WorkflowEntityHooks::class)->entityDelete($entity);
 }
 
 /**
- * Implements hook_entity_operation for workflow_transition.
+ * Implements hook_form_FORM_ID_alter() for "entity_form_display_edit_form".
+ *
+ * Adds workflow settings to the form.
+ */
+#[LegacyHook]
+function workflow_form_entity_form_display_edit_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
+  \Drupal::service(WorkflowTypeFormHooks::class)->formAlter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for "entity_form_display" form.
+ *
+ * Ensures that the to_sid widget is not hidden by site builder.
+ */
+#[LegacyHook]
+function workflow_entity_form_display_presave(EntityInterface $entity): void {
+  \Drupal::service(WorkflowTypeFormHooks::class)->entityPreSave($entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for "entity_form_display" form.
+ *
+ * Saves workflow settings.
+ */
+#[LegacyHook]
+function workflow_entity_form_display_update(EntityInterface $entity): void {
+  \Drupal::service(WorkflowTypeFormHooks::class)->entityUpdate($entity);
+}
+
+/**
+ * Implements hook_entity_operation() for workflow_transition.
  *
  * Core hooks: Change the operations column in a Entity list.
  * Adds a 'revert' operation.
  *
  * @see EntityListBuilder::getOperations()
  */
-function workflow_entity_operation(EntityInterface $entity) {
-  $operations = [];
-
-  // Check correct entity type.
-  if (in_array($entity->getEntityTypeId(), ['workflow_transition'])) {
-    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $entity */
-    $operations = WorkflowTransitionListController::addRevertOperation($entity);
-  }
-
-  return $operations;
+#[LegacyHook]
+function workflow_entity_operation(EntityInterface $entity): array {
+  return \Drupal::service(WorkflowEntityHooks::class)->entityOperation($entity);
 }
 
 /**
@@ -67,8 +102,9 @@ function workflow_entity_operation(EntityInterface $entity) {
  *
  * @see hook_user_cancel()
  */
-function workflow_user_cancel($edit, AccountInterface $account, $method) {
-  WorkflowManager::cancelUser($edit, $account, $method);
+#[LegacyHook]
+function workflow_user_cancel($edit, AccountInterface $account, $method): void {
+  \Drupal::service(WorkflowEntityHooks::class)->userDelete($account);
 }
 
 /**
@@ -76,8 +112,9 @@ function workflow_user_cancel($edit, AccountInterface $account, $method) {
  *
  * @todo Hook hook_user_delete does not exist. hook_ENTITY_TYPE_delete?
  */
-function workflow_user_delete($account) {
-  WorkflowManager::deleteUser($account);
+#[LegacyHook]
+function workflow_user_delete($account): void {
+  \Drupal::service(WorkflowEntityHooks::class)->userDelete($account);
 }
 
 /**
@@ -85,9 +122,9 @@ function workflow_user_delete($account) {
  *
  * Is called when adding a new Workflow type.
  */
-function workflow_workflow_type_insert(EntityInterface $entity) {
-  $permissions_manager = new WorkflowPermissions();
-  $permissions_manager->changeRolePermissions($entity, TRUE);
+#[LegacyHook]
+function workflow_workflow_type_insert(EntityInterface $entity): void {
+  \Drupal::service(WorkflowEntityHooks::class)->workflowTypeInsert($entity);
 }
 
 /**
@@ -95,22 +132,7 @@ function workflow_workflow_type_insert(EntityInterface $entity) {
  *
  * Is called when deleting a new Workflow type.
  */
-function workflow_workflow_type_predelete(EntityInterface $entity) {
-  $permissions_manager = new WorkflowPermissions();
-  $permissions_manager->changeRolePermissions($entity, FALSE);
-}
-
-/**
- * Execute transitions. If prohibited, restore original field value.
- *
- * - insert: use hook_insert(), to have the Entity ID determined when saving transitions.
- * - update: use hook_presave() to revert executions,
- * - so, do not use hook_update().
- *
- * @param \Drupal\Core\Entity\EntityInterface $entity
- *   An Entity.
- */
-function _workflow_execute_transitions(EntityInterface $entity) {
-  // Execute/save the transitions from the widgets in the entity form.
-  WorkflowManager::executeTransitionsOfEntity($entity);
+#[LegacyHook]
+function workflow_workflow_type_predelete(EntityInterface $entity): void {
+  \Drupal::service(WorkflowEntityHooks::class)->workflowTypePredelete($entity);
 }

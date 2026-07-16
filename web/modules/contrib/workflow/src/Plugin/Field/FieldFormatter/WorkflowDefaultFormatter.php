@@ -6,10 +6,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\workflow\Controller\WorkflowTransitionFormController;
 use Drupal\workflow\Entity\WorkflowManager;
-use Drupal\workflow\Entity\WorkflowState;
 use Drupal\workflow\Form\WorkflowTransitionForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -26,7 +25,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
-class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
+class WorkflowDefaultFormatter extends FormatterBase {
 
   /**
    * The workflow storage.
@@ -40,7 +39,7 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
    *
    * @var \Drupal\Core\Session\AccountInterface
    */
-  protected $currentUser;
+  protected $user;
 
   /**
    * The render controller.
@@ -73,16 +72,16 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
    *   The view mode.
    * @param array $third_party_settings
    *   Third party settings.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
+   * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity_type manager.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AccountInterface $user, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->viewBuilder = $entity_type_manager->getViewBuilder('workflow_transition');
     $this->storage = $entity_type_manager->getStorage('workflow_transition');
-    $this->currentUser = $current_user;
+    $this->user = $user;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -107,71 +106,83 @@ class WorkflowDefaultFormatter extends FormatterBase implements ContainerFactory
    * {@inheritdoc}
    *
    * N.B. A large part of this function is taken from CommentDefaultFormatter.
+   *
+   * @see Drupal\comment\Plugin\Field\FieldFormatter\CommentDefaultFormatter
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
-    $output = [];
+    /** @var \Drupal\workflow\Plugin\Field\WorkflowItemListInterface $items */
+    $elements = [];
 
-    $field_name = $this->fieldDefinition->getName();
     $entity = $items->getEntity();
-    $entity_type_id = $entity->getEntityTypeId();
+    $field_name = $items->getName();
+    // $current_state = $items->getState(); // @todo Nicer? But less exceptions.
+    $current_state = $items->getCurrentState();
 
-    // @todo Perhaps global user is not always the correct user.
-    // E.g., on ScheduledTransition->execute()? But this function is mostly used in UI.
-    $user = $this->currentUser; // @todo #2287057: OK?
+    // Avoid creating workflow_state_formatter by saving an error state.
+    $error_exists = FALSE;
 
-    $current_sid = WorkflowManager::getCurrentStateId($entity, $field_name);
-    // First compose the current value with the normal formatter from list.module.
-    $elements = workflow_state_formatter($entity, $field_name, $current_sid);
-
-    /** @var \Drupal\workflow\Entity\WorkflowState $current_state */
-    $current_state = WorkflowState::load($current_sid);
     // The state must not be deleted, or corrupted.
-    if (!$current_state) {
-      return $elements;
+    if (!$error_exists && !$current_state) {
+      $error_exists = TRUE;
     }
 
     // Check permission, so that even with state change rights,
     // the form can be suppressed from the entity view (#1893724).
     $type_id = $current_state->getWorkflowId();
-    if (!$this->currentUser->hasPermission("access $type_id workflow_transition form")) {
-      return $elements;
+    if (!$error_exists && !$this->user->hasPermission("access $type_id workflow_transition form")) {
+      $error_exists = TRUE;
     }
 
     // Workflows are added to the search results and search index by
     // workflow_node_update_index() instead of by this formatter, so don't
     // return anything if the view mode is search_index or search_result.
-    if (in_array($this->viewMode, ['search_result', 'search_index'])) {
-      return $elements;
+    if (!$error_exists && in_array($this->viewMode, ['search_result', 'search_index'])) {
+      $error_exists = TRUE;
     }
 
-    if ($entity_type_id == 'comment') {
-      // No Workflow form allowed on a comment display.
+    if (!$error_exists && WorkflowManager::isTargetCommentEntity($items)) {
+      // No Workflow form allowed on a CommentWithWorkflow display.
       // (Also, this avoids a lot of error messages.)
-      return $elements;
+      $error_exists = TRUE;
+    }
+
+    if (!$error_exists && !$items->first()) {
+      // An entity can exist already before adding the workflow field.
+      $error_exists = TRUE;
     }
 
     // Only build form if user has possible target state(s).
-    if (!$current_state->showWidget($entity, $field_name, $user, FALSE)) {
-      return $elements;
+    // Do not show the form in the print preview mode.
+    if (!$error_exists) {
+      $transition = $items->getDefaultTransition();
+      $controller = WorkflowTransitionFormController::create($transition);
+      $show_options_widget = $controller->mustShowOptionsWidget();
+      if (!$show_options_widget) {
+        $error_exists = TRUE;
+      }
     }
 
-    // Remove the default formatter. We are now building the widget.
-    $elements = [];
+    if ($error_exists) {
+      // Compose the current value with the normal formatter from list.module.
+      $elements = workflow_state_formatter($entity, $field_name, $current_state->id());
+    }
+    else {
+      // Note: $transition is fetched earlier.
+      // BEGIN Copy from CommentDefaultFormatter.
+      // @see Drupal\comment\Plugin\Field\FieldFormatter\CommentDefaultFormatter
+      // Add the WorkflowTransitionForm to the page.
+      $output['workflows'] = WorkflowTransitionForm::getForm($transition);
 
-    // BEGIN Copy from CommentDefaultFormatter.
-    $elements['#cache']['contexts'][] = 'user.permissions';
-    // Add the WorkflowTransitionForm to the page.
-    $output['workflows'] = WorkflowTransitionForm::createInstance($entity, $field_name, []);
+      $elements['#cache']['contexts'][] = 'user.roles';
+      $elements['#cache']['contexts'][] = 'user.permissions';
+      $elements[] = $output + [
+        '#workflow_type' => $this->getFieldSetting('workflow_type'),
+        '#workflow_display_mode' => $this->getFieldSetting('default_mode'),
+        'workflows' => [],
+      ];
+      // END Copy from CommentDefaultFormatter.
+    }
 
-    // Only show the add workflow form if the user has permission.
-    $elements['#cache']['contexts'][] = 'user.roles';
-    // Do not show the form for the print view mode.
-    $elements[] = $output + [
-      '#workflow_type' => $this->getFieldSetting('workflow_type'),
-      '#workflow_display_mode' => $this->getFieldSetting('default_mode'),
-      'workflows' => [],
-    ];
-    // END Copy from CommentDefaultFormatter.
     return $elements;
   }
 

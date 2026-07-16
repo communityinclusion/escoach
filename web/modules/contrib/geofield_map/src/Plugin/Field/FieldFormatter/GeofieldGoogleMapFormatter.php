@@ -122,7 +122,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
   /**
    * The token service.
    *
-   * @var \Drupal\core\Utility\Token
+   * @var \Drupal\Core\Utility\Token
    */
   protected $token;
 
@@ -175,7 +175,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
    *   The Renderer service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
-   * @param \Drupal\core\Utility\Token $token
+   * @param \Drupal\Core\Utility\Token $token
    *   The token service.
    * @param \Drupal\geofield_map\Services\GoogleMapsService $google_maps_service
    *   The Google Maps service.
@@ -201,7 +201,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
     ModuleHandlerInterface $module_handler,
     Token $token,
     GoogleMapsService $google_maps_service,
-    MarkerIconService $marker_icon_service
+    MarkerIconService $marker_icon_service,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->defaultSettings = self::getDefaultSettings();
@@ -327,7 +327,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
     ];
 
     $file_upload_help = $this->markerIcon->getFileUploadHelp();
-    $fid = (integer) !empty($settings['map_marker_and_infowindow']['icon_file_wrapper']['icon_file']['fids']) ? $settings['map_marker_and_infowindow']['icon_file_wrapper']['icon_file']['fids'] : NULL;
+    $fid = !empty($settings['map_marker_and_infowindow']['icon_file_wrapper']['icon_file']['fids']) ? $settings['map_marker_and_infowindow']['icon_file_wrapper']['icon_file']['fids'] : NULL;
     $elements['map_marker_and_infowindow']['icon_file_wrapper'] = [
       '#type' => 'container',
       'label' => [
@@ -335,7 +335,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
       ],
       'description' => [
         '#markup' => Markup::create($this->t('The chosen icon file will be used as Marker for this content @file_upload_help', [
-          '@file_upload_help' => $this->renderer->renderPlain($file_upload_help),
+          '@file_upload_help' => $this->renderer->renderInIsolation($file_upload_help),
         ])),
       ],
       'icon_file' => $this->markerIcon->getIconFileManagedElement($fid),
@@ -398,7 +398,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
         '#map-marker-and-infowindow-wrapper',
         $data,
       ));
-    };
+    }
     return $response;
   }
 
@@ -745,7 +745,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
     // Render the entity with the selected view mode.
     if (isset($description_field) && $description_field === '#rendered_entity' && is_object($entity)) {
       $build = $this->entityTypeManager->getViewBuilder($entity_type)->view($entity, $map_settings['map_marker_and_infowindow']['view_mode']);
-      $description[] = $this->renderer->renderPlain($build);
+      $description[] = $this->renderer->renderInIsolation($build);
     }
     // Normal rendering via fields.
     elseif (isset($description_field)) {
@@ -790,7 +790,7 @@ class GeofieldGoogleMapFormatter extends FormatterBase implements ContainerFacto
           $image_style = $map_settings['map_marker_and_infowindow']['icon_file_wrapper']['image_style'];
         }
 
-        if ((integer) !empty($map_settings['map_marker_and_infowindow']['icon_file_wrapper']['icon_file']['fids'])) {
+        if (!empty($map_settings['map_marker_and_infowindow']['icon_file_wrapper']['icon_file']['fids'])) {
           $fid = $map_settings['map_marker_and_infowindow']['icon_file_wrapper']['icon_file']['fids'];
         }
 

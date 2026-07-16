@@ -33,7 +33,7 @@ class WorkflowState extends FieldableEntity {
       'name' => $this->t('Machine readable name'),
       'state' => $this->t('Human readable name'),
       'weight' => $this->t('Weight (order) of the state'),
-      'sysid' => $this->t('Type of state, usually either WORKFLOW_CREATION or empty'),
+      'sysid' => $this->t("Indicates if this is the 'creation' state"),
       'status' => $this->t('Status'),
     ];
 

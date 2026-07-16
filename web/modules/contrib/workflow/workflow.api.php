@@ -9,7 +9,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\UserInterface;
 use Drupal\workflow\Entity\WorkflowConfigTransition;
-use Drupal\workflow\Entity\WorkflowState;
 use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
 /**
@@ -28,7 +27,7 @@ use Drupal\workflow\Entity\WorkflowTransitionInterface;
  * @return array
  *   The new actions, to be added to the entity list.
  */
-function hook_workflow_operations($op, EntityInterface $entity = NULL) {
+function hook_workflow_operations($op, ?EntityInterface $entity = NULL): array {
   $operations = [];
 
   switch ($op) {
@@ -61,7 +60,6 @@ function hook_workflow_operations($op, EntityInterface $entity = NULL) {
       // As of D8, below hook_workflow_operations is removed,
       // in favour of core hooks.
       // @see EntityListBuilder::getOperations, workflow_operations, workflow.api.php.
-
       // Your module may add operations to the Entity list.
       /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
       $transition = $entity;
@@ -83,21 +81,21 @@ function hook_workflow_operations($op, EntityInterface $entity = NULL) {
  *   The current workflow operation.
  *   E.g., 'transition pre', 'transition post'.
  * @param \Drupal\workflow\Entity\WorkflowTransitionInterface $transition
- *   The transition, that contains all of the above.
+ *   The Transition, that contains all of the above.
  * @param \Drupal\user\UserInterface $user
  *   The user.
  *
- * @return bool|void
+ * @return bool
  *   The return value, depending on $op.
  */
 function hook_workflow($op, WorkflowTransitionInterface $transition, UserInterface $user) {
   switch ($op) {
     case 'transition permitted':
       // As of version 8.x-1.x,
-      // this operation is never called to check if transition is permitted.
+      // this operation is never called to check if Transition is permitted.
       // This was called in the following situations:
       // case 1. when building a widget with list of available transitions;
-      // case 2. when executing a transition, just before the 'transition pre';
+      // case 2. when executing a Transition, just before the 'transition pre';
       // case 3. when showing a 'revert state' link in a Views display.
       // Your module's implementation may return FALSE here and disallow
       // the execution, or avoid the presentation of the new State.
@@ -112,8 +110,7 @@ function hook_workflow($op, WorkflowTransitionInterface $transition, UserInterfa
       // Hook is called when showing the Transition Revert form.
       // Implement this hook if you need to control this.
       // If you return FALSE here, you will veto the transition.
-
-      // workflow_debug(__FILE__, __FUNCTION__, __LINE__, $op, '');
+      // workflow_debug(__FILE__, __FUNCTION__, __LINE__, $op, ''); .
       return TRUE;
 
     case 'transition pre':
@@ -121,8 +118,7 @@ function hook_workflow($op, WorkflowTransitionInterface $transition, UserInterfa
       // Implement this hook if you need to change/do something BEFORE anything
       // is saved to the database.
       // If you return FALSE here, you will veto the transition.
-
-      // workflow_debug(__FILE__, __FUNCTION__, __LINE__, $op, '');
+      // workflow_debug(__FILE__, __FUNCTION__, __LINE__, $op, ''); .
       return TRUE;
 
     case 'transition post':
@@ -153,12 +149,13 @@ function hook_workflow($op, WorkflowTransitionInterface $transition, UserInterfa
  * @param array $context
  *   'transition' - The current transition itself.
  */
-function hook_workflow_comment_alter(&$comment, array &$context) {
-  // workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', '');
+function hook_workflow_comment_alter(&$comment, array &$context): void {
+  // workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', ''); .
 
   /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
   $transition = $context['transition'];
-  // $comment = $transition->getOwner()->getUsername() . ' says: ' . $comment;
+  $user = $transition->getOwner()->getDisplayName();
+  // $comment = "$user says: $comment";
 }
 
 /**
@@ -178,8 +175,8 @@ function hook_workflow_comment_alter(&$comment, array &$context) {
  *   'history' - The row from the workflow_transition_history table.
  *   'transition' - a WorkflowTransition object, containing all of the above.
  */
-function hook_workflow_history_alter(array &$variables) {
-  // workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', '');
+function hook_workflow_history_alter(array &$variables): void {
+  // workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', ''); .
 
   // The Workflow module does nothing with this hook.
   // For an example implementation, see the Workflow Revert add-on.
@@ -204,8 +201,8 @@ function hook_workflow_history_alter(array &$variables) {
  *    ];
  *   @endcode
  */
-function hook_workflow_permitted_state_transitions_alter(array &$transitions, array $context) {
-  // workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', '');
+function hook_workflow_permitted_state_transitions_alter(array &$transitions, array $context): void {
+  // workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', ''); .
 
   // User may have the custom role AUTHOR.
   $user = $context['user'];
@@ -219,7 +216,7 @@ function hook_workflow_permitted_state_transitions_alter(array &$transitions, ar
   foreach ($transitions as $key => $transition) {
     /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition*/
     if (!$transition->isAllowed($user, $force)) {
-      // unset($transitions[$key]);
+      // unset($transitions[$key]);.
     }
   }
 
@@ -242,13 +239,12 @@ function hook_workflow_permitted_state_transitions_alter(array &$transitions, ar
  */
 
 /**
- * Implements field_widget_single_element_WIDGET_TYPE_form_alter() for 'workflow_default'.
+ * Implements hook_widget_single_element_WIDGET_TYPE_form_alter() for 'workflow_default'.
  *
- * Better use hook_form_workflow_transition_form_alter.
+ * The function name is specified in the annotation of WorkflowDefaultWidget.
+ * Note: better use hook_form_workflow_transition_form_alter.
  */
-function hook_field_widget_single_element_workflow_default_form_alter(&$element, FormStateInterface $form_state, $context) {
-  // A hook specific for the 'workflow_default' widget.
-  // The name is specified in the annotation of WorkflowDefaultWidget.
+function hook_field_widget_single_element_workflow_default_form_alter(&$element, FormStateInterface $form_state, $context): void {
 
   // A widget on an entity form.
   if ('workflow_default' != $context['widget']->getPluginId()) {
@@ -286,7 +282,7 @@ function hook_field_widget_single_element_workflow_default_form_alter(&$element,
  * If you change the state on the Entity Edit page (form), you need the hook
  * hook_form_alter(). See below for more info.
  */
-function hook_form_workflow_transition_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function hook_form_workflow_transition_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
 
   // The $transition object contains all you need.
   /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
@@ -316,7 +312,7 @@ function hook_form_workflow_transition_form_alter(&$form, FormStateInterface $fo
     $sid = workflow_node_current_state($entity, $transition->getFieldName());
     $sid = $transition->getFromSid();
     // Get the State object, if needed.
-    $state = WorkflowState::load($sid);
+    $state = $transition->getWorkflow()->getState($sid);
 
     // Change the form, depending on the state ID. @todo Update D8 machine name.
     if ($entity_type == 'node' && $entity_bundle == 'MY_NODE_TYPE') {
@@ -337,18 +333,28 @@ function hook_form_workflow_transition_form_alter(&$form, FormStateInterface $fo
 /**
  * Implements hook_form_alter().
  */
-function hook_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (substr($form_id, 0, 8) == 'workflow') {
-    // workflow_debug(__FILE__, __FUNCTION__, __LINE__, $form_id, '');
+function hook_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
+  $field_name = $form['field_name']['widget']['#default_value'][0];
+  if ($form_id == 'entity_form_display_edit_form') {
+    // Do something.
   }
+  if (substr($form_id, 0, 8) == 'workflow') {
+    // Do something.
+    $jvo = $form[$field_name] ?? NULL;
+  }
+  // $entity = $form->getTargetEntity();
+  // workflow_get_field_name($entity);
+  // $transition = $form_state->{$field_name}?->getTransition();
 }
 
 /**
- * Implements hook_copy_form_values_to_transition_field_alter().
+ * Implements hook_workflow_copy_form_values_to_transition_field_alter().
  *
- * See #2899025 'Attached field type 'file' not working on WorkflowTransition'.
+ * Solves 'Attached field type 'file' not working on WorkflowTransition'.
+ *
+ * @see https://www.drupal.org/project/workflow/issues/2899025
  */
-function hook_copy_form_values_to_transition_field_alter(EntityInterface $entity, $context) {
+function hook_workflow_copy_form_values_to_transition_field_alter(EntityInterface $entity, $context): void {
   /** @var \Drupal\Core\Field\Entity\BaseFieldOverride $field */
   $field = $context['field'];
   $field_name = $context['field_name'];
@@ -356,8 +362,9 @@ function hook_copy_form_values_to_transition_field_alter(EntityInterface $entity
 
   // Workaround for issue 2899025, but works only with entity_browser module.
   // @see https://www.drupal.org/project/workflow/issues/2899025
-  // Issue 'Attached field type 'file' not working on WorkflowTransition'
-  if ($field->getType() == 'file' && !empty($user_input['current'])) {
+  // Issue 'Attached field type 'file' not working on WorkflowTransition'.
+  $field_type = $field->getType();
+  if ($field_type == 'file' && !empty($user_input['current'])) {
     workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', '');
     // Avoid inserting two references to the same file.
     // Workaround for issue #2926094 'Avoid calling the WorkflowTransitionElement twice on a form'.
@@ -395,20 +402,32 @@ function hook_entity_predelete(EntityInterface $entity) {
   }
 }
 
+/**
+ * Implements hook_entity_delete().
+ */
 function hook_entity_delete(EntityInterface $entity) {
   if (substr($entity->getEntityTypeId(), 0, 8) == 'workflow') {
     // workflow_debug(__FILE__, __FUNCTION__, __LINE__, 'delete', $entity->getEntityTypeId());
   }
 }
 
+/**
+ * Implements hook_workflow_type_delete().
+ */
 function hook_workflow_type_delete(EntityInterface $entity) {
   // workflow_debug(__FILE__, __FUNCTION__, __LINE__, 'delete', $entity->getEntityTypeId());
 }
 
+/**
+ * Implements hook_workflow_config_transition_delete().
+ */
 function hook_workflow_config_transition_delete(EntityInterface $entity) {
   // workflow_debug(__FILE__, __FUNCTION__, __LINE__, 'delete', $entity->getEntityTypeId());
 }
 
+/**
+ * Implements hook_workflow_state_delete().
+ */
 function hook_workflow_state_delete(EntityInterface $entity) {
   // workflow_debug(__FILE__, __FUNCTION__, __LINE__, 'delete', $entity->getEntityTypeId());
 }

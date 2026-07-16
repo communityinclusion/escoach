@@ -63,7 +63,7 @@ class GeofieldGoogleStaticMapFormatter extends FormatterBase implements Containe
     $label,
     $view_mode,
     array $third_party_settings,
-    LinkGeneratorInterface $link_generator
+    LinkGeneratorInterface $link_generator,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->link = $link_generator;

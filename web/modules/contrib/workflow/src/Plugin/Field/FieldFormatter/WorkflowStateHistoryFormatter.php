@@ -6,9 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Markup;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\workflow\Entity\WorkflowTransition;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,7 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
-class WorkflowStateHistoryFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
+class WorkflowStateHistoryFormatter extends FormatterBase {
 
   /**
    * The workflow storage.
@@ -33,13 +31,6 @@ class WorkflowStateHistoryFormatter extends FormatterBase implements ContainerFa
    * @var \Drupal\workflow\Entity\WorkflowStorage
    */
   protected $storage;
-
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
 
   /**
    * The render controller.
@@ -72,16 +63,13 @@ class WorkflowStateHistoryFormatter extends FormatterBase implements ContainerFa
    *   The view mode.
    * @param array $third_party_settings
    *   Third party settings.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity_type manager.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->viewBuilder = $entity_type_manager->getViewBuilder('workflow_transition');
     $this->storage = $entity_type_manager->getStorage('workflow_transition');
-    $this->currentUser = $current_user;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -97,7 +85,6 @@ class WorkflowStateHistoryFormatter extends FormatterBase implements ContainerFa
       $configuration['label'],
       $configuration['view_mode'],
       $configuration['third_party_settings'],
-      $container->get('current_user'),
       $container->get('entity_type.manager')
     );
   }
@@ -108,24 +95,24 @@ class WorkflowStateHistoryFormatter extends FormatterBase implements ContainerFa
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $output = [];
 
-    $field_name = $this->fieldDefinition->getName();
+    $field_name = $items->getName();
     $entity = $items->getEntity();
     $entity_type = $entity->getEntityTypeId();
 
     // @todo Expose limit into formatter settings form.
     $limit = 10;
 
-    $workflowTransitions = WorkflowTransition::loadMultipleByProperties($entity_type, [$entity->id()], [], $field_name, '', $limit, 'DESC');
-    if ($workflowTransitions) {
-      $workflowTransitionsViews = [];
-      foreach ($workflowTransitions as $workflowTransition) {
-        $workflowTransitionsView = $this->viewBuilder->view($workflowTransition, 'default');
-        $workflowTransitionsViews[] = $workflowTransitionsView;
+    $transitions = WorkflowTransition::loadMultipleByProperties($entity_type, [$entity->id()], [], $field_name, '', $limit, 'DESC');
+    if ($transitions) {
+      $transition_views = [];
+      foreach ($transitions as $transition) {
+        $transition_view = $this->viewBuilder->view($transition, 'default');
+        $transition_views[] = $transition_view;
       }
 
       $output[] = [
         '#theme' => 'item_list',
-        '#items' => $workflowTransitionsViews,
+        '#items' => $transition_views,
       ];
     }
     else {

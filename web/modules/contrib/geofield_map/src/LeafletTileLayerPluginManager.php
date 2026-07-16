@@ -5,6 +5,7 @@ namespace Drupal\geofield_map;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\geofield_map\Attribute\LeafletTileLayerPlugin;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -33,7 +34,7 @@ class LeafletTileLayerPluginManager extends DefaultPluginManager {
    *   The request stack.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, RequestStack $request_stack) {
-    parent::__construct('Plugin/LeafletTileLayerPlugin', $namespaces, $module_handler, 'Drupal\geofield_map\LeafletTileLayerPluginInterface', 'Drupal\geofield_map\Annotation\LeafletTileLayerPlugin');
+    parent::__construct('Plugin/LeafletTileLayerPlugin', $namespaces, $module_handler, NULL, LeafletTileLayerPlugin::class, 'Drupal\geofield_map\Annotation\LeafletTileLayerPlugin');
 
     $this->alterInfo('geofield_map_leaflet_tile_layer_plugin_info');
     $this->setCacheBackend($cache_backend, 'geofield_map_leaflet_tile_layer_plugin_plugins');

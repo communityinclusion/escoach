@@ -28,17 +28,16 @@ class WorkflowAccessSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('workflow_access.settings');
-    $weight = $config->get('workflow_access_priority');
-
+    $weight = $this->getSetting('workflow_access_priority');
     $form['workflow_access'] = [
       '#type' => 'details',
+      // '#open' Controls HTML5 'details' 'open' attribute. Defaults to FALSE.
       '#open' => TRUE,
       '#title' => $this->t('Workflow Access Settings'),
     ];
     $form['workflow_access']['#tree'] = TRUE;
 
-    $url = 'https://api.drupal.org/api/drupal/core%21modules%21node%21node.api.php/function/hook_node_access_records/8';
+    $url = 'https://api.drupal.org/api/drupal/core%21modules%21node%21node.api.php/function/hook_node_access_records';
     $form['workflow_access']['workflow_access_priority'] = [
       '#type' => 'weight',
       '#delta' => 10,
@@ -57,20 +56,41 @@ class WorkflowAccessSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $weight = $form_state->getValue(['workflow_access', 'workflow_access_priority']);
+    $this->setSetting('workflow_access_priority', $weight);
+
+    // Module's weight has changed.
+    node_access_needs_rebuild(TRUE);
+
+    parent::submitForm($form, $form_state);
   }
 
   /**
-   * {@inheritdoc}
+   * Get the module settings.
+   *
+   * A static function to cater for hook node_access_records().
+   *
+   * @return mixed
+   *   The requested setting. An int, string or array.
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $weight = $form_state->getValues()['workflow_access']['workflow_access_priority'];
+  public static function getSetting($value = 'workflow_access_priority'): mixed {
+    $priority = \Drupal::config('workflow_access.settings')
+      ->get($value);
+    return $priority;
+  }
 
+  /**
+   * Set the module settings.
+   *
+   * @return \Drupal\Core\Form\ConfigFormBase
+   *   The form object.
+   */
+  private function setSetting($key, $value): static {
     $this->config('workflow_access.settings')
-      ->set('workflow_access_priority', $weight)
+      ->set('workflow_access_priority', $value)
       ->save();
-
-    parent::submitForm($form, $form_state);
+    return $this;
   }
 
 }

@@ -3,11 +3,16 @@
 namespace Drupal\geofield_map\Services;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\key\KeyRepositoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class GoogleMapsService.
+ * Provides Google Maps API configuration and localization.
+ *
+ * This service handles the retrieval of the Google Maps API key from
+ * configuration and provides localized API URLs based on the request region.
  */
 class GoogleMapsService {
 
@@ -33,6 +38,20 @@ class GoogleMapsService {
   protected $requestStack;
 
   /**
+   * The Module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Key repository object.
+   *
+   * @var \Drupal\key\KeyRepositoryInterface
+   */
+  protected $keyRepository;
+
+  /**
    * The Gmap Api Key.
    *
    * @var string
@@ -56,7 +75,15 @@ class GoogleMapsService {
    *   The GmapApiKey
    */
   protected function setGmapApiKey() {
-    return $this->config->get('geofield_map.settings')->get('gmap_api_key');
+    $setting = $this->config->get('geofield_map.settings')->get('gmap_api_key');
+    // If api key is the id of a key stored in the key module, load that.
+    if ($this->moduleHandler->moduleExists('key') && isset($this->keyRepository)) {
+      $key = $this->keyRepository->getKey($setting);
+      if ($key) {
+        $setting = $key->getKeyValue();
+      }
+    }
+    return $setting;
   }
 
   /**
@@ -68,16 +95,24 @@ class GoogleMapsService {
    *   The language manager.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
+   * @param \Drupal\core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\key\KeyRepositoryInterface|null $key_repository
+   *   The Key repository object.
    */
   public function __construct(
-    ConfigFactoryInterface $config_factory,
+    ConfigFactoryInterface   $config_factory,
     LanguageManagerInterface $language_manager,
-    RequestStack $request_stack
+    RequestStack             $request_stack,
+    ModuleHandlerInterface   $module_handler,
+    ?KeyRepositoryInterface  $key_repository = NULL,
   ) {
     $this->config = $config_factory;
     $this->languageManager = $language_manager;
-    $this->gmapApiKey = $this->setGmapApiKey();
+    $this->moduleHandler = $module_handler;
     $this->requestStack = $request_stack;
+    $this->keyRepository = $key_repository;
+    $this->gmapApiKey = $this->setGmapApiKey();
   }
 
   /**

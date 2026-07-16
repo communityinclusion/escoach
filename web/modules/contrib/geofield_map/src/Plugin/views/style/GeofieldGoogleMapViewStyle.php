@@ -39,11 +39,11 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
-use Drupal\core\Entity\FieldableEntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\views\ResultRow;
 
 /**
- * Style plugin to render a View output as a Leaflet map.
+ * Style plugin to render a View output as a Google map.
  *
  * @ingroup views_style_plugins
  *
@@ -244,8 +244,8 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
    */
   public function __construct(
     array $configuration,
-          $plugin_id,
-          $plugin_definition,
+    $plugin_id,
+    $plugin_definition,
     ConfigFactoryInterface $config_factory,
     EntityTypeManagerInterface $entity_manager,
     EntityFieldManagerInterface $entity_field_manager,
@@ -258,7 +258,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
     ModuleHandlerInterface $module_handler,
     FieldTypePluginManagerInterface $field_type_manager,
     GoogleMapsService $google_maps_service,
-    MapThemerPluginManager $map_themer_manager
+    MapThemerPluginManager $map_themer_manager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->defaultSettings = self::getDefaultSettings();
@@ -305,7 +305,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     parent::init($view, $display, $options);
 
     // We want to allow view editors to select which entity out of a
@@ -498,7 +498,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
   /**
    * Set the langcode to be used for rendering the entity.
    *
-   * @param \Drupal\core\Entity\FieldableEntityInterface $entity
+   * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
    *   The fieldable Entity.
    * @param \Drupal\views\ResultRow $result
    *   The view Row result.
@@ -582,12 +582,12 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
     $form['data_source'] = [
       '#type' => 'select',
       '#title' => $this->t('Data Source'),
-      '#description' => $this->t('Which field contains geodata?'),
+      '#description' => $this->t('Which Geofield(s) contains geodata you want to map?<br><b>Note: </b>Only Geofield type fields can be selected.'),
       '#options' => $fields_geo_data,
       '#default_value' => $this->options['data_source'],
       '#required' => TRUE,
       '#multiple' => TRUE,
-      '#size' => count($fields_geo_data),
+      '#size' => count($fields_geo_data) + 1,
     ];
 
     // Get the possible entity sources.
@@ -857,7 +857,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
       'data' => [],
     ];
 
-    // Define the list of geofields set as source of Leaflet View geodata,
+    // Define the list of geofields set as source of Google Map View geodata,
     // with backword compatibility with the previous version (8.2.75) when only
     // one Geofield was possible as geodata source.
     $geofield_names = is_array($this->options['data_source']) ? $this->options['data_source'] : [$this->options['data_source']];
@@ -911,7 +911,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
               }
 
               // Render the entity with the selected view mode.
-              /** @var \Drupal\core\Entity\FieldableEntityInterface $entity */
+              /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
               if (isset($entity)) {
                 // Get and set (if not set) the Geofield cardinality.
                 /** @var \Drupal\Core\Field\FieldItemList $geofield_entity */
@@ -956,7 +956,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                         ->view($entity, $default_view_mode, $langcode);
                       $render_context = new RenderContext();
                       $description[] = $this->renderer->executeInRenderContext($render_context, function () use (&$build) {
-                        return $this->renderer->render($build, TRUE);
+                        return $this->renderer->renderInIsolation($build);
                       });
                       if (!$render_context->isEmpty()) {
                         $render_context->update($build_for_bubbleable_metadata);
@@ -969,7 +969,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                       $renderedRow = [
                         $this->view->rowPlugin->render($result),
                       ];
-                      $description[] = $this->renderer->renderPlain($renderedRow);
+                      $description[] = $this->renderer->renderInIsolation($renderedRow);
                       break;
 
                     case '#rendered_entity_ajax':

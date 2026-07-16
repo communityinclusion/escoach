@@ -117,7 +117,7 @@ class GeofieldMapLegend extends BlockBase implements ContainerFactoryPluginInter
    * @return array|null
    *   The MapThemer Plugin, or null.
    */
-  protected function legendFailureElement(TranslatableMarkup $failure_message = NULL): ?array {
+  protected function legendFailureElement(?TranslatableMarkup $failure_message = NULL): ?array {
     if (!isset($failure_message)) {
       $failure_message = $this->t("The Legend can't be rendered");
     }
@@ -170,7 +170,7 @@ class GeofieldMapLegend extends BlockBase implements ContainerFactoryPluginInter
     LinkGeneratorInterface $link_generator,
     RendererInterface $renderer,
     MapThemerPluginManager $map_themer_manager,
-    MarkerIconService $marker_icon_service
+    MarkerIconService $marker_icon_service,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->config = $config_factory;

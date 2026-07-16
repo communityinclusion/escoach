@@ -2,6 +2,8 @@
 
 namespace Drupal\geofield_map\Plugin\GeofieldMapThemer;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield_map\Attribute\MapThemer;
 use Drupal\geofield_map\MapThemerBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\geofield_map\Plugin\views\style\GeofieldGoogleMapViewStyle;
@@ -19,31 +21,32 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
- * Style plugin to render a View output as a Leaflet map.
+ * Map Themer plugin based on List Type fields & Images Selection.
  *
  * @ingroup geofield_map_themers_plugins
  *
  * Attributes set below end up in the $this->definition[] array.
- *
- * @MapThemer(
- *   id = "geofieldmap_list_fields_url",
- *   name = @Translation("List Type Field (geofield_map) - Image Select"),
- *   description = "This Geofield Map Themer allows the Image Selection of
- * different Marker Icons based on List (Options) Type fields in View.",
- *   context = {"ViewStyle"},
- *   weight = 6,
- *   markerIconSelection = {
- *    "type" = "file_uri",
- *    "configSyncCompatibility" = TRUE,
- *   },
- *   defaultSettings = {
- *    "values" = {},
- *    "legend" = {
- *      "class" = "option",
- *     },
- *   }
- * )
  */
+#[MapThemer(
+  id: "geofieldmap_list_fields_url",
+  name: new TranslatableMarkup("List Type Field - Image
+  Select"),
+  description: new TranslatableMarkup("This Geofield Map Themer allows
+  the Image Selection of different Marker Icons based on List (Options) Type
+  fields in View."),
+  context: ["ViewStyle"],
+  weight: 6,
+  markerIconSelection: [
+    "type" => "file_uri",
+    "configSyncCompatibility"  => TRUE,
+  ],
+  defaultSettings: [
+    "values" => [],
+    "legend" => [
+      "class" => "option",
+    ],
+  ],
+)]
 class ListFieldThemerUrl extends MapThemerBase {
 
   /**
@@ -91,7 +94,7 @@ class ListFieldThemerUrl extends MapThemerBase {
     RendererInterface $renderer,
     EntityTypeManagerInterface $entity_manager,
     MarkerIconService $marker_icon_service,
-    EntityTypeBundleInfoInterface $entity_type_bundle_info
+    EntityTypeBundleInfoInterface $entity_type_bundle_info,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $translation_manager, $renderer, $entity_manager, $marker_icon_service);
     $this->config = $config_factory;
@@ -133,7 +136,7 @@ class ListFieldThemerUrl extends MapThemerBase {
     // Get the defined List Type Fields.
     $list_fields = [];
     foreach ($view_fields as $field_id => $field_label) {
-      /* @var \Drupal\field\Entity\FieldStorageConfig $field_storage */
+      /** @var \Drupal\field\Entity\FieldStorageConfig $field_storage */
       if (isset($field_storage_definitions[$field_id])
         && $field_storage_definitions[$field_id] instanceof FieldStorageConfig
         && in_array($field_storage_definitions[$field_id]->getType(), [
@@ -167,7 +170,7 @@ class ListFieldThemerUrl extends MapThemerBase {
     $user_input_list_field = isset($user_input['style_options']) && isset($user_input['style_options']['map_marker_and_infowindow']['theming']['geofieldmap_list_fields']['values']['list_field']) ?
       $user_input['style_options']['map_marker_and_infowindow']['theming']['geofieldmap_list_fields']['values']['list_field'] : NULL;
 
-    $selected_list_field = isset($user_input_list_field) ? $user_input_list_field : $default_list_field;
+    $selected_list_field = $user_input_list_field ?? $default_list_field;
 
     $element = [
       '#type' => 'fieldset',
@@ -209,10 +212,10 @@ class ListFieldThemerUrl extends MapThemerBase {
           'header' => [
             'label' => $this->t('Option'),
             'label_alias' => Markup::create($this->t('Option Alias @description', [
-              '@description' => $this->renderer->renderPlain($label_alias_upload_help),
+              '@description' => $this->renderer->renderInIsolation($label_alias_upload_help),
             ])),
             'marker_icon' => Markup::create($this->t('Marker Icon @file_select_help', [
-              '@file_select_help' => $this->renderer->renderPlain($file_select_help),
+              '@file_select_help' => $this->renderer->renderInIsolation($file_select_help),
             ])),
             'image_style' => '',
           ],
@@ -257,19 +260,19 @@ class ListFieldThemerUrl extends MapThemerBase {
               'markup' => $value,
             ],
             'weight' => [
-              'value' => isset($default_element['fields'][$k]['options'][$id]['weight']) ? $default_element['fields'][$k]['options'][$id]['weight'] : $i,
+              'value' => $default_element['fields'][$k]['options'][$id]['weight'] ?? $i,
               'class' => $table_settings['tabledrag_group'],
             ],
             'label_alias' => [
-              'value' => isset($default_element['fields'][$k]['options'][$id]['label_alias']) ? $default_element['fields'][$k]['options'][$id]['label_alias'] : '',
+              'value' => $default_element['fields'][$k]['options'][$id]['label_alias'] ?? '',
             ],
             'icon_file_uri' => $icon_file_uri,
             'image_style' => [
               'options' => $this->markerIcon->getImageStyleOptions(),
-              'value' => isset($default_element['fields'][$k]['options'][$id]['image_style']) ? $default_element['fields'][$k]['options'][$id]['image_style'] : 'geofield_map_default_icon_style',
+              'value' => $default_element['fields'][$k]['options'][$id]['image_style'] ?? 'geofield_map_default_icon_style',
             ],
             'legend_exclude' => [
-              'value' => isset($default_element['fields'][$k]['options'][$id]['legend_exclude']) ? $default_element['fields'][$k]['options'][$id]['legend_exclude'] : (count($field['options']) > 10 ? TRUE : FALSE),
+              'value' => $default_element['fields'][$k]['options'][$id]['legend_exclude'] ?? (count($field['options']) > 10 ? TRUE : FALSE),
             ],
             'attributes' => ['class' => ['draggable']],
           ];
@@ -294,8 +297,8 @@ class ListFieldThemerUrl extends MapThemerBase {
    * {@inheritdoc}
    */
   public function getIcon(array $datum, GeofieldGoogleMapViewStyle $geofieldMapView, EntityInterface $entity, $map_theming_values) {
-    $list_field = isset($map_theming_values['list_field']) ? $map_theming_values['list_field'] : NULL;
-    $fallback_icon = isset($map_theming_values['fields'][$list_field]['options']['__default_value__']['icon_file']) ? $map_theming_values['fields'][$list_field]['options']['__default_value__']['icon_file'] : NULL;
+    $list_field = $map_theming_values['list_field'] ?? NULL;
+    $fallback_icon = $map_theming_values['fields'][$list_field]['options']['__default_value__']['icon_file'] ?? NULL;
     $file_uri = $fallback_icon;
     if (isset($entity->{$list_field})) {
       $list_field_option = $entity->{$list_field}->value;
@@ -310,7 +313,7 @@ class ListFieldThemerUrl extends MapThemerBase {
   public function getLegend(array $map_theming_values, array $configuration = []) {
     $legend = $this->defaultLegendHeader($configuration);
     // Get the icon image width, as result of the Legend configuration.
-    $icon_width = isset($configuration['markers_width']) ? $configuration['markers_width'] : 50;
+    $icon_width = $configuration['markers_width'] ?? 50;
     $list_field = $map_theming_values['list_field'];
 
     foreach ($map_theming_values['fields'][$list_field]['options'] as $key => $value) {
@@ -323,7 +326,7 @@ class ListFieldThemerUrl extends MapThemerBase {
       if (!empty($value['legend_exclude']) || ($icon_file_uri == 'none' && !$this->renderDefaultLegendIcon())) {
         continue;
       }
-      $label = isset($value['label']) ? $value['label'] : $key;
+      $label = $value['label'] ?? $key;
       $legend['table'][$key] = [
         'value' => [
           '#type' => 'container',

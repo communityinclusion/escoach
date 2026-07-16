@@ -28,12 +28,12 @@ class WorkflowTransitionEvent extends Event {
   }
 
   /**
-   * Gets the transition.
+   * Gets the event's transition.
    *
    * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
    *   The transition.
    */
-  public function getTransition() {
+  public function getTransition(): ?WorkflowTransitionInterface {
     return $this->transition;
   }
 

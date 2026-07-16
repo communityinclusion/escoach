@@ -40,7 +40,7 @@ class WorkflowTransition extends FieldableEntity {
       'uid' => $this->t('User ID of the transition author'),
       'stamp' => $this->t('Date this transition was executed'),
       'comment' => $this->t('Comment explaining this transition'),
-      'wid' => $this->t('Calculated new workflow id based upon sid value.'),
+      'wid' => $this->t('Calculated workflow ID based upon state value.'),
     ];
 
     return $fields;

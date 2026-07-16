@@ -2,50 +2,53 @@
 
 namespace Drupal\workflow\Element;
 
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\FormElement;
-use Drupal\workflow\Entity\Workflow;
+use Drupal\workflow\Controller\WorkflowTransitionFormController;
+use Drupal\workflow\Entity\WorkflowState;
 use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
 /**
  * Provides a form element for the WorkflowTransitionForm and ~Widget.
- *
- * Properties:
- * - #return_value: The value to return when the checkbox is checked.
  *
  * @see \Drupal\Core\Render\Element\FormElement
  * @see https://www.drupal.org/node/169815 "Creating Custom Elements"
  *
  * @FormElement("workflow_transition")
  */
-class WorkflowTransitionElement extends FormElement {
+class WorkflowTransitionElement extends FormElementBase {
 
   /**
    * {@inheritdoc}
    */
-  public function getInfo() {
+  public function getInfo(): array {
     $class = static::class;
     return [
       '#input' => TRUE,
-      '#return_value' => 1,
       '#process' => [
         [$class, 'processTransition'],
-        [$class, 'processAjaxForm'],
-        // [$class, 'processGroup'],
+      ],
+      '#after_build' => [
+        [$class, 'afterBuildTransition'],
       ],
       '#element_validate' => [
         [$class, 'validateTransition'],
       ],
-      // @todo D11 removed #pre_render callback array{class-string<static(Drupal\workflow\Element\WorkflowTransitionElement)>, 'preRenderTransition'} at key '0' is not callable.
-      // '#pre_render' => [
-      //   [$class, 'preRenderTransition'],
-      // ],
-      // '#theme' => 'input__checkbox',
-      // '#theme' => 'input__textfield',
       '#theme_wrappers' => ['form_element'],
-      // '#title_display' => 'after',
     ];
+  }
+
+  /**
+   * Returns a unique string identifying the form.
+   *
+   * @return string
+   *   The form ID.
+   *
+   * @usage Do not change name lightly.
+   *   It is also used in hook_form_FORM_ID_alter().
+   */
+  public static function getFormId(): string {
+    return 'workflow_transition_form';
   }
 
   /**
@@ -63,17 +66,58 @@ class WorkflowTransitionElement extends FormElement {
    * @return array
    *   The Workflow element
    */
-  public static function processTransition(array &$element, FormStateInterface $form_state, array &$complete_form) {
-    workflow_debug(__FILE__, __FUNCTION__, __LINE__); // @todo D8:  test this snippet.
-    return self::transitionElement($element, $form_state, $complete_form);
+  public static function processTransition(array &$element, FormStateInterface $form_state, array &$complete_form): array {
+    // Override WorkflowTransitionElement baseFields, created by Field UI.
+    WorkflowTransitionElement::alter($element, $form_state, $complete_form);
+    WorkflowTransitionButtons::addActionButtons($element, $form_state, $complete_form);
+    return $element;
   }
 
   /**
-   * Generate an element.
+   * {@inheritdoc}
+   */
+  public static function afterBuildTransition($element) {
+    return $element;
+  }
+
+  /**
+   * Validates the Workflow Transition form.
    *
-   * This function is an internal function, to be reused in:
-   * - TransitionElement,
-   * - TransitionDefaultWidget.
+   * @param array $element
+   *   The 'workflow_transition' form element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public static function validateTransition(array &$element, FormStateInterface $form_state) {
+    // @todo Implement validate callback (for attached fields).
+    $transition = $element['#workflow_transition'];
+    $field_name = $transition->getFieldName();
+
+    if (!empty($transition)) {
+      // assert($transition instanceof WorkflowTransitionInterface);
+      // $form_mode = $element['#form_mode'];
+      // $form_display = EntityFormDisplay::collectRenderDisplay($transition, $form_mode);
+      // $form_display->extractFormValues($transition, $element, $form_state);
+      // $form_display->validateFormValues($transition, $element, $form_state);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
+    if ($input ?? FALSE) {
+      $value = $element['#workflow_transition'];
+    }
+    else {
+      // Return default value if no input.
+      $value = $element['#workflow_transition'];
+    }
+    return $value;
+  }
+
+  /**
+   * Override WorkflowTransitionElement baseFields, created by Field UI.
    *
    * @param array $element
    *   Reference to the form element.
@@ -83,351 +127,449 @@ class WorkflowTransitionElement extends FormElement {
    *   The form.
    *
    * @return array
-   *   The form element $element.
-   *
-   * @usage:
-   *   @example $element['#default_value'] = $transition;
-   *   @example $element += WorkflowTransitionElement::transitionElement($element, $form_state, $form);
+   *   The changed form element $element.
    */
-  public static function transitionElement(array &$element, FormStateInterface|NULL $form_state, array &$complete_form) {
+  protected static function alter(array &$element, ?FormStateInterface $form_state, array &$complete_form): array {
 
-    /*
-     * Input.
-     */
     // A Transition object must have been set explicitly.
     /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
-    $transition = $element['#default_value'];
-    /** @var \Drupal\Core\Session\AccountInterface $user */
-    $user = \Drupal::currentUser();
-
-    /*
-     * Derived input.
-     */
+    $transition = $element['#workflow_transition'];
     $field_name = $transition->getFieldName();
-    // Workflow might be empty on Action/VBO configuration.
+    $field_label = $transition->getFieldLabel();
     $wid = $transition->getWorkflowId();
-    $workflow = $transition->getWorkflow();
-    $workflow_settings = $workflow ? $workflow->getSettings() : Workflow::defaultSettings();
-    $label = $workflow ? $workflow->label() : '';
-    $force = $transition->isForced();
-    $entity = $transition->getTargetEntity();
-    $entity_id = $entity ? $entity->id() : NULL;
-    $entity_type_id = $entity ? $entity->getEntityTypeId() : '';
 
-    if ($transition->isExecuted()) {
-      // We are editing an existing/executed/not-scheduled transition.
-      // Only the comments may be changed!
-      $current_sid = $from_sid = $transition->getFromSid();
-      // The states may not be changed anymore.
-      $to_state = $transition->getToState();
-      $options = [$to_state->id() => $to_state->label()];
-      // We need the widget to edit the comment.
-      $show_widget = TRUE;
-      $default_value = $transition->getToSid();
-    }
-    elseif ($entity) {
-      // Normal situation: adding a new transition on an new/existing entity.
-      //
-      // Get the scheduling info, only when updating an existing entity.
-      // This may change the $default_value on the Form.
-      // Technically you could have more than one scheduled transition, but
-      // this will only add the soonest one.
-      // @todo Read the history with an explicit langcode?
-      $current_sid = $from_sid = $transition->getFromSid();
-      $current_state = $from_state = $transition->getFromState();
-      $options = ($current_state) ? $current_state->getOptions($entity, $field_name, $user, FALSE) : [];
-      $show_widget = ($from_state) ? $from_state->showWidget($entity, $field_name, $user, FALSE) : [];
-      $default_value = ($from_state && $from_state->isCreationState()) ? $workflow->getFirstSid($entity, $field_name, $user, FALSE) : $from_sid;
-      $default_value = ($transition->isScheduled()) ? $transition->getToSid() : $default_value;
-    }
-    elseif (!$entity) {
-      // Sometimes, no entity is given. We encountered the following cases:
-      // - D7: the Field settings page,
-      // - D7/D8: the VBO action form;
-      // - D7/D8: the Advance Action form on admin/config/system/actions;
-      // If so, show all options for the given workflow(s).
-      $temp_state = $transition->getFromState() ?? $transition->getToState();
-      $options = ($temp_state)
-        ? $temp_state->getOptions($entity, $field_name, $user, FALSE)
-        : workflow_get_workflow_state_names($wid, $grouped = TRUE);
-      $show_widget = TRUE;
-      $current_sid = $transition->getToSid();
-      $default_value = $from_sid = $transition->getToSid();
-    }
-    else {
-      // We are in trouble! A message is already set in workflow_node_current_state().
-      $options = [];
-      $current_sid = 0;
-      $show_widget = FALSE;
-      $default_value = FALSE;
-    }
-
-    // The help text is not available for container. Let's add it to the
-    // To State box. N.B. it is empty on Workflow Tab, Node View page.
+    // Move help text from below complete_widget to below 'to_sid' widget.
+    // Note: Help text is not set on Workflow Tab, Node View page (@todo?).
     // @see www.drupal.org/project/workflow/issues/3217214
-    $options_type = $workflow_settings['options'];
-    $help_text = $element['#description'] ?? '';
+    $description = $element['#description'] ?? NULL;
     unset($element['#description']);
-
-    // Get the weight of 1 subfield, set standard subfield order.
-    $field_weight = $element['timestamp']['#weight'] ?? $element['#weight'] ?? 0;
 
     /*
      * Output: generate the element.
      */
 
-    // Save the current value of the entity in the form, for later Workflow-module specific references.
-    // We add prefix, since #tree == FALSE.
-    $element['_workflow_transition'] = [
-      '#type' => 'value',
-      '#value' => $transition,
-    ];
-
-    $element['#tree'] = TRUE;
+    unset($element['#title']);
     // Add class following node-form pattern (both on form and container).
-    $element['#attributes']['class'][] = 'workflow-transition-' . $wid . '-container';
-    $element['#attributes']['class'][] = 'workflow-transition-container';
+    $element['#attributes']['class'][] = "workflow-transition-{$wid}-container";
+    $element['#attributes']['class'][] = "workflow-transition-container";
 
-    if (!$show_widget) {
-      // Show no widget, but formatter.
-      $element['from_sid'] = workflow_state_formatter($entity, $field_name, $current_sid);
-      $element['to_sid']['#type'] = 'value';
-      $element['to_sid']['#value'] = $current_sid;
-      $element['to_sid']['#weight'] = $field_weight;
-      // Add options, in case action buttons need them.
-      $element['to_sid']['#options'] = $options;
-      $element['comment']['#type'] = 'value';
-      $element['comment']['#value'] = '';
-      $element['comment']['#weight'] = $field_weight;
+    // Start overriding BaseFieldDefinitions.
+    // @see WorkflowTransition::baseFieldDefinitions()
+    $attribute_name = 'field_name';
+    $attribute_key = 'widget';
+    $widget = [];
+    $widget += self::getAttributeStates($attribute_name, $transition, []);
+    self::updateWidget($element[$attribute_name], $attribute_key, $widget);
 
-      return $element; // <-- exit.
+    $attribute_name = 'from_sid';
+    $attribute_key = 'widget';
+    // The 'from_state' cannot be changed, hence is always a 'value' formatter.
+    $from_sid = $element[$attribute_name][$attribute_key]['#default_value'][0];
+    if ($formatter = FALSE) {
+      $entity = $transition->getTargetEntity();
+      $widget = workflow_state_formatter($entity, $field_name, $from_sid);
+      $widget['#title'] = t('Current state');
+      $widget['#label_display'] = 'before'; // 'above', 'hidden'.
+      $element[$attribute_name]['widget'] = $widget;
+      $widget = [];
     }
-
-    // Prepare a UI wrapper. This might be a fieldset.
-    // It will be overridden in WorkflowTransitionForm.
-    $element = [
-      '#type' => $workflow_settings['fieldset'] ? 'details' : 'container',
-      '#collapsible' => ($workflow_settings['fieldset'] != 0),
-      '#open' => ($workflow_settings['fieldset'] != 2),
-    ] + $element;
-
-    $element['field_name'] = [
-      '#type' => 'select',
-      '#title' => t('Field name'),
-      '#description' => t('Choose the field name.'),
-      '#options' => workflow_get_workflow_field_names(NULL, $entity_type_id),
-      '#default_value' => $field_name,
-      '#access' => FALSE, // Only show on VBO/Actions screen.
-      '#required' => TRUE,
-      '#weight' => $field_weight - 10,
-    ];
-
-    if ($entity) {
-      // $entity may be empty in VBO.
-      // Decide if we show either a widget or a formatter.
-      // Add a state formatter before the rest of the form,
-      // when transition is scheduled or widget is hidden.
-      // Also no widget if the only option is the current sid.
-      if ($transition->isScheduled() || $transition->isExecuted()) {
-        $element['from_sid'] = workflow_state_formatter($entity, $field_name, $current_sid);
-      }
+    else {
+      $element[$attribute_name]['widget']['#type'] = 'item'; // Read-only display element.
+      $element[$attribute_name]['widget']['#markup'] = WorkflowState::load($from_sid);
+      $widget = [];
     }
+    $widget += self::getAttributeStates($attribute_name, $transition, []);
+    self::updateWidget($element[$attribute_name], $attribute_key, $widget);
 
     // Add the 'options' widget.
     // It may be replaced later if 'Action buttons' are chosen.
-    // This overrides BaseFieldDefinition. @todo Apply for form and widget.
-    // @todo Repair $workflow->'name_as_title': no container if no details (schedule/comment).
     $attribute_name = 'to_sid';
-    $attribute_key = 'target_id';
-    $element[$attribute_name]['widget'][0][$attribute_key] = [
-      // Avoid error with grouped options when workflow not set.
-      '#type' => ($wid) ? $options_type : 'select',
-      '#title' => (!$workflow_settings['name_as_title'] && !$transition->isExecuted())
-        ? t('Change @name state', ['@name' => $label])
-        : t('Change state'),
-      '#description' => $help_text,
-      '#access' => TRUE,
-      '#options' => $options,
-      '#default_value' => $default_value,
-      '#weight' => $field_weight,
-      // Remove autocomplete settings from BaseFieldDefinitions().
-      '#maxlength' => 999,
-      '#size' => 0,
-    ] + ($element[$attribute_name]['widget'][0][$attribute_key] ?? []);
+    $attribute_key = 'widget';
+    // Subfield is NEVER disabled in Workflow 'Manage form display' settings.
+    // @see WorkflowTypeFormHooks class.
+    if (isset($element[$attribute_name])) {
+      // Fix bad DX since each widget requires own default value format.
+      // Note: '#type' is always 'select', since set by BaseFieldDefinitions()
+      // and it will be changed below.
+      // Reset $to_sid array to value, only needed for radios.
+      $to_sid = $transition->getToSid();
 
-    if (_workflow_use_action_buttons($options_type)) {
-      // In WorkflowTransitionForm, a default 'Submit' button is added there.
-      // In Entity Form, workflow_form_alter() adds button per permitted state.
-      // Performance: inform workflow_form_alter() to do its job.
-      //
-      // Make sure the '#type' is not set to the invalid 'buttons' value.
-      // It will be replaced by action buttons, but sometimes, the select box
-      // is still shown.
-      // @see workflow_form_alter().
-      $element[$attribute_name]['widget'][0][$attribute_key] = [
-        '#type' => 'select',
-        '#access' => FALSE,
-      ] + ($element[$attribute_name]['widget'][0][$attribute_key] ?? []);
+      $widget = [
+        '#title' => t('Change @name', ['@name' => $field_label]),
+        // Move help text from below complete_widget to below 'to_sid' widget.
+        '#description' => $description,
+        // Add markup with already translated state label,
+        // just in case widget changes to 'item' value display.
+        '#markup' => (string) $transition->getToState(),
+        // Reset $to_sid array to value, only needed for radios.
+        '#default_value' => $to_sid,
+      ];
+      // Adding ['#type','#access'].
+      $widget += self::getAttributeStates($attribute_name, $transition, $element[$attribute_name][$attribute_key]);
+      self::updateWidget($element[$attribute_name], $attribute_key, $widget);
     }
 
     // Display scheduling form under certain conditions.
-    $attribute_name = 'timestamp';
-    $attribute_key = 'value';
-    $element[$attribute_name]['widget'][0][$attribute_key] = [
-      '#type' => 'workflow_transition_timestamp',
-      '#default_value' => $transition,
-      // '#default_value' => new DrupalDateTime('2000-01-01 00:00:00'),
-    ] + ($element[$attribute_name]['widget'][0][$attribute_key] ?? []);
+    $attribute_name = 'scheduled';
+    $attribute_key = 'widget';
+    // Subfield may be disabled in Workflow 'Manage form display' settings.
+    if (isset($element[$attribute_name])) {
+      // Determine a unique class for '#states' API.
+      $class_identifier = self::getClassIdentifier($transition, $form_state);
+
+      // Fix bad DX since each widget requires own default value format.
+      $attribute_type = $element[$attribute_name]['widget']['#type']
+        ?? $element[$attribute_name]['widget']['value']['#type'];
+      $default_value = $transition->isScheduled();
+      $default_value
+        = ($attribute_type == 'checkbox') ? ((bool) $default_value)
+        : (($attribute_type == 'radios') ? ((int) $default_value)
+          : (bool) $default_value);
+
+      // Copy timestamp weight that is set in 'Manage form display' screen.
+      $weight = $element['timestamp']['#weight'] ?? NULL;
+      $weight ??= $element['scheduled']['#weight'];
+      // The 'scheduled' checkbox is directly above 'timestamp' widget.
+      $weight -= 0.002;
+
+      $widget = [
+        // Manipulate default value for different widget types.
+        '#default_value' => $default_value,
+        '#weight' => $weight,
+        '#attributes' => [
+          // Use $class_identifier for '#states' behavior.
+          'class' => [$class_identifier],
+        ],
+      ];
+      $widget += self::getAttributeStates($attribute_name, $transition, []);
+      ($attribute_type == 'radios') ? self::updateWidget($element[$attribute_name], $attribute_key, $widget) : '';
+      ($attribute_type == 'checkbox') ? self::updateWidget($element[$attribute_name][$attribute_key], 'value', $widget) : '';
+
+      // Display scheduling timestamp element under certain conditions.
+      $attribute_name = 'timestamp';
+      $attribute_key = 'widget';
+      // Subfield may be disabled in Workflow 'Manage form display' settings.
+      if (isset($element[$attribute_name])) {
+        $element[$attribute_name]['#states'] = [
+          // @see https://www.drupal.org/docs/drupal-apis/form-api/conditional-form-fields
+          'visible' => [
+              // Use $class_identifier for '#states' behavior.
+              // For some reason, adding both lines will break the widget.
+            ($attribute_type == 'radios')
+              // For 'options_buttons' widget.
+              ? [":input[class^='{$class_identifier}']" => ['value' => '1']]
+              // For 'boolean_checkbox' widget.
+              : [":input[class^='{$class_identifier}']" => ['checked' => TRUE]],
+          ],
+        ];
+
+        $widget = [
+          // A #date_increment multiple of 60 will hide the "seconds"-component.
+          // Time is rounded to last minute in WT::getDefaultRequestTime().
+          '#date_increment' => 60,
+        ];
+        $widget += self::getAttributeStates($attribute_name, $transition, []);
+        // Note: Make sure update is both for 'value' and 'timezone'.
+        self::updateWidget($element[$attribute_name][$attribute_key], 'value', $widget);
+        self::updateWidget($element[$attribute_name], $attribute_key, $widget);
+      }
+    }
 
     // Show comment, when both Field and Instance allow this.
-    // This overrides BaseFieldDefinition.
     $attribute_name = 'comment';
     $attribute_key = 'value';
-    $element[$attribute_name]['widget'][0][$attribute_key] = [
-      '#type' => 'textarea',
-      '#title' => t('Comment'),
-      '#description' => t('Briefly describe the changes you have made.'),
-      '#access' => $workflow_settings['comment_log_node'] != '0', // Align with action buttons.
-      '#default_value' => $transition->getComment(),
-      '#weight' => $field_weight,
-      '#required' => $workflow_settings['comment_log_node'] == '2',
-      '#rows' => 2, //@todo Use correct field setting UI.
-    ] + ($element[$attribute_name]['widget'][0][$attribute_key] ?? []);
+    // Subfield may be disabled in Workflow 'Manage form display' settings.
+    if (isset($element[$attribute_name])) {
+      $widget = [];
+      $widget += self::getAttributeStates($attribute_name, $transition);
+      self::updateWidget($element[$attribute_name]['widget'], $attribute_key, $widget);
+    }
 
-    $element['force'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Force transition'),
-      '#description' => t('If this box is checked, the new state will be
-        assigned even if workflow permissions disallow it.'),
-      '#access' => FALSE, // Only show on VBO/Actions screen.
-      '#default_value' => $force,
-      '#weight' => $field_weight + 10,
-    ];
+    // Let user/system enforce the transition.
+    $attribute_name = 'force';
+    $attribute_key = 'widget';
+    // Subfield may be disabled in Workflow 'Manage form display' settings.
+    if (isset($element[$attribute_name])) {
+      // Fix bad DX since each widget requires own default value format.
+      $attribute_type = $element[$attribute_name]['widget']['#type']
+        ?? $element[$attribute_name]['widget']['value']['#type'];
+      $default_value = $transition->isForced();
+      $default_value
+        = ($attribute_type == 'checkbox') ? ((bool) $default_value)
+        : (($attribute_type == 'radios') ? ((int) $default_value)
+          : (bool) $default_value);
+
+      $widget = [
+        '#default_value' => $default_value,
+      ];
+      $widget += self::getAttributeStates($attribute_name, $transition);
+      ($attribute_type == 'radios') ? self::updateWidget($element[$attribute_name], $attribute_key, $widget) : '';
+      ($attribute_type == 'checkbox') ? self::updateWidget($element[$attribute_name][$attribute_key], 'value', $widget) : '';
+    }
+
+    $attribute_name = 'executed';
+    $attribute_key = 'widget';
+    if (isset($element[$attribute_name])) {
+      $widget = [];
+      $widget += self::getAttributeStates($attribute_name, $transition);
+      self::updateWidget($element[$attribute_name], 'widget', $widget);
+    }
 
     return $element;
   }
 
   /**
-   * Returns a unique string identifying the form.
+   * Adds the workflow attributes to the standard attribute of each widget.
    *
-   * @return string
-   *   The form ID.
+   * For some reason, the widgets are in another level when the entity form page
+   * is presented, then when the entity form page is submitted.
+   *
+   * @param array $haystack
+   *   The array in which the widget is hidden.
+   * @param string $attribute_key
+   *   The widget key.
+   * @param array $data
+   *   The additional workflow data for the widget.
    */
-  protected static function getFormId() {
-    return 'workflow_transition_form'; // @todo D8-port: add $form_id for widget and History tab.
+  protected static function updateWidget(array &$haystack, string $attribute_key, array $data): void {
+    if (isset($haystack[0][$attribute_key])) {
+      $haystack[0][$attribute_key] = $data + $haystack[0][$attribute_key];
+    }
+    elseif (!empty($haystack[$attribute_key])) {
+      $haystack[$attribute_key] = $data + $haystack[$attribute_key];
+    }
+    else {
+      // Subfield is disabled in Workflow 'Manage form display' settings.
+      // Do not add our data.
+    }
   }
 
   /**
-   * Implements ContentEntityForm::copyFormValuesToEntity().
+   * Define class for '#states' behavior.
    *
-   * This is called from:
-   * - WorkflowTransitionForm::copyFormValuesToEntity(),
-   * - WorkflowDefaultWidget.
+   * First, fetch the form ID. This is unique for each entity,
+   * to allow multiple forms per page (Views, etc.).
+   * Make it uniquer by adding the field name, or else the scheduling of
+   * multiple workflow_fields is not independent of each other.
+   * If we are indeed on a Transition form (so, not a Node Form with widget)
+   * then change the form ID, too.
    *
-   * N.B. in contrary to ContentEntityForm::copyFormValuesToEntity(),
-   * - parameter 1 is returned as result, to be able to create a new Transition object.
-   * - parameter 3 is not $form_state (from Form), but an $item array (from Widget).
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $transition
-   *   The transition object.
-   * @param array $form
-   *   The form.
+   * @param \Drupal\workflow\Entity\WorkflowTransitionInterface $transition
+   *   The transition at hand.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
-   * @param array $values
-   *   The field item.
    *
-   * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
-   *   A new Transition object.
+   * @return string
+   *   The unique class for the WorkflowTransitionForm.
    */
-  public static function copyFormValuesToTransition(EntityInterface $transition, array $form, FormStateInterface $form_state, array $values) {
-    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
-
-    // @todo #2287057: verify if submit() really is only used for UI. If not, $user must be passed.
-    $user = workflow_current_user();
-
-    // Get user input from element.
+  protected static function getClassIdentifier(WorkflowTransitionInterface $transition, FormStateInterface $form_state): string {
     $field_name = $transition->getFieldName();
-    $uid = $user->id();
-    $force = FALSE;
 
-    // Read value from form input, else widget values.
-    $action_values = _workflow_transition_form_get_triggering_button($form_state);
-    $to_sid = $action_values['to_sid'] ?? $values['to_sid'][0]['target_id'];
-    // Note: when editing existing Transition, user may still change comments.
-    $comment = $values['comment'][0]['value'] ?? '';
-    // @todo Why is 'timestamp' empty at create Node - when is it unset?
-    $timestamp_values = $values['timestamp'][0]['value'] ?? ['scheduled' => false];
-    $is_scheduled = (bool) $timestamp_values['scheduled'];
-    $timestamp = WorkflowTransitionTimestamp::valueCallback($timestamp_values, $timestamp_values, $form_state);
+    $form_id = $form_state->getFormObject()->getFormId()
+      ?? WorkflowTransitionElement::getFormId();
+    $form_id .= '_' . $field_name . '_scheduled';
+    $form_uid = Html::getUniqueId($form_id);
+    // @todo Align with WorkflowTransitionForm->getFormId().
+    $class_identifier = Html::getClass($form_uid);
+    // History tab gives: "workflow_transition_node_ID_{$field_name}_form".
+    return $class_identifier;
+  }
 
-    if (!isset($to_sid)) {
-      $entity_id = $transition->getTargetEntityId();
-      \Drupal::messenger()->addError(t('Error: content @id has no workflow attached. The data is not saved.', ['@id' => $entity_id]));
-      // The new state is still the previous state.
-      return $transition;
-    }
-
-    // @todo D8: add below exception.
-    // Extract the data from $values, depending on the type of widget.
-    // @todo D8: use massageFormValues($values, $form, $form_state).
+  /**
+   * Determines the #states of a Form attribute.
+   *
+   * States can have the following form:
+   *   $states = [
+   *     '#type' => {'select' | 'hidden'},
+   *     '#access' => {FALSE | TRUE },
+   *     '#required' => {FALSE | TRUE },
+   *   ];
+   *
+   * @param string $attribute_name
+   *   The attribute name.
+   * @param \Drupal\Core\Entity\EntityInterface $transition
+   *   The transition object.
+   * @param array $element
+   *   The current element of the attribute, holding information.
+   *
+   * @return array
+   *   The field states.
+   *
+   * @see https://git.drupalcode.org/project/drupal/-/blob/11.x/core/lib/Drupal/Core/Form/FormHelper.php
+   */
+  protected static function getAttributeStates(string $attribute_name, WorkflowTransitionInterface $transition, array $element = []): array {
+    $states = [];
     /*
-    $old_sid = workflow_node_previous_state($entity, $entity_type, $field_name);
-    if (!$old_sid) {
-      // At this moment, $old_sid should have a value. If the content does not
-      // have a state yet, old_sid contains '(creation)' state. But if the
-      // content is not associated to a workflow, old_sid is now 0. This may
-      // happen in workflow_vbo, if you assign a state to non-relevant nodes.
-      $entity_id = entity_id($entity_type, $entity);
-      \Drupal::messenger()->addError(t('Error: content @id has no workflow
-        attached. The data is not saved.', ['@id' => $entity_id]));
-      // The new state is still the previous state.
-      $new_sid = $old_sid;
-      return $new_sid;
-    }
+    @see https://www.drupal.org/docs/drupal-apis/form-api/conditional-form-fields
+    Here is a list of properties that are used during the rendering and form processing of form elements:
+    - #access: (bool) Whether the element is accessible or not; when FALSE, the element is not rendered and the user submitted value is not taken into consideration.
+    - #disabled: (bool) If TRUE, the element is shown but does not accept user input.
+    - #input: (bool, internal) Whether or not the element accepts input.
+    - #required: (bool) Whether or not input is required on the element.
+    - #states: (array) Information about JavaScript states, such as when to hide or show the element based on input on other elements. Refer to FormHelper::processStates.
+    - #value: Used to set values that cannot be edited by the user. Should NOT be confused with #default_value, which is for form inputs where users can override the default value. Used by: button, hidden, image_button, submit, token, value.
+
+    // '#states' => [
+    //   'visible' => ["input.$class_identifier" => ['value' => '1']],
+    //   'visible' => [':input[name="field_1"]' => ['value' => 'two']],
+    //   'required' => [':input[name="field_1"]' => ['value' => 'two']],
+    //   'required' => [TRUE],
+    // ],
      */
 
-    /*
-     * Process.
-     */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
+    $field_name = $transition->getFieldName();
+    // Workflow might be empty on Action/VBO configuration.
+    $workflow = $transition->getWorkflow();
+    $workflow_settings = $workflow?->getSettings();
 
-    $transition->setValues($to_sid, $uid, $timestamp, $comment);
-    if (!$transition->isExecuted()) {
-      $transition->schedule($is_scheduled);
-      $transition->force($force);
-    }
-    // Add the attached fields to the transition.
-    // Caveat: This works automatically on a Workflow Form,
-    // but only with a hack on a widget.
-    // @todo This line seems necessary for node edit, not for node view.
-    // @todo Support 'attached fields' in ScheduledTransition.
-    $attached_fields = $transition->getAttachedFields();
-    /** @var \Drupal\Core\Field\Entity\BaseFieldOverride $field */
-    foreach ($attached_fields as $field_name => $field) {
-      if (isset($values[$field_name])) {
-        $transition->{$field_name} = $values[$field_name];
-      }
-
-      // #2899025 For each field, let other modules modify the copied values,
-      // as a workaround for not-supported field types.
-      $input ??= $form_state->getUserInput();
-      $context = [
-        'field' => $field,
-        'field_name' => $field_name,
-        'user_input' => $input[$field_name] ?? [],
-        'item' => $values,
+    switch ($attribute_name) {
+      /*
+      // @see https://www.drupal.org/docs/drupal-apis/form-api/conditional-form-fields
+      // Since states are driven by JavaScript only, it is important to
+      // understand that all states are applied on presentation only,
+      // none of the states force any server-side logic, and that they will
+      // not be applied for site visitors without JavaScript support.
+      $form['field_2'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Field 2'),
+        '#options' => [
+          'A' => $this->t('A'),
+          'B' => $this->t('B'),
+          'C' => $this->t('C'),
+          'D' => $this->t('D'),
+        ],
+        '#required' => TRUE,
+        '#disabled' => TRUE,
+        '#states' => [
+          'visible' => [
+            ':input[name="field_1"]' => ['value' => 'two']
+          ],
+          'optional' => [
+            ':input[name="field_1"]' => ['value' => 'one']
+          ],
+          'required' => [
+            ':input[name="field_1"]' => ['value' => 'two']
+          ],
+        ],
       ];
-      \Drupal::moduleHandler()->alter('copy_form_values_to_transition_field', $transition, $context);
+       */
+      case 'field_name':
+        // Only show field_name on VBO/Actions screen.
+        $states = ['#access' => FALSE];
+        break;
+
+      case 'from_sid':
+        // Decide if we show either a widget or a formatter.
+        // Add a state formatter before the rest of the form,
+        // when transition is scheduled or widget is hidden.
+        // Also no widget if the only option is the current sid.
+        $access = $transition->isScheduled()
+          || $transition->isExecuted();
+        $states = [
+          '#access' => $access,
+          // The 'required' asterisk from BaseField will be removed in the form.
+          '#required' => FALSE,
+        ];
+        break;
+
+      case 'to_sid':
+        $controller = WorkflowTransitionFormController::create($transition);
+        $options_type = $controller->getOptionsWidgetType();
+        $states = [
+          '#type' => $options_type,
+          '#access' => TRUE, // $show_options_widget,
+          // The 'required' asterisk from BaseField will be removed in the form.
+          '#required' => FALSE,
+        ];
+        break;
+
+      case 'scheduled':
+        $controller = WorkflowTransitionFormController::create($transition);
+        $add_schedule = $controller->isSchedulingAllowed();
+        // Admin may have disabled schedule, while scheduled transitions exist.
+        $default_value = $add_schedule && $transition->isScheduled();
+        $states = [
+          '#default_value' => $default_value,
+          '#access' => $add_schedule,
+          // The 'required' asterisk from BaseField will be removed in the form.
+          '#required' => FALSE,
+        ];
+        break;
+
+      case 'timestamp':
+        $controller = WorkflowTransitionFormController::create($transition);
+        $add_schedule = $controller->isSchedulingAllowed();
+        $states = [
+          '#access' => $add_schedule,
+        ];
+        break;
+
+      case 'comment':
+        $states = [
+          // [0 => 'hidden', 1 => 'optional', 2 => 'required',];
+          '#access' => ($workflow_settings['comment_log_node'] != '0'),
+          '#required' => ($workflow_settings['comment_log_node'] == '2'),
+        ];
+        break;
+
+      case 'force':
+        $states = [
+          // Only show 'force' parameter on VBO/Actions screen.
+          '#access' => FALSE,
+          // The 'required' asterisk from BaseField will be removed in the form.
+          '#required' => FALSE,
+        ];
+        break;
+
+      case 'executed':
+        $states = [
+          '#access' => FALSE,
+        ];
+        break;
+
+      default:
+        break;
     }
 
-    // Update targetEntity's itemList with the workflow field in two formats.
-    $transition->updateEntity();
+    return $states;
+  }
 
-    // Update form_state, so core can update entity as well.
-    $to_sid = $transition->getToSid();
-    $form_state->setValue(['to_sid', 0, 'target_id'], $to_sid);
+  /**
+   * Internal function to generate a wrapper with title for an element.
+   *
+   * @param array $element
+   *   The form element to be altered, containing the Transition.
+   *
+   * @return array
+   *   The form element $element.
+   */
+  public static function addWrapper(array &$element): array {
+    // Note: Align ['#parents'] in Widget::form...(), Form::copy..(), ...
+    $transition = $element['#workflow_transition'] ?? NULL;
+    $transition ??= $element['widget'][0]['#workflow_transition'];
+    $workflow_settings = $transition->getWorkflow()?->getSettings();
 
-    return $transition;
+    $element = [
+      '#type' => ($workflow_settings['fieldset'] != 0) ? 'details' : 'container',
+      // Title may be NULL, since it will overwrite the 'History' page.
+      '#title' => $workflow_settings['name_as_title']
+        ? (string) $transition->getFieldLabel()
+        : NULL,
+      '#collapsible' => ($workflow_settings['fieldset'] != 0),
+      '#open' => ($workflow_settings['fieldset'] != 2),
+      '#tree' => TRUE,
+    ] + $element;
+
+    // Check if user wants to show single state option field. Hide if needed.
+    $options_type = $transition->getFromState()->get('single_state_widget');
+    if ($options_type == 'hide_fieldset') {
+      // A 'details' element is still visible. Override it.
+      $element['#type'] = 'container';
+      $element['#access'] = FALSE;
+      $element['widget']['#access'] = FALSE;
+    }
+    return $element;
   }
 
 }

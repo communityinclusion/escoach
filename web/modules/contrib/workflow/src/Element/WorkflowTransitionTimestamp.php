@@ -2,20 +2,20 @@
 
 namespace Drupal\workflow\Element;
 
-use Drupal\Component\Utility\Html;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\FormElement;
-use Drupal\workflow\Entity\Workflow;
+use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
 /**
  * Provides a form element for the WorkflowTransitionForm and ~Widget.
  *
+ * @deprecated in workflow:2.1.7 and is removed from workflow:3.0.0. Replaced by standard widget.
  * @see \Drupal\Core\Render\Element\FormElement
  * @see https://www.drupal.org/node/169815 "Creating Custom Elements"
  *
- * @FormElement("workflow_transition_timestamp")
+ * @F o r m E l e m e n t("workflow_transition_timestamp")
  */
-class WorkflowTransitionTimestamp extends FormElement {
+class WorkflowTransitionTimestamp extends FormElementBase {
 
   /**
    * {@inheritdoc}
@@ -24,15 +24,10 @@ class WorkflowTransitionTimestamp extends FormElement {
     $class = static::class;
     return [
       '#input' => TRUE,
-      // '#return_value' => 1,
       '#process' => [
         [$class, 'processTimestamp'],
         [$class, 'processAjaxForm'],
       ],
-      // '#element_validate' => [
-      //   [$class, 'validateTimestamp'],
-      // ],
-      // '#title_display' => 'after',
     ];
   }
 
@@ -40,43 +35,78 @@ class WorkflowTransitionTimestamp extends FormElement {
    * {@inheritdoc}
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
-    $timestamp = \Drupal::time()->getRequestTime();
+    $timestamp = $element['#default_value'];
+    // A Transition object must have been set explicitly.
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
+    $transition = $element['#workflow_transition'] ?? NULL;
+    $transition ??= $element['#default_value'];
 
-    if (!$input) {
+    if (!$input || !is_array($input)) {
       // Massage, normalize value after pressing Form button.
       // $element is also updated via reference.
+      // Get the time from the default transition data.
+      return $timestamp;
+    }
+
+    if ($transition?->isExecuted()) {
+      // Updating (comments of) existing transition (on Workflow History page).
       return $timestamp;
     }
 
     // Fetch $timestamp from widget for scheduled transitions.
-    $scheduled = (bool) $input['scheduled'] ?? '0';
-    if ($scheduled) {
-      $schedule_values = $input['date_time'];
-      // Fetch the (scheduled) timestamp to change the state.
-      // Override $timestamp.
-      $scheduled_date_time = implode(' ', [
-        $schedule_values['workflow_scheduled_date'],
-        $schedule_values['workflow_scheduled_hour'],
-        // $schedule_values['workflow_scheduled_timezone'],
-      ]);
-      $timezone = $schedule_values['workflow_scheduled_timezone'];
-      $old_timezone = date_default_timezone_get();
-      date_default_timezone_set($timezone);
-      $timestamp = strtotime($scheduled_date_time);
-      date_default_timezone_set($old_timezone);
-      if (!$timestamp) {
-        // Time should have been validated in form/widget.
-        $timestamp = \Drupal::time()->getRequestTime();
-      }
+    $old_timezone = date_default_timezone_get();
+    $new_timezone = $input['scheduled_datetime']['timezone'] ?? $old_timezone;
+    $new_timezone = is_array($new_timezone) ? reset($new_timezone) : $new_timezone;
+    $date_time = $input['scheduled_datetime'] ?? [];
+    $date_time = $date_time['datetime'] ?? '';
+    if (is_array($date_time)) {
+      $date_time = implode(' ', $date_time);
+      $date_time = DrupalDateTime::createFromFormat(
+        DrupalDateTime::FORMAT,
+        $date_time,
+        $new_timezone
+      );
+      $timestamp = $date_time->getTimestamp();
     }
+    elseif ($date_time instanceof DrupalDateTime) {
+      // Field was hidden on widget.
+      $timestamp = $date_time->getTimestamp();
+    }
+
+    /*
+    if ($new_timezone === $old_timezone) {
+    return $timestamp;
+    }
+
+    / * * @ v a r \Drupal\Core\Datetime\DrupalDateTime $date_time * /
+    // @todo Test changed Timezone.
+    $timezone = new \DateTimezone($new_timezone);
+    // We now override the value with the entered value converted into the
+    // selected timezone, and then DateTimeWidgetBase converts this value
+    // into UTC for storage.
+    if ($date_time instanceof DrupalDateTime) {
+    $date_time = new DrupalDateTime(
+    $date_time->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
+    $timezone
+    );
+    $timestamp = $date_time->getTimestamp();
+    $timestamp_formatted = $transition->getTimestampFormatted($timestamp);
+    }
+    else {
+    // Time should have been validated in form/widget.
+    $timestamp = $transition->getDefaultRequestTime();
+    }
+     */
 
     return $timestamp;
   }
 
   /**
-   * Generate an element.
+   * Generate a scheduling timestamp (with or without timezone) element.
    *
    * This function is referenced in the Annotation for this class.
+   * Display scheduling timestamp with timezone widget under certain conditions.
+   * This is determined outside of this element, in WorkflowTransitionElement.
    *
    * @param array $element
    *   The element.
@@ -89,138 +119,102 @@ class WorkflowTransitionTimestamp extends FormElement {
    *   The Workflow element.
    */
   public static function processTimestamp(array &$element, FormStateInterface $form_state, array &$complete_form) {
+    // Get the timestamp from the DrupalDateTime object default value.
+    $timestamp = $element['#default_value']->getTimestamp();
+    // Round timestamp to previous minute, since second are not displayed,
+    // making sure the time is in the past.
+    $timestamp = floor($timestamp / 60) * 60;
+    // Convert for use in formElement.
+    $timestamp = DrupalDateTime::createFromTimestamp($timestamp);
 
-    /*
-     * Input.
-     */
-
-     // A Transition object must have been set explicitly.
+    // A Transition object must have been set explicitly.
     /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
-    $transition = $element['#default_value'];
-    /** @var \Drupal\Core\Session\AccountInterface $user */
-    $user = \Drupal::currentUser();
-
-    /*
-     * Derived input.
-     */
-    $field_name = $transition->getFieldName();
+    $transition = $element['#workflow_transition'] ?? NULL;
+    $transition ??= $element['#default_value'];
     // Workflow might be empty on Action/VBO configuration.
-    $wid = $transition->getWorkflowId();
-    $workflow = $transition->getWorkflow();
-    $workflow_settings = $workflow ? $workflow->getSettings() : Workflow::defaultSettings();
+    $workflow_settings = $transition->getWorkflow()?->getSettings();
 
-    // Display scheduling form if user has permission.
-    // Not shown on new entity (not supported by workflow module, because that
-    // leaves the entity in the (creation) state until scheduling time.)
-    // Not shown when editing existing transition.
-    $add_schedule = $workflow_settings['schedule_enable'];
-    if ($add_schedule
-      && !$transition->isExecuted()
-      && $user->hasPermission("schedule $wid workflow_transition")
-      ) {
-      // @todo D8: check below code: form on VBO.
-      // workflow_debug(__FILE__, __FUNCTION__, __LINE__);
-      $step = $form_state ? $form_state->getValue('step') : NULL;
-      if ($step == 'views_bulk_operations_config_form') {
-        // @todo test D8: On VBO Bulk 'modify entity values' form,
-        // leave field settings.
-        $add_schedule = TRUE;
-      }
-      else {
-        // ... and cannot be shown on a Content add page (no $entity_id),
-        // ...but can be shown on a VBO 'set workflow state to..'page (no entity).
-        $entity = $transition->getTargetEntity();
-        $add_schedule = !($entity && !$entity->id());
-      }
-    }
+    $element['scheduled_datetime'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['container-inline']],
+    ];
+    $element['scheduled_datetime']['datetime'] = [
+      '#type' => 'datetime',
+      '#prefix' => t('At') . ' ',
+      '#default_value' => $timestamp,
+    ];
 
-    /*
-     * Output: generate the element.
-     */
-
-    // Display scheduling form under certain conditions.
-    if ($add_schedule) {
+    if ($workflow_settings['schedule_timezone']) {
+      $user = $transition->getOwner();
       $timezone = $user->getTimeZone();
       if (empty($timezone)) {
         $timezone = \Drupal::config('system.date')->get('timezone.default');
       }
-
+      // @todo Use TimeZoneFormHelper::getOptionsList() in version >=D10.1.
+      // @todo Use system_time_zones(FALSE) in version <D10.1, removed in D11.0.
+      // $timezone_options = TimeZoneFormHelper::getOptionsList();
+      // $timezone_options = TimeZoneFormHelper::getOptionsListByRegion();
+      // $timezone_options = DateTimeZone::listIdentifiers();
       $timezone_options = array_combine(timezone_identifiers_list(), timezone_identifiers_list());
-      $is_scheduled = $transition->isScheduled();
-      $timestamp = $transition->getTimestamp();
 
-      $hours = $is_scheduled
-      ? \Drupal::service('date.formatter')->format($timestamp, 'custom', 'H:i', $timezone)
-      : '00:00';
-      // Define class for '#states' behaviour.
-      // Fetch the form ID. This is unique for each entity, to allow multiple form per page (Views, etc.).
-      // Make it uniquer by adding the field name, or else the scheduling of
-      // multiple workflow_fields is not independent of each other.
-      // If we are indeed on a Transition form (so, not a Node Form with widget)
-      // then change the form id, too.
-      $form_id = $form_state ? $form_state->getFormObject()->getFormId() : self::getFormId();
-      // @todo Align with WorkflowTransitionForm->getFormId().
-      $class_identifier = Html::getClass('scheduled_' . Html::getUniqueId($form_id) . '-' . $field_name);
-      $element['scheduled'] = [
-        '#type' => 'radios',
-        '#title' => t('Schedule'),
-        '#options' => [
-          '0' => t('Immediately'),
-          '1' => t('Schedule for state change'),
-        ],
-        '#default_value' => (string) $is_scheduled,
-        '#attributes' => [
-          // 'id' => 'scheduled_' . $form_id,
-          'class' => [$class_identifier],
-        ],
-      ];
-      $element['date_time'] = [
-        '#type' => 'details', // 'container',
-        '#open' => TRUE, // Controls the HTML5 'open' attribute. Defaults to FALSE.
-        '#attributes' => ['class' => ['container-inline']],
-        '#prefix' => '<div style="margin-left: 1em;">',
-        '#suffix' => '</div>',
-        '#states' => [
-          'visible' => ['input.' . $class_identifier => ['value' => '1']],
-        ],
-      ];
-      $element['date_time']['workflow_scheduled_date'] = [
-        '#type' => 'date',
-        '#prefix' => t('At'),
-        '#default_value' => implode('-', [
-          'year' => date('Y', $timestamp),
-          'month' => date('m', $timestamp),
-          'day' => date('d', $timestamp),
-        ]),
-      ];
-      $element['date_time']['workflow_scheduled_hour'] = [
-        '#type' => 'textfield',
-        '#title' => t('Time'),
-        '#maxlength' => 7,
-        '#size' => 6,
-        '#default_value' => $hours,
-        '#element_validate' => ['_workflow_transition_form_element_validate_time'], // @todo D8: this is not called.
-      ];
-      $element['date_time']['workflow_scheduled_timezone'] = [
-        '#type' => $workflow_settings['schedule_timezone'] ? 'select' : 'hidden',
-        '#title' => t('Time zone'),
+      $element['scheduled_datetime']['timezone'] = [
+        '#type' => 'select',
         '#options' => $timezone_options,
         '#default_value' => [$timezone => $timezone],
-      ];
-      $element['date_time']['workflow_scheduled_help'] = [
-        '#type' => 'item',
-        '#prefix' => '<br />',
-        '#description' => t('Please enter a time. If no time is included,
-          the default will be midnight on the specified date.
-          The current time is: @time.', [
-            '@time' => \Drupal::service('date.formatter')
-              ->format(\Drupal::time()->getRequestTime(), 'custom', 'H:i', $timezone),
-          ]
-        ),
       ];
     }
 
     return $element;
+  }
+
+  /**
+   * Get the timestamp value from the element.
+   *
+   * @param \Drupal\workflow\Entity\WorkflowTransitionInterface $transition
+   *   The transition object.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @return int
+   *   The timestamp.
+   */
+  public static function getTimestamp(WorkflowTransitionInterface $transition, FormStateInterface $form_state): int {
+    $timestamp = NULL;
+
+    // For reading $timestamp, use lots of fallbacks. :-/ .
+    $complete_form = $form_state->getCompleteForm();
+    if (!$timestamp) {
+      // Used in Workflow History page, in Block.
+      // $timestamp is set by WorkflowTransitionTimestamp::valueCallback().
+      $timestamp = $complete_form['timestamp']['widget'][0]['value']['#value'] ?? NULL;
+    }
+    if (!$timestamp) {
+      // Used in Node Edit form item, not in History page, not in Block.
+      $field_name = $transition->getFieldName();
+      $timestamp = $complete_form[$field_name]['widget'][0]['timestamp']['widget'][0]['value']['#value'] ?? NULL;
+    }
+    if (!$timestamp) {
+      // Restore lost transition for fetching timestamp
+      // in more complex cases with nested arrays.
+      $values['#default_value'] = $transition;
+    }
+    if (!$timestamp) {
+      $input = $values;
+      $timestamp_input = $input['timestamp'][0]['value'] ?? ['scheduled' => FALSE];
+      $timestamp = WorkflowTransitionTimestamp::valueCallback($values, $timestamp_input, $form_state);
+    }
+    if (!$timestamp) {
+      // Fallback to the raw user post. A workaround for AJAX submissions.
+      $input = $form_state->getUserInput();
+      $timestamp_input = $input['timestamp'][0]['value'] ?? ['scheduled' => FALSE];
+      $timestamp = WorkflowTransitionTimestamp::valueCallback($values, $timestamp_input, $form_state);
+    }
+
+    if ($timestamp instanceof DrupalDateTime) {
+      $timestamp = $timestamp->getTimestamp();
+    }
+
+    return $timestamp;
   }
 
 }

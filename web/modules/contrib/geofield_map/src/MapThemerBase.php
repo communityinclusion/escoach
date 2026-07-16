@@ -83,7 +83,7 @@ abstract class MapThemerBase extends PluginBase implements MapThemerInterface, C
           'group' => $table_settings['tabledrag_group'],
         ],
       ],
-      '#caption' => $this->renderer->renderPlain($table_settings['caption']),
+      '#caption' => $this->renderer->renderInIsolation($table_settings['caption']),
     ];
   }
 
@@ -134,7 +134,7 @@ abstract class MapThemerBase extends PluginBase implements MapThemerInterface, C
           ],
         ],
       ] : [],
-      // @TODO: Monitor this core issue that prevents correct legend_exclude default
+      // @todo Monitor this core issue that prevents correct legend_exclude default
       // value via ajax:
       // Checkboxes default value is ignored by forms system during processing
       // of AJAX request (https://www.drupal.org/project/drupal/issues/1100170)
@@ -198,10 +198,10 @@ abstract class MapThemerBase extends PluginBase implements MapThemerInterface, C
       ],
       'table' => [
         '#type' => 'table',
-        '#caption' => isset($configuration['legend_caption']) ? $configuration['legend_caption'] : '',
+        '#caption' => $configuration['legend_caption'] ?? '',
         '#header' => [
-          isset($configuration['values_label']) ? $configuration['values_label'] : '',
-          isset($configuration['markers_label']) ? $configuration['markers_label'] : '',
+          $configuration['values_label'] ?? '',
+          $configuration['markers_label'] ?? '',
         ],
       ],
     ];
@@ -220,7 +220,7 @@ abstract class MapThemerBase extends PluginBase implements MapThemerInterface, C
     return [
       '#type' => 'html_tag',
       '#tag' => 'div',
-      '#value' => isset($configuration['legend_notes']) ? $configuration['legend_notes'] : '',
+      '#value' => $configuration['legend_notes'] ?? '',
       '#attributes' => [
         'class' => ['notes'],
       ],
@@ -301,7 +301,7 @@ abstract class MapThemerBase extends PluginBase implements MapThemerInterface, C
     TranslationInterface $translation_manager,
     RendererInterface $renderer,
     EntityTypeManagerInterface $entity_manager,
-    MarkerIconService $marker_icon_service
+    MarkerIconService $marker_icon_service,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 

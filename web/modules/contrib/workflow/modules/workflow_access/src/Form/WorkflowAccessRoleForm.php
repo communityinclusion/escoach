@@ -5,8 +5,8 @@ namespace Drupal\workflow_access\Form;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\workflow\Entity\WorkflowState;
 use Drupal\workflow\Form\WorkflowConfigTransitionFormBase;
+use Drupal\workflow_access\Entity\WorkflowAccessState;
 
 /**
  * Provides the base form for workflow add and edit forms.
@@ -36,7 +36,7 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['workflow_access.role'];
+    return [WorkflowAccessState::ROLE_ACCESS];
   }
 
   /**
@@ -62,12 +62,6 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
     if ($workflow) {
       /** @var \Drupal\workflow\Entity\WorkflowState $state */
       $state = $entity;
-      $sid = $state->id();
-
-      // A list of role names keyed by role ID, including the 'author' role.
-      // Only get the roles with proper permission + Author role.
-      $type_id = $workflow->id();
-      $roles = workflow_get_user_role_names("create $type_id workflow_transition");
 
       if ($state->isCreationState()) {
         // No need to set perms on creation.
@@ -76,7 +70,8 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
 
       $view = $update = $delete = [];
       $count = 0;
-      foreach (workflow_access_get_workflow_access_by_sid($sid) as $rid => $access) {
+      $access_state = new WorkflowAccessState(['id' => $state->id()]);
+      foreach ($access_state->readAccess() as $rid => $access) {
         $count++;
         $view[$rid] = $access['grant_view'] ? $rid : 0;
         $update[$rid] = $access['grant_update'] ? $rid : 0;
@@ -85,11 +80,17 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
       // Allow view grants by default for anonymous and authenticated users,
       // if no grants were set up earlier.
       if (!$count) {
-        $view = [
-          AccountInterface::ANONYMOUS_ROLE => AccountInterface::ANONYMOUS_ROLE,
-          AccountInterface::AUTHENTICATED_ROLE => AccountInterface::AUTHENTICATED_ROLE,
+        $roles = [
+          AccountInterface::ANONYMOUS_ROLE,
+          AccountInterface::AUTHENTICATED_ROLE,
         ];
+        $view = array_combine($roles, $roles);
       }
+
+      // A list of role [key =>label] pairs with proper permissions,
+      // including the 'author' role.
+      $type_id = $workflow->id();
+      $roles = workflow_allowed_user_role_names("create $type_id workflow_transition");
 
       $row['label_new'] = [
         '#type' => 'value',
@@ -119,8 +120,7 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($form_state->getValue($this->entitiesKey) as $sid => $access) {
-      // @todo Not waterproof; can be done smarter, using elementchildren().
-      if (!WorkflowState::load($sid)) {
+      if (!$access_state = WorkflowAccessState::load($sid)) {
         continue;
       }
 
@@ -131,7 +131,7 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
           'grant_delete' => (!empty($access['delete'][$rid])) ? (bool) $access['delete'][$rid] : 0,
         ];
       }
-      workflow_access_insert_workflow_access_by_sid($sid, $data);
+      $access_state->insertAccess($data);
 
       // Update all nodes to reflect new settings.
       node_access_needs_rebuild(TRUE);

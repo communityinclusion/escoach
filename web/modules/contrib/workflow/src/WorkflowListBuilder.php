@@ -24,8 +24,8 @@ class WorkflowListBuilder extends ConfigEntityListBuilder {
   public function buildHeader() {
     $header['id'] = $this->t('ID');
     $header['label'] = $this->t('Label');
-    $header['status'] = $this->t('Status');
-
+    // @todo $workflow->getStatus();
+    // $header['status'] = $this->t('Status');
     return $header + parent::buildHeader();
   }
 
@@ -36,8 +36,7 @@ class WorkflowListBuilder extends ConfigEntityListBuilder {
     $row['id'] = $workflow->id();
     $row['label'] = $workflow->label();
     // @todo $workflow->getStatus();
-    $row['status'] = '';
-
+    // $row['status'] = '';
     return $row + parent::buildRow($workflow);
   }
 
@@ -77,7 +76,7 @@ class WorkflowListBuilder extends ConfigEntityListBuilder {
     // $operations = $this->getDefaultOperations($workflow);
     // $operations += $this->moduleHandler()->invokeAll('entity_operation', [$workflow]);
     // $this->moduleHandler->alter('entity_operation', $operations, $workflow);
-
+    //
     // In D8, the interface of below hook_workflow_operations has changed a bit.
     // @see EntityListBuilder::getOperations, workflow_operations, workflow.api.php.
     $operations += $this->moduleHandler()->invokeAll('workflow_operations', ['workflow', $workflow]);
@@ -92,7 +91,7 @@ class WorkflowListBuilder extends ConfigEntityListBuilder {
     $build = parent::render();
 
     /*
-     * Allow modules to insert their own top_action links to the list, like cleanup module.
+     * Allow modules to insert own top_action links, like cleanup module.
      *
      * This is not done anymore via the workflow hook.
      * Instead, for an example:
@@ -102,8 +101,8 @@ class WorkflowListBuilder extends ConfigEntityListBuilder {
     // $top_actions = \Drupal::moduleHandler()
     // ->invokeAll('workflow_operations', ['top_actions', NULL]);
     // $top_actions_args = [
-    //   'links' => $top_actions,
-    //   'attributes' => ['class' => ['inline', 'action-links']],
+    // 'links' => $top_actions,
+    // 'attributes' => ['class' => ['inline', 'action-links']],
     // ];
     return $build;
   }

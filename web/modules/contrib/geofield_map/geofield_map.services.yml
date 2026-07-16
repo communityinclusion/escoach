@@ -2,18 +2,23 @@ services:
   plugin.manager.leaflet_tile_layer_plugin:
     class: Drupal\geofield_map\LeafletTileLayerPluginManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@request_stack']
+  Drupal\geofield_map\LeafletTileLayerPluginManager: '@plugin.manager.leaflet_tile_layer_plugin'
 
   plugin.manager.geofield_map.themer:
     class: Drupal\geofield_map\MapThemerPluginManager
-    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@config.factory', '@string_translation', '@entity_type.manager']
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@config.factory', '@entity_type.manager']
+  Drupal\geofield_map\MapThemerPluginManager: '@plugin.manager.geofield_map.themer'
 
   geofield_map.marker_icon:
-      class: Drupal\geofield_map\Services\MarkerIconService
-      arguments: ['@config.factory', '@string_translation', '@file_system', '@entity_type.manager', '@module_handler', '@link_generator', '@plugin.manager.element_info', '@stream_wrapper_manager', '@request_stack', '@extension.path.resolver', '@logger.factory']
+    class: Drupal\geofield_map\Services\MarkerIconService
+    arguments: ['@config.factory', '@string_translation', '@file_system', '@entity_type.manager', '@module_handler', '@link_generator', '@plugin.manager.element_info', '@stream_wrapper_manager', '@request_stack', '@extension.path.resolver', '@logger.factory']
+  Drupal\geofield_map\Services\MarkerIconService: '@geofield_map.marker_icon'
 
   geofield_map.google_maps:
     class: Drupal\geofield_map\Services\GoogleMapsService
-    arguments: ['@config.factory', '@language_manager', '@request_stack']
+    arguments: ['@config.factory', '@language_manager', '@request_stack', '@module_handler', '@?key.repository']
+  Drupal\geofield_map\Services\GoogleMapsService: '@geofield_map.google_maps'
 
   geofield_map.geocoder:
     class: Drupal\geofield_map\Services\GeocoderService
+  Drupal\geofield_map\Services\GeocoderService: '@geofield_map.geocoder'

@@ -2,6 +2,8 @@
 
 namespace Drupal\geofield_map\Plugin\GeofieldMapThemer;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield_map\Attribute\MapThemer;
 use Drupal\geofield_map\MapThemerBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\geofield_map\Plugin\views\style\GeofieldGoogleMapViewStyle;
@@ -21,31 +23,32 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
- * Style plugin to render a View output as a Leaflet map.
+ * Map Themer plugin based on Taxonomy Terms & Images Selection.
  *
  * @ingroup geofield_map_themers_plugins
  *
  * Attributes set below end up in the $this->definition[] array.
- *
- * @MapThemer(
- *   id = "geofieldmap_taxonomy_term_url",
- *   name = @Translation("Taxonomy Term (geofield_map) - Image Select"),
- *   description = "This Geofield Map Themer allows the Image Selection of
- * different Marker Icons based on Taxonomy Terms reference field in View.",
- *   context = {"ViewStyle"},
- *   weight = 4,
- *   markerIconSelection = {
- *    "type" = "file_uri",
- *    "configSyncCompatibility" = TRUE,
- *   },
- *   defaultSettings = {
- *    "values" = {},
- *    "legend" = {
- *      "class" = "taxonomy-term",
- *     },
- *   }
- * )
  */
+#[MapThemer(
+  id: "geofieldmap_taxonomy_term_url",
+  name: new TranslatableMarkup("Taxonomy Term - Image
+  Select"),
+  description: new TranslatableMarkup("This Geofield Map Themer allows
+  the Image Selection of different Marker Icons based on Taxonomy Terms
+  reference field in View."),
+  context: ["ViewStyle"],
+  weight: 4,
+  markerIconSelection: [
+    "type" => "file_uri",
+    "configSyncCompatibility"  => TRUE,
+  ],
+  defaultSettings: [
+    "values" => [],
+    "legend" => [
+      "class" => "taxonomy-term",
+    ],
+  ],
+)]
 class TaxonomyTermThemerUrl extends MapThemerBase {
 
   /**
@@ -93,7 +96,7 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
     RendererInterface $renderer,
     EntityTypeManagerInterface $entity_manager,
     MarkerIconService $marker_icon_service,
-    EntityTypeBundleInfoInterface $entity_type_bundle_info
+    EntityTypeBundleInfoInterface $entity_type_bundle_info,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $translation_manager, $renderer, $entity_manager, $marker_icon_service);
     $this->config = $config_factory;
@@ -134,7 +137,7 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
 
     $taxonomy_ref_fields = [];
     foreach ($view_fields as $field_id => $field_label) {
-      /* @var \Drupal\field\Entity\FieldStorageConfig $field_storage */
+      /** @var \Drupal\field\Entity\FieldStorageConfig $field_storage_definitions */
       if (isset($field_storage_definitions[$field_id])
         && $field_storage_definitions[$field_id] instanceof FieldStorageConfig
         && $field_storage_definitions[$field_id]->getType() == 'entity_reference'
@@ -166,9 +169,9 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
       foreach ($data['target_bundles'] as $vid) {
         try {
           $taxonomy_terms = [];
-          /* @var \Drupal\taxonomy\TermStorageInterface $taxonomy_term_storage */
+          /** @var \Drupal\taxonomy\TermStorageInterface $taxonomy_term_storage */
           $taxonomy_term_storage = $this->entityManager->getStorage('taxonomy_term');
-          /* @var \stdClass $term */
+          /** @var \stdClass $term */
           foreach ($taxonomy_term_storage->loadTree($vid) as $term) {
             $taxonomy_terms[$term->tid] = $term->name . (count($data['target_bundles']) > 1 ? ' (vid: ' . $vid . ')' : '');
           }
@@ -201,7 +204,7 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
     $user_input_taxonomy_field = isset($user_input['style_options']) && isset($user_input['style_options']['map_marker_and_infowindow']['theming']['geofieldmap_taxonomy_term']['values']['taxonomy_field']) ?
       $user_input['style_options']['map_marker_and_infowindow']['theming']['geofieldmap_taxonomy_term']['values']['taxonomy_field'] : NULL;
 
-    $selected_taxonomy_field = isset($user_input_taxonomy_field) ? $user_input_taxonomy_field : $default_taxonomy_field;
+    $selected_taxonomy_field = $user_input_taxonomy_field ?? $default_taxonomy_field;
 
     $element = [
       '#type' => 'fieldset',
@@ -243,10 +246,10 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
           'header' => [
             'label' => $this->t('Taxonomy term'),
             'label_alias' => Markup::create($this->t('Term Alias @description', [
-              '@description' => $this->renderer->renderPlain($label_alias_upload_help),
+              '@description' => $this->renderer->renderInIsolation($label_alias_upload_help),
             ])),
             'marker_icon' => Markup::create($this->t('Marker Icon @file_select_help', [
-              '@file_select_help' => $this->renderer->renderPlain($file_select_help),
+              '@file_select_help' => $this->renderer->renderInIsolation($file_select_help),
             ])),
             'image_style' => '',
           ],
@@ -324,8 +327,8 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
    * {@inheritdoc}
    */
   public function getIcon(array $datum, GeofieldGoogleMapViewStyle $geofieldMapView, EntityInterface $entity, $map_theming_values) {
-    $taxonomy_field = isset($map_theming_values['taxonomy_field']) ? $map_theming_values['taxonomy_field'] : NULL;
-    $fallback_icon = isset($map_theming_values['fields'][$taxonomy_field]['terms']['__default_value__']['icon_file']) ? $map_theming_values['fields'][$taxonomy_field]['terms']['__default_value__']['icon_file'] : NULL;
+    $taxonomy_field = $map_theming_values['taxonomy_field'] ?? NULL;
+    $fallback_icon = $map_theming_values['fields'][$taxonomy_field]['terms']['__default_value__']['icon_file'] ?? NULL;
     $file_uri = $fallback_icon;
     if (isset($entity->{$taxonomy_field}) && !empty($entity->{$taxonomy_field}->target_id)) {
       $taxonomy_field_term = $entity->{$taxonomy_field}->target_id;
@@ -340,7 +343,7 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
   public function getLegend(array $map_theming_values, array $configuration = []) {
     $legend = $this->defaultLegendHeader($configuration);
     // Get the icon image width, as result of the Legend configuration.
-    $icon_width = isset($configuration['markers_width']) ? $configuration['markers_width'] : 50;
+    $icon_width = $configuration['markers_width'] ?? 50;
     $taxonomy_field = $map_theming_values['taxonomy_field'];
 
     foreach ($map_theming_values['fields'][$taxonomy_field]['terms'] as $vid => $term) {
@@ -353,7 +356,7 @@ class TaxonomyTermThemerUrl extends MapThemerBase {
       if (!empty($term['legend_exclude']) || ($icon_file_uri == 'none' && !$this->renderDefaultLegendIcon())) {
         continue;
       }
-      $label = isset($term['label']) ? $term['label'] : $vid;
+      $label = $term['label'] ?? $vid;
       $legend['table'][$vid] = [
         'value' => [
           '#type' => 'container',

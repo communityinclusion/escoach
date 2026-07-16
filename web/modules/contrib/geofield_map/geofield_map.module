@@ -9,6 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\file\FileInterface;
 use Drupal\image\Entity\ImageStyle;
 
@@ -139,7 +140,7 @@ function geofield_map_preprocess_image_widget(&$variables) {
 
     if (!empty($element['fids']['#value'])) {
       $file = reset($element['#files']);
-      $element['file_' . $file->id()]['filename']['#suffix'] = ' <span class="file-size">(' . format_size($file->getSize()) . ')</span> ';
+      $element['file_' . $file->id()]['filename']['#suffix'] = ' <span class="file-size">(' . ByteSizeMarkup::create($file->getSize()) . ')</span> ';
       $file_variables = [
         'style_name' => $element['#preview_image_style'],
         'uri' => $file->getFileUri(),
@@ -218,7 +219,7 @@ function geofield_map_preprocess_image_widget(&$variables) {
 function geofield_map_preprocess_select(&$variables) {
   $element = $variables['element'];
   if (!empty($element['#geofield_map_marker_icon_select']) && !empty($element['#value']) && $element['#value'] != 'none') {
-    /* @var \Drupal\Core\Image\Image $image */
+    /** @var \Drupal\Core\Image\Image $image */
     $image = \Drupal::service('image.factory')->get($element['#value']);
     $file_width = $file_height = 1;
     if ($image->isValid()) {
@@ -239,39 +240,4 @@ function geofield_map_preprocess_select(&$variables) {
       $variables['data'][$child] = $element[$child];
     }
   }
-}
-
-/**
- * Checks that the file is recognized as a valid image.
- *
- * @param \Drupal\file\FileInterface $file
- *   A file entity.
- *
- * @return array
- *   An empty array if the file is a valid image or an array containing an error
- *   message if it's not.
- *
- * @see file_validate_is_image()
- */
-function geofield_map_file_validate_is_image(FileInterface $file) {
-  $errors = [];
-
-  /* @var \Drupal\Core\Image\ImageFactory $image_factory */
-  $image_factory = \Drupal::service('image.factory');
-  $image = $image_factory->get($file->getFileUri());
-  $supported_extensions = $image_factory->getSupportedExtensions();
-  if ($svg_image_support = \Drupal::service('module_handler')->moduleExists('svg_image')) {
-    $supported_extensions[] = 'svg';
-  }
-
-  // Check before if it is an SVG file, when might be handled.
-  /* @var \Drupal\file\Entity\File $file */
-  if ($svg_image_support && svg_image_is_file_svg($file)) {
-    $errors = [];
-  }
-  elseif (!$image->isValid()) {
-    $errors[] = t('The image file is invalid or the image type is not allowed. Allowed types: %types', ['%types' => implode(', ', $supported_extensions)]);
-  }
-
-  return $errors;
 }

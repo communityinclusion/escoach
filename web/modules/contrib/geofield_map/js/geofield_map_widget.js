@@ -28,8 +28,8 @@
           // - leaflet js is the chosen map library;
           // - geocoder integration is enabled;
           if (options.map_library === 'leaflet' && options.gmap_geocoder) {
-            // Check and wai for the Leaflet module to be loaded.
-            var checkLeafletExist = setInterval(function() {
+            // Wait a little while to make sure Leaflet library is loaded.
+            const checkLeafletExist = setInterval(function() {
                if (window.hasOwnProperty('L')) {
                   Drupal.geoFieldMap.map_initialize(options, context);
                   clearInterval(checkLeafletExist);

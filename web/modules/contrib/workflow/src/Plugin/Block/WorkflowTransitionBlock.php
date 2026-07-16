@@ -59,7 +59,8 @@ class WorkflowTransitionBlock extends BlockBase {
       return $form;
     }
     // Add the WorkflowTransitionForm to the page.
-    $form = WorkflowTransitionForm::createInstance($entity, $field_name, []);
+    $transition = $entity->{$field_name}->getDefaultTransition();
+    $form = WorkflowTransitionForm::getForm($transition);
 
     return $form;
   }

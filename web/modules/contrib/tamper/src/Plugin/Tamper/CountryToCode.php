@@ -2,14 +2,14 @@
 
 namespace Drupal\tamper\Plugin\Tamper;
 
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Locale\CountryManagerInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\tamper\Attribute\Tamper;
 use Drupal\tamper\Exception\TamperException;
 use Drupal\tamper\ItemUsage;
 use Drupal\tamper\TamperBase;
 use Drupal\tamper\TamperableItemInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Plugin implementation for converting country to ISO code.
@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   category: new TranslatableMarkup('Text'),
   itemUsage: ItemUsage::IGNORED,
 )]
-class CountryToCode extends TamperBase implements ContainerFactoryPluginInterface {
+class CountryToCode extends TamperBase {
 
   /**
    * Holds the CountryManager object so we can grab the country list.
@@ -29,6 +29,29 @@ class CountryToCode extends TamperBase implements ContainerFactoryPluginInterfac
    * @var \Drupal\Core\Locale\CountryManagerInterface
    */
   protected $countryManager;
+
+  /**
+   * Constructs a CountryToCode plugin.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Locale\CountryManagerInterface $country_manager
+   *   The country manager used to grab the country list.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    #[Autowire(service: 'country_manager')]
+    CountryManagerInterface $country_manager,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->countryManager = $country_manager;
+  }
 
   /**
    * {@inheritdoc}
@@ -70,15 +93,6 @@ class CountryToCode extends TamperBase implements ContainerFactoryPluginInterfac
     else {
       throw new TamperException('Could not find country name ' . $country . ' in list of countries.');
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = new static($configuration, $plugin_id, $plugin_definition, $configuration['source_definition']);
-    $instance->setCountryManager($container->get('country_manager'));
-    return $instance;
   }
 
   /**

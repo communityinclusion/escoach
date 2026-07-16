@@ -27,9 +27,9 @@ class WorkflowConfigTransitionLabelForm extends WorkflowConfigTransitionFormBase
    */
   public function buildHeader() {
     $header = [
-      'from' => $this->t('Transition from'),
-      'to' => $this->t('Transition to'),
-      'label_new' => $this->t('label'),
+      'from' => $this->t('From state'),
+      'to' => $this->t('To state'),
+      'label_new' => $this->t('Label'),
       'config_transition' => '',
     ];
 

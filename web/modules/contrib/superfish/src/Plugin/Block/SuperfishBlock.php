@@ -798,7 +798,7 @@ class SuperfishBlock extends SystemMenuBlock {
   /**
    * Overrides \Drupal\block\BlockBase::blockValidate().
    */
-  public function blockValidate($form, FormStateInterface $form_state) {
+  public function blockValidate($form, FormStateInterface $form_state): void {
     $touch = $form_state->getValue([
       'plugins',
       'sf-touchscreen',
@@ -1214,7 +1214,8 @@ class SuperfishBlock extends SystemMenuBlock {
     $parameters = (new MenuTreeParameters())
       ->setMinDepth($level)
       ->setMaxDepth($maxdepth)
-      ->setActiveTrail($this->menuActiveTrail->getActiveTrailIds($menu_name));
+      ->setActiveTrail($this->menuActiveTrail->getActiveTrailIds($menu_name))
+      ->onlyEnabledLinks();
 
     // For menu blocks with start level greater than 1, only show menu items
     // from the current active trail. Adjust the root according to the current
@@ -1538,8 +1539,8 @@ class SuperfishBlock extends SystemMenuBlock {
           break;
 
         case 1:
-          $ab = $this->configuration['smallabt'];
-          $plugins['smallscreen']['accordionButton'] = $ab != 1 ? $ab : '';
+          $ab = (int) $this->configuration['smallabt'];
+          $plugins['smallscreen']['accordionButton'] = $ab != 1 ? $ab : 0;
           if ($this->t('Expand') != 'Expand') {
             $plugins['smallscreen']['expandText'] = $this->t('Expand');
           }
