@@ -812,6 +812,37 @@ class EntityUsageTest extends EntityKernelTestBase {
   }
 
   /**
+   * Tests that __wakeup() refreshes container-derived state after unserialize.
+   *
+   * @covers \Drupal\entity_usage\EntityUsageTrackBase::__wakeup
+   */
+  public function testWakeup(): void {
+    $entity = $this->testEntities[0];
+    $config_factory = $this->container->get('config.factory');
+
+    /** @var \Drupal\entity_usage\EntityUsageTrackBase $plugin */
+    $plugin = $this->container->get('plugin.manager.entity_usage.track')->createInstance('entity_reference');
+    // Base field tracking is disabled by default, and 'entity_test' is not in
+    // the 'always_track_base_fields' container parameter, so the 'user_id'
+    // base field is not returned.
+    $this->assertArrayNotHasKey('user_id', $plugin->getReferencingFields($entity, ['entity_reference']));
+
+    $serialized = serialize($plugin);
+
+    // Enable base field tracking after the plugin was constructed, so the
+    // serialized plugin's state is now stale.
+    $config_factory->getEditable('entity_usage.settings')
+      ->set('track_enabled_base_fields', TRUE)
+      ->save();
+
+    /** @var \Drupal\entity_usage\EntityUsageTrackBase $plugin */
+    $plugin = unserialize($serialized);
+    // __wakeup() re-reads the config from the container, rather than relying
+    // on the stale value captured when the plugin was serialized.
+    $this->assertArrayHasKey('user_id', $plugin->getReferencingFields($entity, ['entity_reference']));
+  }
+
+  /**
    * Creates two test entities.
    *
    * @return \Drupal\entity_test\Entity\EntityTest[]

@@ -135,7 +135,9 @@ class EntityUsage implements EntityUsageBulkInterface {
         $target_id_int = $this->isInt($target_id);
         $source_id_int = $this->isInt($source_id);
 
-        $key = $target_id . $target_type . $source_id . $source_type . $source_langcode . ($source_vid ?: 0) . $method . $field_name;
+        // Avoid key collisions by concatenating with a null byte character.
+        // @phpcs:ignore Drupal.Arrays.Array.LongLineDeclaration
+        $key = implode("\0", [$target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid ?: 0, $method, $field_name]);
         $this->inserts[$key] = [
           'target_id' => $target_id_int ? $target_id : 0,
           // Target ID string default value is an empty string.

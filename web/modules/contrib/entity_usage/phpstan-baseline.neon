@@ -1,6 +1,22 @@
 parameters:
 	ignoreErrors:
 		-
+			rawMessage: '''
+				Call to deprecated function trash_entity_is_deleted():
+				in trash:3.0.30 and is removed from trash:3.1.0. Use
+				  \Drupal\trash\Trash::entityIsDeleted() instead.
+			'''
+			identifier: function.deprecated
+			count: 1
+			path: src/Controller/ListUsageController.php
+
+		-
+			rawMessage: 'Parameter #1 $mode of method Drupal\Core\Database\StatementInterface::fetchAll() expects Drupal\Core\Database\Statement\FetchAs|null, int given.'
+			identifier: argument.type
+			count: 1
+			path: src/EntityUsageBatchManager.php
+
+		-
 			rawMessage: 'Method Drupal\entity_usage\EntityUsageTrackManager::processDefinition() has parameter $definition with no type specified.'
 			identifier: missingType.parameter
 			count: 1
