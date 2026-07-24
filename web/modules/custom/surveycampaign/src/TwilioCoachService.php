@@ -25,7 +25,8 @@ class TwilioCoachService
         //Else use the default heading and text for the final screen, from the lib settings page defaults.
         // call the manage closing screen function (if today's date/default to do the work of changing things in SG
         $defaultenable = $type == 1 ? $config->get('defaultenable') : $config->get('secondenable');
-        require $_SERVER['SERVER_ADDR'] == '162.243.15.189' || $_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' || $_SERVER['SERVER_ADDR'] =='50.56.159.116' ? '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php' : '/var/www/es_coach/vendor/autoload.php';
+        require $_SERVER['SERVER_ADDR'] == '127.0.0.1' ? '/var/www/es_coach/vendor/autoload.php' : '/home/ici/escoach.communityinclusion.org/escoach/vendor/autoload.php';
+        \Drupal::logger('surveycampaign alert')->notice($_SERVER['SERVER_ADDR']);
         $survey = '5500151';//Survey to pull from
         $todaydate = date("Y-m-d");
         $tomorrowdate = new DateTime("$todaydate");
