@@ -17,7 +17,7 @@ class TwilioCoachService
     public function load($surveyid,$type = 1,$day = 0,$fixdate = null) {
 
         $user = 'oliver.lyons@umb.edu'; //Email address used to l
-        include($_SERVER['SERVER_ADDR'] == '104.131.35.148' || $_SERVER['SERVER_ADDR'] == '104.239.197.9' || $_SERVER['SERVER_ADDR'] =='50.56.159.116' ? '/home/ici/escoach.communityinclusion.org/logins.php' : '/var/www/logins.php');
+        include($_SERVER['SERVER_ADDR'] == '127.0.0.1' ? '/var/www/logins.php' : '/home/ici/escoach.communityinclusion.org/logins.php');
         $config =  \Drupal::config('surveycampaign.settings');
         $onetime = $type == '2'  && $config->get('alt_repeat') == '0' ? true : false;
         $libconfig =  \Drupal::config('surveycampaign.library_settings');
