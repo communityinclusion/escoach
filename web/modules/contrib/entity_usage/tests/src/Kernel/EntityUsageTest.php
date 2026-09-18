@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\entity_usage\Kernel;
 
+use Drupal\Core\Database\DatabaseExceptionWrapper;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
@@ -792,6 +793,44 @@ class EntityUsageTest extends EntityKernelTestBase {
       ->execute()
       ->fetchCol();
     $this->assertEquals(['entity_reference', 'typed_data'], $methods);
+  }
+
+  /**
+   * Tests that the rows of a failed bulk insert are not sent again.
+   *
+   * @covers \Drupal\entity_usage\EntityUsage::bulkInsert
+   */
+  public function testBulkInsertAfterFailure(): void {
+    /** @var \Drupal\entity_usage\EntityUsage $entity_usage */
+    $entity_usage = $this->container->get('entity_usage.usage');
+
+    // Queue a row against a table that does not exist so the insert fails.
+    $entity_usage->enableBulkInsert('entity_usage_missing_table');
+    $entity_usage->registerUsage(1, 'entity_test', 1, 'foo', 'en', 1, 'entity_reference', 'body');
+    try {
+      $entity_usage->bulkInsert();
+      $this->fail('Inserting into a missing table throws an exception.');
+    }
+    catch (DatabaseExceptionWrapper) {
+      // Expected.
+    }
+
+    // The row of the failed insert has been discarded: the next bulk insert
+    // only writes the rows registered after the failure.
+    $entity_usage->enableBulkInsert();
+    $entity_usage->registerUsage(2, 'entity_test', 1, 'foo', 'en', 1, 'entity_reference', 'body');
+    $entity_usage->bulkInsert();
+
+    $target_ids = $this->injectedDatabase->select($this->tableName, 'e')
+      ->fields('e', ['target_id'])
+      ->execute()
+      ->fetchCol();
+    $this->assertEquals([2], $target_ids);
+
+    // Only the inserted row dispatched an event.
+    $events = $this->state->get('entity_usage_events_test.usage_register', []);
+    $this->assertCount(1, $events);
+    $this->assertSame(2, $events[0]['target_id']);
   }
 
   /**

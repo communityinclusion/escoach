@@ -3,6 +3,7 @@
 namespace Drupal\Tests\page_manager_ui\Functional;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\Tests\page_manager\Traits\WebDriverFormSubmitTrait;
 
 /**
  * Tests the page parameters capabilities.
@@ -10,6 +11,8 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
  * @group page_manager_ui
  */
 class PageParametersTest extends WebDriverTestBase {
+
+  use WebDriverFormSubmitTrait;
 
   /**
    * {@inheritdoc}

@@ -3,7 +3,7 @@ name: Page Manager Test
 description: 'Required for page manager simpletests only.'
 package: Testing
 
-# Information added by Drupal.org packaging script on 2026-03-31
-version: '8.x-4.0-rc4'
+# Information added by Drupal.org packaging script on 2026-07-28
+version: '8.x-4.0'
 project: 'page_manager'
-datestamp: 1774940377
+datestamp: 1785216917

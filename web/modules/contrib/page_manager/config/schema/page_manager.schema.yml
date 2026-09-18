@@ -45,6 +45,69 @@ page_manager.page.*:
           optional:
             type: boolean
             label: 'Optional'
+    menu_type:
+      type: string
+      label: 'Menu type'
+    menu_settings:
+      type: page_manager.menu.settings.[%parent.menu_type]
+      label: 'Menu settings'
+
+# Base type shared by every Page Manager menu type plugin. Plugins provided by
+# other modules should declare page_manager.menu.settings.MY_PLUGIN_ID and
+# extend this type when they add settings of their own.
+page_manager.menu.settings:
+  type: mapping
+  label: 'Menu settings'
+  mapping:
+    title:
+      type: label
+      label: 'Title'
+    weight:
+      type: integer
+      label: 'Weight'
+
+# Fallback for menu type plugins that ship no schema of their own.
+page_manager.menu.settings.*:
+  type: page_manager.menu.settings
+  label: 'Menu settings'
+
+# The page is not placed in a menu, so there is nothing to store.
+page_manager.menu.settings.none:
+  type: mapping
+  label: 'No menu settings'
+
+page_manager.menu.settings.normal_menu:
+  type: page_manager.menu.settings
+  label: 'Normal menu entry settings'
+  mapping:
+    menu_name:
+      type: string
+      label: 'Menu'
+
+page_manager.menu.settings.menu_tab:
+  type: page_manager.menu.settings
+  label: 'Menu tab settings'
+
+page_manager.menu.settings.menu_action:
+  type: page_manager.menu.settings
+  label: 'Local action settings'
+
+page_manager.menu.settings.default_menu_tab:
+  type: page_manager.menu.settings
+  label: 'Default menu tab settings'
+  mapping:
+    parent_menu_type:
+      type: string
+      label: 'Parent menu type'
+    parent_title:
+      type: label
+      label: 'Parent title'
+    parent_menu:
+      type: string
+      label: 'Parent menu'
+    parent_weight:
+      type: integer
+      label: 'Parent weight'
 
 page_manager.page_variant.*:
   type: config_entity

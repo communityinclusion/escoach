@@ -18,6 +18,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_usage\EntityUsageInterface;
 use Drupal\layout_builder\InlineBlockUsageInterface;
 use Drupal\paragraphs\ParagraphInterface;
+use Drupal\trash\Trash;
 use Drupal\trash\TrashManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -540,7 +541,7 @@ class ListUsageController extends ControllerBase {
       }
     }
 
-    $entity_in_trash = !is_null($this->trashManager) && trash_entity_is_deleted($source_entity);
+    $entity_in_trash = !is_null($this->trashManager) && Trash::entityIsDeleted($source_entity);
 
     $entity_label = $source_entity->access('view label') ? $source_entity->label() : $this->t('- Restricted access -');
     if ($entity_in_trash) {
@@ -618,10 +619,10 @@ class ListUsageController extends ControllerBase {
    */
   public function checkAccess($entity_type, $entity_id): AccessResultInterface {
     $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
-    if (!$entity || !$entity->access('view')) {
+    if (!$entity) {
       return AccessResult::forbidden();
     }
-    return AccessResult::allowed();
+    return $entity->access('view', NULL, TRUE);
   }
 
 }

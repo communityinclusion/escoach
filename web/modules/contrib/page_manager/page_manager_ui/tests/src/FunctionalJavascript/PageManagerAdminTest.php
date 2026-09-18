@@ -4,6 +4,7 @@ namespace Drupal\Tests\page_manager_ui\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\page_manager\Entity\Page;
+use Drupal\Tests\page_manager\Traits\WebDriverFormSubmitTrait;
 
 /**
  * Tests the admin UI for page entities.
@@ -11,6 +12,8 @@ use Drupal\page_manager\Entity\Page;
  * @group page_manager_ui
  */
 class PageManagerAdminTest extends WebDriverTestBase {
+
+  use WebDriverFormSubmitTrait;
 
   /**
    * {@inheritdoc}

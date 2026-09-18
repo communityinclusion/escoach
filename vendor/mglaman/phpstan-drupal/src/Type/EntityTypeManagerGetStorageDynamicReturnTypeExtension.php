@@ -2,39 +2,28 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
 use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
 
-    /**
-     * @var EntityDataRepository
-     */
-    private $entityDataRepository;
-
-    /**
-     * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
-     *
-     * @param EntityDataRepository $entityDataRepository
-     */
-    public function __construct(EntityDataRepository $entityDataRepository)
-    {
-        $this->entityDataRepository = $entityDataRepository;
+    public function __construct(
+        private readonly EntityDataRepository $entityDataRepository
+    ) {
     }
 
     public function getClass(): string
     {
-        return 'Drupal\Core\Entity\EntityTypeManagerInterface';
+        return EntityTypeManagerInterface::class;
     }
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
@@ -52,16 +41,17 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
             $methodCall->getArgs(),
             $methodReflection->getVariants()
         )->getReturnType();
-        if (!isset($methodCall->args[0])) {
-            // Parameter is required.
-            throw new ShouldNotHappenException();
+        if ($methodCall->isFirstClassCallable()) {
+            return $returnType;
+        }
+        $args = $methodCall->getArgs();
+        if (count($args) === 0) {
+            // Calling getStorage() without arguments is invalid, but PHPStan
+            // reports that itself; do not crash the analysis.
+            return $returnType;
         }
 
-        $arg1 = $methodCall->args[0];
-        if ($arg1 instanceof VariadicPlaceholder) {
-            throw new ShouldNotHappenException();
-        }
-        $arg1 = $arg1->value;
+        $arg1 = $args[0]->value;
 
         // @todo handle where the first param is EntityTypeInterface::id()
         if ($arg1 instanceof MethodCall) {

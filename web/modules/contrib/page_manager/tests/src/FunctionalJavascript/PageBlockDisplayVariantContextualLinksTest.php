@@ -8,6 +8,7 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\contextual\FunctionalJavascript\ContextualLinkClickTrait;
+use Drupal\Tests\page_manager\Traits\WebDriverFormSubmitTrait;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
@@ -17,6 +18,7 @@ use Drupal\Tests\user\Traits\UserCreationTrait;
  */
 class PageBlockDisplayVariantContextualLinksTest extends WebDriverTestBase {
 
+  use WebDriverFormSubmitTrait;
   use ContextualLinkClickTrait;
   use UserCreationTrait;
 
@@ -129,6 +131,7 @@ class PageBlockDisplayVariantContextualLinksTest extends WebDriverTestBase {
 
     // Check that the contextual link destination is valid.
     $session->getPage()->pressButton('Save');
+    $this->waitForPage();
     $assert_session->pageTextContains('Test block content has been updated.');
     $this->assertEquals($page_url, $session->getCurrentUrl());
 
@@ -137,6 +140,7 @@ class PageBlockDisplayVariantContextualLinksTest extends WebDriverTestBase {
 
     // Check that the contextual link destination is valid.
     $session->getPage()->pressButton('Save');
+    $this->waitForPage();
     $assert_session->pageTextContains("The view Who's online block has been saved.");
     $this->assertEquals($page_url, $session->getCurrentUrl());
   }
