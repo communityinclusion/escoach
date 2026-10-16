@@ -1,0 +1,5 @@
+
+services:
+  Drupal\bootstrap_barrio_subtheme\Hook\BootstrapBarrioSubthemeHooks:
+    class: Drupal\bootstrap_barrio_subtheme\Hook\BootstrapBarrioSubthemeHooks
+    autowire: true

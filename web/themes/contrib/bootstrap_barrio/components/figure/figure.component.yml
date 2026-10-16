@@ -4,32 +4,40 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Figure
 
+# Description for Canvas library panel.
+description: A Bootstrap figure component for images with captions.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
-status: experimental
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Media
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
     image_url:
       type: string
       title: Image URL
+      description: URL of the figure image.
+      format: uri-reference
+      examples: ['https://placehold.co/400x300']
     caption:
       type: string
-      title: Image caption
+      title: Caption
+      description: Caption text for the figure.
+      examples: ['A caption for the above image.']
     rounded:
       type: boolean
-      title: Rounded borders
+      title: Rounded Borders
+      description: Whether to apply rounded corners to the image.
+      examples: [false]
+
 # Slots always hold arbitrary markup. We know that beforehand, so no need for
 # a schema for slots.
 slots:
-  # The key is the name of the slot. In your template you will use
-  # {% block content %}.
   image:
     title: Image
-    required: false
+    description: Slot for custom image content.

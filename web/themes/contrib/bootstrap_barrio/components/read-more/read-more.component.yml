@@ -4,8 +4,14 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Read More
 
+# Description for Canvas library panel.
+description: A read more link component with accessibility support.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
-status: experimental
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Actions
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
@@ -14,19 +20,19 @@ props:
   required:
     - url
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Link attributes.
     url:
       type: string
-      title: Read More url
-      format: iri-reference
-
-slots:
-  a11y:
-    type: string
-    title: Read More screen reader text
-  text:
-    type: string
-    title: Read More text
+      title: URL
+      description: The link destination.
+      format: uri-reference
+      examples: ['/node/1']
+    text:
+      type: string
+      title: Link Text
+      description: The visible link text.
+      examples: ['Read more']
+    a11y:
+      type: string
+      title: Screen Reader Text
+      description: Additional context for screen readers.
+      examples: ['about this article']

@@ -4,38 +4,63 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Accordion
 
+# Description for Canvas library panel.
+description: A Bootstrap accordion component with collapsible panels.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
 status: stable
+
+# Group for organization in Canvas sidebar.
+group: Interactive
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
     id:
       type: string
-      title: id
+      title: Accordion ID
+      description: Unique identifier for the accordion.
+      examples: ['accordion-1']
     style:
       type: string
       title: Style
+      description: Additional CSS class for styling.
+      enum:
+        - ''
+        - accordion-flush
+      meta:enum:
+        '': Default
+        accordion-flush: Flush (no borders)
+      examples: ['']
     items:
       type: array
       title: Items
-      item:
+      description: List of accordion panels.
+      items:
         type: object
-        title: Item
+        title: Accordion Item
         properties:
           header:
             type: string
-            title: Type
+            title: Header
+            description: The title of the accordion panel.
+            examples: ['Panel Title']
           show:
             type: boolean
-            title: show
-            default: false
+            title: Expanded
+            description: Whether the panel is expanded by default.
+            examples: [false]
           body:
             type: string
             title: Body
+            description: The content of the accordion panel.
+            examples: ['Panel content goes here.']
+      examples:
+        - - header: 'First Panel'
+            show: true
+            body: 'Content for the first panel.'
+          - header: 'Second Panel'
+            show: false
+            body: 'Content for the second panel.'

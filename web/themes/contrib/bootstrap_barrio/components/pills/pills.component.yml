@@ -2,10 +2,16 @@
 $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
 
 # The human readable name.
-name: Tabs
+name: Pills
+
+# Description for Canvas library panel.
+description: A Bootstrap pills navigation component with tabbed content.
 
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
-status: experimental
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Navigation
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
@@ -14,17 +20,35 @@ props:
   properties:
     items:
       type: array
-      title: Items
-      item:
+      title: Pills Items
+      description: List of pill tabs with content.
+      items:
         type: object
-        title: Item
+        title: Pill Item
         properties:
-          uli:
-            type: string
-            title: URL
           title:
             type: string
             title: Title
-          active:
+            description: Tab label text.
+            examples: ['Tab 1']
+          body:
+            type: string
+            title: Body
+            description: Content for the tab panel.
+            contentMediaType: text/html
+            examples: ['Tab content goes here.']
+          show:
             type: boolean
-            title: active
+            title: Active
+            description: Whether this tab is active by default.
+            examples: [false]
+      examples:
+        - - title: 'Home'
+            body: 'Home tab content.'
+            show: true
+          - title: 'Profile'
+            body: 'Profile tab content.'
+            show: false
+          - title: 'Settings'
+            body: 'Settings tab content.'
+            show: false

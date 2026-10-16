@@ -4,41 +4,41 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Teaser
 
+# Description for Canvas library panel.
+description: A teaser component for content previews.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
 status: stable
+
+# Group for organization in Canvas sidebar.
+group: Content
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
+    class:
+      type: string
+      title: CSS Classes
+      description: Additional CSS classes for the teaser wrapper.
+      examples: ['teaser--featured']
 
 # Slots always hold arbitrary markup. We know that beforehand, so no need for
 # a schema for slots.
 slots:
-  # The key is the name of the slot. In your template you will use
-  # {% block content %}.
   content:
     title: Content
-    required: true
-    description: The teaser content
+    description: The main teaser content.
   image:
     title: Image
-    required: false
-    description: Teaser image
+    description: Teaser image area.
   meta:
     title: Meta
-    required: false
-    description: Teaser meta
+    description: Teaser meta information (date, author, etc.).
   prefix:
     title: Prefix
-    required: false
-    description: Contextual links slot
+    description: Content before the teaser (contextual links, etc.).
   title:
-    title: Title content
-    required: false
-    description: Teaser title
+    title: Title
+    description: Teaser title content.

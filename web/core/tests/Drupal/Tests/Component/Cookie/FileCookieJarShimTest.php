@@ -6,6 +6,7 @@ namespace Drupal\Tests\Component\Cookie;
 
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Cookie\SetCookie;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
 // cspell:ignore phpggc
@@ -21,9 +22,8 @@ use PHPUnit\Framework\TestCase;
  * @see core/includes/guzzle_file_cookie_jar_shim.php
  * @see https://www.drupal.org/project/drupal/issues/3524971
  * @see https://github.com/guzzle/guzzle/pull/3334
- *
- * @group Cookie
  */
+#[Group('Cookie')]
 class FileCookieJarShimTest extends TestCase {
 
   /**

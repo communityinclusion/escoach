@@ -1,0 +1,30 @@
+/* Video popup play button overlay styling */
+.videopopup-trigger {
+  overflow: hidden;
+  position: relative;
+  display: block;
+}
+
+.video-play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.play-icon {
+  width: 64px;
+  height: 64px;
+  opacity: 0.9;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.videopopup-trigger:hover .play-icon {
+  transform: scale(1.1);
+  opacity: 1;
+}

@@ -1,10 +1,12 @@
 <?php
 
+use Drupal\Component\Utility\DeprecationHelper;
+use Drupal\Core\Extension\ThemeSettingsProvider;
+
 /**
  * @file
  * Lists available colors and color schemes for the Bootstrap Barrio theme.
  */
-
 $info = [
   // Available colors and color labels used in theme.
   'fields' => [
@@ -123,7 +125,7 @@ $info = [
     'drupalSettings' => [
       'color' => [
         // Put the logo path into JavaScript for the live preview.
-        'logo' => theme_get_setting('logo.url', 'bootstrap_barrio_subtheme'),
+        'logo' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.3.0', fn() => \Drupal::service(ThemeSettingsProvider::class)->getSetting('logo.url', 'bootstrap_barrio_subtheme'), fn() => theme_get_setting('logo.url', 'bootstrap_barrio_subtheme')),
       ],
     ],
   ],

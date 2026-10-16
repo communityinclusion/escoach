@@ -27,8 +27,10 @@
 #}
 
 {{ include('bootstrap_barrio:alert',
-  { message_list: message_list,
+  { message_list: message_list|default([]),
     status_headings: status_headings,
-    attributes: attributes
+    attributes: attributes,
+    title_ids: title_ids,
+    alert_wrapper_classes: ['position-fixed', 'bottom-0', 'start-0', 'zindex-tooltip', 'container-fluid', 'p-3', 'z-1']
   })
 }}

@@ -26,8 +26,9 @@
  */
 #}
 {{ include('bootstrap_barrio:alert',
-  { message_list: message_list,
+  { message_list: message_list|default([]),
     status_headings: status_headings,
-    attributes: attributes
+    attributes: attributes,
+    title_ids: title_ids
   })
 }}

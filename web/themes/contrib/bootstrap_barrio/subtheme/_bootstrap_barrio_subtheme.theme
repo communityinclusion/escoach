@@ -4,7 +4,8 @@
  * @file
  * Functions to support theming in the SASS Starterkit subtheme.
  */
-
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\bootstrap_barrio_subtheme\Hook\BootstrapBarrioSubthemeHooks;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -14,21 +15,8 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * Example on how to alter theme settings form
  */
-function bootstrap_barrio_subtheme_form_system_theme_settings_alter(&$form, FormStateInterface $form_state) {
-  $form['components']['navbar']['bootstrap_barrio_navbar_top_background']['#options'] = [
-    'bg-primary' => t('Primary'),
-    'bg-secondary' => t('Secondary'),
-    'bg-light' => t('Light'),
-    'bg-dark' => t('Dark'),
-    'bg-white' => t('White'),
-    'bg-transparent' => t('Transparent'),
-  ];
-  $form['components']['navbar']['bootstrap_barrio_navbar_background']['#options'] = [
-    'bg-primary' => t('Primary'),
-    'bg-secondary' => t('Secondary'),
-    'bg-light' => t('Light'),
-    'bg-dark' => t('Dark'),
-    'bg-white' => t('White'),
-    'bg-transparent' => t('Transparent'),
-  ];
+#[LegacyHook]
+function bootstrap_barrio_subtheme_form_system_theme_settings_alter(&$form, FormStateInterface $form_state)
+{
+    \Drupal::service(BootstrapBarrioSubthemeHooks::class)->formSystemThemeSettingsAlter($form, $form_state);
 }

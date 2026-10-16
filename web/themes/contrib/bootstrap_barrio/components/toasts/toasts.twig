@@ -1,25 +1,78 @@
-<div class="toast-container position-static">
-  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-      <img src="..." class="rounded me-2" alt="...">
-      <strong class="me-auto">Bootstrap</strong>
-      <small class="text-body-secondary">just now</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body">
-      See? Just like this.
-    </div>
-  </div>
+{#
+/**
+ * @file
+ * Default implementation of a toast component.
+ *
+ * Available variables:
+ * - message_list: List of messages to be displayed, grouped by type.
+ * - status_headings: List of all status types.
+ * - attributes: HTML attributes for the element, including:
+ *   - class: HTML classes.
+ * - title_ids: (optional) Unique IDs for the message type titles.
+ * - toast_wrapper_classes: Additional classes for the toast wrapper.
+ */
+#}
 
-  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-      <img src="..." class="rounded me-2" alt="...">
-      <strong class="me-auto">Bootstrap</strong>
-      <small class="text-body-secondary">2 seconds ago</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="check-circle-fill" viewBox="0 0 16 16">
+    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+  </symbol>
+  <symbol id="info-fill" viewBox="0 0 16 16">
+    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+  </symbol>
+  <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+  </symbol>
+</svg>
+
+{%
+  set wrapper_classes = toast_wrapper_classes ? ['toast-container']|merge(toast_wrapper_classes) : ['toast-container']
+%}
+<div class="{{ wrapper_classes|join(' ') }}" aria-live="polite" aria-atomic="true" data-drupal-messages>
+{% for type, messages in message_list %}
+  {%
+    set classes = [
+      'toast',
+      'fade',
+    ]
+  %}
+  {%
+    set contextualClass = {
+      'status': 'text-bg-success',
+      'error': 'text-bg-danger',
+      'warning': 'text-bg-warning',
+      'info': 'text-bg-info',
+    }
+  %}
+  {%
+    set icon = {
+      'status': 'check-circle-fill',
+      'error': 'exclamation-triangle-fill',
+      'warning': 'exclamation-triangle-fill',
+      'info': 'info-fill',
+    }
+  %}
+  {%
+    set autohide = {
+      'status': 'true',
+      'error': 'false',
+      'warning': 'false',
+      'info': 'true',
+    }
+  %}
+  {% for message in messages %}
+    <div {{ attributes|without('role', 'aria-label').addClass(classes).addClass(contextualClass[type]).setAttribute('data-drupal-selector', 'messages').setAttribute('role', role[type]).setAttribute('data-bs-autohide', autohide[type]) }} aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <svg class="bi flex-shrink-0 me-2" width="20" height="20" role="img" aria-label="{{ status_headings[type] }}:">
+          <use xlink:href="#{{ icon[type] }}"/>
+        </svg>
+        <strong class="me-auto">{{ status_headings[type] }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
     </div>
-    <div class="toast-body">
-      Heads up, toasts will stack automatically
-    </div>
-  </div>
+  {% endfor %}
+{% endfor %}
 </div>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="../../../core/tests/bootstrap.php"
+         colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true">
+  <php>
+    <!-- Set error reporting to E_ALL. -->
+    <ini name="error_reporting" value="32767"/>
+    <!-- Suppress deprecation messages during tests. -->
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+    <!-- Database URL for SQLite in-memory. -->
+    <env name="SIMPLETEST_DB" value="sqlite://localhost/:memory:"/>
+    <!-- Base URL for functional tests. -->
+    <env name="SIMPLETEST_BASE_URL" value="http://localhost"/>
+    <!-- Directory for browser test output. -->
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value=""/>
+  </php>
+  <testsuites>
+    <testsuite name="bootstrap_barrio_unit">
+      <directory>./src/Unit</directory>
+    </testsuite>
+    <testsuite name="bootstrap_barrio_kernel">
+      <directory>./src/Kernel</directory>
+    </testsuite>
+    <testsuite name="bootstrap_barrio_functional">
+      <directory>./src/Functional</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory>../</directory>
+    </include>
+    <exclude>
+      <directory>./</directory>
+      <directory>../subtheme</directory>
+    </exclude>
+  </source>
+</phpunit>

@@ -4,31 +4,51 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Tabs
 
+# Description for Canvas library panel.
+description: A Bootstrap tabs component with tabbed content panels.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
-status: experimental
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Navigation
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
     items:
       type: array
-      title: Items
-      item:
+      title: Tab Items
+      description: List of tabs with content panels.
+      items:
         type: object
-        title: Item
+        title: Tab Item
         properties:
-          body:
-            type: string
-            title: Body
           title:
             type: string
             title: Title
+            description: Tab label text.
+            examples: ['Tab 1']
+          body:
+            type: string
+            title: Body
+            description: Content for the tab panel.
+            contentMediaType: text/html
+            examples: ['Tab content goes here.']
           show:
             type: boolean
-            title: Show
+            title: Active
+            description: Whether this tab is active by default.
+            examples: [false]
+      examples:
+        - - title: 'Home'
+            body: 'Home tab content.'
+            show: true
+          - title: 'Profile'
+            body: 'Profile tab content.'
+            show: false
+          - title: 'Contact'
+            body: 'Contact tab content.'
+            show: false

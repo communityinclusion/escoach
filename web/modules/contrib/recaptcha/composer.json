@@ -2,7 +2,7 @@
   "name": "drupal/recaptcha",
   "description": "Protect your website from spam and abuse while letting real people pass through with ease.",
   "type": "drupal-module",
-  "homepage": "https://www.drupal.org/project/recaptcha",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "hass",
@@ -13,11 +13,11 @@
       "homepage":"https://www.drupal.org/node/147903/committers"
     }
   ],
+  "homepage": "https://www.drupal.org/project/recaptcha",
   "support": {
     "issues": "https://www.drupal.org/project/issues/recaptcha",
     "source": "https://git.drupalcode.org/project/recaptcha.git"
   },
-  "license": "GPL-2.0-or-later",
   "require": {
     "drupal/captcha": "^1.15 || ^2.0",
     "google/recaptcha": "^1.3"

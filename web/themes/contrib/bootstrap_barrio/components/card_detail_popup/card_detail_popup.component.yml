@@ -1,0 +1,59 @@
+# This is so your IDE knows about the syntax for fixes and autocomplete.
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Card Detail Popup
+
+# Description for Canvas library panel.
+description: A card component with a popup detail view on interaction.
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Content
+
+# Schema for the props. We support www.json-schema.org. Learn more about the
+# syntax there.
+props:
+  type: object
+  properties:
+    id:
+      type: string
+      title: ID
+      description: Unique identifier for the card popup.
+      examples: ['card-popup-1']
+    card_image:
+      type: string
+      title: Card Image
+      description: URL of the card image.
+      format: uri-reference
+      examples: ['https://placehold.co/400x300']
+    card_image_alt:
+      type: string
+      title: Card Image Alt
+      description: Alternative text for the card image.
+      examples: ['Card image description']
+    card_tag:
+      type: string
+      title: Card Tag
+      description: Tag or category label for the card.
+      examples: ['Featured']
+    card_title:
+      type: string
+      title: Card Title
+      description: The main title of the card.
+      examples: ['Card Title']
+    card_body:
+      type: string
+      title: Card Body
+      description: The body content of the card.
+      contentMediaType: text/html
+      examples: ['<p>Card body content goes here.</p>']
+libraryOverrides:
+  js:
+    ./card_detail_popup.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings

@@ -7,8 +7,8 @@ use Drupal\Core\Render\Component\Exception\ComponentNotFoundException;
 use Drupal\Core\Render\Component\Exception\InvalidComponentException;
 use Drupal\Core\Theme\Component\ComponentValidator;
 use Drupal\Core\Theme\ComponentPluginManager;
-use Twig\DeprecatedCallableInfo;
 use Twig\Extension\AbstractExtension;
+use Twig\Template;
 use Twig\TwigFunction;
 
 /**
@@ -45,12 +45,6 @@ final class ComponentsTwigExtension extends AbstractExtension {
     return [
       new TwigFunction('add_component_context', [$this, 'addAdditionalContext'], ['needs_context' => TRUE]),
       new TwigFunction('validate_component_props', [$this, 'validateProps'], ['needs_context' => TRUE]),
-      // @todo remove in drupal:11.0.0.
-      // @see https://www.drupal.org/project/drupal/issues/3409456.
-      // Start of BC layer.
-      new TwigFunction('sdc_additional_context', [$this, 'addAdditionalContext'], ['needs_context' => TRUE, 'deprecation_info' => new DeprecatedCallableInfo('drupal/core', '10.3.0', 'add_component_context')]),
-      new TwigFunction('sdc_validate_props', [$this, 'validateProps'], ['needs_context' => TRUE, 'deprecation_info' => new DeprecatedCallableInfo('drupal/core', '10.3.0', 'validate_component_props')]),
-      // End of BC layer.
     ];
   }
 
@@ -85,6 +79,9 @@ final class ComponentsTwigExtension extends AbstractExtension {
   protected function mergeAdditionalRenderContext(Component $component, array $context): array {
     $context['componentMetadata'] = $component->metadata->normalize();
     $component_attributes = ['data-component-id' => $component->getPluginId()];
+    if (!empty($context['variant'])) {
+      $component_attributes['data-component-variant'] = $context['variant'];
+    }
     if (!isset($context['attributes'])) {
       $context['attributes'] = new Attribute($component_attributes);
     }
@@ -132,6 +129,31 @@ final class ComponentsTwigExtension extends AbstractExtension {
     }
     catch (ComponentNotFoundException $e) {
       throw new InvalidComponentException($e->getMessage(), $e->getCode(), $e);
+    }
+    catch (InvalidComponentException $e) {
+      // Inspect the backtrace to find the template that embedded the component.
+      $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 20);
+      $calling_template = 'Unknown Template';
+
+      foreach ($backtrace as $trace) {
+        if (isset($trace['object']) && $trace['object'] instanceof Template) {
+          $template_name = $trace['object']->getTemplateName();
+
+          // Skip the component's own template to find its parent container.
+          if ($template_name === $component_id) {
+            continue;
+          }
+
+          $calling_template = $template_name;
+          break;
+        }
+      }
+
+      throw new InvalidComponentException(
+        sprintf('Component validation failed in Twig file [%s] for component [%s]: %s', $calling_template, $component_id, $e->getMessage()),
+        $e->getCode(),
+        $e
+      );
     }
   }
 

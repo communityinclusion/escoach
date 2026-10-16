@@ -11,14 +11,6 @@ files:
     theme:
       bar.css: {}
 
-# Library to test CSS and JS file assets excluded from aggregation.
-no-preprocess:
-  js:
-    no_preprocess.js: { preprocess: false }
-  css:
-    theme:
-      no_preprocess.css: { preprocess: false }
-
 # Library to test external CSS and JS file assets.
 external:
   version: 1
@@ -49,7 +41,7 @@ js-header:
 # Library to test setting cache = FALSE, to prevent aggregation.
 no-cache:
   js:
-    nocache.js: { cache: false }
+    no_cache.js: { cache: false }
 
 order:
   js:

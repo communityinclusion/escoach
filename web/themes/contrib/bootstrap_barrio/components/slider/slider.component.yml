@@ -1,0 +1,45 @@
+# Credits: https://github.com/codyhouse/hero-slider/tree/master
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Slider
+
+# Description for Canvas library panel.
+description: A carousel/slider component for displaying multiple slides.
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Media
+
+props:
+  type: object
+  properties:
+    title:
+      type: string
+      title: Slider Title
+      description: Optional title displayed above the slider.
+      examples: ['Featured Content']
+    slides:
+      type: array
+      title: Slides
+      description: Array of slide content.
+      items:
+        type: string
+      examples:
+        - - 'Slide 1 content'
+          - 'Slide 2 content'
+          - 'Slide 3 content'
+
+# Slots for arbitrary markup.
+slots:
+  content:
+    title: Slides Content
+    description: Nested slide components or custom slide markup.
+
+libraryOverrides:
+  js:
+    ./js/slick-slider.js: {}
+  dependencies:
+    - talent/slick

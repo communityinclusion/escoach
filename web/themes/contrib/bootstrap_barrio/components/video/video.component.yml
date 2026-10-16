@@ -1,0 +1,42 @@
+# Credits: https://github.com/codyhouse/hero-slider/tree/master
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+
+# The human readable name.
+name: Video
+
+# Description for Canvas library panel.
+description: A video component that displays embedded or popup video content.
+
+# Status can be: "experimental", "stable", "deprecated", "obsolete".
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Media
+
+props:
+  type: object
+  properties:
+    id:
+      type: string
+      title: Video ID
+      description: Unique identifier for the video popup.
+      examples: ['video-1']
+    video:
+      type: string
+      title: Video URL
+      description: URL of the video to embed.
+      format: uri-reference
+      examples: ['https://www.youtube.com/embed/dQw4w9WgXcQ']
+    video_type:
+      type: string
+      title: Video Type
+      description: The type of video embed.
+      enum:
+        - youtube
+        - vimeo
+        - local
+      meta:enum:
+        youtube: YouTube
+        vimeo: Vimeo
+        local: Local Video
+      examples: ['youtube']

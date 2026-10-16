@@ -1,9 +1,16 @@
 # Drupal Composer Scaffold
 
-This project provides a composer plugin for placing scaffold files (like
-`index.php`, `update.php`, …) from the `drupal/core` project into their desired
-location inside the web root. Only individual files may be scaffolded with this
-plugin.
+This project provides a composer plugin making the Drupal core Composer package
+work correctly in a Composer project.
+
+This takes care of:
+  - Placing scaffold files (like `index.php`, `update.php`, …) from the
+    `drupal/core` project into their desired location inside the web root. Only
+    individual files may be scaffolded with this plugin.
+  - Writing a DrupalInstalled.php file, which holds a PHP class that defines
+    values about the current installation as class constants.
+  - Writing an autoload.php file to the web root, which includes the Composer
+    autoload.php file.
 
 The purpose of scaffolding files is to allow Drupal sites to be fully managed by
 Composer, and still allow individual asset files to be placed in arbitrary
@@ -14,7 +21,7 @@ possible; for example, a project layout very similar to the current
 [drupal-composer/drupal-project](https://github.com/drupal-composer/drupal-scaffold)
 template will also be provided. When one of these projects is used, the user
 should be able to use `composer require` and `composer update` on a Drupal site
-immediately after untarring the downloaded archive.
+immediately after extracting the downloaded archive.
 
 Note that the dependencies of a Drupal site are only able to scaffold files if
 explicitly granted that right in the top-level composer.json file. See
@@ -48,14 +55,14 @@ their destination location. In order to prevent arbitrary dependencies from
 copying files via the scaffold mechanism, only those projects that are
 specifically permitted by the top-level project will be used to scaffold files.
 
-Example: Permit scaffolding from the project `drupal/core`
+Example: Permit scaffolding from the project `upstream/project`
 ```
   "name": "my/project",
   ...
   "extra": {
     "drupal-scaffold": {
       "allowed-packages": [
-        "drupal/core"
+        "upstream/project"
       ],
       ...
     }
@@ -63,8 +70,9 @@ Example: Permit scaffolding from the project `drupal/core`
 ```
 Allowing a package to scaffold files also permits it to delegate permission to
 scaffold to any project that it requires itself. This allows a package to
-organize its scaffold assets as it sees fit. For example, the project
-`drupal/core` may choose to store its assets in a subproject `drupal/assets`.
+organize its scaffold assets as it sees fit. For example, if `upstream/project`
+stores its assets in a subproject `upstream/assets`, `upstream/assets` would
+implicitly be allowed to scaffold files.
 
 It is possible for a project to obtain scaffold files from multiple projects.
 For example, a Drupal project using a distribution, and installing on a specific
@@ -102,7 +110,8 @@ This makes it possible to configure a project with different file layouts; for
 example, either the `drupal/drupal` file layout or the
 `drupal-composer/drupal-project` file layout could be used to set up a project.
 
-If a web-root is not explicitly defined, then it will default to `./`.
+If a web-root is not explicitly defined, then it will default to `.`, the same
+directory as the composer.json file.
 
 ### Altering Scaffold Files
 
@@ -382,7 +391,7 @@ Sample composer.json for a project that relies on packages that use composer-sca
   "name": "my/project",
   "require": {
     "drupal/core-composer-scaffold": "*",
-    "composer/installers": "^1.2",
+    "composer/installers": "^2.3",
     "cweagans/composer-patches": "^1.6.5",
     "drupal/core": "^8.8.x-dev",
     "service-provider/d8-scaffold-files": "^1"
@@ -393,9 +402,6 @@ Sample composer.json for a project that relies on packages that use composer-sca
   },
   "extra": {
     "drupal-scaffold": {
-      "allowed-packages": [
-        "drupal/core"
-      ],
       "locations": {
         "web-root": "./docroot"
       },
@@ -446,7 +452,6 @@ Sample composer.json for composer-scaffold files in drupal/assets:
         "[web-root]/index.php": "assets/index.php",
         "[web-root]/robots.txt": "assets/robots.txt",
         "[web-root]/update.php": "assets/update.php",
-        "[web-root]/web.config": "assets/web.config"
       }
     }
   }

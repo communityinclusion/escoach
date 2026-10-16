@@ -37,15 +37,15 @@
  * - header_columns: The number of columns in the header.
  * - thead_class: Class for the table header
  *
- * @see template_preprocess_table()
+ * @see \Drupal\Core\Theme\ThemePreprocess::preprocessTable()
  */
 #}
-
+{% set no_striping = (table_class == 'table-striped') ? true : false %}
 {%
   set table_classes = [
     'table',
     hover ? 'table-hover',
-    not no_striping ? 'table-striped' : 'table-bordered',
+    table_class,
   ]
 %}
 <div class="table-responsive">

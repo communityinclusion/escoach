@@ -21,7 +21,7 @@
  * - placeholder_token: The token for generating head, css, js and js-bottom
  *   placeholders.
  *
- * @see template_preprocess_html()
+ * @see \Drupal\Core\Theme\ThemePreprocess::preprocessHtml()
  */
 #}
 {%
@@ -41,7 +41,11 @@
     <js-placeholder token="{{ placeholder_token|raw }}">
   </head>
   <body{{ attributes.addClass(body_classes) }}>
-    <a href="#main-content" class="visually-hidden-focusable">
+    {#
+      Keyboard navigation/accessibility link to main content section in
+      page.html.twig.
+    #}
+    <a href="#main-content" class="visually-hidden focusable skip-link">
       {{ 'Skip to main content'|t }}
     </a>
     {{ page_top }}

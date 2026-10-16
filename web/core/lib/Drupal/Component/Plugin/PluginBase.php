@@ -45,10 +45,15 @@ abstract class PluginBase implements PluginInspectionInterface, DerivativeInspec
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
+   *   If the plugin is being created by calling
+   *   \Drupal\Component\Plugin\Factory\FactoryInterface::createInstance(),
+   *   this is the configuration array passed to that method.
    * @param string $plugin_id
    *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
+   *
+   * @see https://www.drupal.org/docs/8/api/plugin-api/plugin-definitions
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     $this->configuration = $configuration;
@@ -98,8 +103,15 @@ abstract class PluginBase implements PluginInspectionInterface, DerivativeInspec
    *
    * @return bool
    *   A boolean indicating whether the plugin is configurable.
+   *
+   * @deprecated in drupal:11.1.0 and is removed from drupal:12.0.0. Use
+   * instanceof to check if the plugin implements
+   * \Drupal\Component\Plugin\ConfigurableInterface instead.
+   *
+   * @see https://www.drupal.org/node/3198285
    */
   public function isConfigurable() {
+    @trigger_error(__CLASS__ . "::" . __FUNCTION__ . " is deprecated in drupal:11.1.0 and is removed from drupal:12.0.0. Use instanceof to check if the plugin implements \Drupal\Component\Plugin\ConfigurableInterface instead. See https://www.drupal.org/node/3198285", E_USER_DEPRECATED);
     return $this instanceof ConfigurableInterface;
   }
 

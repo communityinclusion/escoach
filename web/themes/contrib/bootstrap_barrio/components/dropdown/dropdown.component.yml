@@ -4,49 +4,58 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Dropdown
 
+# Description for Canvas library panel.
+description: A Bootstrap dropdown menu component.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
-status: experimental
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Navigation
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Button attributes.
     dropdown_text:
       type: string
-      title: Dropdown text
+      title: Dropdown Text
+      description: The text shown on the dropdown toggle button.
+      examples: ['Menu']
     items:
       type: array
-      title: Dropdown items
-      item:
+      title: Dropdown Items
+      description: List of items in the dropdown menu.
+      items:
         type: object
-        title: Breadcrumb
+        title: Dropdown Item
         properties:
-          listAttributes:
-            type: Drupal\Core\Template\Attribute
-            title: List attributes
-          attributes:
-            type: Drupal\Core\Template\Attribute
-            title: Link attributes
           url:
             type: string
             title: URL
+            description: Link URL for the dropdown item.
+            format: uri-reference
+            examples: ['/page']
           text:
             type: string
             title: Text
+            description: Display text for the dropdown item.
+            examples: ['Menu Item']
+      examples:
+        - - url: '/action-1'
+            text: 'Action'
+          - url: '/action-2'
+            text: 'Another action'
+          - url: '/action-3'
+            text: 'Something else'
 
 # Slots always hold arbitrary markup. We know that beforehand, so no need for
 # a schema for slots.
 slots:
-  # The key is the name of the slot. In your template you will use
-  # {% block content %}.
   dropdown_button:
-    title: Dropdown button
-    required: false
+    title: Dropdown Button
+    description: Custom button content for the dropdown toggle.
   dropdown_menu:
-    title: Dropdown menu
-    required: false
+    title: Dropdown Menu
+    description: Custom menu content for the dropdown.

@@ -4,8 +4,14 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Menu
 
+# Description for Canvas library panel.
+description: A navigation menu component.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
 status: stable
+
+# Group for organization in Canvas sidebar.
+group: Navigation
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
@@ -14,7 +20,30 @@ props:
   properties:
     items:
       type: array
-      title: Links
-      item:
-        type: Drupal\Core\Menu\MenuLinkInterface
-        title: Link
+      title: Menu Items
+      description: List of menu links.
+      items:
+        type: object
+        title: Menu Item
+        properties:
+          url:
+            type: [string, object]
+            title: URL
+            format: uri-reference
+            examples: ['/page']
+          title:
+            type: string
+            title: Title
+            examples: ['Page Link']
+          below:
+            type: array
+            title: Submenu
+            items:
+              type: object
+      examples:
+        - - url: '/'
+            title: 'Home'
+          - url: '/about'
+            title: 'About'
+          - url: '/contact'
+            title: 'Contact'

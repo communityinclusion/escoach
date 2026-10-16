@@ -4,30 +4,65 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Navs
 
+# Description for Canvas library panel.
+description: A Bootstrap navs component for navigation styling.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
-status: experimental
+status: stable
+
+# Group for organization in Canvas sidebar.
+group: Navigation
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
     alignment:
       type: string
       title: Alignment
+      description: Navigation alignment and style.
       enum:
+        - ''
         - justify-content-center
         - justify-content-end
         - flex-column
         - nav-tabs
         - nav-pills
+      meta:enum:
+        '': Default (Left)
+        justify-content-center: Center
+        justify-content-end: Right
+        flex-column: Vertical
+        nav-tabs: Tabs Style
+        nav-pills: Pills Style
+      examples: ['']
     items:
       type: array
-      title: Links
-      item:
-        type: Drupal\Core\Menu\MenuLinkInterface
-        title: Link
+      title: Navigation Items
+      description: List of navigation links.
+      items:
+        type: object
+        title: Navigation Item
+        properties:
+          url:
+            type: string
+            title: URL
+            format: uri-reference
+            examples: ['/page']
+          title:
+            type: string
+            title: Title
+            examples: ['Link']
+          active:
+            type: boolean
+            title: Active
+            examples: [false]
+      examples:
+        - - url: '#'
+            title: 'Active'
+            active: true
+          - url: '#'
+            title: 'Link'
+          - url: '#'
+            title: 'Another Link'

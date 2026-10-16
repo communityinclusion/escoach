@@ -4,34 +4,52 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Modal
 
+# Description for Canvas library panel.
+description: A Bootstrap modal dialog component.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
 status: stable
+
+# Group for organization in Canvas sidebar.
+group: Interactive
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
     modal_title:
       type: string
-      title: Modal title
+      title: Modal Title
+      description: The title displayed in the modal header.
+      examples: ['Modal Title']
     close:
       type: boolean
-      title: Close button
-      default: true
+      title: Show Close Button
+      description: Whether to display the close button.
+      examples: [true]
+    size:
+      type: string
+      title: Size
+      description: The size of the modal dialog.
+      enum:
+        - ''
+        - modal-sm
+        - modal-lg
+        - modal-xl
+      meta:enum:
+        '': Default
+        modal-sm: Small
+        modal-lg: Large
+        modal-xl: Extra Large
+      examples: ['']
 
 # Slots always hold arbitrary markup. We know that beforehand, so no need for
 # a schema for slots.
 slots:
-  # The key is the name of the slot. In your template you will use
-  # {% block content %}.
   modal_body:
     title: Body
-    required: true
+    description: The main content of the modal.
   modal_footer:
     title: Footer
-    required: false
+    description: Content for the modal footer, typically buttons.

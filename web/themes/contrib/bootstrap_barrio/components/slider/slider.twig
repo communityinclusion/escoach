@@ -1,0 +1,13 @@
+{# Hero Slider Component #}
+{# This component is a slider that displays a series of slides with images, videos, and text. #}
+
+<section class="slick-slider">
+  <h2>{{ title }}</h2>
+  <div class="slick-container">
+    {% for slide in slides %}
+      <div>
+        {{ slide | raw }}
+      </div>
+    {% endfor %}
+  </div>
+</section>

@@ -10,8 +10,8 @@ details {
     border: 1px solid $border-color;
     margin-top: $spacer;
     margin-bottom: $spacer;
-    font-weight: $font-weight-bold;
     summary {
+        font-weight: $font-weight-bold;
         cursor: pointer;
         padding: 1rem;
         &:hover {

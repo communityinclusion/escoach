@@ -30,10 +30,9 @@
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_filter": "^2.7",
         "drupal/config_split": "^2.0",
-        "drupal/core": "^10.6.17",
-        "drupal/core-composer-scaffold": "^8.9.1",
-        "drupal/core-project-message": "^8.8",
-        "drupal/core-recommended": "^10.1.6",
+        "drupal/core": "^11.4.10",
+        "drupal/core-composer-scaffold": "^11",
+        "drupal/core-recommended": "^11.4",
         "drupal/csv_importer": "1.x-dev",
         "drupal/csv_serialization": "^4.0",
         "drupal/ctools": "^4.1",
@@ -41,7 +40,7 @@
         "drupal/email_registration": "^2.0@RC",
         "drupal/entity_browser": "^2.3",
         "drupal/entity_usage": "^2.0@alpha",
-        "drupal/field_display_label": "1.x-dev",
+        "drupal/field_display_label": "^2.0",
         "drupal/field_group": "3.x-dev",
         "drupal/field_hidden": "^2.0",
         "drupal/form_options_attributes": "^2.0",
@@ -81,11 +80,11 @@
         "drupal/views_bulk_operations": "^4.1",
         "drupal/views_data_export": "^1.4",
         "drupal/workflow": "^2.2",
-        "drush/drush": "^12.4",
+        "drush/drush": "^13",
         "mglaman/composer-drupal-lenient": "^1.0",
         "pear/archive_tar": "^1.4.10",
-        "symfony/phpunit-bridge": "^6.3",
-        "symfony/process": "^6.3.0",
+        "symfony/phpunit-bridge": "^7.4",
+        "symfony/process": "^7.4",
         "twbs/bootstrap-icons": "^1.11",
         "twilio/sdk": "^6.4"
     },
@@ -106,7 +105,8 @@
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
             "cweagans/composer-patches": true,
-            "mglaman/composer-drupal-lenient": true
+            "mglaman/composer-drupal-lenient": true,
+            "symfony/runtime": true
         }
     },
     "extra": {

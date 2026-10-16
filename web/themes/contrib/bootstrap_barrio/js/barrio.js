@@ -37,7 +37,7 @@
         // Don't follow the link
         event.preventDefault();
       
-        toggle(event.target.next('ul'));
+        toggle(event.target.nextElementSibling);
         event.stopPropagation();
       
       }, false);

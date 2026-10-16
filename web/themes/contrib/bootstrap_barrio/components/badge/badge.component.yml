@@ -4,18 +4,52 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Badge
 
+# Description for Canvas library panel.
+description: A Bootstrap badge component for labels and counters.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
 status: stable
+
+# Group for organization in Canvas sidebar.
+group: Feedback
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
+  required:
+    - text
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Badge attributes.
     text:
       type: string
       title: Text
+      description: The text to display in the badge.
+      examples: ['New']
+    variant:
+      type: string
+      title: Variant
+      description: The color variant of the badge.
+      enum:
+        - primary
+        - secondary
+        - success
+        - danger
+        - warning
+        - info
+        - light
+        - dark
+      meta:enum:
+        primary: Primary
+        secondary: Secondary
+        success: Success
+        danger: Danger
+        warning: Warning
+        info: Info
+        light: Light
+        dark: Dark
+      examples: ['primary']
+    rounded_pill:
+      type: boolean
+      title: Rounded Pill
+      description: Whether to use pill-shaped rounded corners.
+      examples: [false]

@@ -38,7 +38,7 @@
 @media (min-width: 768px) {
 
   /* Enables first level dropdown from main nav links */
-  .dropdown:hover>.dropdown-menu {
+  .menu--main .dropdown:hover>.dropdown-menu {
     display: block;
   }
 

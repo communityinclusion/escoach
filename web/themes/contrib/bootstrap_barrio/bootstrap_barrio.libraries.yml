@@ -154,6 +154,8 @@ maintenance_page:
 messages:
   js:
     js/messages.js: {}
+  dependencies:
+    - core/drupal
 
 navigation:
   version: VERSION
@@ -180,11 +182,17 @@ sidebar_collapse:
   css:
     component:
       css/components/sidebar-collapse.css: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
 
 tabledrag:
   version: VERSION
   js:
     js/tabledrag.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
 
 tabs:
   version: VERSION
@@ -204,6 +212,7 @@ toast:
     js/toast.js: {}
   dependencies:
     - bootstrap_barrio/bootstrap_js
+    - core/drupal
 
 verticaltabs:
   version: VERSION

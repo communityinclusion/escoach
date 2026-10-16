@@ -1,0 +1,26 @@
+<div>
+  <div class="card-detail-popup p-2" data-modal-id="{{ id }}">
+    <div class="card">
+      <img src="{{ card_image }}" class="card-img rounded-4" alt="{{ card_image_alt }}">
+      <div class="card-img-overlay text-white d-flex align-items-end">
+        <p>{{ card_title }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% set drupal_settings = {
+  '#attached': {
+    'drupalSettings': {
+      'talent': {
+        'card_popup': {
+          (id): {
+            'title': card_title,
+            'body': card_body
+          }
+        }
+      }
+    }
+  }
+} %}
+{{ drupal_settings }}

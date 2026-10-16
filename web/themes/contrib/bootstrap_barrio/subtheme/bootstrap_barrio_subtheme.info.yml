@@ -1,7 +1,7 @@
 name: Bootstrap Barrio Subtheme
 type: theme
 description: 'Basic structure for a Bootstrap Barrio SubTheme.'
-core_version_requirement: ^10.3 || ^11
+core_version_requirement: '>=11.2'
 base theme: bootstrap_barrio
 
 libraries:

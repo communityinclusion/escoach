@@ -1,0 +1,5 @@
+
+services:
+  Drupal\bootstrap_barrio\Hook\BootstrapBarrioHooks:
+    class: Drupal\bootstrap_barrio\Hook\BootstrapBarrioHooks
+    autowire: true

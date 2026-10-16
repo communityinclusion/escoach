@@ -9,7 +9,7 @@
         ]
       %}
       <li class="nav-item" role="presentation">
-        <button class="{{ tabs_classes | join(' ') }}" id="{{'tab-' ~ id ~ '-' ~ key}}" data-bs-toggle="tab" data-bs-target="{{'#body-tab-' ~ id ~ '-' ~ key}}" type="button" role="tab" aria-controls="home" aria-selected="{{ item.show ? 'true' : 'false' }}">{{item.header}}</button>
+        <button class="{{ tabs_classes | join(' ') }}" id="{{'tab-' ~ id ~ '-' ~ key}}" data-bs-toggle="tab" data-bs-target="{{'#body-tab-' ~ id ~ '-' ~ key}}" type="button" role="tab" aria-controls="home" aria-selected="{{ item.show ? 'true' : 'false' }}">{{item.title}}</button>
       </li>
     {% endfor %}
   </ul>

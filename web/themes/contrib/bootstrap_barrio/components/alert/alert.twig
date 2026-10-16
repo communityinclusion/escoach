@@ -1,3 +1,18 @@
+{#
+/**
+ * @file
+ * Default implementation of an alert component.
+ *
+ * Available variables:
+ * - message_list: List of messages to be displayed, grouped by type.
+ * - status_headings: List of all status types.
+ * - attributes: HTML attributes for the element, including:
+ *   - class: HTML classes.
+ * - title_ids: (optional) Unique IDs for the message type titles.
+ * - alert_wrapper_classes: Additional classes for the alert wrapper.
+ */
+#}
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="check-circle-fill" viewBox="0 0 16 16">
     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
@@ -10,16 +25,19 @@
   </symbol>
 </svg>
 
-<div class="alert-wrapper" data-drupal-messages>
+{%
+  set wrapper_classes = alert_wrapper_classes ? ['alert-wrapper']|merge(alert_wrapper_classes) : ['alert-wrapper']
+%}
+<div class="{{ wrapper_classes|join(' ') }}" data-drupal-messages>
 {% for type, messages in message_list %}
   {%
     set classes = [
       'alert',
       'alert-dismissible',
-      'd-flex align-items-center',
       'fade',
       'show',
-      'col-12',
+      'd-flex',
+      'align-items-center',
       type == 'status' ? 'alert-success',
       type == 'warning' ? 'alert-warning',
       type == 'error' ? 'alert-danger',
@@ -28,10 +46,10 @@
   %}
   {%
     set role = {
-      'status': 'status',
+      'status': 'alert',
       'error': 'alert',
       'warning': 'alert',
-      'info': 'status',
+      'info': 'alert',
     }
   %}
   <div aria-label="{{ status_headings[type] }}" {{ attributes|without('role', 'aria-label').addClass(classes).setAttribute('data-drupal-selector', 'messages').setAttribute('role', role[type]) }}>
@@ -42,7 +60,7 @@
     {% elseif type == 'status' %}
       <svg class="bi flex-shrink-0 me-4" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
     {% elseif type == 'info' %}
-      <svg class="bi flex-shrink-0 me-4" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+      <svg class="bi flex-shrink-0 me-4" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
     {% endif %}
     <div>
       <h2 id="{{ title_ids[type] }}" class="alert-heading">
@@ -53,11 +71,10 @@
           {{ message }}
         {% else %}
           {{ message }}
-      <hr>
+          <hr>
         {% endif %}
       {% endfor %}
     </div>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 {% endfor %}
 </div>

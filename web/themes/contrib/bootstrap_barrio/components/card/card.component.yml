@@ -4,45 +4,60 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Card
 
+# Description for Canvas library panel.
+description: A Bootstrap card component for flexible content containers.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
 status: stable
+
+# Group for organization in Canvas sidebar.
+group: Content
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
     card_img_top:
       type: string
-      title: Image
+      title: Image URL
+      description: URL of the card top image.
+      format: uri-reference
+      examples: ['https://placehold.co/400x200']
     card_img_alt:
       type: string
       title: Image Alt
+      description: Alternative text for the card image.
+      examples: ['Card image']
     card_header:
       type: string
       title: Card Header
+      description: Header text for the card.
+      examples: ['Featured']
     card_body:
       type: string
       title: Card Body
+      description: Main content of the card.
+      contentMediaType: text/html
+      examples: ['<p>This is the card body content.</p>']
     card_footer:
       type: string
       title: Card Footer
+      description: Footer text for the card.
+      examples: ['Last updated 3 mins ago']
+
 # Slots always hold arbitrary markup. We know that beforehand, so no need for
 # a schema for slots.
 slots:
   card_img_top_block:
     title: Image
-    required: false
+    description: Slot for custom image content.
   card_header_block:
     title: Card Header
-    required: false
+    description: Slot for custom header content.
   card_body_block:
     title: Card Body
-    required: false
+    description: Slot for custom body content.
   card_footer_block:
     title: Card Footer
-    required: false
+    description: Slot for custom footer content.

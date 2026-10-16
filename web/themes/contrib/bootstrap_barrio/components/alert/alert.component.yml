@@ -4,31 +4,55 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 # The human readable name.
 name: Alert
 
+# Description for Canvas library panel.
+description: A Bootstrap alert component for displaying messages.
+
 # Status can be: "experimental", "stable", "deprecated", "obsolete".
 status: stable
+
+# Group for organization in Canvas sidebar.
+group: Feedback
 
 # Schema for the props. We support www.json-schema.org. Learn more about the
 # syntax there.
 props:
   type: object
   properties:
-    attributes:
-      type: Drupal\Core\Template\Attribute
-      title: Attributes
-      description: Wrapper attributes.
     message_list:
-      type: array
+      type: object
       title: Messages
-      items:
-        type: string
+      description: Messages grouped by type (status, warning, error, info); each value is a list of message strings.
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      examples:
+        - status: ['This is an alert message.']
     status_headings:
       type: object
       title: Status Headings
+      description: Heading text for the alert.
       properties:
         type:
           type: string
-          title: Type
+          title: Heading
+          examples: ['Status Message']
     display:
       type: string
-      title: Display
-      default: 'status'
+      title: Display Type
+      description: The type of alert to display.
+      enum:
+        - status
+        - warning
+        - error
+      meta:enum:
+        status: Status (Success)
+        warning: Warning
+        error: Error
+      examples: ['status']
+
+# Slots for arbitrary markup.
+slots:
+  content:
+    title: Content
+    description: Additional content for the alert.

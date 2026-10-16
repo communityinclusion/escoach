@@ -1,0 +1,5 @@
+
+services:
+  Drupal\field_display_label\Hook\FieldDisplayLabelHooks:
+    class: Drupal\field_display_label\Hook\FieldDisplayLabelHooks
+    autowire: true
