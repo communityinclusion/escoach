@@ -10,3 +10,5 @@ b5_footer_bg_schema: 'secondary'
 
 b5_top_container: 'container'
 b5_top_container_config: ''
+
+b5_theme_mode: 'light'

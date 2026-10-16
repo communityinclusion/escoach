@@ -2,7 +2,10 @@
 
 namespace Drupal\bootstrap5;
 
+use Drupal\Core\Extension\ThemeExtensionList;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Bootstrap5 subtheme form manager.
@@ -17,10 +20,24 @@ class SubthemeFormManager {
   protected SubthemeManager $subthemeManager;
 
   /**
-   * SubthemeFormManager constructor.
+   * The theme extension list.
+   *
+   * @var \Drupal\Core\Extension\ThemeExtensionList
    */
-  public function __construct() {
-    $this->subthemeManager = new SubthemeManager(\Drupal::service('file_system'), \Drupal::service('messenger'));
+  protected $themeExtensionList;
+
+  /**
+   * SubthemeFormManager constructor.
+   *
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
+   *   The file system service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger interface.
+   * @param \Drupal\Core\Extension\ThemeExtensionList $theme_extension_list
+   *   The theme extension list.
+   */
+  public function __construct(FileSystemInterface $file_system, MessengerInterface $messenger, ThemeExtensionList $theme_extension_list) {
+    $this->subthemeManager = new SubthemeManager($file_system, $messenger, $theme_extension_list);
   }
 
   /**

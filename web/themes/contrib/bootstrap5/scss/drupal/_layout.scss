@@ -22,3 +22,9 @@
 .region-nav-additional {
   flex-shrink: 0;
 }
+
+@include media-breakpoint-up(lg) {
+  .region-nav-additional {
+    display: flex;
+  }
+}

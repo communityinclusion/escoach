@@ -9,6 +9,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\memcache\Driver\MemcacheDriverFactory;
+use Drupal\memcache\Statistics\RequestStatistics;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -48,6 +49,13 @@ class MemcacheAdminSubscriber implements EventSubscriberInterface {
   protected $renderer;
 
   /**
+   * The per-request statistics collector.
+   *
+   * @var \Drupal\memcache\Statistics\RequestStatistics
+   */
+  protected $statistics;
+
+  /**
    * MemcacheAdminSubscriber constructor.
    *
    * @param \Drupal\memcache\Driver\MemcacheDriverFactory $memcache_factory
@@ -58,12 +66,16 @@ class MemcacheAdminSubscriber implements EventSubscriberInterface {
    *   The current user.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer service.
+   * @param \Drupal\memcache\Statistics\RequestStatistics|null $statistics
+   *   (optional) The per-request statistics collector. Taken from the driver
+   *   factory when omitted.
    */
-  public function __construct(MemcacheDriverFactory $memcache_factory, ConfigFactoryInterface $config_factory, AccountInterface $current_user, RendererInterface $renderer) {
+  public function __construct(MemcacheDriverFactory $memcache_factory, ConfigFactoryInterface $config_factory, AccountInterface $current_user, RendererInterface $renderer, ?RequestStatistics $statistics = NULL) {
     $this->memcacheFactory = $memcache_factory;
     $this->configFactory = $config_factory;
     $this->currentUser = $current_user;
     $this->renderer = $renderer;
+    $this->statistics = $statistics ?? $memcache_factory->getRequestStatistics();
   }
 
   /**
@@ -79,6 +91,12 @@ class MemcacheAdminSubscriber implements EventSubscriberInterface {
    * Display statistics on page.
    */
   public function displayStatistics(ResponseEvent $event) {
+    // Memcache is switched off for this environment, so there is nothing to
+    // report and asking the factory for a driver would throw on every page.
+    if ($this->memcacheFactory->isDisabled()) {
+      return;
+    }
+
     $user = $this->currentUser;
     if ($user->id() == 0) {
       // Suppress for the above criteria.
@@ -106,8 +124,9 @@ class MemcacheAdminSubscriber implements EventSubscriberInterface {
           if ($show_stats && $user->hasPermission('access memcache statistics')) {
             $output = '';
 
-            $memcache = $this->memcacheFactory->get(NULL, TRUE);
-            $memcache_stats = $memcache->requestStats();
+            // Only holds data when $settings['memcache']['collect_statistics']
+            // is enabled; see MemcacheDriverFactory.
+            $memcache_stats = $this->statistics->get();
             if (!empty($memcache_stats['ops'])) {
               foreach ($memcache_stats['ops'] as $row => $stats) {
                 $memcache_stats['ops'][$row][0] = new HtmlEscapedText($stats[0]);

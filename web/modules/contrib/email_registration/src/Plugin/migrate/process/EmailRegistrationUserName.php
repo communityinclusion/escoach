@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\email_registration\Plugin\migrate\process;
 
 use Drupal\migrate\MigrateExecutableInterface;
@@ -46,7 +48,7 @@ class EmailRegistrationUserName extends ProcessPluginBase {
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     // Clean and convert mail to username:
-    return email_registration_strip_mail_and_cleanup($value);
+    return !empty($value) ? email_registration_strip_mail_and_cleanup($value) : $value;
   }
 
 }

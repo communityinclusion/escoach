@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\email_registration\Functional;
 
 use Drupal\user\Entity\User;
@@ -47,6 +49,31 @@ class EmailRegistrationFunctionalTest extends EmailRegistrationFunctionalTestBas
     $session->statusCodeEquals(200);
     // Ensure the correct test page is loaded as front page:
     $session->pageTextContains('Test page text.');
+  }
+
+  /**
+   * Test the error message when a blocked user tries to login.
+   */
+  public function testBlockedUserLogin() {
+    $user_config = $this->container->get('config.factory')->getEditable('user.settings');
+    $email_registration_config = $this->container->get('config.factory')->getEditable('email_registration.settings');
+    $user_config
+      ->set('verify_mail', FALSE)
+      ->save();
+    $user = $this->createUser([], $this->randomMachineName(), FALSE, [
+      'mail' => $this->randomMachineName() . '@example.com',
+      'pass' => 'test',
+      'status' => 0,
+    ]);
+    $email_registration_config->set('login_with_username', FALSE)->save();
+    $this->drupalGet('user/login');
+    $this->assertSession()->responseContains('Enter your email address.');
+    $this->assertSession()->responseContains('Enter the password that accompanies your email address.');
+    $this->submitForm([
+      'name' => $user->get('mail')->value,
+      'pass' => $user->passRaw,
+    ], 'Log in');
+    $this->assertSession()->pageTextContains('The account with email address ' . $user->get('mail')->value . ' has not been activated or is blocked.');
   }
 
   /**
@@ -102,7 +129,7 @@ class EmailRegistrationFunctionalTest extends EmailRegistrationFunctionalTestBas
     $email_registration_config->set('login_with_username', TRUE)->save();
     $this->drupalGet('user/login');
     $this->assertSession()->responseContains('Enter your email address or username.');
-    $this->assertSession()->responseContains('Email or username');
+    $this->assertSession()->responseContains('Email address or username');
     $this->submitForm($login, 'Log in');
     // When login_with_username is true, a user can login with just their
     // username.
@@ -193,66 +220,46 @@ class EmailRegistrationFunctionalTest extends EmailRegistrationFunctionalTestBas
    * Tests the options to allow the username on registration.
    */
   public function testAllowUsernameRegistration() {
-    \Drupal::configFactory()->getEditable('user.settings')
-      ->set('verify_mail', FALSE)
-      ->set('register', UserInterface::REGISTER_VISITORS)
-      ->save();
-    \Drupal::configFactory()->getEditable('email_registration.settings')
-      ->set('require_username_on_registration', TRUE)
-      ->save();
 
     $name = strtolower($this->randomMachineName());
     $pass = $this->randomString();
 
-    $this->drupalGet('/user/register');
-    $assert_session = $this->assertSession();
-    $session = $this->getSession();
-    $page = $session->getPage();
+    // Login as admin user:
+    $this->drupalLogin($this->adminUser);
 
-    $assert_session->fieldExists('Email');
-    $assert_session->fieldExists('Username');
-    $assert_session->fieldExists('Password');
-    $assert_session->fieldExists('Confirm password');
+    $this->drupalGet('/admin/people/create');
+    $session = $this->assertSession();
+    $page = $this->getSession()->getPage();
+
+    $session->fieldExists('edit-mail');
+    // Admin users should see the Username field:
+    $session->fieldExists('edit-name');
+    // The modified username description should also exist:
+    $session->elementTextEquals('css', '#edit-name--description', "Leave empty to generate the username from the email address.Several special characters are allowed, including space, period (.), hyphen (-), apostrophe ('), underscore (_), and the @ sign.");
+    $session->fieldExists('Password');
+    $session->fieldExists('Confirm password');
 
     // Omit the username.
-    $page->fillField('Email', "$name@example.com");
+    $page->fillField('edit-mail', "$name@example.com");
     $page->fillField('Password', $pass);
     $page->fillField('Confirm password', $pass);
     $page->pressButton('Create new account');
 
-    // Check that the username field is required.
-    $assert_session->pageTextContains('Username field is required.');
-
-    $page->fillField('Username', $name);
-    $page->fillField('Password', $pass);
-    $page->fillField('Confirm password', $pass);
-    $page->pressButton('Create new account');
-
-    $assert_session->pageTextContains('Registration successful. You are now logged in.');
-
-    $this->drupalGet('/user');
-    $assert_session->pageTextContains($name);
-
-    // Extract the user ID from the current URL and load the user from backend.
-    preg_match('/(\d+)$/', $this->getSession()->getCurrentUrl(), $found);
-    $account = User::load($found[1]);
-
-    // Check that the name entered by the user has been assigned.
-    $this->assertEquals($name, $account->getAccountName());
+    $session->pageTextContains("Created a new user account for $name. No email has been sent.");
 
     // Log out.
     $this->drupalLogout();
     $this->drupalGet('/user/login');
 
     // Check that the username is not present on the login form.
-    $assert_session->fieldNotExists('Username');
+    $session->fieldNotExists('Username');
 
-    $page->fillField('Email', "$name@example.com");
+    $page->fillField('Email address', "$name@example.com");
     $page->fillField('Password', $pass);
     $page->pressButton('Log in');
 
     // Check that the user is logged in.
-    $assert_session->pageTextContains($name);
+    $session->pageTextContains($name);
 
     \Drupal::configFactory()->getEditable('email_registration.settings')
       ->set('login_with_username', TRUE)
@@ -262,25 +269,25 @@ class EmailRegistrationFunctionalTest extends EmailRegistrationFunctionalTestBas
     $this->drupalLogout();
     $this->drupalGet('/user/login');
 
-    // Login with username.
-    $page->fillField('Email or username', $name);
+    // Login with username:
+    $page->fillField('Email address or username', $name);
     $page->fillField('Password', $pass);
     $page->pressButton('Log in');
 
     // Check that the user is logged in.
-    $assert_session->pageTextContains($name);
+    $session->pageTextContains($name);
 
     // Log out.
     $this->drupalLogout();
     $this->drupalGet('/user/login');
 
     // Login with email.
-    $page->fillField('Email or username', "$name@example.com");
+    $page->fillField('Email address or username', "$name@example.com");
     $page->fillField('Password', $pass);
     $page->pressButton('Log in');
 
     // Check that the user is logged in.
-    $assert_session->pageTextContains($name);
+    $session->pageTextContains($name);
   }
 
   /**
@@ -327,6 +334,88 @@ class EmailRegistrationFunctionalTest extends EmailRegistrationFunctionalTestBas
     // Since there is already an 'admin' user through BrowserTestBase,
     // this user will be named 'admin_1':
     $this->assertSame('admin_1', $this->adminUser->getAccountName());
+  }
+
+  /**
+   * Tests user editing own credentials won't change their username.
+   *
+   * Makes sure, the email_registration naming conventions won't magically
+   * overwrite the username, when the user is edited.
+   */
+  public function testUserEditOwnCredentialsDoesNotChangeUsername() {
+    $session = $this->assertSession();
+    $page = $this->getSession()->getPage();
+    $user = $this->createUser(['change own username']);
+    $this->drupalLogin($user);
+    $this->drupalGet('user/' . $user->id() . '/edit');
+    // First let's see if changing the name won't reset the username:
+    $page->fillField('edit-name', 'Changed Username');
+    $page->pressButton('edit-submit');
+    $session->statusCodeEquals(200);
+    $session->pageTextContains('The changes have been saved.');
+    $session->elementTextEquals('css', 'h1', 'Changed Username');
+    $session->elementAttributeContains('css', '#edit-name', 'value', 'Changed Username');
+    // Now do the same with the email-address:
+    $page->fillField('edit-current-pass', $user->passRaw);
+    $page->fillField('edit-mail', 'myVeryNewMail@address.com');
+    $page->pressButton('edit-submit');
+    $session->statusCodeEquals(200);
+    $session->pageTextContains('The changes have been saved.');
+    $session->elementTextEquals('css', 'h1', 'Changed Username');
+    $session->elementAttributeContains('css', '#edit-name', 'value', 'Changed Username');
+  }
+
+  /**
+   * Tests admin editing user credentials won't change their username.
+   *
+   * Makes sure, the email_registration naming conventions won't magically
+   * overwrite the username, when the user is edited.
+   */
+  public function testAdminEditUserCredentialsDoesNotChangeUsername() {
+    $session = $this->assertSession();
+    $page = $this->getSession()->getPage();
+    $this->drupalLogin($this->adminUser);
+    $this->drupalGet('user/' . $this->user->id() . '/edit');
+    // First let's see if changing the name won't reset the username:
+    $page->fillField('edit-name', 'Changed Username');
+    $page->pressButton('edit-submit');
+    $session->statusCodeEquals(200);
+    $session->pageTextContains('The changes have been saved.');
+    $session->elementTextEquals('css', 'h1', 'Changed Username');
+    $session->elementAttributeContains('css', '#edit-name', 'value', 'Changed Username');
+    // Now do the same with the email-address:
+    $page->fillField('edit-mail', 'myVeryNewMail@address.com');
+    $page->pressButton('edit-submit');
+    $session->statusCodeEquals(200);
+    $session->pageTextContains('The changes have been saved.');
+    $session->elementTextEquals('css', 'h1', 'Changed Username');
+    $session->elementAttributeContains('css', '#edit-name', 'value', 'Changed Username');
+  }
+
+  /**
+   * Test programmatically editing user credentials won't change their username.
+   *
+   * Makes sure, the email_registration naming conventions won't magically
+   * overwrite the username, when the user is edited.
+   */
+  public function testProgrammaticallyEditingUserDoesNotChangeUsername() {
+    // First let's see if changing the name won't reset the username:
+    $this->user->setUsername('Changed Username')->save();
+    $this->assertEquals('Changed Username', $this->user->getAccountName());
+    // Now do the same with the email-address:
+    $this->user->setEmail('myVeryNewMail@address.com')->save();
+    $this->assertEquals('myVeryNewMail@address.com', $this->user->getEmail());
+    $this->assertEquals('Changed Username', $this->user->getAccountName());
+  }
+
+  /**
+   * Tests, that logging in won't magically change the users username.
+   */
+  public function testLoginDoesNotChangeUsername() {
+    $user = $this->drupalCreateUser([], 'Initial Username', FALSE, ['mail' => 'completelyDifferent@mail.com']);
+    $this->drupalLogin($user);
+    $this->assertEquals('Initial Username', $user->getAccountName());
+    $this->assertEquals('completelyDifferent@mail.com', $user->getEmail());
   }
 
 }

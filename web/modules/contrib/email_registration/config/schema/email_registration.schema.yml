@@ -5,9 +5,6 @@ email_registration.settings:
     login_with_username:
       type: boolean
       label: 'Allow users to log in with email address or username.'
-    require_username_on_registration:
-      type: boolean
-      label: 'Require also the username on registration'
 
 # Commerce.
 commerce_checkout.commerce_checkout_pane.email_registration_login:

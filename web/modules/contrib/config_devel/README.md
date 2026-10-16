@@ -63,6 +63,9 @@ Features in the Drupal 7 era. In order to achieve this you need to:
         - field.field.node.article.body
         - node.type.article
     ```
+   Any key is supported beneath the top-level `config_devel` key, so this can
+   be used with the `config/optional` config directory, or other directory names
+   used by third party modules.
 5. Run `drush config:devel-export my_module`. The resulting module folder will
    have all the files needed, enable it on another installation and you will get
    the expected configuration values.

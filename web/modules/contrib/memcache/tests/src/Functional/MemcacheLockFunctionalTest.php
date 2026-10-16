@@ -8,12 +8,16 @@ use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Tests\system\Functional\Lock\LockFunctionalTest;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Confirm locking works between two separate requests.
  *
  * @group memcache
  */
+#[Group('memcache')]
+#[RunTestsInSeparateProcesses]
 class MemcacheLockFunctionalTest extends LockFunctionalTest implements ServiceModifierInterface {
 
   /**

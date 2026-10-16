@@ -13,3 +13,17 @@ a {
 table {
   caption-side: unset;
 }
+
+.admin-dblog {
+  .table {
+    .icon {
+      background-color: var(--#{$prefix}table-bg-state, var(--#{$prefix}table-bg-type, var(--#{$prefix}table-accent-bg, var(--#{$prefix}table-bg))));
+    }
+
+
+    > :not(caption) > * > * {
+      box-shadow: unset;
+      background-color: var(--#{$prefix}table-bg-state, var(--#{$prefix}table-bg-type, var(--#{$prefix}table-accent-bg, var(--#{$prefix}table-bg))));
+    }
+  }
+}

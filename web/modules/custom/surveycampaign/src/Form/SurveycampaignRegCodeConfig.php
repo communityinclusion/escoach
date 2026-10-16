@@ -83,19 +83,7 @@ class SurveycampaignRegCodeConfig extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function formQuery($table,$var,$survid,$day = 0) {
-    $database = \Drupal::database();
-    $result = $database->select($table, 'ta')
-    ->fields('ta', array(
-    "$var"
-      )
-    )
-    ->condition('ta.surveyid', $survid)
-    ->condition('senddate', $database->escapeLike($daydate) . '%', 'LIKE')
-    ->execute()->fetchField();
-    return $result;
-
-  }
+ 
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $i = 0;

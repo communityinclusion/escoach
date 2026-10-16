@@ -63,21 +63,28 @@
     description_display == 'invisible' ? 'visually-hidden',
   ]
 %}
+
 <div{{ attributes.addClass(classes) }}>
   {% if label_display in ['before', 'invisible'] %}
     {{ label }}
-  {% endif %}
-  {% if prefix is not empty %}
-    <span class="field-prefix">{{ prefix }}</span>
   {% endif %}
   {% if description_display == 'before' and description.content %}
     <div{{ description.attributes }}>
       {{ description.content }}
     </div>
   {% endif %}
-  {{ children }}
-  {% if suffix is not empty %}
-    <span class="field-suffix">{{ suffix }}</span>
+  {% if prefix is not empty or suffix is not empty %}
+    <div class="input-group">
+      {% if prefix is not empty %}
+        <span class="input-group-text">{{ prefix }}</span>
+      {% endif %}
+      {{ children }}
+      {% if suffix is not empty %}
+        <span class="input-group-text">{{ suffix }}</span>
+      {% endif %}
+    </div>
+  {% else %}
+    {{ children }}
   {% endif %}
   {% if label_display == 'after' %}
     {{ label }}

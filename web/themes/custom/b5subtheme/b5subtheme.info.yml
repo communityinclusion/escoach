@@ -1,7 +1,7 @@
 name: 'B5 subtheme for ES Coach'
 type: theme
 description: 'B5 subtheme for ES Coach subtheme based on Bootstrap 5 theme.'
-core_version_requirement: '^9.4 || ^10'
+core_version_requirement: '^10 || ^11'
 'base theme': bootstrap5
 libraries:
   - b5subtheme/global-styling

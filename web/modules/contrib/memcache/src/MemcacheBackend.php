@@ -8,6 +8,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\CacheTagsChecksumInterface;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\Logger\LoggerChannelTrait;
+use Drupal\Core\Site\Settings;
 use Drupal\memcache\Invalidator\TimestampInvalidatorInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
@@ -17,6 +18,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 class MemcacheBackend implements CacheBackendInterface {
 
   use LoggerChannelTrait;
+  use TransactionAwareTrait;
 
   /**
    * The maximum size of an individual cache chunk.
@@ -75,6 +77,22 @@ class MemcacheBackend implements CacheBackendInterface {
   protected $timestampInvalidator;
 
   /**
+   * Cache IDs whose deletion is delayed until the transaction is committed.
+   *
+   * Keyed by cache ID for fast lookups.
+   *
+   * @var true[]
+   */
+  protected $delayedDeletions = [];
+
+  /**
+   * Whether a deletion of the whole bin is delayed until commit.
+   *
+   * @var bool
+   */
+  protected $delayedBinDeletion = FALSE;
+
+  /**
    * Constructs a MemcacheBackend object.
    *
    * @param string $bin
@@ -119,13 +137,22 @@ class MemcacheBackend implements CacheBackendInterface {
   /**
    * Returns the timestamp for the current request.
    *
+   * Delegates to the core time service so that tests (and anything else that
+   * swaps the 'datetime.time' service) see the same request time here as in
+   * core's own cache backends. The backend also serves the container cache,
+   * which is read before the container exists, so fall back to the raw
+   * request time in that case.
+   *
    * @return int
    *   A Unix timestamp.
    *
-   * @see Drupal\Component\Datetime\Time::getRequestTime()
+   * @see \Drupal\Component\Datetime\Time::getRequestTime()
    */
   public static function getRequestTime() {
-    return (int) $_SERVER['REQUEST_TIME'] ?? time();
+    if (\Drupal::hasContainer() && \Drupal::hasService('datetime.time')) {
+      return \Drupal::time()->getRequestTime();
+    }
+    return (int) ($_SERVER['REQUEST_TIME'] ?? time());
   }
 
   /**
@@ -144,12 +171,33 @@ class MemcacheBackend implements CacheBackendInterface {
     $cache = $this->memcache->getMulti($cids);
     $fetched = [];
 
+    // Before checking the validity of each item individually, register the
+    // cache tags for all returned cache items for preloading, this allows the
+    // cache tag service to optimise cache tag lookups.
+    if (method_exists($this->checksumProvider, 'registerCacheTagsForPreload')) {
+      $tags_for_preload = [];
+      foreach ($cache as $result) {
+        if (!is_string($result) && !empty($result->tags)) {
+          $tags_for_preload[] = $result->tags;
+        }
+      }
+      if ($tags_for_preload) {
+        $this->checksumProvider->registerCacheTagsForPreload(array_merge(...$tags_for_preload));
+      }
+    }
+
     foreach ($cache as $result) {
       if (is_string($result)) {
         continue;
       }
 
       if (!$this->timeIsGreaterThanBinDeletionTime($result->created)) {
+        continue;
+      }
+
+      // Ignore items that are scheduled for deletion once the current
+      // database transaction is committed.
+      if (isset($this->delayedDeletions[$result->cid])) {
         continue;
       }
 
@@ -214,7 +262,12 @@ class MemcacheBackend implements CacheBackendInterface {
   public function set($cid, $data, $expire = CacheBackendInterface::CACHE_PERMANENT, array $tags = []) {
     assert(Inspector::assertAllStrings($tags));
 
-    $tags[] = "memcache:$this->bin";
+    // The per-bin tag only exists to support the deprecated invalidateAll().
+    // Skip it when invalidateAll() is handled by deleteAll() instead, so items
+    // do not carry (and have to check) a tag that is never invalidated.
+    if (!$this->invalidateAllAsDelete()) {
+      $tags[] = "memcache:$this->bin";
+    }
     $tags = array_unique($tags);
     // Sort the cache tags so that they are stored consistently.
     sort($tags);
@@ -227,6 +280,16 @@ class MemcacheBackend implements CacheBackendInterface {
     $cache->expire = $expire;
     $cache->tags = $tags;
     $cache->checksum = $this->checksumProvider->getCurrentChecksum($tags);
+
+    // Do not write cache items whose tags have a pending (delayed) invalidation
+    // because of an open database transaction. The checksum provider returns
+    // a sentinel value in that case: the item could never be read back as
+    // valid, and writing it would needlessly clobber a possibly still valid
+    // item that other requests can use. Drupal 12 returns the sentinel as a
+    // string, older versions as an integer.
+    if ((string) $cache->checksum === (string) CacheTagsChecksumInterface::INVALID_CHECKSUM_WHILE_IN_TRANSACTION) {
+      return FALSE;
+    }
 
     // Cache all items permanently. We handle expiration in our own logic.
     if ($this->memcache->set($cid, $cache)) {
@@ -313,6 +376,21 @@ class MemcacheBackend implements CacheBackendInterface {
    * {@inheritdoc}
    */
   public function setMultiple(array $items) {
+    // Register the tags of every item for preloading so that the first set()
+    // fetches all of their timestamps in one request instead of one per item.
+    if (method_exists($this->checksumProvider, 'registerCacheTagsForPreload')) {
+      $tags_for_preload = [];
+      foreach ($items as $item) {
+        if (!empty($item['tags'])) {
+          assert(Inspector::assertAllStrings($item['tags']));
+          $tags_for_preload[] = $item['tags'];
+        }
+      }
+      if ($tags_for_preload) {
+        $this->checksumProvider->registerCacheTagsForPreload(array_merge(...$tags_for_preload));
+      }
+    }
+
     foreach ($items as $cid => $item) {
       $item += [
         'expire' => CacheBackendInterface::CACHE_PERMANENT,
@@ -327,13 +405,34 @@ class MemcacheBackend implements CacheBackendInterface {
    * {@inheritdoc}
    */
   public function delete($cid) {
-    $this->memcache->delete($cid);
+    $this->deleteMultiple([$cid]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function deleteMultiple(array $cids) {
+    if (!$cids) {
+      return;
+    }
+    if ($this->inDatabaseTransaction()) {
+      // Defer the deletion until the transaction is committed. Meanwhile the
+      // items are hidden from this request in getMultiple(), while other
+      // requests keep seeing the (still committed) data.
+      $this->addPostTransactionCallback([$this, 'postRootTransactionCommit']);
+      $this->delayedDeletions += array_fill_keys($cids, TRUE);
+      return;
+    }
+    $this->doDeleteMultiple($cids);
+  }
+
+  /**
+   * Deletes items from memcache.
+   *
+   * @param string[] $cids
+   *   The cache IDs to delete.
+   */
+  protected function doDeleteMultiple(array $cids) {
     foreach ($cids as $cid) {
       $this->memcache->delete($cid);
     }
@@ -350,7 +449,60 @@ class MemcacheBackend implements CacheBackendInterface {
       );
     }
 
+    $this->invalidateBin();
+  }
+
+  /**
+   * Marks all items in the bin as deleted.
+   *
+   * Outside of a database transaction the bin deletion timestamp is written to
+   * memcache immediately. Inside a transaction only the local timestamp is
+   * updated, so that this request no longer sees the items, while the shared
+   * timestamp is written once the transaction is committed. Other requests
+   * would otherwise repopulate the bin from not yet committed data.
+   */
+  protected function invalidateBin() {
+    if ($this->inDatabaseTransaction()) {
+      $this->addPostTransactionCallback([$this, 'postRootTransactionCommit']);
+      $this->delayedBinDeletion = TRUE;
+      $this->lastBinDeletionTime = $this->timestampInvalidator->getCurrentTimestamp();
+      return;
+    }
     $this->lastBinDeletionTime = $this->timestampInvalidator->invalidateTimestamp($this->bin);
+  }
+
+  /**
+   * Callback invoked once the root database transaction has ended.
+   *
+   * Performs the delayed deletions if the transaction was committed and
+   * discards them otherwise.
+   *
+   * This runs from \Drupal\Core\Database\Transaction::__destruct(), so it must
+   * only issue plain memcache commands; in particular it must never serialize
+   * cache data, which could trigger arbitrary __sleep() implementations.
+   *
+   * @param bool $success
+   *   Whether the transaction was committed.
+   *
+   * @internal
+   */
+  public function postRootTransactionCommit($success) {
+    $this->postTransactionCallbackRegistered = FALSE;
+    $cids = array_keys($this->delayedDeletions);
+    $this->delayedDeletions = [];
+    $bin_deletion = $this->delayedBinDeletion;
+    $this->delayedBinDeletion = FALSE;
+
+    if ($success) {
+      if ($bin_deletion) {
+        $this->lastBinDeletionTime = $this->timestampInvalidator->invalidateTimestamp($this->bin);
+      }
+      $this->doDeleteMultiple($cids);
+    }
+    elseif ($bin_deletion) {
+      // Fall back to the shared timestamp again.
+      $this->lastBinDeletionTime = NULL;
+    }
   }
 
   /**
@@ -375,6 +527,12 @@ class MemcacheBackend implements CacheBackendInterface {
    * @see Drupal\Core\Cache\CacheBackendInterface::invalidateAll()
    */
   public function invalidateMultiple(array $cids) {
+    // Unlike deletions, invalidations are not delayed until the end of an open
+    // database transaction: re-writing the item requires serializing its data
+    // again, which is not safe from a post-transaction callback (it runs in a
+    // destructor, where arbitrary __sleep() implementations may e.g. start a
+    // Fiber). Core does not use invalidate() for entity or render caches, and
+    // cache tag invalidation, which those rely on, is delayed.
     foreach ($cids as $cid) {
       if ($item = $this->get($cid)) {
         $item->expire = static::getRequestTime() - 1;
@@ -395,7 +553,30 @@ class MemcacheBackend implements CacheBackendInterface {
       );
     }
 
-    $this->invalidateTags(["memcache:$this->bin"]);
+    if ($this->invalidateAllAsDelete()) {
+      // Core deprecated invalidateAll() in favour of deleteAll(); treating it
+      // as a bin deletion means every item is one tag lighter and one check
+      // cheaper on read.
+      $this->deleteAll();
+    }
+    else {
+      $this->invalidateTags(["memcache:$this->bin"]);
+    }
+  }
+
+  /**
+   * Whether invalidateAll() is handled as deleteAll().
+   *
+   * Read from settings rather than the memcache.settings service because
+   * this backend also serves the cache.container bin before the container
+   * exists.
+   *
+   * @return bool
+   *   TRUE (the default) to delete the bin, FALSE to keep the legacy per-bin
+   *   tag invalidation.
+   */
+  protected function invalidateAllAsDelete(): bool {
+    return (bool) (Settings::get('memcache', [])['invalidate_all_as_delete'] ?? TRUE);
   }
 
   /**
@@ -423,7 +604,7 @@ class MemcacheBackend implements CacheBackendInterface {
       );
     }
 
-    $this->lastBinDeletionTime = $this->timestampInvalidator->invalidateTimestamp($this->bin);
+    $this->invalidateBin();
   }
 
   /**

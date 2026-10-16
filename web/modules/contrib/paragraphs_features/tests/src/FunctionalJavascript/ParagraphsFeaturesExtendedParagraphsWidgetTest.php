@@ -59,7 +59,7 @@ class ParagraphsFeaturesExtendedParagraphsWidgetTest extends ParagraphsFeaturesJ
     // Add a nested paragraph and check that add in between is used only for
     // base paragraphs field, but not for the nested paragraph.
     $session->executeScript("document.querySelector('.paragraphs-features__add-in-between__button').click()");
-    $page->find('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_nested")]')->click();
+    $this->scrollClick('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_nested")]');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     $base_buttons = $page->findAll('xpath', '//*[contains(concat(" ", normalize-space(@class), " "), " paragraphs-features__add-in-between__button ") and not(ancestor::div[contains(@class, "paragraphs-nested")])]');
@@ -75,19 +75,19 @@ class ParagraphsFeaturesExtendedParagraphsWidgetTest extends ParagraphsFeaturesJ
     // Check first add in between button.
     $page->find('xpath', '(//*[contains(@class, "paragraphs-features__add-in-between__button")])[1]')->click();
     $this->assertSession()->hiddenFieldValueEquals('field_paragraphs[add_more][add_more_delta]', '0');
-    $page->find('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]')->click();
+    $this->scrollClick('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Check last add in between button.
     $this->scrollClick('xpath', '(//*[contains(@class, "paragraphs-features__add-in-between__button")])[last()]');
     $this->assertSession()->hiddenFieldValueEquals('field_paragraphs[add_more][add_more_delta]', '2');
-    $page->find('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]')->click();
+    $this->scrollClick('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Check add in between button between existing paragraphs.
     $page->find('xpath', '(//*[contains(concat(" ", normalize-space(@class), " "), " paragraphs-features__add-in-between__button ")])[3]')->click();
     $this->assertSession()->hiddenFieldValueEquals('field_paragraphs[add_more][add_more_delta]', '2');
-    $page->find('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]')->click();
+    $this->scrollClick('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     $base_buttons = $page->findAll('xpath', '//*[contains(concat(" ", normalize-space(@class), " "), " paragraphs-features__add-in-between__button ") and not(ancestor::div[contains(@class, "paragraphs-nested")])]');

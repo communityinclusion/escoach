@@ -62,7 +62,7 @@ JS;
     $driver = $session->getDriver();
 
     $this->scrollClick('xpath', '(//*[contains(@class, "paragraph-type-add-modal-button")])[1]');
-    $page->find('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]')->click();
+    $this->scrollClick('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_1")]');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $ck_editor_id = $this->getCkEditorId($index);
 
@@ -322,7 +322,7 @@ JS;
     $this->drupalGet("node/add/$content_type");
 
     $page->find('xpath', '(//*[contains(@class, "paragraph-type-add-modal-button")])[1]')->click();
-    $page->find('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_3_text_fields")]')->click();
+    $this->scrollClick('xpath', '//*[contains(@class, "paragraphs-add-dialog") and contains(@class, "ui-dialog-content")]//*[contains(@name, "test_3_text_fields")]');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Add required texts to text fields.

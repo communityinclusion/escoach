@@ -35,7 +35,7 @@ class MemcacheStatisticsController extends ControllerBase {
   /**
    * Event Dispatcher Service.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcher
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
   protected $dispatcher;
 
@@ -81,7 +81,7 @@ class MemcacheStatisticsController extends ControllerBase {
    *
    * @param \Drupal\memcache\Driver\MemcacheDriverFactory $memcacheDriverFactory
    *   The Memcache Driver.
-   * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $dispatcher
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
    *   Event Dispatcher service.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
    *   Date Formatter service.
@@ -134,6 +134,10 @@ class MemcacheStatisticsController extends ControllerBase {
    *   The page output.
    */
   public function statsTable($cluster = 'default') {
+    if ($disabled = $this->disabledReport()) {
+      return $disabled;
+    }
+
     $bin = $this->getBinMapping($cluster);
     /** @var \Drupal\memcache\DrupalMemcacheInterface $memcache */
     $memcache = $this->memcacheDriverFactory->get($bin, TRUE);
@@ -212,6 +216,10 @@ class MemcacheStatisticsController extends ControllerBase {
    *   The page output.
    */
   public function statsTableRaw($cluster, $server, $type = 'default') {
+    if ($disabled = $this->disabledReport()) {
+      return $disabled;
+    }
+
     $cluster = $this->binMapping($cluster);
     $server = str_replace('!', '/', $server);
 
@@ -251,6 +259,22 @@ class MemcacheStatisticsController extends ControllerBase {
     }
 
     return $output;
+  }
+
+  /**
+   * Builds the report shown when memcache is switched off in settings.
+   *
+   * @return array|null
+   *   A render array explaining the situation, or NULL when memcache is on.
+   */
+  protected function disabledReport() {
+    if (!$this->memcacheDriverFactory->isDisabled()) {
+      return NULL;
+    }
+
+    return [
+      '#markup' => '<p>' . $this->t("Memcache is disabled on this environment: \$settings['memcache']['servers'] and \$settings['memcache']['bins'] are both empty arrays, so there are no statistics to report.") . '</p>',
+    ];
   }
 
   /**

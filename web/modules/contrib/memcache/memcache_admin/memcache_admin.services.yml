@@ -6,10 +6,13 @@ services:
       - '@config.factory'
       - '@current_user'
       - '@renderer'
+      - '@memcache.request_statistics'
     tags:
       - { name: event_subscriber }
   memcache_stats.memcached:
     class: Drupal\memcache_admin\EventSubscriber\MemcacheServerStatsSubscriber
+    arguments:
+      - '@memcache.factory'
     tags:
       - { name: event_subscriber }
   memcache_stats.mcrouter:

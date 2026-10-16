@@ -140,14 +140,14 @@ class ConfigDevelCommands extends DrushCommands {
       throw new \Exception(sprintf("Couldn't export configuration. The '%s' extension has no config declared in a 'config_devel' section in the info file.", $extension));
     }
 
-    // Export the required config.
-    if (isset($config['install'])) {
-      $this->exportConfig($config['install'], $type, $extension, InstallStorage::CONFIG_INSTALL_DIRECTORY);
-    }
+    foreach ($config as $directory => $config_names) {
+      $directory = match ($directory) {
+        'install' => InstallStorage::CONFIG_INSTALL_DIRECTORY,
+        'optional' => InstallStorage::CONFIG_OPTIONAL_DIRECTORY,
+        default => 'config/' . $directory,
+      };
 
-    // If we have any optional configuration, export that as well.
-    if (isset($config['optional'])) {
-      $this->exportConfig($config['optional'], $type, $extension, InstallStorage::CONFIG_OPTIONAL_DIRECTORY);
+      $this->exportConfig($config_names, $type, $extension, $directory);
     }
   }
 
@@ -189,14 +189,15 @@ class ConfigDevelCommands extends DrushCommands {
       throw new \Exception(sprintf("Couldn't import configuration. There is no config available for %s.", $extension));
     }
 
-    // Import config
-    if (isset($config['install'])) {
-      $this->importConfig($config['install'], $type, $extension, InstallStorage::CONFIG_INSTALL_DIRECTORY);
-    }
+    // Import config.
+    foreach ($config as $directory => $config_names) {
+      $directory = match ($directory) {
+        'install' => InstallStorage::CONFIG_INSTALL_DIRECTORY,
+        'optional' => InstallStorage::CONFIG_OPTIONAL_DIRECTORY,
+        default => 'config/' . $directory,
+      };
 
-    // Import optional config
-    if (isset($config['optional'])) {
-      $this->importConfig($config['optional'], $type, $extension, InstallStorage::CONFIG_OPTIONAL_DIRECTORY);
+      $this->importConfig($config_names, $type, $extension, $directory);
     }
   }
 
@@ -276,15 +277,19 @@ class ConfigDevelCommands extends DrushCommands {
   }
 
   /**
-   * Returns the config for the given extension.
+   * Gets the list of config managed by config devel for a given extension.
+   *
+   * This is read from the extension info file's 'config_devel' property.
    *
    * @param string $type
-   *   Either 'module', 'theme' or 'profile'.
+   *   The extension type. One of 'module', 'theme' or 'profile'.
    * @param string $extension
    *   The name of the extension for which to return the config.
    *
    * @return array
-   *   An array containing install and optional config.
+   *   An array containing config names, grouped by config location. Top-level
+   *   keys are the config subdirectory, such as 'install' or 'optional'. Inner
+   *   arrays are numeric lists of config names.
    *
    * @throws \Exception
    *   Throws an exception if the 'config_devel' property of the extension's
@@ -294,34 +299,25 @@ class ConfigDevelCommands extends DrushCommands {
     $filename = \Drupal::service('extension.path.resolver')->getPath($type, $extension) . '/' . $extension .'.info.yml';
     $info = $this->infoParser->parse($filename);
 
-    $config = [];
-
     if (!isset($info['config_devel'])) {
       throw new \Exception("The '$extension' $type is missing a 'config_devel' property in its info.yml file.");
     }
-
-    if (isset($info['config_devel'])) {
-      if (!is_array($info['config_devel'])) {
-        throw new \Exception("The 'config_devel' property in the '$extension' extension must be an array.");
-      }
-
-      // Keep backwards compatibility for the old format. This has config names
-      // listed directly beneath 'config_devel', rather than an intermediate
-      // level for 'install' and 'optional'.
-      // Detect the old format based on whether there's neither of these two
-      // keys.
-      if (!isset($info['config_devel']['install']) && !isset($info['config_devel']['optional'])) {
-        $info['config_devel']['install'] = $info['config_devel'];
-      }
-
-      foreach (['install', 'optional'] as $type) {
-        if (isset($info['config_devel'][$type])) {
-          $config[$type] = $info['config_devel'][$type];
-        }
-      }
+    if (!is_array($info['config_devel'])) {
+      throw new \Exception("The 'config_devel' property in the '$extension' extension must be an array.");
     }
 
-    return $config;
+    // Keep backwards compatibility for the old format. This has config names
+    // listed directly beneath 'config_devel', rather than an intermediate
+    // level for 'install' and 'optional'.
+    if (array_is_list($info['config_devel'])) {
+      $new_format = [
+        'install' => $info['config_devel'],
+      ];
+      // Remove the top-level config names.
+      $info['config_devel'] = $new_format;
+    }
+
+    return $info['config_devel'];
   }
 
   /**

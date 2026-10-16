@@ -13,7 +13,7 @@ class ParagraphsFeatureCollapseAllTest extends ParagraphsFeaturesJavascriptTestB
    * Test display of collapse all.
    */
   public function testCollapseAllOption() {
-    // Create content type with paragrapjs field.
+    // Create content type with paragraphs field.
     $content_type = 'test_collapse_all';
 
     // Create nested paragraph with addition of one text test paragraph.

@@ -10,7 +10,7 @@ or this theme's _variables_drupal.scss and recompile css!)
 
 ## FEATURES
 
-* Bootstrap 5 library ([5.3.3](https://blog.getbootstrap.com/2024/02/20/bootstrap-5-3-3/)
+* Bootstrap 5 library ([5.3.8](https://blog.getbootstrap.com/2025/08/25/bootstrap-5-3-8/)
   and [5.2.3](https://blog.getbootstrap.com/2022/11/22/bootstrap-5-2-3/)) included
 * Bootstrap 5 breakpoints
 * Bootstrap 5 integration with CKEditor
@@ -44,7 +44,14 @@ Head to `Appearance` and clicking bootstrap5 `settings`.
 
 #### Create a sub-theme using Drush
 
-* `drush --include="web/themes/contrib/bootstrap5/src/Drush" bootstrap5:subtheme MACHINE_NAME --subtheme-name="SUBTHEME_NAME"`
+* `drush --include="web/themes/contrib/bootstrap5/src/Drush" bootstrap5:generate-subtheme MACHINE_NAME --subtheme-name="SUBTHEME_NAME"`
+
+Replace placeholder values before running, e.g.
+
+MACHINE_NAME with my_subtheme
+"SUBTHEME_NAME" with "My Subtheme"
+
+* `drush --include="web/themes/contrib/bootstrap5/src/Drush" bootstrap5:generate-subtheme my_subtheme --subtheme-name="My Subtheme"`
 
 #### Create a sub-theme manually
 
@@ -66,17 +73,15 @@ Head to `Appearance` and clicking bootstrap5 `settings`.
 
 ## Branching
 
-* `3.0.x` Stable branch based on `Starterkit` and `Stable9` (Drupal 9.4+, Drupal 10+)
-* `2.0.x` Legacy branch based on `Claro` and `Stable` (Drupal 9 only)
+* `4.0.x` Drupal 10/11 support (inclusions: bootstrap icons (included), bootswatch, dark mode, CSS variables)
+* `3.0.x` Stable branch based on Starterkit and Stable9 (Drupal 9.4+, Drupal 10+) `deprecated`
 
-### Upgrade: 2.x to 3.x
-
-Run database updates via interface (OR run drush updb).
-It will uninstall old themes (if present) and enable `stable9`.
-
-If your installation is config driven, don't forget to switch `stable` and `claro` to `stable9`.
 
 ## FAQ
+
+### FAQ - CSS returns conflicting results for administrator
+
+If administrator CSS is returning bad results, apply [#3458077 core patch](https://www.drupal.org/project/drupal/issues/3458077).
 
 ### FAQ - Adding custom color
 
@@ -157,34 +162,4 @@ We call a macro which calls itself to render the full tree.
     {% endif %}
   </li>
 {% endmacro %}
-```
-
-
-## Upgrade to branch 3.0.x
-
-### drush 11
-
-- When running `drush updb`, make sure you are running drush 11 otherwise you
-  might run into errors.
-- Run updates via drupal interface if using drush 10 or less.
-- If errors already appeared, use either `drush theme:uninstall claro stable`
-  and/or `drush theme:install stable9` depending on what php error you'll get.
-
-### Configuration
-
-If using configuration synchronisation, make sure your core.extension.yml contains
-
-```
-theme:
-...
-stable9: 0
-```
-
-instead of
-
-```
-theme:
-...
-stable: 0
-classy: 0
 ```

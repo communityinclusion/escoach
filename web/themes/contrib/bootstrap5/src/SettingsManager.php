@@ -52,7 +52,7 @@ class SettingsManager {
     $description = '';
     if (\Drupal::moduleHandler()
       ->moduleExists('twbstools')) {
-      $styleguidePath = base_path().'styleguide';
+      $styleguidePath = base_path() . 'styleguide';
       $description = $this->t("Style guide demonstrates abilities of bootstrap framework. Open <a target='_blank' href='@sglink'>style guide</a> in a new window.", [
         '@sglink' => $styleguidePath,
       ]);
@@ -99,10 +99,28 @@ class SettingsManager {
       }
     }
 
+    $form['theme_mode_details'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Theme mode'),
+      '#description' => $this->t('Select the color theme mode for your website.'),
+      '#open' => TRUE,
+    ];
+
+    $form['theme_mode_details']['b5_theme_mode'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Theme mode'),
+      '#default_value' => theme_get_setting('b5_theme_mode'),
+      '#description' => $this->t('Select the color theme mode: light or dark.'),
+      '#options' => [
+        'light' => $this->t('Light'),
+        'dark' => $this->t('Dark'),
+      ],
+    ];
+
     $form['body_details'] = [
       '#type' => 'details',
       '#title' => $this->t('Body options'),
-      '#description' => $this->t('Combination of theme/background colour may affect background colour/text colour contrast. To fix any contrast issues, override corresponding variables in scss file: <code>[bootstrap 5 theme]/dist/boostrap/[version]/scss/_variables.scss</code>'),
+      '#description' => $this->t('Combination of theme/background colour may affect background colour/text colour contrast. To fix any contrast issues, override corresponding variables in scss file: <code>[bootstrap 5 theme]/dist/bootstrap/[version]/scss/_variables.scss</code>'),
       '#open' => TRUE,
     ];
 
@@ -140,7 +158,7 @@ class SettingsManager {
     $form['nav_details'] = [
       '#type' => 'details',
       '#title' => $this->t('Navbar options'),
-      '#description' => $this->t("Combination of theme/background colour may affect background colour/text colour contrast. To fix any contrast issues, override \$navbar-light-*/\$navbar-dark-* variables (refer to dist/boostrap/scss/_variables.scss)"),
+      '#description' => $this->t("Combination of theme/background colour may affect background colour/text colour contrast. To fix any contrast issues, override \$navbar-light-*/\$navbar-dark-* variables (refer to dist/bootstrap/scss/_variables.scss)"),
       '#open' => TRUE,
     ];
 
@@ -163,7 +181,7 @@ class SettingsManager {
     $form['footer_details'] = [
       '#type' => 'details',
       '#title' => $this->t('Footer options'),
-      '#description' => $this->t("Combination of theme/background colour may affect background colour/text colour contrast. To fix any contrast issues, override corresponding variables in scss (refer to dist/boostrap/scss/_variables.scss)"),
+      '#description' => $this->t("Combination of theme/background colour may affect background colour/text colour contrast. To fix any contrast issues, override corresponding variables in scss (refer to dist/bootstrap/scss/_variables.scss)"),
       '#open' => TRUE,
     ];
 
@@ -189,13 +207,6 @@ class SettingsManager {
       '#description' => $this->t("Configuration for text formats and editors."),
       '#open' => TRUE,
     ];
-
-    /*$form['text_formats']['b5_ckeditor_enable'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('CKEditor with bootstrap support'),
-      '#default_value' => theme_get_setting('b5_ckeditor_enable'),
-      '#description' => $this->t("Enable bootstrap support inside bootstrap editor. If enabled, containers, cards and other styles will be rendered inside CKEditor."),
-    ];*/
 
     $form['subtheme'] = [
       '#type' => 'details',

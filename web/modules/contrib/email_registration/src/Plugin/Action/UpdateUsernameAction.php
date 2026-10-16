@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\email_registration\Plugin\Action;
 
-use Drupal\Core\Action\ActionBase;
+use Drupal\Core\Action\Plugin\Action\EntityActionBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\email_registration\UsernameGenerator;
 use Drupal\user\UserInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Auto username rename bulk action.
@@ -15,7 +20,35 @@ use Drupal\user\UserInterface;
  *   type = "user",
  * )
  */
-class UpdateUsernameAction extends ActionBase {
+class UpdateUsernameAction extends EntityActionBase {
+
+  /**
+   * The username generator service.
+   *
+   * @var \Drupal\email_registration\UsernameGenerator
+   */
+  protected $usernameGenerator;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, string $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager, UsernameGenerator $usernameGenerator) {
+    $this->usernameGenerator = $usernameGenerator;
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager'),
+      $container->get('email_registration.username_generator')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -23,25 +56,16 @@ class UpdateUsernameAction extends ActionBase {
   public function execute($account = NULL) {
     // Rename the given user:
     if (!empty($account) && $account instanceof UserInterface) {
-      $newUsername = email_registration_strip_mail_and_cleanup($account->getEmail());
-      // Ensure whatever name we have is unique:
-      $newUsernameUnique = email_registration_unique_username($newUsername, (int) $account->id());
-      $account->setUsername($newUsernameUnique);
-
-      // If the validation for an account fails for some reason, log it and
-      // return void:
-      if ($account->isValidationRequired() && !$account->validate()) {
-        \Drupal::logger('email_registration')->error('Email registration failed setting the new name on user @id.', ['@id' => $account->id()]);
-        return;
-      }
-      $account->save();
+      // Give the user a temporary 'email_registration_' username, so that
+      // our "email_registration_user_presave()" hook can execute:
+      $account->setUsername($this->usernameGenerator->generateRandomUsername())->save();
     }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var \Drupal\user\UserInterface $object */
     $access = $object->status->access('edit', $account, TRUE)
       ->andIf($object->access('update', $account, TRUE));

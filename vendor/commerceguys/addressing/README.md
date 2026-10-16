@@ -1,31 +1,28 @@
 addressing
 ==========
 
-[![Build Status](https://travis-ci.org/commerceguys/addressing.svg?branch=master)](https://travis-ci.org/commerceguys/addressing)
+[![Build Status](https://github.com/commerceguys/addressing/actions/workflows/build.yml/badge.svg)](https://github.com/commerceguys/addressing/actions/workflows/build.yml)
 
-A PHP 7.3+ addressing library, powered by CLDR and Google's address data.
+A PHP 8.0+ addressing library, powered by CLDR and Google's address data.
 
 Manipulates postal addresses, meant to identify a precise recipient location for shipping or billing purposes.
 
 Features:
-- Countries, with translations for over 250 locales
+- Countries, with translations for over 150 locales. Powered by [CLDR](http://cldr.unicode.org) v48.
 - Address formats for over 200 countries
-- Subdivisions (administrative areas, localities, dependent localities) for 44 countries
+- Subdivisions (administrative areas, localities, dependent localities) for 62 countries
 - Both latin and local subdivision names, when relevant (e.g: Okinawa / 沖縄県)
 - Formatting, in HTML or plain text.
 - Validation via symfony/validator
 - Zones
 
-The dataset is [stored locally](https://github.com/commerceguys/addressing/tree/master/resources) in JSON format.
-Countries are generated from [CLDR](http://cldr.unicode.org) v42. Address formats and subdivisions are generated from Google's [Address Data Service](https://chromium-i18n.appspot.com/ssl-address).
-
-Further backstory can be found in [this blog post](https://drupalcommerce.org/blog/16864/commerce-2x-stories-addressing).
+Address formats and subdivisions were initially generated from Google's [Address Data Service](https://chromium-i18n.appspot.com/ssl-address), and are now owned and maintained by the library.
 
 Also check out [commerceguys/intl](https://github.com/commerceguys/intl) for CLDR-powered languages/currencies/number formatting.
 
 # Data model
 
-The [address interface](https://github.com/commerceguys/addressing/blob/master/src/AddressInterface.php) represents a postal adddress, with getters for the following fields:
+The [address interface](https://github.com/commerceguys/addressing/blob/main/src/AddressInterface.php) represents a postal address, with getters for the following fields:
 
 - Country code
 - Administrative area
@@ -35,6 +32,7 @@ The [address interface](https://github.com/commerceguys/addressing/blob/master/s
 - Sorting code
 - Address line 1
 - Address line 2
+- Address line 3
 - Organization
 - Given name (First name)
 - Additional name (Middle name / Patronymic)
@@ -43,10 +41,10 @@ The [address interface](https://github.com/commerceguys/addressing/blob/master/s
 Field names follow the OASIS [eXtensible Address Language (xAL)](http://www.oasis-open.org/committees/ciq/download.shtml) standard.
 
 The interface makes no assumptions about mutability.
-The implementing application can extend the interface to provide setters, or implement a value object that uses either [PSR-7 style with* mutators](https://github.com/commerceguys/addressing/blob/master/src/ImmutableAddressInterface) or relies on an AddressBuilder.
-A default [address value object](https://github.com/commerceguys/addressing/blob/master/src/Address.php) is provided that can be used as an example, or mapped by Doctrine (preferably as an embeddable).
+The implementing application can extend the interface to provide setters, or implement a value object that uses either [PSR-7 style with* mutators](https://github.com/commerceguys/addressing/blob/main/src/ImmutableAddressInterface) or relies on an AddressBuilder.
+A default [address value object](https://github.com/commerceguys/addressing/blob/main/src/Address.php) is provided that can be used as an example, or mapped by Doctrine (preferably as an embeddable).
 
-The [address format](https://github.com/commerceguys/addressing/blob/master/src/AddressFormat/AddressFormat.php) provides the following information:
+The [address format](https://github.com/commerceguys/addressing/blob/main/src/AddressFormat/AddressFormat.php) provides the following information:
 
 - Which fields are used, and in which order
 - Which fields are required
@@ -54,19 +52,19 @@ The [address format](https://github.com/commerceguys/addressing/blob/master/src/
 - The labels for the administrative area (state, province, parish, etc.), locality (city/post town/district, etc.), dependent locality (neighborhood, suburb, district, etc) and the postal code (postal code or ZIP code)
 - The regular expression pattern for validating postal codes
 
-The [country](https://github.com/commerceguys/addressing/blob/master/src/Country/Country.php) provides the following information:
+The [country](https://github.com/commerceguys/addressing/blob/main/src/Country/Country.php) provides the following information:
 
 - The country name.
 - The numeric and three-letter country codes.
 - The official currency code, when known.
 - The timezones which the country spans.
 
-The [subdivision](https://github.com/commerceguys/addressing/blob/master/src/Subdivision/Subdivision.php) provides the following information:
+The [subdivision](https://github.com/commerceguys/addressing/blob/main/src/Subdivision/Subdivision.php) provides the following information:
 
-- The subdivision code (used to represent the subdivison on a parcel/envelope, e.g. CA for California)
-- The subdivison name (shown to the user in a dropdown)
+- The subdivision code (used to represent the subdivision on a parcel/envelope, e.g. CA for California)
+- The subdivision name (shown to the user in a dropdown)
 - The local code and name, if the country uses a non-latin script (e.g. Cyrilic in Russia).
-- The postal code prefix (used to ensure that a postal code begins with the expected characters)
+- The postal code pattern (if different from the one on the address format).
 
 Subdivisions are hierarchical and can have up to three levels:
 Administrative Area -> Locality -> Dependent Locality.
@@ -219,7 +217,7 @@ if (!$violations->count()) {
 
 # Zones
 
-[Zones](https://github.com/commerceguys/addressing/blob/master/src/Zone/Zone.php) are [territorial](https://github.com/commerceguys/addressing/blob/master/src/Zone/ZoneTerritory.php) groupings often used for shipping or tax purposes.
+[Zones](https://github.com/commerceguys/addressing/blob/main/src/Zone/Zone.php) are [territorial](https://github.com/commerceguys/addressing/blob/main/src/Zone/ZoneTerritory.php) groupings often used for shipping or tax purposes.
 For example, a set of shipping rates associated with a zone where the rates
 become available only if the customer's address belongs to the zone.
 
@@ -257,3 +255,4 @@ echo $zone->match($austrianAddress); // true
 # Integrations
 
 - [Drupal module](https://drupal.org/project/address)
+- [Symfony bundle](https://github.com/daften/addressing-bundle)

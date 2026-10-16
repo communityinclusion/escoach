@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\email_registration\Functional\Plugin\Commerce\CheckoutPane;
 
 use Drupal\commerce_product\Entity\ProductInterface;
@@ -126,7 +128,7 @@ class EmailRegistrationCommerceTest extends CommerceBrowserTestBase {
     $account = $this->drupalCreateUser();
 
     $this->drupalGet('/checkout');
-    $this->assertCheckoutProgressStep('Login');
+    $this->assertCheckoutProgressStep('Log in');
 
     $edit = [
       'email_registration_login[returning_customer][name]' => $account->getEmail(),
@@ -150,7 +152,7 @@ class EmailRegistrationCommerceTest extends CommerceBrowserTestBase {
     $account = $this->drupalCreateUser();
 
     $this->drupalGet('/checkout');
-    $this->assertCheckoutProgressStep('Login');
+    $this->assertCheckoutProgressStep('Log in');
     $this->assertSession()->pageTextContains('Email address or username');
 
     $edit = [
@@ -167,7 +169,7 @@ class EmailRegistrationCommerceTest extends CommerceBrowserTestBase {
    */
   public function testLoginWithoutValues() {
     $this->drupalGet('/checkout');
-    $this->assertCheckoutProgressStep('Login');
+    $this->assertCheckoutProgressStep('Log in');
     $this->submitForm([], 'Log in');
     $this->assertSession()->pageTextContains('Unrecognized email address or password. Forgot your password?');
   }
@@ -180,7 +182,7 @@ class EmailRegistrationCommerceTest extends CommerceBrowserTestBase {
     $account = $this->drupalCreateUser();
 
     $this->drupalGet('/checkout');
-    $this->assertCheckoutProgressStep('Login');
+    $this->assertCheckoutProgressStep('Log in');
 
     $edit = [
       'email_registration_login[returning_customer][name]' => $account->getEmail(),
@@ -205,7 +207,7 @@ class EmailRegistrationCommerceTest extends CommerceBrowserTestBase {
       ->save();
 
     $this->drupalGet('/checkout');
-    $this->assertCheckoutProgressStep('Login');
+    $this->assertCheckoutProgressStep('Log in');
     $this->assertSession()->pageTextContains('Enter your email address.');
 
     $edit = [
@@ -233,7 +235,7 @@ class EmailRegistrationCommerceTest extends CommerceBrowserTestBase {
       ->save();
 
     $this->drupalGet('/checkout');
-    $this->assertCheckoutProgressStep('Login');
+    $this->assertCheckoutProgressStep('Log in');
 
     $edit = [
       'email_registration_login[returning_customer][name]' => $account->getEmail(),
@@ -253,7 +255,7 @@ class EmailRegistrationCommerceTest extends CommerceBrowserTestBase {
     $account->save();
 
     $this->drupalGet('/checkout');
-    $this->assertCheckoutProgressStep('Login');
+    $this->assertCheckoutProgressStep('Log in');
 
     // Try logging in with wrong pass first.
     $edit = [

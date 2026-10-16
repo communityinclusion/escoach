@@ -1,0 +1,9 @@
+# Project-specific DDEV settings for the memcache module.
+#
+# This file is loaded after config.contrib.yaml, so it survives updates of the
+# ddev-drupal-contrib add-on (which regenerates config.contrib.yaml).
+web_environment:
+  # The memcached service provided by the ddev/ddev-memcached add-on. The
+  # module and its tests read this variable to find the server, the same way
+  # the GitLab CI job does in .gitlab-ci.yml.
+  - MEMCACHED_HOST=memcached:11211

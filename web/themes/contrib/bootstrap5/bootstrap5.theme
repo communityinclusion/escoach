@@ -2,14 +2,16 @@
 
 /**
  * @file
- * bootstrap5 theme file.
+ * Bootstrap5 theme file.
  */
 
 use Drupal\block\Entity\Block;
 use Drupal\bootstrap5\SettingsManager;
 use Drupal\bootstrap5\SubthemeFormManager;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\views\Form\ViewsForm;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -40,7 +42,7 @@ function bootstrap5_form_system_theme_settings_alter(&$form, FormStateInterface 
  * Validate callback to ensure filter order and allowed_html are compatible.
  */
 function bootstrap5_form_system_theme_settings_subtheme_validate(array &$form, FormStateInterface $form_state) {
-  $subtheme_form_manager = new SubthemeFormManager();
+  $subtheme_form_manager = new SubthemeFormManager(\Drupal::service('file_system'), \Drupal::service('messenger'), \Drupal::service('extension.list.theme'));
   return $subtheme_form_manager->validateForm($form, $form_state);
 }
 
@@ -50,7 +52,7 @@ function bootstrap5_form_system_theme_settings_subtheme_validate(array &$form, F
  * @see bootstrap5_form_system_theme_settings_alter()
  */
 function bootstrap5_form_system_theme_settings_subtheme_submit($form, FormStateInterface $form_state) {
-  $subtheme_form_manager = new SubthemeFormManager();
+  $subtheme_form_manager = new SubthemeFormManager(\Drupal::service('file_system'), \Drupal::service('messenger'), \Drupal::service('extension.list.theme'));
   return $subtheme_form_manager->submitForm($form, $form_state);
 }
 
@@ -61,6 +63,14 @@ function bootstrap5_preprocess_html(&$variables) {
   // Body colour theme.
   $variables['b5_body_schema'] = theme_get_setting('b5_body_schema');
   $variables['b5_body_bg_schema'] = theme_get_setting('b5_body_bg_schema');
+
+  // Add route as CSS class.
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $route_class = Html::cleanCssIdentifier(str_replace('.', '-', $route_name));
+  $variables['attributes']['class'][] = 'page-route-' . $route_class;
+
+  // Theme mode.
+  $variables['b5_theme_mode'] = theme_get_setting('b5_theme_mode');
 }
 
 /**
@@ -143,6 +153,23 @@ function _bootstrap5_attributes_class_string_to_array(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK() for form element.
+ */
+function bootstrap5_preprocess_form_element(&$variables) {
+  if (isset($variables['type'])) {
+    if (in_array($variables['type'], ['checkbox', 'radio'])) {
+      if (isset($variables['label'])) {
+        $variables['label']['#attributes']['class'][] = 'form-check-label';
+      }
+      $variables['attributes']['class'][] = 'form-check';
+    }
+    elseif (in_array($variables['type'], ['file', 'managed_file'])) {
+      $variables['label']['#attributes']['class'][] = 'form-label';
+    }
+  }
+}
+
+/**
  * Implements theme_preprocess_textarea().
  */
 function bootstrap5_preprocess_textarea(&$variables) {
@@ -175,9 +202,16 @@ function bootstrap5_preprocess_input(&$variables) {
     $variables['attributes']['class'][] = 'form-control';
   }
 
-  if (in_array($type_html, ['checkbox'])) {
+  if (in_array($type_html, ['checkbox', 'radio'])) {
     $variables['attributes']['class'][] = 'form-check-input';
   }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for file input.
+ */
+function bootstrap5_preprocess_input__file(&$variables) {
+  $variables['attributes']['class'][] = 'form-control';
 }
 
 /**
@@ -186,6 +220,22 @@ function bootstrap5_preprocess_input(&$variables) {
 function bootstrap5_preprocess_datetime_form(&$variables) {
   _bootstrap5_attributes_class_string_to_array($variables);
   $variables['attributes']['class'][] = 'form-inline';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for media library wrapper.
+ */
+function bootstrap5_preprocess_media_library_wrapper(&$variables) {
+  $variables['attributes']['class'][] = "d-flex";
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for links in media library menu.
+ */
+function bootstrap5_preprocess_links__media_library_menu(&$variables) {
+  foreach ($variables['links'] as &$link) {
+    $link['link']['#options']['attributes']['class'][] = 'nav-link';
+  }
 }
 
 /**
@@ -277,7 +327,8 @@ function bootstrap5_views_pre_render(ViewExecutable $view) {
   if ($view->id() === 'media_library') {
     if ($view->display_handler->options['defaults']['css_class']) {
       $add_classes($view->displayHandlers->get('default')->options['css_class'], ['media-library-view']);
-    } else {
+    }
+    else {
       $add_classes($view->display_handler->options['css_class'], ['media-library-view']);
     }
 
@@ -296,7 +347,8 @@ function bootstrap5_views_pre_render(ViewExecutable $view) {
         $add_classes($view->field['delete_media']->options['alter']['link_class'], ['media-library-item__remove']);
         $add_classes($view->field['delete_media']->options['alter']['link_class'], ['icon-link']);
       }
-    } elseif (strpos($view->current_display, 'widget') === 0) {
+    }
+    elseif (strpos($view->current_display, 'widget') === 0) {
       if (array_key_exists('rendered_entity', $view->field)) {
         $add_classes($view->field['rendered_entity']->options['element_class'], ['media-library-item__content']);
       }
@@ -306,7 +358,8 @@ function bootstrap5_views_pre_render(ViewExecutable $view) {
 
       if ($view->display_handler->options['defaults']['css_class']) {
         $add_classes($view->displayHandlers->get('default')->options['css_class'], ['media-library-view--widget']);
-      } else {
+      }
+      else {
         $add_classes($view->display_handler->options['css_class'], ['media-library-view--widget']);
       }
     }
@@ -349,5 +402,21 @@ function bootstrap5_theme_suggestions_menu_alter(array &$suggestions, array $var
     $region = $variables['attributes']['data-block']['region'];
     $suggestions[] = $variables['theme_hook_original'] . '__' . $region;
     $suggestions[] = 'menu__' . $region;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function bootstrap5_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Copied from claro.theme claro_form_alter().
+  $form_object = $form_state->getFormObject();
+  if ($form_object instanceof ViewsForm && strpos($form_object->getBaseFormId(), 'views_form_media_library') === 0) {
+    if (isset($form['header'])) {
+      $form['header']['#attributes']['class'][] = 'media-library-views-form__header';
+      $form['header']['media_bulk_form']['#attributes']['class'][] = 'media-library-views-form__bulk_form';
+    }
+    $form['actions']['submit']['#attributes']['class'] = ['media-library-select'];
+    $form['#attributes']['class'][] = 'media-library-views-form';
   }
 }

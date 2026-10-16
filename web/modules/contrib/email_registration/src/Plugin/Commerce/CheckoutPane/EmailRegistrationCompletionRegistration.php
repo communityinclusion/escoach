@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\email_registration\Plugin\Commerce\CheckoutPane;
 
+use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\CompletionRegister;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\email_registration\UsernameGenerator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the registration pane without username.
@@ -18,15 +23,30 @@ use Drupal\Core\Form\FormStateInterface;
 class EmailRegistrationCompletionRegistration extends CompletionRegister {
 
   /**
+   * The username generator.
+   */
+  protected UsernameGenerator $usernameGenerator;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, ?CheckoutFlowInterface $checkout_flow = NULL) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition, $checkout_flow);
+    $instance->usernameGenerator = $container->get(UsernameGenerator::class);
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildPaneForm(array $pane_form, FormStateInterface $form_state, array &$complete_form) {
     $pane_form = parent::buildPaneForm($pane_form, $form_state, $complete_form);
 
-    // Set the name as per email_registration_form_user_register_form_alter().
+    // Set a temporary username, which gets overwritten through
+    // "email_registration_user_presave()":
     $pane_form['name'] = [
       '#type' => 'hidden',
-      '#value' => 'email_registration_' . \Drupal::service('uuid')->generate(),
+      '#value' => $this->usernameGenerator->generateRandomUsername(),
     ];
 
     // Try and help password managers.

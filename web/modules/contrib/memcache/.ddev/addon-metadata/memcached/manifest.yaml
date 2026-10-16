@@ -1,0 +1,8 @@
+name: memcached
+repository: ddev/ddev-memcached
+version: v1.1.8
+install_date: "2026-09-15T00:41:37-07:00"
+project_files:
+    - docker-compose.memcached.yaml
+global_files: []
+removal_actions: []

@@ -36,3 +36,12 @@ function email_registration_update_8100() {
   $email_registration->set('login_with_username', FALSE);
   $email_registration->save();
 }
+
+/**
+ * Remove the removed "require_username_on_registration" config.
+ */
+function email_registration_update_9001() {
+  $config = \Drupal::configFactory()->getEditable('email_registration.settings');
+  $config->clear('require_username_on_registration');
+  $config->save();
+}

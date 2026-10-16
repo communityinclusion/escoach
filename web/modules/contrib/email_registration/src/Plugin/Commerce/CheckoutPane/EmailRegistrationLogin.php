@@ -1,19 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\email_registration\Plugin\Commerce\CheckoutPane;
 
-use Drupal\commerce\CredentialsCheckFloodInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\Login;
-use Drupal\Core\Config\ImmutableConfig;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Email;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\user\UserAuthInterface;
+use Drupal\email_registration\UsernameGenerator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Provides the email registration login pane.
@@ -27,57 +25,23 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class EmailRegistrationLogin extends Login {
 
   /**
-   * The "email_registration.settings" config object.
-   *
-   * @var \Drupal\Core\Config\ImmutableConfig
+   * The config factory.
    */
-  protected $config;
+  protected ConfigFactoryInterface $configFactory;
 
   /**
-   * Constructs a new EmailRegistrationLogin object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface $checkout_flow
-   *   The parent checkout flow.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\commerce\CredentialsCheckFloodInterface $credentials_check_flood
-   *   The credentials check flood controller.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
-   * @param \Drupal\user\UserAuthInterface $user_auth
-   *   The user authentication object.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The request stack.
-   * @param \Drupal\Core\Config\ImmutableConfig $config
-   *   The email registration settings.
+   * The username generator.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CheckoutFlowInterface $checkout_flow, EntityTypeManagerInterface $entity_type_manager, CredentialsCheckFloodInterface $credentials_check_flood, AccountInterface $current_user, UserAuthInterface $user_auth, RequestStack $request_stack, ImmutableConfig $config) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $checkout_flow, $entity_type_manager, $credentials_check_flood, $current_user, $user_auth, $request_stack);
-    $this->config = $config;
-  }
+  protected UsernameGenerator $usernameGenerator;
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, CheckoutFlowInterface $checkout_flow = NULL) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $checkout_flow,
-      $container->get('entity_type.manager'),
-      $container->get('commerce.credentials_check_flood'),
-      $container->get('current_user'),
-      $container->get('user.auth'),
-      $container->get('request_stack'),
-      $container->get('config.factory')->get('email_registration.settings')
-    );
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, ?CheckoutFlowInterface $checkout_flow = NULL) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition, $checkout_flow);
+    $instance->configFactory = $container->get('config.factory');
+    $instance->usernameGenerator = $container->get(UsernameGenerator::class);
+    return $instance;
   }
 
   /**
@@ -86,7 +50,7 @@ class EmailRegistrationLogin extends Login {
   public function buildPaneForm(array $pane_form, FormStateInterface $form_state, array &$complete_form) {
     $pane_form = parent::buildPaneForm($pane_form, $form_state, $complete_form);
 
-    $login_with_username = $this->config->get('login_with_username');
+    $login_with_username = $this->configFactory->get('email_registration.settings')->get('login_with_username');
     $pane_form['returning_customer']['name']['#title'] = $login_with_username ? $this->t('Email address or username') : $this->t('Email address');
     $pane_form['returning_customer']['name']['#description'] = $login_with_username ? $this->t('Enter your email address or username.') : $this->t('Enter your email address.');
     $pane_form['returning_customer']['name']['#element_validate'][] = 'email_registration_user_login_validate';
@@ -96,7 +60,7 @@ class EmailRegistrationLogin extends Login {
     $complete_form['#cache']['tags'][] = 'config:email_registration.settings';
 
     $pane_form['register']['name']['#type'] = 'value';
-    $pane_form['register']['name']['#value'] = 'email_registration_' . \Drupal::service('uuid')->generate();
+    $pane_form['register']['name']['#value'] = $this->usernameGenerator->generateRandomUsername();
     $pane_form['register']['mail']['#title'] = $this->t('Email');
 
     return $pane_form;
@@ -116,9 +80,12 @@ class EmailRegistrationLogin extends Login {
         $user = user_load_by_mail($mail);
       }
 
+      $login_no_username = !$this->configFactory
+        ->get('email_registration.settings')
+        ->get('login_with_username');
       if (empty($user)) {
         // Check if users are allowed to login with username as well.
-        if (!$this->config->get('login_with_username')) {
+        if ($login_no_username) {
           // Users are not allowed to login with username. Since no user was
           // found with the specified mail address, fail with an error and
           // bail out.
@@ -132,7 +99,7 @@ class EmailRegistrationLogin extends Login {
         }
       }
       else {
-        // We have found an user! Save username on the form state, as that is
+        // We have found a user! Save username on the form state, as that is
         // what the parent class expects in their submit handler.
         $username = $user->getAccountName();
         $form_state->setValue([
@@ -150,16 +117,17 @@ class EmailRegistrationLogin extends Login {
         $password_url = Url::fromRoute('user.pass', [], ['query' => $query])
           ->toString();
 
-        if (user_is_blocked($username)) {
+        if ($user->isBlocked()) {
           $form_state->setError($name_element, $this->t('The account with email address %mail has not been activated or is blocked.', ['%mail' => $mail]));
           return;
         }
 
         $uid = $this->userAuth->authenticate($username, $password);
         if (!$uid) {
-          $this->credentialsCheckFlood->register($this->clientIp, $username);
+          $client_ip = $this->requestStack->getCurrentRequest()->getClientIp();
+          $this->credentialsCheckFlood->register($client_ip, $username);
           // Changing the wrong credentials error message.
-          if (!$this->config->get('login_with_username')) {
+          if ($login_no_username) {
             $form_state->setError($name_element, $this->t('Unrecognized email address or password. <a href=":password">Forgot your password?</a>', [':password' => $password_url]));
             // Adding return to avoid the parent error when password is empty.
             return;

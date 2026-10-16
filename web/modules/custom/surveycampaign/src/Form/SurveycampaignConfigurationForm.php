@@ -330,10 +330,10 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
         '8' => $this->t('8'),
         '9' => $this->t('9'),
         '10' => $this->t('10'),
-        '10' => $this->t('11'),
-        '10' => $this->t('12'),
-        '10' => $this->t('13'),
-        '10' => $this->t('14'),
+        '11' => $this->t('11'),
+        '12' => $this->t('12'),
+        '13' => $this->t('13'),
+        '14' => $this->t('14'),
       ],
       '#default_value' => $config->get('def_warning_trigger'),
     ];
@@ -1060,32 +1060,6 @@ class SurveycampaignConfigurationForm extends ConfigFormBase {
 
 
   parent::submitForm($form, $form_state);
-  }
-  protected function timzoneAdjust($basetime){
-    $senddate = new DateTime($basetime);
-                $invitelink = $output->invitelink;
-
-                switch($timezone) {
-                    case 'ET':
-                        $senddate = $senddate;
-
-                        break;
-                    case 'CT':
-                        $senddate = $senddate->modify("+ 1 hour");
-                    break;
-                    case 'MT':
-                        $senddate = $senddate->modify("+ 2 hours");
-                    break;
-                    case 'PT':
-                        $senddate = $senddate->modify("+ 3 hours");
-                    break;
-                    default:
-                        $senddate = $senddate;
-                    break;
-                }
-
-                $senddate = $senddate->format('Y-m-d H:i:s');
-
   }
 
   /**

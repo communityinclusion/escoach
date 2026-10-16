@@ -15,32 +15,33 @@
  * @see template_preprocess_details()
  */
 #}
-<details{{ attributes.addClass('card') }}>
-  {%- if title -%}
-    {%
-      set summary_classes = [
-      required ? 'js-form-required',
-      required ? 'form-required invalid-feedback',
-      'card-header bg-light',
-    ]
-    %}
-
-    <summary{{ summary_attributes.addClass(summary_classes) }}>{{ title }}</summary>
-  {%- endif -%}
-  <div class="details-wrapper card-body">
-    {% if errors %}
-      <div class="alert alert-danger" role="alert">
-        <strong>{{ errors }}</strong>
-      </div>
-    {% endif %}
-    {%- if description -%}
-      <div class="alert alert-info">{{ description }}</div>
-    {%- endif -%}
-    {%- if children -%}
-      {{ children }}
-    {%- endif -%}
-    {%- if value -%}
-      {{ value }}
-    {%- endif -%}
-  </div>
-</details>
+<div{{attributes.addClass('accordion')}}>
+	<details class="accordion-item" {{attributes['open']}}>
+		{%- if title -%}
+			{%
+        set summary_classes = [
+          required ? 'js-form-required',
+          required ? 'form-required invalid-feedback',
+          'accordion-header accordion-button',
+        ]
+      %}
+			<summary{{summary_attributes.addClass(summary_classes)}}>{{ title }}</summary>
+		{%- endif -%}
+		<div class="accordion-body">
+			{% if errors %}
+				<div class="alert alert-danger" role="alert">
+					<strong>{{ errors }}</strong>
+				</div>
+			{% endif %}
+			{%- if description -%}
+				<div class="alert alert-info">{{ description }}</div>
+			{%- endif -%}
+			{%- if children -%}
+				{{ children }}
+			{%- endif -%}
+			{%- if value -%}
+				{{ value }}
+			{%- endif -%}
+		</div>
+	</details>
+</div>

@@ -31,13 +31,12 @@
         "issues": "http://drupal.org/project/issues/email_registration",
         "source": "https://git.drupalcode.org/project/email_registration"
     },
-    "require": {
-        "drupal/core": "^9.1 || ^10"
-    },
-    "conflict": {
-        "drupal/commerce": "<2.12"
+    "autoload": {
+        "psr-4": {
+            "Drupal\\email_registration\\Component\\": "lib"
+        }
     },
     "require-dev": {
-        "drupal/commerce": "^2.0"
+        "drupal/commerce": "^3.0"
     }
 }

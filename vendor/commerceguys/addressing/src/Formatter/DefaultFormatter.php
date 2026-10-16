@@ -23,28 +23,28 @@ class DefaultFormatter implements FormatterInterface
      *
      * @var AddressFormatRepositoryInterface
      */
-    protected $addressFormatRepository;
+    protected AddressFormatRepositoryInterface $addressFormatRepository;
 
     /**
      * The country repository.
      *
      * @var CountryRepositoryInterface
      */
-    protected $countryRepository;
+    protected CountryRepositoryInterface $countryRepository;
 
     /**
      * The subdivision repository.
      *
      * @var SubdivisionRepositoryInterface
      */
-    protected $subdivisionRepository;
+    protected SubdivisionRepositoryInterface $subdivisionRepository;
 
     /**
      * The default options.
      *
      * @var array
      */
-    protected $defaultOptions = [
+    protected array $defaultOptions = [
         'locale' => 'en',
         'html' => true,
         'html_tag' => 'p',
@@ -70,6 +70,7 @@ class DefaultFormatter implements FormatterInterface
 
     /**
      * {@inheritdoc}
+     * @throws \ReflectionException
      */
     public function format(AddressInterface $address, array $options = []): string
     {
@@ -92,7 +93,7 @@ class DefaultFormatter implements FormatterInterface
         foreach ($view as $key => $element) {
             $replacements['%' . $key] = $element;
         }
-        $output = strtr($formatString, $replacements);
+        $output = $this->insertValues($formatString, $replacements);
         $output = $this->cleanupOutput($output);
 
         if (!empty($options['html'])) {
@@ -132,11 +133,13 @@ class DefaultFormatter implements FormatterInterface
     /**
      * Builds the view for the given address.
      *
-     * @param AddressInterface $address       The address.
-     * @param AddressFormat    $addressFormat The address format.
-     * @param array            $options       The formatting options.
+     * @param AddressInterface $address The address.
+     * @param AddressFormat $addressFormat The address format.
+     * @param array $options The formatting options.
      *
      * @return array The view.
+     * @throws \ReflectionException
+     * @throws \ReflectionException
      */
     protected function buildView(AddressInterface $address, AddressFormat $addressFormat, array $options): array
     {
@@ -149,7 +152,7 @@ class DefaultFormatter implements FormatterInterface
             'html' => $options['html'],
             'html_tag' => 'span',
             'html_attributes' => ['class' => 'country'],
-            'value' => isset($countries[$countryCode]) ? $countries[$countryCode] : $countryCode,
+            'value' => $countries[$countryCode] ?? $countryCode,
         ];
         foreach ($addressFormat->getUsedFields() as $field) {
             // The constant is more suitable as a class than the value since
@@ -199,7 +202,7 @@ class DefaultFormatter implements FormatterInterface
     {
         foreach ($attributes as $name => $value) {
             if (is_array($value)) {
-                $value = implode(' ', (array) $value);
+                $value = implode(' ', $value);
             }
             $attributes[$name] = $name . '="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '"';
         }
@@ -208,17 +211,52 @@ class DefaultFormatter implements FormatterInterface
     }
 
     /**
-     * Removes empty lines, leading punctuation, excess whitespace.
+     * Inserts the rendered address fields into the format string.
      *
-     * @param string $output The output that needs cleanup.
-     *
-     * @return string The cleaned up output.
+     * Empty fields need special handling. When one falls between two values,
+     * keep the separator before it and discard the one after it.
+     */
+    protected function insertValues(string $formatString, array $replacements): string
+    {
+        $lines = [];
+        foreach (explode("\n", $formatString) as $line) {
+            $rendered = '';
+            $separator = '';
+            $skipped = false;
+            foreach (preg_split('/(%[a-zA-Z0-9]+)/', $line, -1, PREG_SPLIT_DELIM_CAPTURE) as $part) {
+                if (!array_key_exists($part, $replacements)) {
+                    // A separator before an empty field usually belongs to
+                    // the value that came before it, so keep that one.
+                    if (!$skipped) {
+                        $separator = $part;
+                    }
+                    continue;
+                }
+                if ($replacements[$part] === '') {
+                    $skipped = true;
+                    continue;
+                }
+                if ($rendered !== '' || !$skipped) {
+                    $rendered .= $separator;
+                }
+                $rendered .= $replacements[$part];
+                $separator = '';
+                $skipped = false;
+            }
+            $lines[] = $rendered;
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Removes empty lines, leading/trailing punctuation, excess whitespace.
      */
     protected function cleanupOutput(string $output): string
     {
         $lines = explode("\n", $output);
         foreach ($lines as $index => $line) {
-            $line = trim(preg_replace('/^[-,]+/', '', $line, 1));
+            $line = trim($line, ' -,');
             $line = preg_replace('/\s\s+/', ' ', $line);
             $lines[$index] = $line;
         }
@@ -243,22 +281,19 @@ class DefaultFormatter implements FormatterInterface
         }
 
         // Replace the subdivision values with the names of any predefined ones.
-        $originalValues = [];
-        $subdivisionFields = $addressFormat->getUsedSubdivisionFields();
-        $parents = [];
+        $subdivisionFields = $addressFormat->getSubdivisionDataFields();
+        $parents = [$address->getCountryCode()];
         foreach ($subdivisionFields as $index => $field) {
             if (empty($values[$field])) {
                 // This level is empty, so there can be no sublevels.
                 break;
             }
-            $parents[] = $index ? $originalValues[$subdivisionFields[$index - 1]] : $address->getCountryCode();
             $subdivision = $this->subdivisionRepository->get($values[$field], $parents);
             if (!$subdivision) {
                 break;
             }
+            $parents[] = $values[$field];
 
-            // Remember the original value so that it can be used for $parents.
-            $originalValues[$field] = $values[$field];
             // Replace the value with the expected code.
             $useLocalName = Locale::matchCandidates($address->getLocale(), $subdivision->getLocale());
             $values[$field] = $useLocalName ? $subdivision->getLocalCode() : $subdivision->getCode();

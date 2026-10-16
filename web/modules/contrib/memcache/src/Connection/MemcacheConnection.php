@@ -25,14 +25,15 @@ class MemcacheConnection implements MemcacheConnectionInterface {
    * {@inheritdoc}
    */
   public function addServer($server_path, $persistent = FALSE) {
-    [$host, $port] = explode(':', $server_path);
-
     // Support unix sockets in the format 'unix:///path/to/socket'.
-    if ($host == 'unix') {
+    if (ServerAddress::isUnixSocket($server_path)) {
       // When using unix sockets with Memcache use the full path for $host.
       $host = $server_path;
       // Port is always 0 for unix sockets.
       $port = 0;
+    }
+    else {
+      [$host, $port] = ServerAddress::parse($server_path);
     }
 
     // When using the PECL memcache extension, we must use ->(p)connect

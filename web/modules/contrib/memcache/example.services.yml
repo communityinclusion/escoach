@@ -12,7 +12,8 @@ services:
   memcache.timestamp.invalidator.tag:
     class: Drupal\memcache\Invalidator\MemcacheTimestampInvalidator
     # Remember to use the same bin as the bootstrap container if you are using it!
-    # Adjust tolerance factor as appropriate when not running memcache on localhost.
+    # The last argument is the clock skew tolerance in seconds. See
+    # "Clock skew and the timestamp tolerance" in README.md before changing it.
     arguments: ['@memcache.factory', 'memcache_tag_timestamps', 0.001]
 
   # Cache tag checksum backend. Used by memcache and most other cache backends
@@ -27,3 +28,9 @@ services:
   lock:
     class: Drupal\Core\Lock\LockBackendInterface
     factory: ['@memcache.lock.factory', get]
+
+  # Replaces the default flood backend with a memcache implementation.
+  # Requires Drupal 10.1 or later.
+  flood:
+    class: Drupal\Core\Flood\FloodInterface
+    factory: ['@memcache.flood.factory', get]

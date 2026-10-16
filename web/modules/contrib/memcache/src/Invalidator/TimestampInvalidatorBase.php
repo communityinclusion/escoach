@@ -40,13 +40,19 @@ abstract class TimestampInvalidatorBase implements TimestampInvalidatorInterface
   protected function markAsOutdated($tag) {
     $now = $this->getCurrentTimestamp($this->tolerance);
     $current = $this->getLastInvalidationTimestamp($tag);
-    if ($now > $current) {
-      $this->writeTimestamp($tag, $now);
-      return $now;
+
+    // Invalidations must always advance the timestamp. If another server's
+    // clock is ahead, the stored timestamp may already be in our future.
+    // Keeping it unchanged drops the invalidation and serves stale cache.
+    // We increment past the stored value to guarantee invalidation without
+    // reversing time.
+    if ($current && $now <= $current) {
+      $now = round($current + $this->tolerance, 3);
     }
-    else {
-      return $current;
-    }
+
+    $this->writeTimestamp($tag, $now);
+
+    return $now;
   }
 
   /**

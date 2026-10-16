@@ -1,14 +1,14 @@
 name: 'Email Registration Username'
 type: module
-description: "Synchronizes the username with the user's email address. Allows to obfuscate the user name display to prevent information disclosure. WARNING: See the README.md for details about the possible security implications."
+description: "Use your email address as your username on registration and sync both fields on updating the user. WARNING: See the README.md for details about the possible security implications."
 package: Administration
 configure: entity.user.admin_form
-core_version_requirement: ^9.1 || ^10
+core_version_requirement: ^9.5 || ^10 || ^11
 dependencies:
   - email_registration:email_registration
   - token:token
 
-# Information added by Drupal.org packaging script on 2023-11-21
-version: '8.x-1.4'
+# Information added by Drupal.org packaging script on 2026-08-27
+version: '2.0.0-rc9'
 project: 'email_registration'
-datestamp: 1700548928
+datestamp: 1787842853

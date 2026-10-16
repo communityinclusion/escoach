@@ -2,5 +2,5 @@ name: 'survey_dashboard'
 type: module
 description: 'Survey Dashboard'
 #core: 8.x
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 package: 'Custom'

@@ -2,9 +2,10 @@
 
 namespace Drupal\memcache\Driver;
 
-use Drupal\Component\Utility\Timer;
 use Drupal\Core\Logger\LoggerChannelTrait;
+use Drupal\memcache\Connection\MemcachedConnection;
 use Drupal\memcache\DrupalMemcacheInterface;
+use Drupal\memcache\Logger\ErrorLogLogger;
 use Drupal\memcache\MemcacheSettings;
 
 /**
@@ -12,7 +13,9 @@ use Drupal\memcache\MemcacheSettings;
  */
 abstract class DriverBase implements DrupalMemcacheInterface {
 
-  use LoggerChannelTrait;
+  use LoggerChannelTrait {
+    getLogger as traitGetLogger;
+  }
 
   /**
    * The memcache config object.
@@ -46,12 +49,35 @@ abstract class DriverBase implements DrupalMemcacheInterface {
   /**
    * Stats for the entire request.
    *
+   * No longer written to by the drivers: statistics are collected by
+   * \Drupal\memcache\Driver\StatisticsDriverDecorator into the
+   * memcache.request_statistics service. Kept for subclasses that still call
+   * statsWrite().
+   *
    * @var array
    */
   protected static $stats = [
     'all' => [],
     'ops' => [],
   ];
+
+  /**
+   * Whether a failed memcache operation has been logged during this request.
+   *
+   * @var bool
+   */
+  protected static $failureLogged = FALSE;
+
+  /**
+   * Whether a failure is being logged right now.
+   *
+   * Logging goes through services that may themselves read the cache, and
+   * with the server down those reads fail too; without this flag each of them
+   * would start logging again until the stack overflows.
+   *
+   * @var bool
+   */
+  protected static $loggingFailure = FALSE;
 
   /**
    * Constructs a DriverBase object.
@@ -77,6 +103,29 @@ abstract class DriverBase implements DrupalMemcacheInterface {
   }
 
   /**
+   * Gets the logger for a specific channel.
+   *
+   * The container cache bin is used while the kernel is still building the
+   * container, before \Drupal::setContainer() has run, so a failed operation
+   * on it has no logger service to report to. Asking for one at that point
+   * throws, which turns a failed cache write into a fatal error for the whole
+   * request. Fall back to the PHP error log until the container exists.
+   *
+   * @param string $channel
+   *   The name of the channel.
+   *
+   * @return \Psr\Log\LoggerInterface
+   *   The logger for the given channel.
+   */
+  protected function getLogger($channel) {
+    // @phpstan-ignore-next-line
+    if (!\Drupal::hasContainer()) {
+      return new ErrorLogLogger($channel);
+    }
+    return $this->traitGetLogger($channel);
+  }
+
+  /**
    * Wrapper settings method for config vs settings object.
    *
    * @param string $key
@@ -99,13 +148,17 @@ abstract class DriverBase implements DrupalMemcacheInterface {
    * {@inheritdoc}
    */
   public function get($key) {
-    $collect_stats = $this->statsInit();
-
     $full_key = $this->key($key);
-    $result   = $this->memcache->get($full_key);
+    try {
+      $result = $this->memcache->get($full_key);
+    }
+    catch (\Throwable $e) {
+      $this->discardUnserializableItem($full_key, $e);
+      return FALSE;
+    }
 
-    if ($collect_stats) {
-      $this->statsWrite('get', 'cache', [$full_key => (bool) $result]);
+    if ($result === FALSE) {
+      $this->checkResult('get', $full_key);
     }
 
     return $result;
@@ -130,16 +183,76 @@ abstract class DriverBase implements DrupalMemcacheInterface {
   }
 
   /**
+   * Fetches keys one at a time, dropping any that cannot be unserialized.
+   *
+   * A single unreadable item aborts an entire multi-get, which would otherwise
+   * turn one poisoned entry into a total cache outage for every request.
+   *
+   * @param string[] $full_keys
+   *   Prefixed memcache keys, keyed by cache ID.
+   *
+   * @return array
+   *   The values that could be read, keyed by their prefixed memcache key.
+   */
+  protected function getMultiFallback(array $full_keys) {
+    $results = [];
+
+    foreach ($full_keys as $full_key) {
+      try {
+        // The extension emits a warning of its own before handing us the
+        // exception; we report the failure ourselves below.
+        $result = @$this->memcache->get($full_key);
+      }
+      catch (\Throwable $e) {
+        $this->discardUnserializableItem($full_key, $e);
+        continue;
+      }
+
+      if ($result !== FALSE) {
+        $results[$full_key] = $result;
+      }
+    }
+
+    return $results;
+  }
+
+  /**
+   * Removes an item whose stored value could not be unserialized.
+   *
+   * Objects belonging to code that is no longer installed, or that reference a
+   * service which no longer exists, throw while being woken up. Such an item
+   * can never be read again, so delete it rather than let it break every
+   * subsequent request until it expires or the server is flushed.
+   *
+   * @param string $full_key
+   *   The prefixed memcache key of the offending item.
+   * @param \Throwable $e
+   *   The error raised while unserializing the item.
+   */
+  protected function discardUnserializableItem($full_key, \Throwable $e) {
+    $this->memcache->delete($full_key);
+
+    try {
+      $this->getLogger('memcache')->warning('Deleted cache item @key because its stored value could not be unserialized: @message. This usually means the item holds an object from code that is no longer installed.', [
+        '@key' => $full_key,
+        '@message' => $e->getMessage(),
+      ]);
+    }
+    catch (\Throwable $ignored) {
+      // Cache reads happen before the container is available, so logging is
+      // best effort. Removing the item is what actually matters.
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function delete($key) {
-    $collect_stats = $this->statsInit();
-
     $full_key = $this->key($key);
     $result = $this->memcache->delete($full_key, 0);
 
-    if ($collect_stats) {
-      $this->statsWrite('delete', 'cache', [$full_key => $result]);
+    if (!$result) {
+      $this->checkResult('delete', $full_key);
     }
 
     return $result;
@@ -149,14 +262,108 @@ abstract class DriverBase implements DrupalMemcacheInterface {
    * {@inheritdoc}
    */
   public function flush() {
-    $collect_stats = $this->statsInit();
-
     $result = $this->memcache->flush();
 
-    if ($collect_stats) {
-      $this->statsWrite('flush', 'cache', ['' => $result]);
+    if (!$result) {
+      $this->checkResult('flush', '');
     }
+
     return $result;
+  }
+
+  /**
+   * Reacts to a memcache operation that returned FALSE.
+   *
+   * The base implementation does nothing: the Memcache PECL extension cannot
+   * tell a miss from a failed server, and it raises a PHP notice of its own
+   * when a server fails. Drivers that can tell the difference should call
+   * logFailure() for anything that is not a normal outcome.
+   *
+   * @param string $operation
+   *   The operation that returned FALSE, e.g. 'set'.
+   * @param string $key
+   *   The full memcache key involved, or '' when there is none.
+   */
+  protected function checkResult($operation, $key) {
+    // Nothing to do by default; see MemcachedDriver::checkResult().
+  }
+
+  /**
+   * Logs a failed memcache operation, at most once per request.
+   *
+   * A server that is down makes every operation on it fail, so logging each
+   * one would flood the log with hundreds of identical entries per request.
+   * The first failure in a request is logged at error level and the rest are
+   * dropped. When APCu is available the log is also throttled across
+   * requests, to one entry per $settings['memcache']['failure_log_interval']
+   * seconds (default 60; 0 logs once per request regardless of APCu). With
+   * $settings['memcache']['debug'] set, every failure is logged.
+   *
+   * @param string $operation
+   *   The operation that failed, e.g. 'set'.
+   * @param string $key
+   *   The full memcache key involved, or '' when there is none.
+   * @param string $reason
+   *   The reason reported by the extension, if any.
+   */
+  protected function logFailure($operation, $key, $reason = '') {
+    if (static::$loggingFailure) {
+      return;
+    }
+
+    $debug = $this->settings->get('debug');
+    $interval = 0;
+    if (!$debug) {
+      if (static::$failureLogged) {
+        return;
+      }
+      // Set the flag before logging: the logger itself may hit the cache,
+      // fail again and end up back here.
+      static::$failureLogged = TRUE;
+
+      $interval = (int) $this->settings->get('failure_log_interval', 60);
+      // apcu_add() is atomic and fails while the entry exists, so it doubles
+      // as a lock shared by every process in the pool.
+      if ($interval > 0 && function_exists('apcu_enabled') && apcu_enabled()) {
+        if (!apcu_add('memcache:failure_logged:' . $this->settings->get('key_prefix', ''), TRUE, $interval)) {
+          return;
+        }
+      }
+      else {
+        $interval = 0;
+      }
+    }
+
+    $servers = [];
+    if ($this->memcache instanceof \Memcached) {
+      foreach ($this->memcache->getServerList() as $server) {
+        $servers[] = $server['host'] . ':' . $server['port'];
+      }
+    }
+
+    if ($debug) {
+      $throttle = '';
+    }
+    elseif ($interval > 0) {
+      $throttle = 'Further failures are not logged for @interval seconds.';
+    }
+    else {
+      $throttle = 'Further failures in this request are not logged.';
+    }
+
+    static::$loggingFailure = TRUE;
+    try {
+      $this->getLogger('memcache')->error('Memcache @operation failed for key @key on server(s) @servers: @reason. The site is running without this cache while the server is unreachable; the status report lists which servers are affected. ' . $throttle, [
+        '@operation' => $operation,
+        '@key' => $key === '' ? '(none)' : $key,
+        '@servers' => $servers ? implode(', ', $servers) : '(unknown)',
+        '@reason' => $reason === '' ? 'no reason reported' : $reason,
+        '@interval' => $interval,
+      ]);
+    }
+    finally {
+      static::$loggingFailure = FALSE;
+    }
   }
 
   /**
@@ -167,7 +374,8 @@ abstract class DriverBase implements DrupalMemcacheInterface {
    * @param string $stats_type
    *   The type of statistics to retrieve when using the Memcache extension.
    * @param bool $aggregate
-   *   Whether to aggregate statistics.
+   *   Whether to add a "total" entry to the servers of the bin, summing the
+   *   statistics of all servers. See ::aggregateStats() for what is summed.
    */
   public function stats($stats_bin = 'cache', $stats_type = 'default', $aggregate = FALSE) {
 
@@ -181,6 +389,12 @@ abstract class DriverBase implements DrupalMemcacheInterface {
         if (isset($this->memcache)) {
           if ($this->memcache instanceof \Memcached) {
             $stats[$bin] = $this->memcache->getStats();
+
+            // The Memcached extension gives up on the whole pool as soon as
+            // one server does not answer, which hides the servers that do.
+            if (!is_array($stats[$bin])) {
+              $stats[$bin] = $this->memcachedStatsPerServer();
+            }
           }
 
           // The PHP Memcache extension 3.x version throws an error if the stats
@@ -207,40 +421,162 @@ abstract class DriverBase implements DrupalMemcacheInterface {
 
     // Optionally calculate a sum-total for all servers in the current bin.
     if ($aggregate) {
-
-      // Some variables don't logically aggregate.
-      $no_aggregate = [
-        'pid',
-        'time',
-        'version',
-        'libevent',
-        'pointer_size',
-        'accepting_conns',
-        'listen_disabled_num',
-        'slab_reassign_last_busy_status',
-      ];
-
       foreach ($stats as $bin => $servers) {
         if (is_array($servers)) {
-          foreach ($servers as $server) {
-            if (is_array($server)) {
-              foreach ($server as $key => $value) {
-                if (!in_array($key, $no_aggregate) && is_numeric($value)) {
-                  if (isset($stats[$bin]['total'][$key])) {
-                    $stats[$bin]['total'][$key] += $value;
-                  }
-                  else {
-                    $stats[$bin]['total'][$key] = $value;
-                  }
-                }
-              }
-            }
+          $total = $this->aggregateStats($servers);
+          if ($total) {
+            $stats[$bin]['total'] = $total;
           }
         }
       }
     }
 
     return $stats;
+  }
+
+  /**
+   * Collects statistics from each server of a Memcached pool separately.
+   *
+   * \Memcached::getStats() returns FALSE for the entire pool when any one
+   * server fails to answer, so a single dead server makes the statistics of
+   * the live ones unavailable. Asking every server over its own connection
+   * keeps the healthy servers reporting and marks the dead ones as FALSE.
+   *
+   * This is a blocking network operation and is only meant for the
+   * statistics report, never for the cache hot path.
+   *
+   * @return array
+   *   The statistics keyed by "host:port", or FALSE for a server that did not
+   *   answer.
+   */
+  protected function memcachedStatsPerServer() {
+    $stats = [];
+    $timeout = (int) $this->settings->get('status_connect_timeout', 1000);
+
+    foreach ($this->memcache->getServerList() as $server) {
+      $address = $server['host'] . ':' . $server['port'];
+      $stats[$address] = FALSE;
+
+      $connection = $this->createStatsConnection();
+      $memcache = $connection->getMemcache();
+      // Keep a dead server from stalling the report.
+      $memcache->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+      $memcache->setOption(\Memcached::OPT_POLL_TIMEOUT, $timeout);
+
+      // Unix sockets are listed with the path as the host and a port of 0.
+      $path = empty($server['port']) ? 'unix://' . $server['host'] : $address;
+      if ($connection->addServer($path, FALSE)) {
+        $server_stats = @$memcache->getStats();
+        if (is_array($server_stats)) {
+          // The single server answers under whatever name the extension gives
+          // it, so take the one non-empty entry rather than guess the key.
+          foreach ($server_stats as $answer) {
+            if (is_array($answer) && !empty($answer)) {
+              $stats[$address] = $answer;
+              break;
+            }
+          }
+        }
+      }
+      $connection->close();
+    }
+
+    return $stats;
+  }
+
+  /**
+   * Creates the throwaway connection used to query one server's statistics.
+   *
+   * Separate from the pool so that a single dead server cannot poison it, and
+   * overridable so that a test double can stand in for the real extension.
+   *
+   * @return \Drupal\memcache\Connection\MemcachedConnection
+   *   A connection with no servers added yet.
+   */
+  protected function createStatsConnection() {
+    return new MemcachedConnection($this->settings);
+  }
+
+  /**
+   * Sums the statistics of several servers into one set of totals.
+   *
+   * Only values that are meaningful as a sum are added up: counters and gauges
+   * such as hits, misses, items, bytes and pages. Properties of a server or of
+   * a slab class are not sums of anything: the pid or version of a server, or
+   * the chunk size of slab class 2, which is per server and not necessarily
+   * the same on every server of a cluster. Those are carried into the totals
+   * only when every server reports the same value, and left out otherwise.
+   *
+   * @param array $servers
+   *   The statistics of each server, keyed by server address, as returned by
+   *   the extension. Entries that are not arrays (unreachable servers) are
+   *   ignored.
+   *
+   * @return array
+   *   The totals, keyed by statistic name. Empty when no server responded.
+   */
+  protected function aggregateStats(array $servers) {
+    $total = [];
+    $properties = [];
+    $responded = 0;
+
+    foreach ($servers as $server) {
+      if (!is_array($server)) {
+        continue;
+      }
+      $responded++;
+
+      foreach ($server as $key => $value) {
+        if (!$this->isAggregatableStat($key)) {
+          $properties[$key][] = $value;
+        }
+        elseif (is_numeric($value)) {
+          if (isset($total[$key])) {
+            $total[$key] += $value;
+          }
+          else {
+            $total[$key] = $value;
+          }
+        }
+      }
+    }
+
+    foreach ($properties as $key => $values) {
+      if (count($values) === $responded && count(array_unique($values)) === 1) {
+        $total[$key] = reset($values);
+      }
+    }
+
+    return $total;
+  }
+
+  /**
+   * Determines whether a statistic is a sum of anything across servers.
+   *
+   * @param string $key
+   *   The statistic name, e.g. "get_hits" or "2:chunk_size".
+   *
+   * @return bool
+   *   TRUE if the values of several servers add up to a meaningful total,
+   *   FALSE if the statistic describes a server or a slab class instead.
+   */
+  protected function isAggregatableStat($key) {
+    $patterns = [
+      // Server properties, from the default statistics.
+      '/^(pid|time|version|libevent|pointer_size|accepting_conns|listen_disabled_num|slab_reassign_last_busy_status)$/',
+      // Slab class properties, from the "slabs" statistics.
+      '/^\d+:(chunk_size|chunks_per_page)$/',
+      // Item ages and eviction times, from the "items" statistics.
+      '/^items:\d+:(age|age_hot|age_warm|evicted_time)$/',
+    ];
+
+    foreach ($patterns as $pattern) {
+      if (preg_match($pattern, (string) $key)) {
+        return FALSE;
+      }
+    }
+
+    return TRUE;
   }
 
   /**
@@ -276,7 +612,16 @@ abstract class DriverBase implements DrupalMemcacheInterface {
   }
 
   /**
-   * Helper function to get request stats.
+   * Returns the legacy per-request statistics array.
+   *
+   * The drivers no longer record anything here. Per-request statistics are
+   * collected by \Drupal\memcache\Driver\StatisticsDriverDecorator into the
+   * memcache.request_statistics service when
+   * $settings['memcache']['collect_statistics'] is enabled; read them from
+   * that service, or from MemcacheDriverFactory::getRequestStatistics().
+   *
+   * @return array
+   *   The static statistics array, empty unless a subclass calls statsWrite().
    */
   public function requestStats() {
     return self::$stats;
@@ -300,46 +645,25 @@ abstract class DriverBase implements DrupalMemcacheInterface {
   }
 
   /**
-   * Helper function to initialize the stats for a memcache operation.
+   * Legacy hook that used to decide whether an operation was recorded.
+   *
+   * The drivers no longer call this; statistics collection lives in
+   * \Drupal\memcache\Driver\StatisticsDriverDecorator. Kept so that
+   * subclasses overriding it keep working.
+   *
+   * @return bool
+   *   Always FALSE.
    */
   protected function statsInit() {
-    static $drupal_static_fast;
-
-    if (!isset($drupal_static_fast)) {
-      // @phpcs:ignore
-      $drupal_static_fast = &drupal_static(__FUNCTION__, ['variable_checked' => NULL, 'user_access_checked' => NULL]);
-    }
-    $variable_checked = &$drupal_static_fast['variable_checked'];
-    $user_access_checked = &$drupal_static_fast['user_access_checked'];
-
-    // Confirm DRUPAL_BOOTSTRAP_VARIABLES has been reached. We don't use
-    // drupal_get_bootstrap_phase() as it's buggy. We can use variable_get()
-    // here because _drupal_bootstrap_variables() includes module.inc
-    // immediately after it calls variable_initialize().
-    // @codingStandardsIgnoreStart
-    // if (!isset($variable_checked) && function_exists('module_list')) {
-    //   $variable_checked = variable_get('show_memcache_statistics', FALSE);
-    // }
-    // If statistics are enabled we need to check user access.
-    // if (!empty($variable_checked) && !isset($user_access_checked) && !empty($GLOBALS['user']) && function_exists('user_access')) {
-    //   // Statistics are enabled and the $user object has been populated, so check
-    //   // that the user has access to view them.
-    //   $user_access_checked = user_access('access memcache statistics');
-    // }
-    // @codingStandardsIgnoreEnd
-    // Return whether or not statistics are enabled and the user can access
-    // them.
-    if ((!isset($variable_checked) || $variable_checked) && (!isset($user_access_checked) || $user_access_checked)) {
-      Timer::start('dmemcache');
-      return TRUE;
-    }
-    else {
-      return FALSE;
-    }
+    return FALSE;
   }
 
   /**
-   * Memcache statistics to be displayed at end of page generation.
+   * Legacy method that records an operation into the static statistics array.
+   *
+   * The drivers no longer call this; statistics collection lives in
+   * \Drupal\memcache\Driver\StatisticsDriverDecorator. Kept so that
+   * subclasses calling it keep working.
    *
    * @param string $action
    *   The action being performed (get, set, etc...).
@@ -350,9 +674,9 @@ abstract class DriverBase implements DrupalMemcacheInterface {
    *   action is being performed on, and whether or not it was a success.
    */
   protected function statsWrite($action, $bin, array $keys) {
-
-    // Determine how much time elapsed to execute this action.
-    $time = Timer::read('dmemcache');
+    // The 'dmemcache' timer this used to read was never started, so no elapsed
+    // time was ever recorded here. The decorator times operations itself.
+    $time = 0;
 
     // Build the 'all' and 'ops' arrays displayed by memcache_admin.module.
     foreach ($keys as $key => $success) {

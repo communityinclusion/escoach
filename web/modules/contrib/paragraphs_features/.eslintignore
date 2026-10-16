@@ -9,3 +9,4 @@ profiles/**/libraries/**/*
 js/build/*
 js/ckeditor5_plugins/**/*
 webpack.config.js
+*.yml

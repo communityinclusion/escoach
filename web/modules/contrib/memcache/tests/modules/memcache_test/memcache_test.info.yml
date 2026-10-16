@@ -1,0 +1,13 @@
+name: Memcache test
+type: module
+description: Simulates a memcached proxy that does not implement the "stats" command.
+package: Testing
+core_version_requirement: '^9.5 || ^10 || ^11'
+hidden: true
+dependencies:
+  - memcache:memcache
+
+# Information added by Drupal.org packaging script on 2026-09-30
+version: '8.x-2.9'
+project: 'memcache'
+datestamp: 1790800691

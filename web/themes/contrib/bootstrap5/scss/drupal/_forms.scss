@@ -16,6 +16,10 @@
 }
 
 input {
+  &.form-text {
+    margin-top: 0;
+  }
+
   &[type='search'] {
     box-sizing: border-box;
   }

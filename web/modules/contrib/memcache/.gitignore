@@ -1,0 +1,13 @@
+# Drupal core checkout and dependencies created by "ddev poser" (see the
+# "DEVELOPMENT" section of README.md).
+/vendor/
+/web/
+/recipes/
+/.editorconfig
+/.gitattributes
+
+# Default configs the ddev phpcs / phpstan commands download from
+# gitlab_templates when the module ships none.
+/phpcs.xml.dist
+/phpstan.neon
+/phpstan-baseline.neon

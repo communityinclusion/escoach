@@ -13,7 +13,7 @@ class ParagraphsFeaturesSingleActionTest extends ParagraphsFeaturesJavascriptTes
    * Test display of action.
    */
   public function testSingleActionOption() {
-    // Create content type with paragrapjs field.
+    // Create content type with paragraphs field.
     $content_type = 'test_single_action';
 
     // Create nested paragraph with addition of one text test paragraph.

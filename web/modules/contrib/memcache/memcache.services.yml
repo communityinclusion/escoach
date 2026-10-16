@@ -2,16 +2,31 @@ services:
   memcache.settings:
     class: Drupal\memcache\MemcacheSettings
     arguments: ['@settings']
+  memcache.request_statistics:
+    class: Drupal\memcache\Statistics\RequestStatistics
   memcache.factory:
     class: Drupal\memcache\Driver\MemcacheDriverFactory
-    arguments: ['@memcache.settings']
+    arguments: ['@memcache.settings', '@memcache.request_statistics']
   memcache.timestamp.invalidator.bin:
     class: Drupal\memcache\Invalidator\MemcacheTimestampInvalidator
-    # Override this service and adjust tolerance if necessary.
+    # The last argument is the clock skew tolerance in seconds. Override this
+    # service to change it; see "Clock skew and the timestamp tolerance" in
+    # README.md.
     arguments: ['@memcache.factory', 'memcache_bin_timestamps', 0.001]
+  memcache.timestamp.invalidator.bin.key_value:
+    # Alternative bin invalidator for web servers with their own private
+    # memcached instance: alias memcache.timestamp.invalidator.bin to this
+    # service so a full bin deletion on one server reaches the others through
+    # the database. See "Isolated memcached instance per web server" in the
+    # README.
+    class: Drupal\memcache\Invalidator\KeyValueTimestampInvalidator
+    arguments: ['@keyvalue.database', 'memcache_bin_timestamps', 0.001]
   cache.backend.memcache:
     class: Drupal\memcache\MemcacheBackendFactory
     arguments: ['@memcache.factory', '@cache_tags.invalidator.checksum', '@memcache.timestamp.invalidator.bin']
   memcache.lock.factory:
     class: Drupal\memcache\Lock\MemcacheLockFactory
     arguments: ['@memcache.factory']
+  memcache.flood.factory:
+    class: Drupal\memcache\Flood\MemcacheFloodFactory
+    arguments: ['@memcache.factory', '@request_stack', '@datetime.time']

@@ -8,7 +8,7 @@ configure: config_devel.settings
 dependencies:
   - drupal:config
 
-# Information added by Drupal.org packaging script on 2026-07-29
-version: '8.x-1.12'
+# Information added by Drupal.org packaging script on 2026-09-22
+version: '8.x-1.13'
 project: 'config_devel'
-datestamp: 1785339744
+datestamp: 1790087598

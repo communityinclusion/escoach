@@ -3,6 +3,7 @@
 namespace Drupal\bootstrap5;
 
 use Drupal\Component\Serialization\Yaml;
+use Drupal\Core\Extension\ThemeExtensionList;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -29,16 +30,26 @@ class SubthemeManager {
   protected $messenger;
 
   /**
+   * The theme extension list.
+   *
+   * @var \Drupal\Core\Extension\ThemeExtensionList
+   */
+  protected $themeExtensionList;
+
+  /**
    * SubthemeManager constructor.
    *
    * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   The file system service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger.
+   * @param \Drupal\Core\Extension\ThemeExtensionList $them_extension_list
+   *   The theme extension list.
    */
-  public function __construct(FileSystemInterface $file_system, MessengerInterface $messenger) {
+  public function __construct(FileSystemInterface $file_system, MessengerInterface $messenger, ThemeExtensionList $them_extension_list) {
     $this->fileSystem = $file_system;
     $this->messenger = $messenger;
+    $this->themeExtensionList = $them_extension_list;
   }
 
   /**
@@ -110,7 +121,7 @@ class SubthemeManager {
       ];
     }
     // Validate machine name to ensure correct format.
-    if(!preg_match("/^[a-z]+[0-9a-z_]+$/", $subtheme_machine_name)) {
+    if (!preg_match("/^[a-z]+[0-9a-z_]+$/", $subtheme_machine_name)) {
       return [
         'subtheme_machine_name',
         $this->t('Subtheme machine name format is incorrect.'),
@@ -152,20 +163,20 @@ class SubthemeManager {
     $themePath = DRUPAL_ROOT . DIRECTORY_SEPARATOR . $subtheme_folder . DIRECTORY_SEPARATOR . $subtheme_machine_name;
     if (!is_dir($themePath)) {
       // Copy CSS file replace empty one.
-      $subforders = ['css'];
-      foreach ($subforders as $subforder) {
-        $directory = $themePath . DIRECTORY_SEPARATOR . $subforder . DIRECTORY_SEPARATOR;
+      $subfolders = ['css'];
+      foreach ($subfolders as $subfolder) {
+        $directory = $themePath . DIRECTORY_SEPARATOR . $subfolder . DIRECTORY_SEPARATOR;
         $fs->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
         $files = $fs->scanDirectory(
-          \Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $subforder . DIRECTORY_SEPARATOR, '/.*css/', [
+          $this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $subfolder . DIRECTORY_SEPARATOR, '/.*css/', [
             'recurse' => FALSE,
-        ]);
+          ]);
         foreach ($files as $file) {
           $fileName = $file->filename;
           $fs->copy(
-            \Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $subforder . DIRECTORY_SEPARATOR . $fileName,
-            $themePath . DIRECTORY_SEPARATOR . $subforder . DIRECTORY_SEPARATOR . $fileName, TRUE);
+            $this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $subfolder . DIRECTORY_SEPARATOR . $fileName,
+            $themePath . DIRECTORY_SEPARATOR . $subfolder . DIRECTORY_SEPARATOR . $fileName, TRUE);
         }
       }
 
@@ -176,7 +187,7 @@ class SubthemeManager {
         'screenshot.png',
       ];
       foreach ($files as $fileName) {
-        $fs->copy(\Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $fileName,
+        $fs->copy($this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $fileName,
           $themePath . DIRECTORY_SEPARATOR . $fileName, TRUE);
       }
 
@@ -195,7 +206,7 @@ class SubthemeManager {
           '',
           '/**',
           ' * @file',
-          ' * ' . $subtheme_name .' theme file.',
+          ' * ' . $subtheme_name . ' theme file.',
           ' */',
           '',
         ],
@@ -217,7 +228,7 @@ class SubthemeManager {
 
       foreach ($files as $fileName => $lines) {
         // Get file content.
-        $content = str_replace('bootstrap5', $subtheme_machine_name, file_get_contents(\Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $fileName));
+        $content = str_replace('bootstrap5', $subtheme_machine_name, file_get_contents($this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . $fileName));
         if (is_array($lines)) {
           $content = implode(PHP_EOL, $lines);
         }
@@ -226,7 +237,7 @@ class SubthemeManager {
       }
 
       // Info yml file generation.
-      $infoYml = Yaml::decode(file_get_contents(\Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'bootstrap5.info.yml'));
+      $infoYml = Yaml::decode(file_get_contents($this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'bootstrap5.info.yml'));
       $infoYml['name'] = $subtheme_name;
       $infoYml['description'] = $subtheme_name . ' subtheme based on Bootstrap 5 theme.';
       $infoYml['base theme'] = 'bootstrap5';
@@ -234,7 +245,8 @@ class SubthemeManager {
       $infoYml['libraries'] = [];
       $infoYml['libraries'][] = $subtheme_machine_name . '/global-styling';
       $infoYml['libraries-override'] = [
-        'bootstrap5/global-styling' => false,
+        'bootstrap5/global-styling' => FALSE,
+        'bootstrap5/ckeditor5-stylesheets' => FALSE,
       ];
 
       foreach ([
@@ -255,7 +267,7 @@ class SubthemeManager {
 
       // SCSS files generation.
       $scssPath = $themePath . DIRECTORY_SEPARATOR . 'scss';
-      $b5ScssPath = \Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'scss' . DIRECTORY_SEPARATOR;
+      $b5ScssPath = $this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'scss' . DIRECTORY_SEPARATOR;
       $fs->prepareDirectory($scssPath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
       $files = [
@@ -263,14 +275,14 @@ class SubthemeManager {
           "// Sub theme styling.",
           "@import 'variables_drupal';",
           '',
-          "// Bootstrap overriden variables.",
+          "// Bootstrap overridden variables.",
           "// @see https://getbootstrap.com/docs/5.2/customize/sass/#variable-defaults.",
           "@import 'variables_bootstrap';",
           '',
           "// Include bootstrap.",
           "@import '" .
           str_repeat('../', count(explode(DIRECTORY_SEPARATOR, $subtheme_folder)) + 2) .
-          \Drupal::service('extension.list.theme')->getPath('bootstrap5') . "/scss/style';",
+          $this->themeExtensionList->getPath('bootstrap5') . "/scss/style';",
           '',
         ],
         'ck5style.scss' => $b5ScssPath . 'ck5style.scss',
@@ -290,7 +302,7 @@ class SubthemeManager {
       }
 
       // Add block config to subtheme.
-      $orig_config_path = \Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'config/optional';
+      $orig_config_path = $this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'config/optional';
       $config_path = $themePath . DIRECTORY_SEPARATOR . 'config/optional';
       $files = scandir($orig_config_path);
       $fs->prepareDirectory($config_path, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
@@ -308,7 +320,7 @@ class SubthemeManager {
       }
 
       // Add install config to subtheme.
-      $orig_config_path = \Drupal::service('extension.list.theme')->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'config/install';
+      $orig_config_path = $this->themeExtensionList->getPath('bootstrap5') . DIRECTORY_SEPARATOR . 'config/install';
       $config_path = $themePath . DIRECTORY_SEPARATOR . 'config/install';
       $files = scandir($orig_config_path);
       $fs->prepareDirectory($config_path, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);

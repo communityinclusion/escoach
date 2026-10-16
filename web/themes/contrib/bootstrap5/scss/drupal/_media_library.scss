@@ -1,4 +1,4 @@
-
+// Style the add and remove buttons / links.
   .media-library-item__edit,
   .media-library-item__remove {
     position: absolute;
@@ -16,6 +16,7 @@
     font-size: 0;
     border: $form-check-input-border;
     @include border-radius($form-check-input-border-radius);
+    background-color: $form-check-input-bg;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 0.75rem;
@@ -33,13 +34,15 @@
 
 // admin/content/media
 .view-media-library {
-  .media-library-views-form {
-    @include make-row(0);
+  .media-library-views-form__rows {
+    @include make-row();
+    --#{$prefix}gutter-y: var(--#{$prefix}gutter-x);
     position: relative;
 
     .form-actions,
     .form-wrapper,
     .media-library-select-all {
+      @include make-col-ready();
       @include make-col(12);
       margin: $spacer 0;
 
@@ -51,6 +54,7 @@
     .media-library-item--grid {
       position: relative;
 
+      @include make-col-ready();
       @include make-col(12);
 
       @include media-breakpoint-up(md) {
@@ -64,13 +68,10 @@
 
       .views-field-media-library-select-form,
       .views-field-media-bulk-form {
-        @extend .card-header;
-
         position: absolute;
         z-index: 1;
-        top: .5 * $spacer;
-        left: .5 * $spacer;
-        right: .5 * $spacer;
+        top: $spacer;
+        left: $spacer;
 
         .form-item {
           margin: 0;
@@ -81,9 +82,8 @@
         @extend .card;
         @extend .card-body;
 
-        height: calc(100% - $spacer);
-        padding-top: 3 * $spacer;
-        margin: .5 * $spacer;
+        height: 100%;
+
       }
     }
   }
@@ -110,10 +110,11 @@
 .view-media-library {
   .view-filters {
     .form--inline {
-      @include make-row(0);
+      @include make-row();
       align-items: flex-end;
 
       > div {
+        @include make-col-ready();
         @include make-col(12);
         @include media-breakpoint-up(md) {
           @include make-col-auto;
@@ -126,12 +127,14 @@
 
 // media library selection on a field
 .media-library-selection {
-  @include make-row(0);
+  @include make-row();
+  margin: $spacer 0;
 
   .media-library-item {
     &.media-library-item--grid {
       position: relative;
 
+      @include make-col-ready();
       @include make-col(12);
 
       @include media-breakpoint-up(md) {
@@ -145,8 +148,6 @@
       }
 
       @extend .card;
-      padding-top: 3 * $spacer;
-      margin: .5 * $spacer;
 
       > div,
       article {
@@ -163,4 +164,9 @@
       @include list-unstyled();
     }
   }
+}
+
+// Center the image previews.
+.media-library-item__preview {
+  text-align: center;
 }

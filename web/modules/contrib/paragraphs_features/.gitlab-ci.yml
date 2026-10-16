@@ -1,0 +1,43 @@
+################
+# DrupalCI GitLabCI template.
+#
+# Based on the official project pipeline:
+# https://project.pages.drupalcode.org/gitlab_templates/
+################
+
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - "/includes/include.drupalci.main.yml"
+      - "/includes/include.drupalci.variables.yml"
+      - "/includes/include.drupalci.workflows.yml"
+
+################
+# phpstan 2.3 ships 226 MB of optional prebuilt turbo extensions, which push
+# the composer job's artifact past the upload limit. Every composer job
+# extends .composer-base, so one override covers them all. The template's own
+# exclusions are repeated, as a list is replaced, not merged.
+################
+.composer-base:
+  artifacts:
+    exclude:
+      - '.git'
+      - '.git/**/*'
+      - '$_WEB_ROOT/**/.git'
+      - '$_WEB_ROOT/**/.git/**/*'
+      - 'vendor/**/.git'
+      - 'vendor/**/.git/**/*'
+      - 'vendor/phpstan/phpstan/turbo-ext/**'
+
+# Run functional-JS and Nightwatch under both Claro and Gin — paragraphs_features
+# gates behaviors on an active-theme check for those two.
+phpunit:
+  parallel:
+    matrix:
+      - THEME: ["claro", "gin"]
+
+nightwatch:
+  parallel:
+    matrix:
+      - THEME: ["claro", "gin"]

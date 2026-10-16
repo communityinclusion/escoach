@@ -76,6 +76,30 @@ class ParagraphsFeatures {
         'addMoreAjax',
       ];
     }
+
+    // Attach scroll_to_element on the widget root so the client-side command
+    // handler is loaded even when add_more is absent (cardinality reached,
+    // access denied, etc.).
+    $elements['#attached']['library'][] = 'paragraphs_features/scroll_to_element';
+    // Route Edit/Remove/Collapse buttons through itemAjaxScroll so their
+    // AJAX response also carries a ScrollToElementCommand. Firefox drops
+    // window.scrollY during the widget's replaceWith DOM swap and has no
+    // native way to recover; the command restores the affected row.
+    foreach (Element::children($elements) as $delta) {
+      if (!is_numeric($delta)) {
+        continue;
+      }
+      foreach (['actions', 'dropdown_actions'] as $group) {
+        foreach (['edit_button', 'remove_button', 'collapse_button'] as $button) {
+          if (!empty($elements[$delta]['top']['actions'][$group][$button]['#ajax']['callback'])) {
+            $elements[$delta]['top']['actions'][$group][$button]['#ajax']['callback'] = [
+              static::class,
+              'itemAjaxScroll',
+            ];
+          }
+        }
+      }
+    }
     // This feature is not part of of the foreach above, since it is not a
     // javascript feature, it is a direct modification of the form. If the
     // feature is not set, it defaults back to paragraphs behavior.
@@ -108,6 +132,47 @@ class ParagraphsFeatures {
     $response = new AjaxResponse();
     $response->addCommand(new InsertCommand(NULL, $element));
     $response->addCommand(new ScrollToElementCommand($element[$element['#max_delta']]['#attributes']['data-drupal-selector'], $element['#attributes']['data-drupal-selector']));
+    return $response;
+  }
+
+  /**
+   * AJAX callback wrapping ParagraphsWidget::itemAjax with scroll-to-element.
+   *
+   * Firefox drops window.scrollY during the widget's replaceWith DOM swap
+   * and cannot recover, because core's refocus fallback lands on the
+   * paragraph's non-focusable .paragraph-top div. Dispatching
+   * ScrollToElementCommand for the affected paragraph restores the row into
+   * view after the response settles.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state object.
+   *
+   * @return \Drupal\Core\Ajax\AjaxResponse
+   *   The ajax response with the rebuilt widget and a scroll command.
+   */
+  public static function itemAjaxScroll(array $form, FormStateInterface $form_state) {
+    $element = ParagraphsWidget::itemAjax($form, $form_state);
+
+    $response = new AjaxResponse();
+    $response->addCommand(new InsertCommand(NULL, $element));
+
+    $delta = $form_state->getTriggeringElement()['#delta'] ?? NULL;
+    $deltas = array_map('intval', array_filter(Element::children($element), 'is_numeric'));
+    // Prefer the smallest surviving delta >= the clicked one (same paragraph
+    // for Edit/Collapse; the one that took its viewport position for Remove
+    // — Paragraphs keeps deltas sparse). Fall back to the last surviving
+    // paragraph when nothing survives at or after the clicked delta.
+    $atOrAfter = array_filter($deltas, fn($d) => $d >= $delta);
+    $targetDelta = $atOrAfter ? min($atOrAfter) : end($deltas);
+
+    $target = $element[$targetDelta]['#attributes']['data-drupal-selector'] ?? NULL;
+    $parent = $element['#attributes']['data-drupal-selector'] ?? NULL;
+    if ($target !== NULL && $parent !== NULL) {
+      $response->addCommand(new ScrollToElementCommand($target, $parent));
+    }
+
     return $response;
   }
 

@@ -26,3 +26,6 @@ bootstrap5.settings:
     b5_top_container_config:
       type: string
       label: 'Website container type configuration'
+    b5_theme_mode:
+      type: string
+      label: 'Theme mode'

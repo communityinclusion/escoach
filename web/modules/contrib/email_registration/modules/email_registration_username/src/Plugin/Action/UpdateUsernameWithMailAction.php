@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\email_registration_username\Plugin\Action;
 
 use Drupal\Core\Action\ActionBase;
@@ -25,15 +27,7 @@ class UpdateUsernameWithMailAction extends ActionBase {
   public function execute($account = NULL) {
     // Rename the given user:
     if (!empty($account) && $account instanceof UserInterface) {
-      $mail = $account->getEmail();
-      $account->setUsername($mail);
-
-      // If the validation for an account fails for some reason, log it and
-      // return void:
-      if ($account->isValidationRequired() && !$account->validate()) {
-        \Drupal::logger('email_registration')->error('Email registration failed setting the new name on user @id.', ['@id' => $account->id()]);
-        return;
-      }
+      $account->setUsername(email_registration_truncate_username($account->getEmail()));
       $account->save();
     }
   }
@@ -41,7 +35,7 @@ class UpdateUsernameWithMailAction extends ActionBase {
   /**
    * {@inheritdoc}
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var \Drupal\user\UserInterface $object */
     $access = $object->status->access('edit', $account, TRUE)
       ->andIf($object->access('update', $account, TRUE));

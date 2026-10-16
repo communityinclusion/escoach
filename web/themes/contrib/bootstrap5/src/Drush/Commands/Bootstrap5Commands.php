@@ -4,6 +4,7 @@ namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandError;
 use Drupal\bootstrap5\SubthemeManager;
+use Drupal\Core\Extension\ThemeExtensionList;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drush\Attributes as CLI;
@@ -20,10 +21,18 @@ final class Bootstrap5Commands extends DrushCommands {
 
   /**
    * Constructs a Subtheme Commands object.
+   *
+   * @param \Drupal\Core\File\FileSystemInterface $fileSystem
+   *   The file system service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger interface.
+   * @param \Drupal\Core\Extension\ThemeExtensionList $themeExtensionList
+   *   The theme extension list.
    */
   public function __construct(
-    private readonly FileSystemInterface $fileSystem,
-    private readonly MessengerInterface $messenger,
+    protected FileSystemInterface $fileSystem,
+    protected MessengerInterface $messenger,
+    protected ThemeExtensionList $themeExtensionList,
   ) {
     parent::__construct();
   }
@@ -35,6 +44,7 @@ final class Bootstrap5Commands extends DrushCommands {
     return new static(
       $container->get('file_system'),
       $container->get('messenger'),
+      $container->get('extension.list.theme'),
     );
   }
 
@@ -52,9 +62,9 @@ final class Bootstrap5Commands extends DrushCommands {
     array $options = [
       'subtheme-name' => 'B5 subtheme',
       'subtheme-folder' => 'themes/custom',
-    ]
+    ],
   ) {
-    $subthemeManager = new SubthemeManager($this->fileSystem, $this->messenger);
+    $subthemeManager = new SubthemeManager($this->fileSystem, $this->messenger, $this->themeExtensionList);
     $result = $subthemeManager->validateSubtheme($options['subtheme-folder'], $machine_name);
 
     if (is_array($result)) {

@@ -5,38 +5,485 @@
  * Install, update and uninstall hooks for the Memcache module.
  */
 
+use Drupal\Core\Site\Settings;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
+use Drupal\memcache\Connection\AsciiAuthenticator;
+use Drupal\memcache\Driver\MemcacheDriverFactory;
+use Drupal\memcache\Driver\MemcachedDriver;
+
 /**
  * Implements hook_requirements().
  */
 function memcache_requirements($phase) {
+  return _memcache_requirements($phase, extension_loaded('memcache'), extension_loaded('memcached'));
+}
+
+/**
+ * Builds the requirements for memcache_requirements().
+ *
+ * Split out so that the "no extension installed" path can be exercised by a
+ * test running on an environment that has one.
+ *
+ * @param string $phase
+ *   The phase in which requirements are checked: 'install' or 'runtime'.
+ * @param bool $memcache
+ *   Whether the memcache PECL extension is loaded.
+ * @param bool $memcached
+ *   Whether the memcached PECL extension is loaded.
+ *
+ * @return array
+ *   An array of requirements.
+ */
+function _memcache_requirements($phase, $memcache, $memcached) {
   $requirements = [];
 
-  $memcache = extension_loaded('memcache');
-  $memcached = extension_loaded('memcached');
-
   if ($phase == 'install' || $phase == 'runtime') {
+
+    // Memcache is switched off for this environment in settings.php, so there
+    // is nothing to check and a missing extension is not a problem. Reporting
+    // an error here would block installing a profile that lists this module
+    // on an environment without memcache, which is exactly where this setting
+    // is used.
+    if (_memcache_settings_disabled()) {
+      $requirements['memcache_disabled']['title'] = t('Memcache');
+      $requirements['memcache_disabled']['severity'] = REQUIREMENT_INFO;
+      $requirements['memcache_disabled']['value'] = t('Disabled');
+      $requirements['memcache_disabled']['description'] = t("\$settings['memcache']['servers'] and \$settings['memcache']['bins'] are both empty arrays, so no caches are served by memcache on this environment.");
+      return $requirements;
+    }
 
     if (!$memcache && !$memcached) {
       $requirements['memcache_extension']['title'] = t('Memcache');
       $requirements['memcache_extension']['severity'] = REQUIREMENT_ERROR;
       $requirements['memcache_extension']['value'] = t('Extensions not available');
       $requirements['memcache_extension']['description'] = t('Either the <a href="http://php.net/manual/en/book.memcache.php">memcache</a> or <a href="http://php.net/manual/en/book.memcached.php">memcached</a> extensions must be installed in order to use memcache integration.');
+
+      // Without an extension there is nothing further that can be checked.
+      return $requirements;
     }
   }
 
   if ($phase == 'runtime') {
+    // These are the versions of the PHP client extensions, not of the
+    // memcached daemon the site talks to; say so, because the two are easily
+    // confused when only a version number is shown.
     if ($memcache) {
       // @todo consider adding minimum version requirement for extensions.
-      $requirements['memcache_extension_version']['title'] = t('Memcache version');
+      $requirements['memcache_extension_version']['title'] = t('Memcache PHP extension');
       $requirements['memcache_extension_version']['severity'] = REQUIREMENT_OK;
       $requirements['memcache_extension_version']['value'] = phpversion('memcache');
+      $requirements['memcache_extension_version']['description'] = t('Version of the <a href=":url">memcache</a> PHP extension. This is the client library, not the memcached server.', [':url' => 'https://www.php.net/manual/en/book.memcache.php']);
     }
     if ($memcached) {
-      $requirements['memcached_extension_version']['title'] = t('Memcached version');
-      $requirements['memcached_extension_version']['severity'] = REQUIREMENT_OK;
-      $requirements['memcached_extension_version']['value'] = phpversion('memcached');
+      $requirements['memcached_extension_version'] = _memcache_requirements_memcached_version(phpversion('memcached'), PHP_VERSION_ID);
     }
+
+    $requirements += _memcache_requirements_servers();
   }
 
   return $requirements;
+}
+
+/**
+ * Returns whether memcache is switched off for this environment in settings.
+ *
+ * Mirrors \Drupal\memcache\Driver\MemcacheDriverFactory::isDisabled(). It reads
+ * the raw settings because at install time the module's classes and services
+ * are not available yet.
+ *
+ * @return bool
+ *   TRUE when both the 'servers' and 'bins' settings are empty arrays.
+ */
+function _memcache_settings_disabled() {
+  $settings = Settings::get('memcache', []);
+
+  return ($settings['servers'] ?? NULL) === [] && ($settings['bins'] ?? NULL) === [];
+}
+
+/**
+ * Builds the requirement describing the installed memcached extension version.
+ *
+ * Releases of php-memcached before 3.2.0 store a bare float value with its
+ * sign flipped when running on PHP 8.1 or later. This module stores the last
+ * deletion time of every bin and the invalidation time of every cache tag as a
+ * bare float, so on an affected build every cache clear is silently ignored.
+ *
+ * @param string $version
+ *   The version of the memcached extension, as returned by phpversion().
+ * @param int $php_version_id
+ *   The running PHP version, in the PHP_VERSION_ID form.
+ *
+ * @return array
+ *   A single requirement row.
+ *
+ * @see https://github.com/php-memcached-dev/php-memcached/issues/500
+ * @see https://www.drupal.org/project/memcache/issues/3276584
+ */
+function _memcache_requirements_memcached_version($version, $php_version_id) {
+  $requirement = [
+    'title' => t('Memcached PHP extension'),
+    'severity' => REQUIREMENT_OK,
+    'value' => $version,
+    'description' => t('Version of the <a href=":url">memcached</a> PHP extension. This is the client library, not the memcached server.', [':url' => 'https://www.php.net/manual/en/book.memcached.php']),
+  ];
+
+  if ($php_version_id >= 80100 && version_compare($version, MemcachedDriver::MINIMUM_EXTENSION_VERSION, '<')) {
+    $requirement['severity'] = REQUIREMENT_ERROR;
+    $requirement['description'] = t('The memcached extension @version is not supported on PHP @php: releases before @minimum store float values with the wrong sign, so cache clears and cache tag invalidations are silently ignored. Upgrade the memcached extension to @minimum or later.', [
+      '@version' => $version,
+      '@php' => sprintf('%d.%d', intdiv($php_version_id, 10000), intdiv($php_version_id, 100) % 100),
+      '@minimum' => MemcachedDriver::MINIMUM_EXTENSION_VERSION,
+    ]);
+  }
+
+  return $requirement;
+}
+
+/**
+ * Builds the runtime requirements describing the configured memcache servers.
+ *
+ * A memcache server that is configured but unreachable is easy to miss:
+ * \Memcached::addServer() never connects, so every cache operation just fails
+ * and the site runs uncached. The driver logs the first failure per request;
+ * report it here as well, which is where an administrator goes looking.
+ *
+ * @return array
+ *   An array of requirements.
+ */
+function _memcache_requirements_servers() {
+  $requirements = [];
+
+  $requirements['memcache_servers']['title'] = t('Memcache servers');
+
+  try {
+    /** @var \Drupal\memcache\Driver\MemcacheDriverFactory $factory */
+    $factory = \Drupal::service('memcache.factory');
+
+    $results = $factory->checkServers();
+
+    // A preferred extension that is not installed is silently ignored in
+    // favour of whichever one is, which is easy to miss when debugging.
+    $preferred = \Drupal::service('memcache.settings')->get('extension');
+    if ($preferred && strcasecmp($preferred, $factory->getExtension()) !== 0) {
+      $requirements['memcache_extension_preferred'] = [
+        'title' => t('Memcache extension'),
+        'severity' => REQUIREMENT_WARNING,
+        'value' => t('Using %actual', ['%actual' => $factory->getExtension()]),
+        'description' => t("\$settings['memcache']['extension'] requests %preferred, but that extension is not installed. %actual is being used instead.", [
+          '%preferred' => $preferred,
+          '%actual' => $factory->getExtension(),
+        ]),
+      ];
+    }
+  }
+  catch (\Throwable $e) {
+    $requirements['memcache_servers']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_servers']['value'] = t('Configuration error');
+    $requirements['memcache_servers']['description'] = t('The memcache configuration could not be loaded: @message', ['@message' => $e->getMessage()]);
+    return $requirements;
+  }
+
+  if (!$results) {
+    $requirements['memcache_servers']['severity'] = REQUIREMENT_WARNING;
+    $requirements['memcache_servers']['value'] = t('None configured');
+    $requirements['memcache_servers']['description'] = t("No memcache servers are configured, so no caches are being served by memcache. Set \$settings['memcache']['servers'] in settings.php.");
+    return $requirements;
+  }
+
+  $failed = array_keys(array_filter($results, function ($reachable) {
+    return !$reachable;
+  }));
+  $total = count($results);
+
+  if ($failed) {
+    $requirements['memcache_servers']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_servers']['value'] = t('@failed of @total unreachable', [
+      '@failed' => count($failed),
+      '@total' => $total,
+    ]);
+    $requirements['memcache_servers']['description'] = t("Failed to connect to the memcache server(s) at %servers. Cache reads and writes to these servers fail, which leaves the site running without a cache; the first failure in each request is logged to the memcache channel. Check that memcached is running and reachable, and review \$settings['memcache']['servers'] in settings.php.", [
+      '%servers' => implode(', ', $failed),
+    ]);
+
+    return $requirements;
+  }
+
+  $requirements['memcache_servers']['severity'] = REQUIREMENT_OK;
+  $requirements['memcache_servers']['value'] = \Drupal::translation()->formatPlural($total, '1 server available', '@count servers available');
+  $requirements['memcache_servers']['description'] = t('Connected to %servers.', ['%servers' => implode(', ', array_keys($results))]);
+
+  // Every server answered, so a full round trip should work too. This catches
+  // problems a connection check cannot see, such as a failing SASL handshake
+  // or a server that refuses to store anything.
+  if ($error = _memcache_requirements_roundtrip()) {
+    $requirements['memcache_servers']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_servers']['value'] = t('Not storing data');
+    $requirements['memcache_servers']['description'] = $error;
+  }
+
+  $requirements += _memcache_requirements_memory($factory);
+  $requirements += _memcache_requirements_ascii_auth($factory);
+
+  return $requirements;
+}
+
+/**
+ * Builds the runtime requirement describing ASCII protocol authentication.
+ *
+ * Only present when $settings['memcache']['ascii_auth'] is set. Reports the
+ * configurations that cannot work (the Memcache PECL extension, or SASL and
+ * the binary protocol, which "-Y" switches off), servers that refuse the
+ * credentials, servers that do not ask for any (so the credentials protect
+ * nothing), and memcached releases older than the ones that support or
+ * properly implement the feature.
+ *
+ * @param \Drupal\memcache\Driver\MemcacheDriverFactory $factory
+ *   The driver factory.
+ *
+ * @return array
+ *   An array of requirements.
+ */
+function _memcache_requirements_ascii_auth(MemcacheDriverFactory $factory) {
+  $settings = \Drupal::service('memcache.settings');
+  if (!$settings->get('ascii_auth')) {
+    return [];
+  }
+
+  $requirements = [];
+  $requirements['memcache_ascii_auth']['title'] = t('Memcache authentication');
+
+  try {
+    $authenticator = AsciiAuthenticator::fromSettings($settings);
+  }
+  catch (\Throwable $e) {
+    $requirements['memcache_ascii_auth']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_ascii_auth']['value'] = t('Misconfigured');
+    $requirements['memcache_ascii_auth']['description'] = $e->getMessage();
+    return $requirements;
+  }
+
+  if ($factory->getExtension() !== \Memcached::class) {
+    $requirements['memcache_ascii_auth']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_ascii_auth']['value'] = t('Unsupported extension');
+    $requirements['memcache_ascii_auth']['description'] = t('ASCII protocol authentication is only available with the Memcached PECL extension; the site is using %extension, which cannot authenticate and will be refused by the servers.', ['%extension' => $factory->getExtension()]);
+    return $requirements;
+  }
+
+  $options = $settings->get('options', []);
+  if ($settings->get('sasl') || !empty($options[\Memcached::OPT_BINARY_PROTOCOL])) {
+    $requirements['memcache_ascii_auth']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_ascii_auth']['value'] = t('Conflicting settings');
+    $requirements['memcache_ascii_auth']['description'] = t("ASCII protocol authentication is enabled together with SASL or the binary protocol. A memcached server started with -Y disables the binary protocol, so remove \$settings['memcache']['sasl'] and Memcached::OPT_BINARY_PROTOCOL, or remove \$settings['memcache']['ascii_auth'].");
+    return $requirements;
+  }
+
+  $results = $factory->checkAsciiAuthentication();
+  $rejected = array_keys($results, 'rejected', TRUE);
+  $not_required = array_keys($results, 'not_required', TRUE);
+
+  if ($rejected) {
+    $requirements['memcache_ascii_auth']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_ascii_auth']['value'] = t('Credentials rejected');
+    $requirements['memcache_ascii_auth']['description'] = t("The memcache server(s) at %servers refused the user %user configured in \$settings['memcache']['ascii_auth']. Every operation on them fails until the credentials match an entry in the server's authfile.", [
+      '%servers' => implode(', ', $rejected),
+      '%user' => $authenticator->getUsername(),
+    ]);
+    return $requirements;
+  }
+
+  if ($not_required) {
+    $requirements['memcache_ascii_auth']['severity'] = REQUIREMENT_WARNING;
+    $requirements['memcache_ascii_auth']['value'] = t('Not enforced');
+    $requirements['memcache_ascii_auth']['description'] = t('The memcache server(s) at %servers accept commands without authenticating, so they were not started with the -Y option and the configured credentials protect nothing. Start memcached with -Y and an authfile containing the configured user.', [
+      '%servers' => implode(', ', $not_required),
+    ]);
+    return $requirements;
+  }
+
+  // Every reachable server authenticated; check the release they run.
+  $old = [];
+  $unpatched = [];
+  foreach ($factory->getServerStats() as $server => $stats) {
+    $version = is_array($stats) ? ($stats['version'] ?? NULL) : NULL;
+    if ($version === NULL) {
+      continue;
+    }
+    // Strip build suffixes such as "1.6.38-arm64".
+    $version = preg_replace('/[^0-9.].*$/', '', (string) $version);
+    if (version_compare($version, AsciiAuthenticator::MINIMUM_SERVER_VERSION, '<')) {
+      $old[] = "$server ($version)";
+    }
+    elseif (version_compare($version, AsciiAuthenticator::RECOMMENDED_SERVER_VERSION, '<')) {
+      $unpatched[] = "$server ($version)";
+    }
+  }
+
+  if ($old) {
+    $requirements['memcache_ascii_auth']['severity'] = REQUIREMENT_ERROR;
+    $requirements['memcache_ascii_auth']['value'] = t('Unsupported memcached version');
+    $requirements['memcache_ascii_auth']['description'] = t('ASCII protocol authentication needs memcached @minimum or later; %servers report an older release.', [
+      '@minimum' => AsciiAuthenticator::MINIMUM_SERVER_VERSION,
+      '%servers' => implode(', ', $old),
+    ]);
+    return $requirements;
+  }
+
+  $requirements['memcache_ascii_auth']['severity'] = $unpatched ? REQUIREMENT_WARNING : REQUIREMENT_OK;
+  $requirements['memcache_ascii_auth']['value'] = t('Authenticated as %user', ['%user' => $authenticator->getUsername()]);
+  $requirements['memcache_ascii_auth']['description'] = $unpatched
+    ? t('memcached @recommended or later is recommended for ASCII protocol authentication: earlier releases can spin on the CPU while waiting for the credentials. %servers report an older release.', [
+      '@recommended' => AsciiAuthenticator::RECOMMENDED_SERVER_VERSION,
+      '%servers' => implode(', ', $unpatched),
+    ])
+    : t('Every memcache server requires authentication and accepted the configured credentials. Note that the ASCII protocol sends them in plain text; see "ASCII protocol authentication" in README.md.');
+
+  return $requirements;
+}
+
+/**
+ * Builds the runtime requirement describing memcache memory use and evictions.
+ *
+ * Memcached silently drops the least recently used items once its memory limit
+ * is reached. A server left at the default 64 MB is the usual cause, and the
+ * only visible symptom is a lower hit rate, so report the memory in use and the
+ * eviction count here rather than only in memcache_admin.
+ *
+ * @param \Drupal\memcache\Driver\MemcacheDriverFactory $factory
+ *   The driver factory.
+ *
+ * @return array
+ *   An array of requirements.
+ */
+function _memcache_requirements_memory(MemcacheDriverFactory $factory) {
+  $requirements = [];
+  $requirements['memcache_memory']['title'] = t('Memcache memory');
+
+  try {
+    $stats = array_filter($factory->getServerStats(), function ($server_stats) {
+      return is_array($server_stats) && isset($server_stats['limit_maxbytes'], $server_stats['bytes']);
+    });
+  }
+  catch (\Throwable $e) {
+    $stats = [];
+  }
+
+  if (!$stats) {
+    $requirements['memcache_memory']['severity'] = REQUIREMENT_OK;
+    $requirements['memcache_memory']['value'] = t('Not available');
+    $requirements['memcache_memory']['description'] = t('The memcache servers did not report any statistics. This is expected when connecting through a proxy such as twemproxy, which does not implement the stats command.');
+    return $requirements;
+  }
+
+  $limit = 0;
+  $used = 0;
+  $evictions = 0;
+  $servers = [];
+  foreach ($stats as $server => $server_stats) {
+    $server_limit = (int) $server_stats['limit_maxbytes'];
+    $server_used = (int) $server_stats['bytes'];
+    $server_evictions = (int) ($server_stats['evictions'] ?? 0);
+
+    $limit += $server_limit;
+    $used += $server_used;
+    $evictions += $server_evictions;
+
+    $servers[] = t('@server: @used of @limit used (@percent%), @evictions evictions', [
+      '@server' => $server,
+      '@used' => _memcache_requirements_format_size($server_used),
+      '@limit' => _memcache_requirements_format_size($server_limit),
+      '@percent' => number_format($server_limit ? $server_used / $server_limit * 100 : 0, 1),
+      '@evictions' => number_format($server_evictions),
+    ]);
+  }
+
+  $requirements['memcache_memory']['severity'] = REQUIREMENT_OK;
+  $requirements['memcache_memory']['value'] = t('@used of @limit used (@percent%)', [
+    '@used' => _memcache_requirements_format_size($used),
+    '@limit' => _memcache_requirements_format_size($limit),
+    '@percent' => number_format($limit ? $used / $limit * 100 : 0, 1),
+  ]);
+
+  $description = [
+    '#theme' => 'item_list',
+    '#items' => $servers,
+  ];
+
+  // Evictions are counted since the daemon started, so any at all mean the
+  // memory limit has been hit at some point. Sites that deliberately size
+  // memcache to evict can turn the warning off.
+  if ($evictions > 0 && \Drupal::service('memcache.settings')->get('report_evictions', TRUE)) {
+    $requirements['memcache_memory']['severity'] = REQUIREMENT_WARNING;
+    $description = [
+      '#type' => 'inline_template',
+      '#template' => '{{ message }}{{ servers }}',
+      '#context' => [
+        'message' => t("Memcached has evicted @evictions items because it ran out of memory. Cached data is being discarded before it expires, which lowers the cache hit rate. If the servers below are running with a small memory limit, increase it (the <code>-m</code> option of memcached). To silence this warning on a deliberately small cache, set <code>\$settings['memcache']['report_evictions'] = FALSE;</code> in settings.php.", [
+          '@evictions' => number_format($evictions),
+        ]),
+        'servers' => $description,
+      ],
+    ];
+  }
+
+  $requirements['memcache_memory']['description'] = $description;
+
+  return $requirements;
+}
+
+/**
+ * Formats a byte count for the status report across supported core versions.
+ *
+ * @param int $size
+ *   The size in bytes.
+ *
+ * @return \Drupal\Component\Render\MarkupInterface|string
+ *   The formatted size.
+ */
+function _memcache_requirements_format_size($size) {
+  if (class_exists(ByteSizeMarkup::class)) {
+    return ByteSizeMarkup::create($size);
+  }
+
+  // Removed in Drupal 11, but the only option before Drupal 10.2.
+  // @phpstan-ignore-next-line
+  return format_size($size);
+}
+
+/**
+ * Stores, reads back and deletes a single value to verify memcache works.
+ *
+ * @return \Drupal\Core\StringTranslation\TranslatableMarkup|null
+ *   A message describing the failure, or NULL when the round trip succeeded.
+ */
+function _memcache_requirements_roundtrip() {
+  $cid = 'memcache_requirements_test';
+  // Bin deletion and cache tag invalidation times are stored as bare floats,
+  // and a broken extension build can store those with the wrong sign, so
+  // check that a float survives the round trip rather than a string.
+  // @see _memcache_requirements_memcached_version()
+  $value = 1.5;
+
+  try {
+    /** @var \Drupal\memcache\DrupalMemcacheInterface $driver */
+    $driver = \Drupal::service('memcache.factory')->get('memcache_requirements');
+
+    if (!$driver->set($cid, $value)) {
+      return t('Connected to memcache, but storing a test value failed.');
+    }
+
+    $stored = $driver->get($cid);
+    $driver->delete($cid);
+
+    if ($stored !== $value) {
+      return t('Connected to memcache, but a test value read back as %actual instead of %expected.', [
+        '%actual' => var_export($stored, TRUE),
+        '%expected' => var_export($value, TRUE),
+      ]);
+    }
+  }
+  catch (\Throwable $e) {
+    return t('Storing a test value in memcache failed: @message', ['@message' => $e->getMessage()]);
+  }
+
+  return NULL;
 }

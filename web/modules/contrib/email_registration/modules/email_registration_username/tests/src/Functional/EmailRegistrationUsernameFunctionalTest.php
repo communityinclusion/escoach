@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\email_registration_username\Functional;
 
 use Drupal\Tests\email_registration\Functional\EmailRegistrationFunctionalTestBase;
 use Drupal\Tests\email_registration\Traits\EmailRegistrationTestTrait;
+use Drupal\user\UserInterface;
 
 /**
  * This class provides methods specifically for testing something.
@@ -125,16 +128,32 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
   }
 
   /**
-   * Tests obfuscation with an empty obfuscation value (aka using the fallback).
+   * Tests if the override can be disabled.
    */
-  public function testObfuscationDefault() {
+  public function testDisplayOverrideDisabled() {
     // Create a test user with an already synced mail and username:
     $testUser = $this->drupalCreateUser([], 'test@test.com', FALSE, [
       'mail' => 'test@test.com',
     ]);
+    $this->config('email_registration_username.settings')->set('username_display_override_mode', 'disabled')->save();
     // Login as a user without the 'view user email addresses' permission:
     $this->drupalLogin($this->user);
-    $this->config('email_registration_username.settings')->set('obfuscation_value', '')->save();
+
+    // Override shouldn't happen:
+    $this->assertSame('test@test.com', $testUser->getDisplayName());
+  }
+
+  /**
+   * Tests the override default.
+   */
+  public function testDisplayOverrideDefault() {
+    // Create a test user with an already synced mail and username:
+    $testUser = $this->drupalCreateUser([], 'test@test.com', FALSE, [
+      'mail' => 'test@test.com',
+    ]);
+    $this->config('email_registration_username.settings')->set('username_display_override_mode', 'email_registration')->save();
+    // Login as a user without the 'view user email addresses' permission:
+    $this->drupalLogin($this->user);
 
     $this->assertNotSame('test@test.com', $testUser->getDisplayName());
     // The default/fallback logic should obfuscate "test@test.com" to "test":
@@ -142,25 +161,26 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
   }
 
   /**
-   * Tests obfuscation with a static obfuscation value.
+   * Test override with a custom static override value.
    */
-  public function testObfuscationStaticValue() {
+  public function testCustomDisplayOverrideStaticValue() {
     // Create a test user with an already synced mail and username:
     $testUser = $this->drupalCreateUser([], 'test@test.com', FALSE, [
       'mail' => 'test@test.com',
     ]);
     // Login as a user without the 'view user email addresses' permission:
     $this->drupalLogin($this->user);
-    $this->config('email_registration_username.settings')->set('obfuscation_value', 'OBFUSCATED')->save();
+    $this->config('email_registration_username.settings')->set('username_display_override_mode', 'custom')->save();
+    $this->config('email_registration_username.settings')->set('username_display_custom', 'OBFUSCATED')->save();
 
     $this->assertNotSame('test@test.com', $testUser->getDisplayName());
     $this->assertSame('OBFUSCATED', $testUser->getDisplayName());
   }
 
   /**
-   * Tests obfuscation with a static obfuscation value set through the UI.
+   * Tests override with a static override value set through the UI.
    */
-  public function testObfuscationStaticValueViaUi() {
+  public function testDisplayOverrideStaticValueViaUi() {
     $session = $this->assertSession();
     $page = $this->getSession()->getPage();
     // Create a test user with an already synced mail and username:
@@ -171,7 +191,8 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('/admin/config/people/accounts');
     $session->statusCodeEquals(200);
-    $page->fillField('edit-obfuscation-value', 'OBFUSCATED');
+    $page->fillField('edit-username-display-override-mode-custom', 'custom');
+    $page->fillField('edit-username-display-custom', 'OBFUSCATED');
     $page->pressButton('edit-submit');
     $session->statusCodeEquals(200);
     $session->pageTextContains('The configuration options have been saved.');
@@ -189,39 +210,41 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
   }
 
   /**
-   * Tests obfuscation with a token.
+   * Tests override with a token.
    */
-  public function testObfuscationTokenSiteName() {
+  public function testDisplayOverrideTokenSiteName() {
     // Create a test user with an already synced mail and username:
     $testUser = $this->drupalCreateUser([], 'test@test.com', FALSE, [
       'mail' => 'test@test.com',
     ]);
     // Login as a user without the 'view user email addresses' permission:
     $this->drupalLogin($this->user);
-    $this->config('email_registration_username.settings')->set('obfuscation_value', '[site:name]')->save();
+    $this->config('email_registration_username.settings')->set('username_display_override_mode', 'custom')->save();
+    $this->config('email_registration_username.settings')->set('username_display_custom', '[site:name]')->save();
 
     $this->assertSame('Drupal', $testUser->getDisplayName());
   }
 
   /**
-   * Tests obfuscation with a token.
+   * Tests override with a different token.
    */
-  public function testObfuscationTokenUserMail() {
+  public function testDisplayOverrideTokenUserMail() {
     // Create a test user with an already synced mail and username:
     $testUser = $this->drupalCreateUser([], 'test@test.com', FALSE, [
       'mail' => 'test@test.com',
     ]);
     // Login as a user without the 'view user email addresses' permission:
     $this->drupalLogin($this->user);
-    $this->config('email_registration_username.settings')->set('obfuscation_value', '[user:mail]')->save();
+    $this->config('email_registration_username.settings')->set('username_display_override_mode', 'custom')->save();
+    $this->config('email_registration_username.settings')->set('username_display_custom', '[user:mail]')->save();
 
     $this->assertSame('test@test.com', $testUser->getDisplayName());
   }
 
   /**
-   * Test the obfuscation on nodes.
+   * Test the override on nodes.
    */
-  public function testObfuscationOnNode() {
+  public function testDisplayOverrideOnNode() {
     $session = $this->assertSession();
     // Create a test user with an already synced mail and username:
     $testUser = $this->drupalCreateUser([], 'test@test.com', FALSE, [
@@ -240,7 +263,7 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
 
     // Login as a user without the 'view user email addresses' permission:
     $this->drupalLogin($this->user);
-    $this->config('email_registration_username.settings')->set('obfuscation_value', '')->save();
+    $this->config('email_registration_username.settings')->set('username_display_override_mode', 'email_registration')->save();
 
     // See if the author is obfuscated:
     $this->drupalGet('/node/' . $node->id());
@@ -266,9 +289,9 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
   }
 
   /**
-   * Test the obfuscation on profile pages.
+   * Test the override on profile pages.
    */
-  public function testObfuscationOnProfilePage() {
+  public function testDisplayOverrideOnProfilePage() {
     $session = $this->assertSession();
     // Create a test user with an already synced mail and username:
     $testUser = $this->drupalCreateUser([], 'test@test.com', FALSE, [
@@ -281,7 +304,7 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
     $this->user->addRole($accessUserRole);
     $this->user->save();
     $this->drupalLogin($this->user);
-    $this->config('email_registration_username.settings')->set('obfuscation_value', '')->save();
+    $this->config('email_registration_username.settings')->set('username_display_override_mode', 'email_registration')->save();
 
     // See if the author is obfuscated:
     $this->drupalGet('/user/' . $testUser->id());
@@ -299,6 +322,40 @@ class EmailRegistrationUsernameFunctionalTest extends EmailRegistrationFunctiona
     // See if the author is not obfuscated anymore:
     $this->drupalGet('/user/' . $testUser->id());
     $session->elementTextEquals('css', 'h1', 'test@test.com');
+  }
+
+  /**
+   * Tests username truncation when registering with a very long email.
+   */
+  public function testLongEmailUsernameTruncation() {
+    $this->container->get('config.factory')->getEditable('user.settings')
+      ->set('verify_mail', FALSE)
+      ->set('register', UserInterface::REGISTER_VISITORS)
+      ->save();
+
+    // Full email longer than UserInterface::USERNAME_MAX_LENGTH (60).
+    // Local part is 49 chars; with "@example.com" the mail is 61 chars.
+    $localPart = str_repeat('a', UserInterface::USERNAME_MAX_LENGTH - 11);
+    $pass = $this->randomString(10);
+    $mail = $localPart . '@example.com';
+    $this->assertGreaterThan(UserInterface::USERNAME_MAX_LENGTH, mb_strlen($mail));
+
+    $this->drupalGet('/user/register');
+    $this->submitForm([
+      'mail' => $mail,
+      'pass[pass1]' => $pass,
+      'pass[pass2]' => $pass,
+    ], 'Create new account');
+
+    $account = user_load_by_mail($mail);
+    $this->assertNotFalse($account);
+
+    // Check if we get the expected trimmed mail as username:
+    $expectedUsername = mb_substr($mail, 0, UserInterface::USERNAME_MAX_LENGTH);
+    $this->assertSame($expectedUsername, $account->getAccountName());
+
+    // Assert that the length equals:
+    $this->assertEquals(UserInterface::USERNAME_MAX_LENGTH, mb_strlen($account->getAccountName()));
   }
 
 }
