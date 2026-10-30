@@ -4,6 +4,7 @@ namespace Drupal\geofield\Plugin\migrate\process;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\geofield\WktGeneratorInterface;
+use Drupal\migrate\Attribute\MigrateProcess;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
@@ -26,11 +27,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *    - longitude
  *
  * @endcode
- *
- * @MigrateProcessPlugin(
- *   id = "geofield_latlon"
- * )
  */
+#[MigrateProcess('geofield_latlon')]
 class GeofieldLatLon extends ProcessPluginBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -50,6 +48,9 @@ class GeofieldLatLon extends ProcessPluginBase implements ContainerFactoryPlugin
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -62,6 +63,9 @@ class GeofieldLatLon extends ProcessPluginBase implements ContainerFactoryPlugin
 
   /**
    * {@inheritdoc}
+   *
+   * @return mixed
+   *   The transformed value.
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     $value = array_map('floatval', $value);

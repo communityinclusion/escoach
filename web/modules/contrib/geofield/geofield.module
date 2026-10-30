@@ -5,6 +5,8 @@
  * Contains the geofield.module.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\geofield\Hook\GeofieldHooks;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Field\FieldTypeCategoryManagerInterface;
 
@@ -95,20 +97,9 @@ const GEOFIELD_NAUTICAL_MILES = 3444;
 /**
  * Implements hook_theme().
  */
+#[LegacyHook]
 function geofield_theme() {
-  return [
-    'geofield_dms' => [
-      'variables' => [
-        'components' => [],
-      ],
-    ],
-    'geofield_latlon' => [
-      'variables' => [
-        'lat' => 0,
-        'lon' => 0,
-      ],
-    ],
-  ];
+  return \Drupal::service(GeofieldHooks::class)->theme();
 }
 
 /**
@@ -154,9 +145,9 @@ function geofield_haversine(array $options = []) {
   return $formula;
 }
 
-/*
-* Implements hook_field_type_category_info_alter().
-*/
+/**
+ * Implements hook_field_type_category_info_alter().
+ */
 function geofield_field_type_category_info_alter(&$definitions) {
   $definitions[FieldTypeCategoryManagerInterface::FALLBACK_CATEGORY]['libraries'][] = 'geofield/geofield-icon';
 }

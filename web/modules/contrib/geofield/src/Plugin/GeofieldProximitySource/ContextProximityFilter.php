@@ -3,6 +3,8 @@
 namespace Drupal\geofield\Plugin\GeofieldProximitySource;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield\Attribute\GeofieldProximitySource;
 use Drupal\geofield\Plugin\GeofieldProximitySourceBase;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
 use Drupal\geofield\Plugin\views\argument\GeofieldProximityArgument;
@@ -12,18 +14,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Defines 'Geofield Context Filter' plugin.
  *
  * @package Drupal\geofield\Plugin
- *
- * @GeofieldProximitySource(
- *   id = "geofield_context_filter",
- *   label = @Translation("Context Filter (By context filter)"),
- *   description = @Translation("Allow the contextual input of Origin as couple of Latitude and Longitude in decimal degrees."),
- *   exposedDescription = @Translation("Contextual input of Origin as couple of Latitude and Longitude in decimal degrees."),
- *   context = {
- *     "sort",
- *     "field",
- *   },
- * )
  */
+#[GeofieldProximitySource(
+  id: 'geofield_context_filter',
+  label: new TranslatableMarkup('Context Filter (By context filter)'),
+  description: new TranslatableMarkup('Allow the contextual input of Origin as couple of Latitude and Longitude in decimal degrees.'),
+  exposedDescription: new TranslatableMarkup('Contextual input of Origin as couple of Latitude and Longitude in decimal degrees.'),
+  context: [
+    'sort',
+    'field',
+  ],
+)]
 class ContextProximityFilter extends GeofieldProximitySourceBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -35,6 +36,9 @@ class ContextProximityFilter extends GeofieldProximitySourceBase implements Cont
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(

@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\geofield\Kernel;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -9,6 +11,8 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group geofield
  */
+#[Group('geofield')]
+#[RunTestsInSeparateProcesses]
 class WktGeneratorTest extends KernelTestBase {
 
   /**

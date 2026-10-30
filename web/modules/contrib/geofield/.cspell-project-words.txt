@@ -26,3 +26,5 @@ openlayers
 phayes
 polylines
 postgis
+itamair
+Slideshare

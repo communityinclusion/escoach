@@ -7,6 +7,8 @@ use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield\Attribute\GeofieldProximitySource;
 use Drupal\geofield\Plugin\GeofieldProximitySourceBase;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,18 +17,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Defines 'Geofield Custom Origin' plugin.
  *
  * @package Drupal\geofield\Plugin
- *
- * @GeofieldProximitySource(
- *   id = "geofield_origin_from_proximity_filter",
- *   label = @Translation("Origin from Proximity Filter"),
- *   description = @Translation("A sort and field plugin that points the Origin from an existing Geofield Proximity Filter."),
- *   exposedDescription = @Translation("The origin is fixed from an existing Geofield Proximity Filter."),
- *   context = {
- *     "sort",
- *     "field",
- *   }
- * )
  */
+#[GeofieldProximitySource(
+  id: 'geofield_origin_from_proximity_filter',
+  label: new TranslatableMarkup('Origin from Proximity Filter'),
+  description: new TranslatableMarkup('A sort and field plugin that points the Origin from an existing Geofield Proximity Filter.'),
+  exposedDescription: new TranslatableMarkup('The origin is fixed from an existing Geofield Proximity Filter.'),
+  context: [
+    'sort',
+    'field',
+  ],
+)]
 class OriginFromProximityFilter extends GeofieldProximitySourceBase implements ContainerFactoryPluginInterface {
 
   use LoggerChannelTrait;
@@ -40,6 +41,9 @@ class OriginFromProximityFilter extends GeofieldProximitySourceBase implements C
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(

@@ -20,3 +20,11 @@ services:
     class: Drupal\geofield\Plugin\GeofieldProximitySourceManager
     parent: default_plugin_manager
   Drupal\geofield\Plugin\GeofieldProximitySourceManager: '@plugin.manager.geofield_proximity_source'
+
+  Drupal\geofield\Hook\GeofieldHooks:
+    class: Drupal\geofield\Hook\GeofieldHooks
+    autowire: true
+
+  Drupal\geofield\Hook\GeofieldViewsHooks:
+    class: Drupal\geofield\Hook\GeofieldViewsHooks
+    autowire: true

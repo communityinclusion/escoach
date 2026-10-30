@@ -2,20 +2,21 @@
 
 namespace Drupal\geofield\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Field\Attribute\FieldWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Plugin implementation of the 'geofield_bounds' widget.
- *
- * @FieldWidget(
- *   id = "geofield_bounds",
- *   label = @Translation("Bounding Box"),
- *   field_types = {
- *     "geofield"
- *   }
- * )
  */
+#[FieldWidget(
+  id: 'geofield_bounds',
+  label: new TranslatableMarkup('Bounding Box'),
+  field_types: [
+    'geofield',
+  ],
+)]
 class GeofieldBoundsWidget extends GeofieldBaseWidget {
 
   /**
@@ -27,6 +28,9 @@ class GeofieldBoundsWidget extends GeofieldBaseWidget {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The form element for the field item.
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
@@ -47,6 +51,9 @@ class GeofieldBoundsWidget extends GeofieldBaseWidget {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The field values, in the form the field type stores.
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     foreach ($values as $delta => $value) {

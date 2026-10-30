@@ -118,6 +118,7 @@ function _captcha_update_captcha_session($captcha_sid, $solution) {
     ->fields([
       'timestamp' => \Drupal::time()->getRequestTime(),
       'solution' => $solution,
+      'status' => CaptchaConstants::CAPTCHA_STATUS_UNSOLVED,
     ])
     ->execute();
 }

@@ -19,6 +19,8 @@ use Drupal\Core\Url;
 use Drupal\captcha\Constants\CaptchaConstants;
 use Drupal\captcha\Element\Captcha;
 use Drupal\captcha\Entity\CaptchaPoint;
+use Drupal\crowdsec\ScenarioPluginManager;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Implements hook_help().
@@ -440,24 +442,28 @@ function _captcha_get_posted_captcha_info(array $element, FormStateInterface $fo
           ->select('captcha_sessions', 'cs')
           ->fields('cs', ['token'])
           ->condition('csid', $posted_captcha_sid)
+          // Only for unsolved sessions to prevent replay:
+          ->condition('status', CaptchaConstants::CAPTCHA_STATUS_UNSOLVED)
           ->execute()
           ->fetchField();
 
-        // If we do have a CAPTCHA token mismatch then log it.
-        try {
-          if (($expected_captcha_token !== $posted_captcha_token) && empty($input['captcha_cacheable'])) {
-            throw new \UnexpectedValueException('CAPTCHA session reuse attack detected.');
+        // A solved or unknown session returns FALSE from the query above, and
+        // a POST that drops the captcha_token field sends NULL. Treat any
+        // difference from the posted token, including these, as a reuse
+        // attempt. Comparing against FALSE explicitly keeps this independent of
+        // how the database layer represents a NULL token column.
+        if ($expected_captcha_token === FALSE || $expected_captcha_token !== $posted_captcha_token) {
+          // The captcha_cacheable flag only suppresses the log message.
+          if (empty($input['captcha_cacheable'])) {
+            \Drupal::logger('captcha')->debug(
+              'CAPTCHA session reuse attack detected on %form_id. Posted CAPTCHA token: %posted_captcha_token. Expected captcha token: %expected_captcha_token',
+              [
+                '%form_id' => $this_form_id,
+                '%expected_captcha_token' => var_export($expected_captcha_token, TRUE),
+                '%posted_captcha_token' => var_export($posted_captcha_token, TRUE),
+              ]
+            );
           }
-        }
-        catch (\Exception $e) {
-          \Drupal::logger('captcha')->debug(
-            'CAPTCHA session reuse attack detected on %form_id. Posted CAPTCHA token: %posted_captcha_token. Expected captcha token: %expected_captcha_token',
-            [
-              '%form_id' => $this_form_id,
-              '%expected_captcha_token' => var_export($expected_captcha_token, TRUE),
-              '%posted_captcha_token' => var_export($posted_captcha_token, TRUE),
-            ]
-          );
           // Invalidate the CAPTCHA session.
           $posted_captcha_sid = NULL;
         }
@@ -481,7 +487,6 @@ function _captcha_get_posted_captcha_info(array $element, FormStateInterface $fo
  * files).
  */
 function captcha_validate($element, FormStateInterface &$form_state) {
-
   $captcha_info = $form_state->get('captcha_info');
   $form_id = $captcha_info['this_form_id'];
 
@@ -537,6 +542,8 @@ function captcha_validate($element, FormStateInterface &$form_state) {
             '%module' => $captcha_info['module'],
           ]);
       }
+
+      captcha_signal_crowdsec();
     }
   }
   else {
@@ -619,6 +626,8 @@ function captcha_validate($element, FormStateInterface &$form_state) {
               '%module' => $captcha_info['module'],
             ]);
         }
+
+        captcha_signal_crowdsec();
       }
     }
     else {
@@ -631,6 +640,15 @@ function captcha_validate($element, FormStateInterface &$form_state) {
         'CAPTCHA validation error: unknown CAPTCHA session ID (%csid).',
         ['%csid' => var_export($csid, TRUE)]);
     }
+  }
+}
+
+/**
+ * Forwards a signal of a failed captcha attempt to the CrowdSec module.
+ */
+function captcha_signal_crowdsec(): void {
+  if (interface_exists('Drupal\crowdsec\ScenarioInterface')) {
+    ScenarioPluginManager::getPlugin('captcha:failed_captcha')->addSignal(\Drupal::request()->getClientIp(), Response::HTTP_FORBIDDEN, \Drupal::currentUser()->getAccountName());
   }
 }
 

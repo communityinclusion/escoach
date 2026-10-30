@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\geofield\Kernel;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\entity_test\Entity\EntityTest;
@@ -14,6 +16,8 @@ use Drupal\Tests\field\Kernel\FieldKernelTestBase;
  *
  * @group geofield
  */
+#[Group('geofield')]
+#[RunTestsInSeparateProcesses]
 class GeofieldItemTest extends FieldKernelTestBase {
 
   /**

@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
 use Drupal\geofield\Plugin\views\GeofieldProximityHandlerTrait;
+use Drupal\views\Attribute\ViewsSort;
 use Drupal\views\Plugin\views\sort\SortPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -13,9 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Field handler to sort Geofields by proximity.
  *
  * @ingroup views_field_handlers
- *
- * @ViewsSort("geofield_proximity_sort")
  */
+#[ViewsSort('geofield_proximity_sort')]
 class GeofieldProximitySort extends SortPluginBase {
 
   use GeofieldProximityHandlerTrait;
@@ -37,6 +37,9 @@ class GeofieldProximitySort extends SortPluginBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The options of the handler, with their defaults.
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
@@ -69,6 +72,9 @@ class GeofieldProximitySort extends SortPluginBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(

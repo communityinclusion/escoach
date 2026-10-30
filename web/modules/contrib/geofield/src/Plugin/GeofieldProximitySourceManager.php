@@ -9,6 +9,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\geofield\Attribute\GeofieldProximitySource;
 
 /**
  * Provides the Geofield Proximity Source plugin manager.
@@ -21,7 +22,7 @@ class GeofieldProximitySourceManager extends DefaultPluginManager {
    * {@inheritdoc}
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/GeofieldProximitySource', $namespaces, $module_handler, 'Drupal\geofield\Plugin\GeofieldProximitySourceInterface', 'Drupal\geofield\Annotation\GeofieldProximitySource');
+    parent::__construct('Plugin/GeofieldProximitySource', $namespaces, $module_handler, 'Drupal\geofield\Plugin\GeofieldProximitySourceInterface', GeofieldProximitySource::class, 'Drupal\geofield\Annotation\GeofieldProximitySource');
 
     $this->alterInfo('geofield_geofield_proximity_source_info');
     $this->setCacheBackend($cache_backend, 'geofield_geofield_proximity_source_plugins');

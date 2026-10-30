@@ -42,7 +42,7 @@ class GeoConstraintValidator extends ConstraintValidator implements ContainerInj
   /**
    * {@inheritdoc}
    */
-  public function validate($value, Constraint $constraint) {
+  public function validate(mixed $value, Constraint $constraint): void {
     if (isset($value)) {
       $valid_geometry = TRUE;
 

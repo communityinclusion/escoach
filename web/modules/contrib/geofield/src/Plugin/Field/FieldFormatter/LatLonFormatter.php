@@ -2,25 +2,29 @@
 
 namespace Drupal\geofield\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\geofield\DmsConverter;
 
 /**
  * Plugin implementation of the 'geofield_latlon' formatter.
- *
- * @FieldFormatter(
- *   id = "geofield_latlon",
- *   label = @Translation("Lat/Lon"),
- *   field_types = {
- *     "geofield"
- *   }
- * )
  */
+#[FieldFormatter(
+  id: 'geofield_latlon',
+  label: new TranslatableMarkup('Lat/Lon'),
+  field_types: [
+    'geofield',
+  ],
+)]
 class LatLonFormatter extends GeofieldDefaultFormatter {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The default settings, keyed by setting name.
    */
   public static function defaultSettings() {
     return [
@@ -55,6 +59,9 @@ class LatLonFormatter extends GeofieldDefaultFormatter {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The form elements for the settings.
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $elements = parent::settingsForm($form, $form_state);
@@ -72,6 +79,9 @@ class LatLonFormatter extends GeofieldDefaultFormatter {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The lines of the settings summary.
    */
   public function settingsSummary() {
     $summary[] = $this->t('Geospatial output format: @format', ['@format' => $this->formatOptions()[$this->getOutputFormat()]]);
@@ -80,13 +90,16 @@ class LatLonFormatter extends GeofieldDefaultFormatter {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   A render array for each field item, keyed by delta.
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
 
     foreach ($items as $delta => $item) {
       $output = ['#markup' => ''];
-      $geom = $this->geoPhpWrapper->load($item->value);
+      $geom = $this->geoPhpWrapper->load($item->get('value')->getValue());
       if ($geom) {
         // If the geometry is not a point, get the centroid.
         if ($geom->getGeomType() != 'Point') {

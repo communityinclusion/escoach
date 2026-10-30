@@ -2,6 +2,9 @@
 
 namespace Drupal\Tests\geofield\Kernel;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -12,6 +15,8 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
  *
  * @group geofield
  */
+#[Group('geofield')]
+#[RunTestsInSeparateProcesses]
 class GeofieldFormatterTest extends EntityKernelTestBase {
 
   /**
@@ -85,6 +90,7 @@ class GeofieldFormatterTest extends EntityKernelTestBase {
    *
    * @dataProvider latLonFormatterProvider
    */
+  #[DataProvider('latLonFormatterProvider')]
   public function testLatLonFormatter($point, $format, $expected_value) {
     // Create the entity to be referenced.
     $entity = EntityTest::create(['name' => $this->randomMachineName()]);

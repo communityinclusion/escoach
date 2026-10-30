@@ -4,21 +4,22 @@ namespace Drupal\geofield\Plugin\GeofieldProximitySource;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield\Attribute\GeofieldProximitySource;
 use Drupal\geofield\Plugin\GeofieldProximitySourceBase;
 
 /**
  * Defines 'Geofield Manual Origin' plugin.
  *
  * @package Drupal\geofield\Plugin
- *
- * @GeofieldProximitySource(
- *   id = "geofield_manual_origin",
- *   label = @Translation("Manual Origin (Default)"),
- *   description = @Translation("Allow the Manual input of Origin as couple of Latitude and Longitude in decimal degrees."),
- *   exposedDescription = @Translation("Manual input of Distance and Origin (as couple of Latitude and Longitude in decimal degrees.)"),
- *   context = {},
- * )
  */
+#[GeofieldProximitySource(
+  id: 'geofield_manual_origin',
+  label: new TranslatableMarkup('Manual Origin (Default)'),
+  description: new TranslatableMarkup('Allow the Manual input of Origin as couple of Latitude and Longitude in decimal degrees.'),
+  exposedDescription: new TranslatableMarkup('Manual input of Distance and Origin (as couple of Latitude and Longitude in decimal degrees.)'),
+  context: [],
+)]
 class ManualOriginDefault extends GeofieldProximitySourceBase {
 
   /**

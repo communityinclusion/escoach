@@ -2,20 +2,21 @@
 
 namespace Drupal\geofield\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Field\Attribute\FieldWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Plugin implementation of the 'geofield_latlon' widget.
- *
- * @FieldWidget(
- *   id = "geofield_latlon",
- *   label = @Translation("Latitude/Longitude"),
- *   field_types = {
- *     "geofield"
- *   }
- * )
  */
+#[FieldWidget(
+  id: 'geofield_latlon',
+  label: new TranslatableMarkup('Latitude/Longitude'),
+  field_types: [
+    'geofield',
+  ],
+)]
 class GeofieldLatLonWidget extends GeofieldBaseWidget {
 
   /**
@@ -27,6 +28,9 @@ class GeofieldLatLonWidget extends GeofieldBaseWidget {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The default settings, keyed by setting name.
    */
   public static function defaultSettings() {
     return [
@@ -36,6 +40,9 @@ class GeofieldLatLonWidget extends GeofieldBaseWidget {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The form elements for the settings.
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $elements = parent::settingsForm($form, $form_state);
@@ -51,6 +58,9 @@ class GeofieldLatLonWidget extends GeofieldBaseWidget {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The lines of the settings summary.
    */
   public function settingsSummary() {
     return [
@@ -60,13 +70,19 @@ class GeofieldLatLonWidget extends GeofieldBaseWidget {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The form element for the field item.
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
 
-    /** @var \Drupal\geofield\Plugin\Field\FieldType\GeofieldItem $geofield_item */
     $geofield_item = $items->getValue()[$delta];
-    if (empty($geofield_item) || $geofield_item['geo_type'] == 'Point') {
+    if (!is_array($geofield_item) || empty($geofield_item['value'])) {
+      $geofield_item = [];
+    }
+
+    if (empty($geofield_item) || ($geofield_item['geo_type'] ?? NULL) === 'Point') {
       $latlon_value = [];
 
       foreach ($this->components as $component) {
@@ -83,11 +99,11 @@ class GeofieldLatLonWidget extends GeofieldBaseWidget {
     else {
       $widget_label = $this->getPluginDefinition()['label']->render();
       $element['value'] += [
-        '#prefix' => '<div class="geofield-warning">' . $this->t('The "@widget_label" widget cannot be applied because it doesn\'t support Geometries (Polylines, Polygons, etc.).', [
+        '#prefix' => '<div class="geofield-warning">' . $this->t('The "@widget_label" widget cannot be applied because it doesn\'t support no "Point" type Geometries.', [
           '@widget_label' => $widget_label,
         ]) . '</div>',
         '#type' => 'textarea',
-        '#default_value' => $items[$delta]->value ?: NULL,
+        '#default_value' => $geofield_item['value'],
       ];
     }
     return $element;
@@ -95,6 +111,9 @@ class GeofieldLatLonWidget extends GeofieldBaseWidget {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The field values, in the form the field type stores.
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     foreach ($values as $delta => $value) {

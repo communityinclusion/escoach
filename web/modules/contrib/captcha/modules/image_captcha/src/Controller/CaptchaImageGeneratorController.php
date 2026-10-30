@@ -140,8 +140,7 @@ class CaptchaImageGeneratorController implements ContainerInjectionInterface {
         imagepng($image);
 
       }
-        // Release image memory.
-      imagedestroy($image);
+      // Release image memory.
       unset($image);
       return $this;
 

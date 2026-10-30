@@ -39,7 +39,7 @@ any entity type/bundle and then choose the preferred widget or formatter.
 ## Advanced Mapping and Geocoding with Geofield
 
 Geofield perfectly matches and extends itself with its dependent most adopted
-third party modules, such as::
+third party modules, such as:
 
 - [Geofield Map](https://www.drupal.org/project/geofield_map): an advanced,
   complete and easy-to-use Geo Mapping solution that lets you manage the
@@ -63,7 +63,7 @@ third party modules, such as::
 ### Geofield Schema
 
 Geofield fields contain nine columns of information about the geographic data
-that is stores. At its heart is the 'wkt' column where it stores the full
+that it stores. At its heart is the 'wkt' column where it stores the full
 geometry in the 'Well Known Text' (WKT) format. All other columns are metadata
 derived from the WKT column. Columns are as follows:
 ```
@@ -79,13 +79,11 @@ derived from the WKT column. Columns are as follows:
 ```
 
 
-### Save or Updated a Geofield programmatically
+### Save or Update a Geofield Programmatically
 
 To save or update programmatically a Geofield (both single and multivalue) it is
-
 sufficient to pass the WKT values/geometries to the
-
-{Drupal\geofield\Plugin\Field\FieldType\GeofieldItem} setValue public method
+`Drupal\geofield\Plugin\Field\FieldType\GeofieldItem` `setValue` public method.
 
 For instance, in case of a node entity containing a geofield named
 "field_geofield", it is possible to update/set its multiple values in the
@@ -107,10 +105,10 @@ following way:
   // Generate the (second) geofield value in the proper format.
   // The perimeter of Bryant Park, in New York City (US)
   $geofield_polygon = [
-    'value' => "POLYGON((-73.98411932014324 40.754779803566606," +
-      "-73.98502054237224 40.75354445673964," +
-      "-73.98186626457073 40.75221155678824," +
-      "-73.98092212699748 40.75344692838096," +
+    'value' => "POLYGON((-73.98411932014324 40.754779803566606," .
+      "-73.98502054237224 40.75354445673964," .
+      "-73.98186626457073 40.75221155678824," .
+      "-73.98092212699748 40.75344692838096," .
       "-73.98411932014324 40.754779803566606))",
   ];
 
@@ -122,14 +120,15 @@ following way:
   $entity->save();
 ```
 
+---
 
-## Maintainers
+## Authors / Maintainers
 
-Drupal 8, 9, 10:
-- Italo Mairo (itamair) - https://www.drupal.org/u/itamair
+From Drupal 8 to today:
+- **Italo Mairo** — [itamair](https://www.drupal.org/u/itamair) - main maintainer
 
 Drupal 7:
-- Brandon Bergren (bdragon) - https://www.drupal.org/u/bdragon
-- Brandon Morrison (Brandonian) - https://www.drupal.org/u/brandonian
-- Patrick Hayes (phayes) - https://www.drupal.org/u/phayes
-- Pablo López (plopesc) - https://www.drupal.org/u/plopesc
+- **Patrick Hayes** - [phayes](https://www.drupal.org/u/phayes) - original creator
+- **Juraj Nemec** - [poker10](https://www.drupal.org/u/poker10)
+
+And credits to the wider Drupal community.

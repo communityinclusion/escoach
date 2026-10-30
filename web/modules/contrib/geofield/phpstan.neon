@@ -8,5 +8,11 @@ parameters:
   level: 2
   paths:
     - .
+  bootstrapFiles:
+    - phpstan-bootstrap.php
+  excludePaths:
+    # Extends a migrate_drupal class. Drupal 12 core no longer ships
+    # migrate_drupal, and the plugin is only discovered when it is installed.
+    - src/Plugin/migrate/field/Geofield.php
   ignoreErrors:
     - "#^Unsafe usage of new static#"

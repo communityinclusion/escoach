@@ -5,6 +5,7 @@ namespace Drupal\geofield\Plugin\views\filter;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\geofield\Plugin\views\GeofieldBoundaryHandlerTrait;
+use Drupal\views\Attribute\ViewsFilter;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
 use Drupal\views\Plugin\views\query\Sql;
 
@@ -12,9 +13,8 @@ use Drupal\views\Plugin\views\query\Sql;
  * Filter handler for search keywords.
  *
  * @ingroup views_filter_handlers
- *
- * @ViewsFilter("geofield_rectangular_boundary_filter")
  */
+#[ViewsFilter('geofield_rectangular_boundary_filter')]
 class GeofieldRectBoundaryFilter extends FilterPluginBase implements ContainerFactoryPluginInterface {
 
   use GeofieldBoundaryHandlerTrait;

@@ -3,18 +3,21 @@
 namespace Drupal\geofield\Element;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Attribute\FormElement;
 use Drupal\Core\Render\Element\FormElementBase;
 use Drupal\geofield\DmsConverter;
 
 /**
  * Provides a Geofield DMS form element.
- *
- * @FormElementBase("geofield_dms")
  */
+#[FormElement('geofield_dms')]
 class GeofieldDms extends FormElementBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The default properties of the element.
    */
   public function getInfo() {
     $class = get_class($this);

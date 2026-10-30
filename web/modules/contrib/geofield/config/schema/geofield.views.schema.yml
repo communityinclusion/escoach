@@ -1,6 +1,69 @@
+# The settings the proximity origin source plugins store, shared by the
+# proximity field, filter and sort, which all offer the same sources.
+geofield_proximity_source_configuration:
+  type: mapping
+  label: 'Proximity origin source configuration'
+  mapping:
+    exposed_summary:
+      type: boolean
+      label: 'Expose the summary description of the proximity source'
+    origin:
+      type: mapping
+      label: 'Origin coordinates'
+      mapping:
+        lat:
+          type: string
+          label: 'Latitude'
+        lon:
+          type: string
+          label: 'Longitude'
+    origin_hidden_flag:
+      type: boolean
+      label: 'Hide the origin input elements from the exposed form'
+    origin_summary_flag:
+      type: boolean
+      label: 'Show the origin coordinates as a summary in the exposed form'
+    origin_address:
+      type: string
+    plugins:
+      type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          checked:
+            type: boolean
+          weight:
+            type: integer
+    use_autocomplete:
+      type: boolean
+    settings:
+      type: mapping
+      mapping:
+        autocomplete:
+          type: mapping
+          mapping:
+            min_terms:
+              type: integer
+            delay:
+              type: integer
+            address_format:
+              type: string
+    source_proximity_filter:
+      type: string
+      label: 'Source proximity filter'
+
 views.field.geofield_proximity_field:
   type: views.field.numeric
   label: 'Geofield Proximity Field'
+  mapping:
+    units:
+      type: string
+      label: 'Units'
+    source:
+      type: string
+      label: 'Origin source plugin'
+    source_configuration:
+      type: geofield_proximity_source_configuration
 
 views.filter.geofield_proximity_filter:
   type: views_filter
@@ -22,46 +85,7 @@ views.filter.geofield_proximity_filter:
     source:
       type: string
     source_configuration:
-      type: mapping
-      mapping:
-        exposed_summary:
-          type: boolean
-        origin:
-          type: mapping
-          mapping:
-            lat:
-              type: string
-            lon:
-              type: string
-        origin_hidden_flag:
-          type: boolean
-        origin_summary_flag:
-          type: boolean
-        origin_address:
-          type: string
-        plugins:
-          type: sequence
-          sequence:
-            type: mapping
-            mapping:
-              checked:
-                type: boolean
-              weight:
-                type: integer
-        use_autocomplete:
-          type: boolean
-        settings:
-          type: mapping
-          mapping:
-            autocomplete:
-              type: mapping
-              mapping:
-                min_terms:
-                  type: integer
-                delay:
-                  type: integer
-                address_format:
-                  type: string
+      type: geofield_proximity_source_configuration
 
 views.filter_value.geofield_proximity_filter:
   type: views.field.numeric
@@ -96,10 +120,7 @@ views.sort.geofield_proximity_sort:
     source:
       type: string
     source_configuration:
-      type: mapping
-      mapping:
-        source_proximity_filter:
-          type: string
+      type: geofield_proximity_source_configuration
 
 views.argument.geofield_proximity_argument:
   type: views_argument

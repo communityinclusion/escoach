@@ -3,25 +3,26 @@
 namespace Drupal\geofield\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\geofield\GeoPHP\GeoPHPInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'geofield_default' formatter.
- *
- * @FieldFormatter(
- *   id = "geofield_default",
- *   label = @Translation("Raw Output"),
- *   field_types = {
- *     "geofield"
- *   }
- * )
  */
+#[FieldFormatter(
+  id: 'geofield_default',
+  label: new TranslatableMarkup('Raw Output'),
+  field_types: [
+    'geofield',
+  ],
+)]
 class GeofieldDefaultFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -75,6 +76,9 @@ class GeofieldDefaultFormatter extends FormatterBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -91,6 +95,9 @@ class GeofieldDefaultFormatter extends FormatterBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The default settings, keyed by setting name.
    */
   public static function defaultSettings() {
     return [
@@ -111,6 +118,9 @@ class GeofieldDefaultFormatter extends FormatterBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The form elements for the settings.
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $elements = parent::settingsForm($form, $form_state);
@@ -136,6 +146,9 @@ class GeofieldDefaultFormatter extends FormatterBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The lines of the settings summary.
    */
   public function settingsSummary() {
     $summary = [];
@@ -145,11 +158,14 @@ class GeofieldDefaultFormatter extends FormatterBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   A render array for each field item, keyed by delta.
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
     foreach ($items as $delta => $item) {
-      $geom = $this->geoPhpWrapper->load($item->value);
+      $geom = $this->geoPhpWrapper->load($item->get('value')->getValue());
       $output = $geom ? $geom->out($this->getOutputFormat()) : '';
       if ($this->getSetting('output_escape')) {
         $output = Html::escape($output);

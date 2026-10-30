@@ -88,6 +88,9 @@ abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -104,6 +107,9 @@ abstract class GeofieldBaseWidget extends WidgetBase implements ContainerFactory
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The form element for the field item.
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // Attach Geofield Libraries.

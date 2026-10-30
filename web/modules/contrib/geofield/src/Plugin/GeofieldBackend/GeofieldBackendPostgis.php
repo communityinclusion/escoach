@@ -2,17 +2,18 @@
 
 namespace Drupal\geofield\Plugin\GeofieldBackend;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield\Attribute\GeofieldBackend;
 use Drupal\geofield\Plugin\GeofieldBackendBase;
 
 /**
  * PostgreSQL/PostGIS Backend for Geofield.
- *
- * @GeofieldBackend(
- *   id = "geofield_backend_postgis",
- *   admin_label = @Translation("PostGIS Geometry"),
- *   description = @Translation("Geofield Backend storing values in EWKB Format, suitable for PostgreSQL/PostGIS (needs PostGis enabled)")
- * )
  */
+#[GeofieldBackend(
+  id: 'geofield_backend_postgis',
+  admin_label: new TranslatableMarkup('PostGIS Geometry'),
+  description: new TranslatableMarkup('Geofield Backend storing values in EWKB Format, suitable for PostgreSQL/PostGIS (needs PostGis enabled)'),
+)]
 class GeofieldBackendPostgis extends GeofieldBackendBase {
 
   /**

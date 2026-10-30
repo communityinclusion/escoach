@@ -4,6 +4,7 @@ namespace Drupal\geofield\Plugin\views\argument;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\geofield\Plugin\views\GeofieldBoundaryHandlerTrait;
+use Drupal\views\Attribute\ViewsArgument;
 use Drupal\views\Plugin\views\argument\ArgumentPluginBase;
 use Drupal\views\Plugin\views\query\Sql;
 
@@ -14,9 +15,8 @@ use Drupal\views\Plugin\views\query\Sql;
  * NE-Lat,NE-Lng,SW-Lat,SW-Lng, so "11.1,33.3,55.5,77.7".
  *
  * @ingroup views_argument_handlers
- *
- * @ViewsArgument("geofield_rectangular_boundary_argument")
  */
+#[ViewsArgument('geofield_rectangular_boundary_argument')]
 class GeofieldRectBoundaryArgument extends ArgumentPluginBase {
 
   use GeofieldBoundaryHandlerTrait;

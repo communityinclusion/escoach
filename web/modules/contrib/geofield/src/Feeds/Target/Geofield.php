@@ -55,6 +55,9 @@ class Geofield extends FieldTargetBase implements ContainerFactoryPluginInterfac
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -67,6 +70,9 @@ class Geofield extends FieldTargetBase implements ContainerFactoryPluginInterfac
 
   /**
    * {@inheritdoc}
+   *
+   * @return \Drupal\feeds\FieldTargetDefinition
+   *   The definition of the target.
    */
   protected static function prepareTarget(FieldDefinitionInterface $field_definition) {
     return FieldTargetDefinition::createFromFieldDefinition($field_definition)
@@ -144,6 +150,9 @@ class Geofield extends FieldTargetBase implements ContainerFactoryPluginInterfac
 
   /**
    * {@inheritdoc}
+   *
+   * @return string|array
+   *   The summary of the target configuration.
    */
   public function getSummary() {
 

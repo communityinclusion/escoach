@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
+use Drupal\views\Attribute\ViewsFilter;
 use Drupal\views\Plugin\views\filter\NumericFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -15,9 +16,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * Field handler to filter Geofields by proximity.
  *
  * @ingroup views_filter_handlers
- *
- * @ViewsFilter("geofield_proximity_filter")
  */
+#[ViewsFilter('geofield_proximity_filter')]
 class GeofieldProximityFilter extends NumericFilter {
 
   use LoggerChannelTrait;
@@ -87,6 +87,9 @@ class GeofieldProximityFilter extends NumericFilter {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The options of the handler, with their defaults.
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
@@ -148,6 +151,9 @@ class GeofieldProximityFilter extends NumericFilter {
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -162,6 +168,9 @@ class GeofieldProximityFilter extends NumericFilter {
 
   /**
    * Provide Operators List.
+   *
+   * @return array
+   *   The filter operators, keyed by operator id.
    */
   public function operators() {
     $operators = [
@@ -598,6 +607,9 @@ class GeofieldProximityFilter extends NumericFilter {
 
   /**
    * {@inheritdoc}
+   *
+   * @return bool
+   *   TRUE if the exposed input is accepted, FALSE otherwise.
    */
   public function acceptExposedInput($input) {
     if (empty($this->options['exposed'])) {

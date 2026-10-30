@@ -3,12 +3,12 @@
 namespace Drupal\geofield\Element;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Attribute\FormElement;
 
 /**
  * Provides a Geofield Lat Lon form element.
- *
- * @FormElement("geofield_latlon")
  */
+#[FormElement('geofield_latlon')]
 class GeofieldLatLon extends GeofieldElementBase {
 
   /**
@@ -29,6 +29,9 @@ class GeofieldLatLon extends GeofieldElementBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array
+   *   The default properties of the element.
    */
   public function getInfo() {
     $class = get_class($this);

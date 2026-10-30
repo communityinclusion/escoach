@@ -4,6 +4,7 @@ namespace Drupal\geofield\Plugin\migrate\process;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\geofield\GeoPHP\GeoPHPInterface;
+use Drupal\migrate\Attribute\MigrateProcess;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
@@ -11,11 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Maps D7 geofield values to new the geofield values.
- *
- * @MigrateProcessPlugin(
- *   id = "geofield_d7d8"
- * )
  */
+#[MigrateProcess('geofield_d7d8')]
 class GeoField extends ProcessPluginBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -35,6 +33,9 @@ class GeoField extends ProcessPluginBase implements ContainerFactoryPluginInterf
 
   /**
    * {@inheritdoc}
+   *
+   * @return static
+   *   A new instance of the plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -47,6 +48,9 @@ class GeoField extends ProcessPluginBase implements ContainerFactoryPluginInterf
 
   /**
    * {@inheritdoc}
+   *
+   * @return mixed
+   *   The transformed value.
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     return [

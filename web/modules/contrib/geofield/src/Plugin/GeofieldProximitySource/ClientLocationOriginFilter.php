@@ -4,22 +4,23 @@ namespace Drupal\geofield\Plugin\GeofieldProximitySource;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\geofield\Attribute\GeofieldProximitySource;
 
 /**
  * Defines 'Geofield Client Location Origin' plugin.
  *
  * @package Drupal\geofield\Plugin
- *
- * @GeofieldProximitySource(
- *   id = "geofield_client_location_origin",
- *   label = @Translation("Client Location Origin"),
- *   description = @Translation("Gets the Client Location through the browser HTML5 Geolocation API."),
- *   context = {
- *     "filter",
- *   },
- *   exposedOnly = true
- * )
  */
+#[GeofieldProximitySource(
+  id: 'geofield_client_location_origin',
+  label: new TranslatableMarkup('Client Location Origin'),
+  description: new TranslatableMarkup('Gets the Client Location through the browser HTML5 Geolocation API.'),
+  context: [
+    'filter',
+  ],
+  exposedOnly: TRUE,
+)]
 class ClientLocationOriginFilter extends ManualOriginDefault {
 
   /**

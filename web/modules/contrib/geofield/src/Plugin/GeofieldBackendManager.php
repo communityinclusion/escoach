@@ -5,6 +5,7 @@ namespace Drupal\geofield\Plugin;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\geofield\Attribute\GeofieldBackend;
 
 /**
  * Defines the plugin manager Geofield backends.
@@ -23,7 +24,7 @@ class GeofieldBackendManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/GeofieldBackend', $namespaces, $module_handler, 'Drupal\geofield\Plugin\GeofieldBackendPluginInterface', 'Drupal\geofield\Annotation\GeofieldBackend');
+    parent::__construct('Plugin/GeofieldBackend', $namespaces, $module_handler, 'Drupal\geofield\Plugin\GeofieldBackendPluginInterface', GeofieldBackend::class, 'Drupal\geofield\Annotation\GeofieldBackend');
 
     $this->alterInfo('geofield');
     $this->setCacheBackend($cache_backend, 'geofield_plugins');
